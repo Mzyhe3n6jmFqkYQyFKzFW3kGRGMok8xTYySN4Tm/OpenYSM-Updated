@@ -2,21 +2,21 @@ package com.elfmcys.yesstevemodel.client.entity;
 
 import com.elfmcys.yesstevemodel.client.ClientModelManager;
 import com.elfmcys.yesstevemodel.client.animation.condition.ConditionManager;
-import com.elfmcys.yesstevemodel.client.model.VehicleModelBundle;
-import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel;
-import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel;
-import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController;
 import com.elfmcys.yesstevemodel.client.animation.molang.MolangEventDispatcher;
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly;
 import com.elfmcys.yesstevemodel.client.model.ProjectileModelBundle;
+import com.elfmcys.yesstevemodel.client.model.VehicleModelBundle;
+import com.elfmcys.yesstevemodel.client.upload.IResourceLocatable;
 import com.elfmcys.yesstevemodel.client.upload.UploadManager;
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity;
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.Animation;
+import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController;
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue;
 import com.elfmcys.yesstevemodel.geckolib3.core.processor.IBone;
+import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel;
+import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel;
 import com.elfmcys.yesstevemodel.geckolib3.model.provider.data.EntityModelData;
-import com.elfmcys.yesstevemodel.client.upload.IResourceLocatable;
 import com.elfmcys.yesstevemodel.util.data.OrderedStringMap;
 import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
@@ -181,7 +181,7 @@ public abstract class LivingAnimatable<T extends LivingEntity> extends GeoEntity
             if (abstractTexture != null) {
                 ((TexturedModelWrapper) getRenderShape()).setTexture(abstractTexture);
                 this.textureIndex = map.getValuesList().indexOf(abstractTexture);
-            } else {
+            } else if (!map.isEmpty()) {
                 this.currentTextureName = map.getKeyAt(0);
                 ((TexturedModelWrapper) getRenderShape()).setTexture(map.getValueAt(0));
                 this.textureIndex = 0;
@@ -207,7 +207,8 @@ public abstract class LivingAnimatable<T extends LivingEntity> extends GeoEntity
     }
 
     public String getCurrentTextureName() {
-        return isModelReady() ? this.currentTextureName : getModelAssembly().getAnimationBundle().getTextures().getKeyAt(0);
+        OrderedStringMap<String, ? extends AbstractTexture> textures = getModelAssembly().getAnimationBundle().getTextures();
+        return isModelReady() ? this.currentTextureName : (textures.isEmpty() ? "" : textures.getKeyAt(0));
     }
 
     @Override
@@ -257,7 +258,10 @@ public abstract class LivingAnimatable<T extends LivingEntity> extends GeoEntity
         public TexturedModelWrapper(ModelAssembly modelAssembly, boolean isActive, boolean collectAllTextures, boolean registerImmediately, int textureResolution) {
             super(modelAssembly, isActive);
             AbstractTexture abstractTexture = modelAssembly.getAnimationBundle().getTextures().get(LivingAnimatable.this.currentTextureName);
-            this.currentTexture = UploadManager.getOrCreateLocatableWithSize(abstractTexture != null ? abstractTexture : modelAssembly.getAnimationBundle().getDefaultTexture(), registerImmediately, textureResolution);
+            if (abstractTexture == null) {
+                abstractTexture = modelAssembly.getAnimationBundle().getDefaultTexture();
+            }
+            this.currentTexture = abstractTexture != null ? UploadManager.getOrCreateLocatableWithSize(abstractTexture, registerImmediately, textureResolution) : null;
             this.textureResolution = textureResolution;
             if (collectAllTextures) {
                 this.allTextures = new ArrayList();
@@ -281,7 +285,7 @@ public abstract class LivingAnimatable<T extends LivingEntity> extends GeoEntity
 
         @Override
         public boolean isValid() {
-            return this.currentTexture.getResourceLocation().isPresent();
+            return this.currentTexture != null && this.currentTexture.getResourceLocation().isPresent();
         }
     }
 }

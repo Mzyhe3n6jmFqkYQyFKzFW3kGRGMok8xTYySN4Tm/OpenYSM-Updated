@@ -1,9 +1,9 @@
 package com.elfmcys.yesstevemodel.command.subcommands;
 
-import com.elfmcys.yesstevemodel.model.ServerModelManager;
-import com.elfmcys.yesstevemodel.event.CommandRegistry;
 import com.elfmcys.yesstevemodel.capability.AuthModelsCapability;
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability;
+import com.elfmcys.yesstevemodel.event.CommandRegistry;
+import com.elfmcys.yesstevemodel.model.ServerModelManager;
 import com.elfmcys.yesstevemodel.model.format.ServerModelData;
 import com.elfmcys.yesstevemodel.util.YSMMessageFormatter;
 import com.google.gson.Gson;
@@ -83,7 +83,7 @@ public class ModelCommand {
         if (Objects.equals(textureName, "-")) {
             textureName = info.getLoadedModelData().getModelProperties().getDefaultTexture();
             if (StringUtils.isBlank(textureName) || !info.getModelInfo().getTextures().contains(textureName)) {
-                textureName = info.getModelInfo().getTextures().get(0);
+                textureName = info.getModelInfo().getTextures().isEmpty() ? "" : info.getModelInfo().getTextures().get(0);
             }
         }
         if (ServerModelManager.getServerModelInfo().get(modelName).getModelInfo().getTextures().isEmpty()) {

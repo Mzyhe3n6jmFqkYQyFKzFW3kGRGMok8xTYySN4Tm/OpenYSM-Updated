@@ -4,7 +4,6 @@ import com.elfmcys.yesstevemodel.NativeLibLoader;
 import com.elfmcys.yesstevemodel.audio.AudioCodec;
 import com.elfmcys.yesstevemodel.audio.AudioTrackData;
 import com.elfmcys.yesstevemodel.client.ClientModelInfo;
-import rip.ysm.compat.oculus.ShadersTextureType;
 import com.elfmcys.yesstevemodel.client.gui.custom.AbstractConfig;
 import com.elfmcys.yesstevemodel.client.gui.custom.ExtraAnimationButtons;
 import com.elfmcys.yesstevemodel.client.gui.custom.configs.CheckboxConfig;
@@ -26,14 +25,14 @@ import com.elfmcys.yesstevemodel.geckolib3.core.keyframe.event.EventKeyFrame;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.FloatValue;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue;
 import com.elfmcys.yesstevemodel.geckolib3.file.*;
+import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoBone;
+import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel;
 import com.elfmcys.yesstevemodel.geckolib3.resource.GeckoLibCache;
 import com.elfmcys.yesstevemodel.geckolib3.util.IInterpolable;
 import com.elfmcys.yesstevemodel.geckolib3.util.LinearKeyframeInterpolator;
 import com.elfmcys.yesstevemodel.geckolib3.util.TicksInterpolator;
 import com.elfmcys.yesstevemodel.model.format.ServerModelInfo;
 import com.elfmcys.yesstevemodel.resource.models.*;
-import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoBone;
-import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel;
 import com.elfmcys.yesstevemodel.resource.pojo.RawYsmModel;
 import com.elfmcys.yesstevemodel.util.data.OrderedStringMap;
 import com.elfmcys.yesstevemodel.util.data.StringMapPair;
@@ -46,6 +45,7 @@ import org.gagravarr.opus.OpusFile;
 import org.gagravarr.vorbis.VorbisFile;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
+import rip.ysm.compat.oculus.ShadersTextureType;
 import rip.ysm.imagestream.avif.AvifDecoder;
 import rip.ysm.imagestream.webp.WebpDecoder;
 
@@ -954,6 +954,11 @@ public class YSMClientMapper {
     }
 
     public static GeometryDescription buildContext(RawYsmModel.RawGeometry model) {
+        if (model == null) {
+            // 某些子实体/退化模型可能没有 mainModel（例如只有箭的动画但没有主模型）。
+            // 返回一个兜底 GeometryDescription，避免后续读 model.identifier 时 NPE。
+            return new GeometryDescription("geometry.unknown", 64f, 64f, 1f, 1f, new double[3]);
+        }
         return new GeometryDescription(
                 model.identifier,
                 model.textureWidth, // default texture width ratio
