@@ -37,19 +37,19 @@ object TacCompatImpl {
         event: AnimationEvent<out LivingAnimatable<*>>,
         animation: String,
         loopType: ILoopType
-    ): PlayState = PlayState.CONTINUE
+    ): PlayState? = null
 
     @JvmStatic
     fun handleGunHoldAnimState(
         stack: ItemStack,
         event: AnimationEvent<out LivingAnimatable<*>>
-    ): PlayState = PlayState.CONTINUE
+    ): PlayState? = null
 
     @JvmStatic
     fun handleGunActionAnimState(
         stack: ItemStack,
         event: AnimationEvent<out LivingAnimatable<*>>
-    ): PlayState = PlayState.CONTINUE
+    ): PlayState? = null
 
     @JvmStatic
     fun handleGunSound(entity: LivingEntity, stack: ItemStack) {

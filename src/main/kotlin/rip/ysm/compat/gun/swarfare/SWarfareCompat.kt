@@ -41,19 +41,19 @@ object SWarfareCompat {
         event: AnimationEvent<out LivingAnimatable<out LivingEntity>>,
         str: String,
         loopType: ILoopType
-    ): PlayState = SWarfareCompatImpl.handleTaczAnim(entity, event, str, loopType)
+    ): PlayState? = SWarfareCompatImpl.handleTaczAnim(entity, event, str, loopType)
 
     @JvmStatic
     fun handleGunHoldAnim(
         stack: ItemStack,
         event: AnimationEvent<out LivingAnimatable<out LivingEntity>>
-    ): PlayState = SWarfareCompatImpl.handleGunHoldAnim(stack, event)
+    ): PlayState? = SWarfareCompatImpl.handleGunHoldAnim(stack, event)
 
     @JvmStatic
     fun handleGunActionAnim(
         stack: ItemStack,
         event: AnimationEvent<out LivingAnimatable<out LivingEntity>>
-    ): PlayState = SWarfareCompatImpl.handleGunActionAnim(stack, event)
+    ): PlayState? = SWarfareCompatImpl.handleGunActionAnim(stack, event)
 
     @JvmStatic
     fun getGunTexture(stack: ItemStack): Identifier? = SWarfareCompatImpl.getGunTexture(stack)
