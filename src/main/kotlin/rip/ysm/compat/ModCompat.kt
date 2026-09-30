@@ -3,8 +3,8 @@ package rip.ysm.compat
 import net.fabricmc.loader.api.FabricLoader
 
 @Suppress("unused")
-open class ModCompat(private val modId: String) {
-    val isModLoaded by lazy { FabricLoader.getInstance().isModLoaded(modId) }
+open class ModCompat(private vararg val modId: String) {
+    val isModLoaded by lazy { modId.any { FabricLoader.getInstance().isModLoaded(it) } }
 
     open fun initialize() {}
 
