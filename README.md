@@ -1,9 +1,12 @@
 # OpenYSM-Updated
 
 > [!IMPORTANT]
-> 本仓库是 [IzumiiKonata/OpenYSM-Updated](https://github.com/IzumiiKonata/OpenYSM-Updated) 的非官方维护 fork，面向 Minecraft 1.21.11 与 Fabric，并提供东方小女仆 Tsumugi 兼容。本项目不代表 Yes Steve Model、OpenYSM 或其上游维护者的官方版本。
+> 本仓库是 [IzumiiKonata/OpenYSM-Updated](https://github.com/IzumiiKonata/OpenYSM-Updated) 的非官方维护 fork，面向
+Minecraft 1.21.11 与 Fabric，并提供东方小女仆 Tsumugi 兼容。本项目不代表 Yes Steve Model、OpenYSM 或其上游维护者的官方版本。
 
-[OpenYSM](https://github.com/OpenYSM/OpenYSM) 是 Yes Steve Model 的开源实现，可使用 Bedrock 或 Gecko 模型替换玩家模型，并支持动画、材质切换与动画轮盘。本 fork 在 Fabric 高版本移植基础上提供 [东方小女仆 Tsumugi](https://github.com/gege-tlph/TouhouLittleMaid-Tsumugi) 的 YSM 模型兼容。
+[OpenYSM](https://github.com/OpenYSM/OpenYSM) 是 Yes Steve Model 的开源实现，可使用 Bedrock 或 Gecko
+模型替换玩家模型，并支持动画、材质切换与动画轮盘。本 fork 在 Fabric
+高版本移植基础上提供 [东方小女仆 Tsumugi](https://github.com/gege-tlph/TouhouLittleMaid-Tsumugi) 的 YSM 模型兼容。
 
 English: An unofficial Fabric 1.21.11 fork of OpenYSM-Updated with Touhou Little Maid: Tsumugi model integration.
 
@@ -19,12 +22,12 @@ English: An unofficial Fabric 1.21.11 fork of OpenYSM-Updated with Touhou Little
 
 ## 兼容性
 
-| 组件 | 要求 |
-|---|---|
-| Minecraft | 1.21.11 |
+| 组件          | 要求              |
+|---------------|-------------------|
+| Minecraft     | 1.21.11           |
 | Fabric Loader | 0.17.0 或更高版本 |
-| Java | 21 |
-| 安装位置 | 客户端与服务端 |
+| Java          | 21                |
+| 安装位置      | 客户端与服务端    |
 
 Fabric API、Architectury API、Cardinal Components API 与 Forge Config API Port 已包含在发布产物中，无需另行安装。
 
@@ -33,7 +36,8 @@ Fabric API、Architectury API、Cardinal Components API 与 Forge Config API Por
 1. 安装适用于 Minecraft 1.21.11 的 Fabric Loader。
 2. 从 [GitHub Releases](https://github.com/gege-tlph/OpenYSM-Updated/releases/latest) 下载 `openysm-fabric-*.jar`。
 3. 将 JAR 放入客户端和服务端的 `mods` 目录。
-4. 如需女仆模型兼容，同时安装 [东方小女仆 Tsumugi](https://github.com/gege-tlph/TouhouLittleMaid-Tsumugi) **0.8.5 或更高版本**。兼容功能会自动启用，无需额外配置。
+4. 如需女仆模型兼容，同时安装 [东方小女仆 Tsumugi](https://github.com/gege-tlph/TouhouLittleMaid-Tsumugi) **0.8.5
+   或更高版本**。兼容功能会自动启用，无需额外配置。
 
 > [!IMPORTANT]
 > 女仆的挂件渲染（背包、手持物、主副手、头饰、背旗）需要东方小女仆 **0.8.5** 才提供的接口。
@@ -70,13 +74,13 @@ Fabric 构建产物位于 `fabric/build/libs/`。
 
 ## 相关项目
 
-| 项目 | 关系 |
-|---|---|
-| [OpenYSM/OpenYSM](https://github.com/OpenYSM/OpenYSM) | OpenYSM 原始项目与通用文档来源 |
-| [IzumiiKonata/OpenYSM-Updated](https://github.com/IzumiiKonata/OpenYSM-Updated) | 本 fork 的直接上游 |
-| [东方小女仆 Tsumugi](https://github.com/gege-tlph/TouhouLittleMaid-Tsumugi) | 女仆模型兼容目标 |
-| [Maid Restaurant](https://github.com/gege-tlph/MaidRestaurant) | Tsumugi 的餐厅自动化附属模组 |
-| [Patchouli](https://github.com/gege-tlph/Patchouli) | 同一维护系列中的游戏内文档库 |
+| 项目                                                                            | 关系                           |
+|---------------------------------------------------------------------------------|--------------------------------|
+| [OpenYSM/OpenYSM](https://github.com/OpenYSM/OpenYSM)                           | OpenYSM 原始项目与通用文档来源 |
+| [IzumiiKonata/OpenYSM-Updated](https://github.com/IzumiiKonata/OpenYSM-Updated) | 本 fork 的直接上游             |
+| [东方小女仆 Tsumugi](https://github.com/gege-tlph/TouhouLittleMaid-Tsumugi)     | 女仆模型兼容目标               |
+| [Maid Restaurant](https://github.com/gege-tlph/MaidRestaurant)                  | Tsumugi 的餐厅自动化附属模组   |
+| [Patchouli](https://github.com/gege-tlph/Patchouli)                             | 同一维护系列中的游戏内文档库   |
 
 ## 许可证
 
