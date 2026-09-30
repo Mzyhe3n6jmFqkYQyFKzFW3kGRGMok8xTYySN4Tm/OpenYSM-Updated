@@ -45,7 +45,7 @@ object YesSteveModel {
         YsmEventBootstrap.register()
     }
 
-    @Suppress("DEPRECATION", "removal")
+    @Suppress("DEPRECATION")
     private fun initConfig() {
         val oldConfig: File = PlatformAPI.getConfigFolder().resolve("yes_steve_model-common.toml").toFile()
         if (oldConfig.isFile) {
@@ -78,9 +78,7 @@ object YesSteveModel {
     @JvmStatic
     fun sendUnavailableMessage() {
         val localPlayer: LocalPlayer? = Minecraft.getInstance().player
-        if (localPlayer != null) {
-            localPlayer.displayClientMessage(getUnavailableComponent(), false)
-        }
+        localPlayer?.displayClientMessage(getUnavailableComponent(), false)
     }
 
     @JvmStatic
