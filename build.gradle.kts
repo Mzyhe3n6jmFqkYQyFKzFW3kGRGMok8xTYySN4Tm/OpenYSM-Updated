@@ -39,11 +39,21 @@ repositories {
     maven("https://maven.ladysnake.org/releases") {
         name = "Ladysnake"
     }
+    maven("https://maven.parchmentmc.org") {
+        name = "Parchment"
+    }
 }
 
 dependencies {
     minecraft(libs.minecraft)
-    mappings(loom.officialMojangMappings())
+    mappings(loom.layered {
+        officialMojangMappings()
+        parchment(
+            "org.parchmentmc.data:parchment-${
+                libs.versions.minecraft.get()
+            }:${libs.versions.parchment.mappings.get()}@zip"
+        )
+    })
 
     modImplementation(libs.fabric.loader)
     modImplementation(libs.fabric.api)
