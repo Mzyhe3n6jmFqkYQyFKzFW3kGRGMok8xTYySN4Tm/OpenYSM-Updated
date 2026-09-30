@@ -6,9 +6,9 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
 }
 
-group = property("maven_group") as String
-version = property("mod_version") as String
-base.archivesName.set(property("archives_name") as String)
+group = providers.gradleProperty("maven_group").get()
+version = "${providers.gradleProperty("version").get()}+${libs.versions.minecraft.get()}"
+base.archivesName = providers.gradleProperty("archives_name").get()
 
 repositories {
     flatDir {
