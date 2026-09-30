@@ -1,0 +1,37 @@
+[versions]
+# Minecraft & Fabric Properties
+minecraft = "1.21.11"
+fabric-loader = "0.19.3"
+fabric-api = "0.141.3+1.21.11"
+fabric-language-kotlin = "1.14.1+kotlin.2.4.20"
+cardinal-components = "7.3.1"
+forge-config-api-port = "uXrWPsCu"
+architectury-api = "19.0.1"
+night-config = "3.8.1"
+iris = "1.10.7+1.21.11-fabric"
+touhou-little-maid = "0.8.5-neo1.5.3+mc1.21.11"
+
+# Build & Toolchain
+loom = "1.17-SNAPSHOT"
+kotlin = "2.4.20"
+jvm-toolchain = "25"
+jvm-target = "21"
+
+[libraries]
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
+fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
+fabric-language-kotlin = { module = "net.fabricmc:fabric-language-kotlin", version.ref = "fabric-language-kotlin" }
+architectury-fabric = { module = "dev.architectury:architectury-fabric", version.ref = "architectury-api" }
+forge-config-api-port = { module = "maven.modrinth:forge-config-api-port", version.ref = "forge-config-api-port" }
+night-config-core = { module = "com.electronwill.night-config:core", version.ref = "night-config" }
+night-config-toml = { module = "com.electronwill.night-config:toml", version.ref = "night-config" }
+cardinal-components-base = { module = "org.ladysnake.cardinal-components-api:cardinal-components-base", version.ref = "cardinal-components" }
+cardinal-components-entity = { module = "org.ladysnake.cardinal-components-api:cardinal-components-entity", version.ref = "cardinal-components" }
+imagestream = { module = "com.github.TartaricAlkaline:ImageStream", version = "-SNAPSHOT" }
+iris = { module = "maven.modrinth:iris", version.ref = "iris" }
+touhoulittlemaid-fabric = { module = "libs:touhoulittlemaid-fabric", version.ref = "touhou-little-maid" }
+
+[plugins]
+fabric-loom = { id = "fabric-loom", version.ref = "loom" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
