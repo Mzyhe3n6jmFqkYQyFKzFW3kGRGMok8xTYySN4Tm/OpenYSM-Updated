@@ -29,8 +29,8 @@ object SlashBladeCompatImpl {
     }
 
     @JvmStatic
-    fun handleSlashBladeAnim(player: Player, event: AnimationEvent<CustomPlayerEntity>, str: String, loopType: ILoopType): PlayState =
-        PlayState.CONTINUE
+    fun handleSlashBladeAnim(player: Player, event: AnimationEvent<CustomPlayerEntity>, str: String, loopType: ILoopType): PlayState? =
+        null
 
     @JvmStatic
     fun getComboAnimName(event: AnimationEvent<LivingAnimatable<*>>): String = ""

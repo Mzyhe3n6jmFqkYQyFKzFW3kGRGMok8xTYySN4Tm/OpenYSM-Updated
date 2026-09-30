@@ -17,6 +17,6 @@ object SpellbooksCompat {
     }
 
     @JvmStatic
-    fun resolvePlayState(event: AnimationEvent<LivingAnimatable<*>>, entity: LivingEntity): PlayState =
+    fun resolvePlayState(event: AnimationEvent<LivingAnimatable<*>>, entity: LivingEntity): PlayState? =
         SpellbooksCompatImpl.resolvePlayState(event, entity)
 }

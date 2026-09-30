@@ -30,7 +30,12 @@ object SlashBladeCompat {
     }
 
     @JvmStatic
-    fun handleSlashBladeAnim(player: Player, event: AnimationEvent<CustomPlayerEntity>, str: String, loopType: ILoopType): PlayState =
+    fun handleSlashBladeAnim(
+        player: Player,
+        event: AnimationEvent<CustomPlayerEntity>,
+        str: String,
+        loopType: ILoopType
+    ): PlayState? =
         SlashBladeCompatImpl.handleSlashBladeAnim(player, event, str, loopType)
 
     @JvmStatic

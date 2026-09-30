@@ -39,19 +39,19 @@ object SWarfareCompatImpl {
         event: AnimationEvent<out LivingAnimatable<out LivingEntity>>,
         str: String,
         loopType: ILoopType
-    ): PlayState = PlayState.CONTINUE
+    ): PlayState? = null
 
     @JvmStatic
     fun handleGunHoldAnim(
         stack: ItemStack,
         event: AnimationEvent<out LivingAnimatable<out LivingEntity>>
-    ): PlayState = PlayState.CONTINUE
+    ): PlayState? = null
 
     @JvmStatic
     fun handleGunActionAnim(
         stack: ItemStack,
         event: AnimationEvent<out LivingAnimatable<out LivingEntity>>
-    ): PlayState = PlayState.CONTINUE
+    ): PlayState? = null
 
     @JvmStatic
     fun getGunTexture(stack: ItemStack): Identifier? = null
