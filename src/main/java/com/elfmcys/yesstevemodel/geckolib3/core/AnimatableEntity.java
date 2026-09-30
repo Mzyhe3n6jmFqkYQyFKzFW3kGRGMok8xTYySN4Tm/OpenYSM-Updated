@@ -300,7 +300,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
         if (!this.animationProcessor.isDisabled()) {
             this.isTickTriggered |= this.rateLimiter.request(this.seekTime / 20.0f);
             boolean z2 = (this.isTickTriggered && !this.hasUpdatedThisTick) || this.wasAnimationActiveLastTick || z;
-            boolean z3 = (!z || (this.seekTime == 0.0f && !this.hasUpdatedThisTick)) && this.isTickTriggered && !this.hasUpdatedThisTick;
+            boolean z3 = (z || (this.seekTime == 0.0f && !this.hasUpdatedThisTick)) && this.isTickTriggered && !this.hasUpdatedThisTick;
             resetHeadTracking(this.wasEvaluatedLastFrame);
             if (z2) {
                 if (z3) {
