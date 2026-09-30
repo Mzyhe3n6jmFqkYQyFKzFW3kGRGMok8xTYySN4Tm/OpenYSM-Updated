@@ -16,10 +16,10 @@ public class AnimationRegister {
     public static void registerAnimationState() {
         register("death", ILoopType.EDefaultLoopTypes.PLAY_ONCE, Priority.HIGHEST, (player, event) -> player.isDeadOrDying());
         register("riptide", Priority.HIGHEST, (player, event) -> player.isAutoSpinAttack());
-        register("sleep", Priority.HIGHEST, (player, event) -> player.getPose() == Pose.SLEEPING);
+        register("sleep", Priority.HIGHEST, (player, event) -> player.hasPose(Pose.SLEEPING));
         register("swim", Priority.HIGHEST, (player, event) -> player.isSwimming());
-        register("climb", Priority.HIGHEST, (player, event) -> player.getPose() == Pose.SWIMMING && Math.abs(event.getLimbSwingAmount()) > MIN_SPEED);
-        register("climbing", Priority.HIGHEST, (player, event) -> player.getPose() == Pose.SWIMMING);
+        register("climb", Priority.HIGHEST, (player, event) -> player.isVisuallySwimming() && Math.abs(event.getLimbSwingAmount()) > MIN_SPEED);
+        register("climbing", Priority.HIGHEST, (player, event) -> player.isVisuallySwimming());
         register("ladder_up", Priority.HIGHEST, (player, event) -> player.onClimbable() && getVerticalSpeed(player) > 0.0f);
         register("ladder_stillness", Priority.HIGHEST, (player, event) -> player.onClimbable() && getVerticalSpeed(player) == 0.0f);
         register("ladder_down", Priority.HIGHEST, (player, event) -> player.onClimbable() && getVerticalSpeed(player) < 0.0f);
@@ -32,12 +32,12 @@ public class AnimationRegister {
             }
             return player.getAbilities().flying;
         });
-        register("elytra_fly", Priority.HIGH, (player, event) -> player.getPose() == Pose.FALL_FLYING && player.isFallFlying());
+        register("elytra_fly", Priority.HIGH, (player, event) -> player.hasPose(Pose.FALL_FLYING) && player.isFallFlying());
         register("swim_stand", Priority.NORMAL, (player, event) -> player.isInWater() && !player.onGround());
         register("attacked", ILoopType.EDefaultLoopTypes.PLAY_ONCE, 2, (player, event) -> player.hurtTime > 0);
         register("jump", Priority.NORMAL, (player, event) -> !player.onGround() && !player.isInWater());
-        register("sneak", Priority.NORMAL, (player, event) -> player.onGround() && player.getPose() == Pose.CROUCHING && Math.abs(event.getLimbSwingAmount()) > MIN_SPEED);
-        register("sneaking", Priority.NORMAL, (player, event) -> player.onGround() && player.getPose() == Pose.CROUCHING);
+        register("sneak", Priority.NORMAL, (player, event) -> player.onGround() && player.hasPose(Pose.CROUCHING) && Math.abs(event.getLimbSwingAmount()) > MIN_SPEED);
+        register("sneaking", Priority.NORMAL, (player, event) -> player.onGround() && player.hasPose(Pose.CROUCHING));
         register("run", Priority.LOW, (player, event) -> player.onGround() && player.isSprinting());
         register("walk", Priority.LOW, (player, event) -> player.onGround() && event.getLimbSwingAmount() > MIN_SPEED);
         register("idle", Priority.LOWEST, (player, event) -> true);
