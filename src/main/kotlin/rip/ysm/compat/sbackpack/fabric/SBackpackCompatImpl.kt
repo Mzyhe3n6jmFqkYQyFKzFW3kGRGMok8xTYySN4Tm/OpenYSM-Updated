@@ -1,0 +1,27 @@
+package rip.ysm.compat.sbackpack.fabric
+
+import com.elfmcys.yesstevemodel.client.animation.molang.CtrlBinding
+import net.fabricmc.loader.api.FabricLoader
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.item.ItemStack
+import org.apache.commons.lang3.tuple.Pair
+import java.util.Optional
+
+object SBackpackCompatImpl {
+    @JvmStatic
+    fun isLoaded(): Boolean = FabricLoader.getInstance().isModLoaded("sophisticatedbackpacks")
+
+    @JvmStatic
+    fun setupRenderLayers() {
+    }
+
+    @JvmStatic
+    fun getInCompatibleInfo(): Optional<Pair<String, String>> = Optional.empty()
+
+    @JvmStatic
+    fun getBackpack(livingEntity: LivingEntity): ItemStack = ItemStack.EMPTY
+
+    @JvmStatic
+    fun registerControllerFunctions(binding: CtrlBinding) {
+    }
+}
