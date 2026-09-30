@@ -1,8 +1,8 @@
 package rip.ysm.compat.optifine.fabric
 
-import net.fabricmc.loader.api.FabricLoader
+import rip.ysm.compat.optifine.OptiFineDetector
 
 object OptiFineDetectorImpl {
     @JvmStatic
-    fun isOptifinePresent(): Boolean = FabricLoader.getInstance().isModLoaded("optifabric")
+    fun isOptifinePresent(): Boolean = OptiFineDetector.isModLoaded
 }

@@ -1,10 +1,11 @@
 package rip.ysm.compat.oculus
 
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.oculus.fabric.OculusCompatImpl
 
-object OculusCompat {
+object OculusCompat : ModCompat("iris") {
     @JvmStatic
-    fun isLoaded(): Boolean = OculusCompatImpl.isLoaded()
+    fun isLoaded(): Boolean = isModLoaded
 
     @JvmStatic
     fun isPBRActive(): Boolean = OculusCompatImpl.isPBRActive()

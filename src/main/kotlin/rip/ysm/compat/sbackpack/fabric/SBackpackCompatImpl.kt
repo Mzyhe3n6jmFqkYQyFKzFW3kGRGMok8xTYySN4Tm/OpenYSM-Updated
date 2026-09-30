@@ -1,15 +1,15 @@
 package rip.ysm.compat.sbackpack.fabric
 
 import com.elfmcys.yesstevemodel.client.animation.molang.CtrlBinding
-import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
 import org.apache.commons.lang3.tuple.Pair
+import rip.ysm.compat.sbackpack.SBackpackCompat
 import java.util.Optional
 
 object SBackpackCompatImpl {
     @JvmStatic
-    fun isLoaded(): Boolean = FabricLoader.getInstance().isModLoaded("sophisticatedbackpacks")
+    fun isLoaded(): Boolean = SBackpackCompat.isModLoaded
 
     @JvmStatic
     fun setupRenderLayers() {

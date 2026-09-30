@@ -5,9 +5,13 @@ import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.slashblade.fabric.SlashBladeRendererImpl
 
-object SlashBladeRenderer {
+object SlashBladeRenderer : ModCompat("slashblade") {
+    @JvmStatic
+    fun isLoaded(): Boolean = isModLoaded
+
     @JvmStatic
     fun renderOnEntity(
         livingEntity: LivingEntity,

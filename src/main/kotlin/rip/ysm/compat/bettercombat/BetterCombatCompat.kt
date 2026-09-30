@@ -1,11 +1,12 @@
 package rip.ysm.compat.bettercombat
 
 import com.elfmcys.yesstevemodel.client.animation.molang.CtrlBinding
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.bettercombat.fabric.BetterCombatCompatImpl
 
-object BetterCombatCompat {
+object BetterCombatCompat : ModCompat("bettercombat") {
     @JvmStatic
-    fun isLoaded(): Boolean = BetterCombatCompatImpl.isLoaded()
+    fun isLoaded(): Boolean = isModLoaded
 
     @JvmStatic
     fun registerBindings(binding: CtrlBinding) {

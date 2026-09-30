@@ -2,9 +2,10 @@ package rip.ysm.compat.immersivemelodies
 
 import com.elfmcys.yesstevemodel.client.animation.molang.CtrlBinding
 import net.minecraft.world.entity.LivingEntity
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.immersivemelodies.fabric.ImmersiveMelodiesCompatImpl
 
-object ImmersiveMelodiesCompat {
+object ImmersiveMelodiesCompat : ModCompat("immersive_melodies") {
     class ImmersiveMelodiesData {
         @JvmField var pitch: Float = 0f
         @JvmField var volume: Float = 0f
@@ -14,7 +15,7 @@ object ImmersiveMelodiesCompat {
     }
 
     @JvmStatic
-    fun isLoaded(): Boolean = ImmersiveMelodiesCompatImpl.isLoaded()
+    fun isLoaded(): Boolean = isModLoaded
 
     @JvmStatic
     fun updateMelodyProgress(livingEntity: LivingEntity, imData: ImmersiveMelodiesData) {

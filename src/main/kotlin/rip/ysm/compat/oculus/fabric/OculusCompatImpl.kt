@@ -1,26 +1,24 @@
 package rip.ysm.compat.oculus.fabric
 
-import net.fabricmc.loader.api.FabricLoader
 import net.irisshaders.iris.api.v0.IrisApi
+import rip.ysm.compat.oculus.OculusCompat
 
 object OculusCompatImpl {
-    private val IRIS_LOADED = FabricLoader.getInstance().isModLoaded("iris")
+    @JvmStatic
+    fun isLoaded(): Boolean = OculusCompat.isModLoaded
 
     @JvmStatic
-    fun isLoaded(): Boolean = IRIS_LOADED
-
-    @JvmStatic
-    fun isPBRActive(): Boolean = IRIS_LOADED && IrisHolder.shadowPass()
+    fun isPBRActive(): Boolean = OculusCompat.isModLoaded && IrisHolder.shadowPass()
 
     @JvmStatic
     fun updatePBRState() {
     }
 
     @JvmStatic
-    fun isShaderPackInUse(): Boolean = IRIS_LOADED && IrisHolder.shaderPackInUse()
+    fun isShaderPackInUse(): Boolean = OculusCompat.isModLoaded && IrisHolder.shaderPackInUse()
 
     @JvmStatic
-    fun isRenderingShadowPass(): Boolean = IRIS_LOADED && IrisHolder.shadowPass()
+    fun isRenderingShadowPass(): Boolean = OculusCompat.isModLoaded && IrisHolder.shadowPass()
 
     private object IrisHolder {
         @JvmStatic

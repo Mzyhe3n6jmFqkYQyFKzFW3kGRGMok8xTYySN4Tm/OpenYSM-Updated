@@ -5,13 +5,14 @@ import com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import net.minecraft.world.entity.player.Player
 import org.apache.commons.lang3.tuple.Pair
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.parcool.fabric.ParcoolCompatImpl
 import java.util.Optional
 import java.util.function.BiFunction
 
-object ParcoolCompat {
+object ParcoolCompat : ModCompat("parcool") {
     @JvmStatic
-    fun isLoaded(): Boolean = ParcoolCompatImpl.isLoaded()
+    fun isLoaded(): Boolean = isModLoaded
 
     @JvmStatic
     fun getInCompatibleInfo(): Optional<Pair<String, String>> = ParcoolCompatImpl.getInCompatibleInfo()

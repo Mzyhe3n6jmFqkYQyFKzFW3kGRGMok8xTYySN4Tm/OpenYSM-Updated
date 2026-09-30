@@ -3,11 +3,12 @@ package rip.ysm.compat.touhoulittlemaid
 import com.elfmcys.yesstevemodel.network.message.FeedbackData
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.projectile.Projectile
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.touhoulittlemaid.fabric.TouhouMaidCompatImpl
 
-object TouhouMaidCompat {
+object TouhouMaidCompat : ModCompat("touhou_little_maid") {
     @JvmStatic
-    fun isLoaded(): Boolean = TouhouMaidCompatImpl.isLoaded()
+    fun isLoaded(): Boolean = isModLoaded
 
     @JvmStatic
     fun init() {
