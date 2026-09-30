@@ -7,7 +7,8 @@ import com.elfmcys.yesstevemodel.network.message.S2CSetModelAndTexturePacket;
 import com.elfmcys.yesstevemodel.network.message.S2CSyncAuthModelsPacket;
 import com.elfmcys.yesstevemodel.network.message.S2CSyncStarModelsPacket;
 import com.elfmcys.yesstevemodel.network.message.S2CVersionCheckPacket;
-import dev.architectury.event.events.common.PlayerEvent;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -19,10 +20,11 @@ public final class EnterServerEvent {
     }
 
     public static void register() {
-        PlayerEvent.PLAYER_JOIN.register(player -> {
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
             if (!YesSteveModel.isAvailable()) {
                 return;
             }
+            ServerPlayer player = handler.player;
             NetworkHandler.sendToClientPlayer(new S2CVersionCheckPacket(), player);
             CapabilityEvent.getModelInfoCap(player).ifPresent(modelInfoCap -> {
                 if (!NetworkHandler.isPlayerConnected(player) && !modelInfoCap.isMandatory()) {

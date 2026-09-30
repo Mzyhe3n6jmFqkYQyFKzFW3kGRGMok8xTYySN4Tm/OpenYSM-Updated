@@ -2,7 +2,7 @@ package com.elfmcys.yesstevemodel.event;
 
 import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.model.ServerModelManager;
-import dev.architectury.event.events.common.LifecycleEvent;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
 public final class ServerStartupEvent {
 
@@ -10,7 +10,7 @@ public final class ServerStartupEvent {
     }
 
     public static void register() {
-        LifecycleEvent.SERVER_BEFORE_START.register(server -> {
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
             if (!YesSteveModel.isAvailable()) {
                 return;
             }

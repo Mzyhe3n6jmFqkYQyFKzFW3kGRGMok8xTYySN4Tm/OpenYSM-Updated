@@ -2,14 +2,14 @@ package com.elfmcys.yesstevemodel.client.renderer;
 
 import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.mixin.client.EntityRenderDispatcherAccessor;
-import dev.architectury.registry.ReloadListenerRegistry;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import rip.ysm.api.PlatformAPI;
 import rip.ysm.compat.sbackpack.SBackpackCompat;
 
@@ -30,8 +30,17 @@ public class RendererManager {
         if (PlatformAPI.isServer()) {
             return;
         }
-        ResourceManagerReloadListener listener = resourceManager -> resetRenderers();
-        ReloadListenerRegistry.register(PackType.CLIENT_RESOURCES, listener, Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "renderer_manager"));
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
+            @Override
+            public Identifier getFabricId() {
+                return Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "renderer_manager");
+            }
+
+            @Override
+            public void onResourceManagerReload(ResourceManager resourceManager) {
+                resetRenderers();
+            }
+        });
     }
 
     private static void resetRenderers() {

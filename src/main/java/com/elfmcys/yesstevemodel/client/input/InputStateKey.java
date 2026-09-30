@@ -2,9 +2,9 @@ package com.elfmcys.yesstevemodel.client.input;
 
 import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.util.InputUtil;
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.client.ClientRawInputEvent;
 import rip.ysm.api.PlatformAPI;
+import rip.ysm.api.client.event.ClientRawInputEvent;
+import rip.ysm.api.event.EventResult;
 
 public class InputStateKey {
 

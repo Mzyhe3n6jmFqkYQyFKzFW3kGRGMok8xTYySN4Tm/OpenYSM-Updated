@@ -24,8 +24,8 @@ import com.google.common.util.concurrent.RateLimiter;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dev.architectury.platform.Platform;
-import dev.architectury.utils.GameInstance;
+import net.fabricmc.loader.api.FabricLoader;
+import rip.ysm.api.PlatformAPI;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.floats.FloatReferencePair;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -278,7 +278,8 @@ public final class ServerModelManager {
             } catch (IOException ignored) {}
         }
         try {
-            Path assetsBuiltin = Platform.getMod(YesSteveModel.MOD_ID).findResource("assets", YesSteveModel.MOD_ID, "builtin").orElse(null);
+            Path assetsBuiltin = FabricLoader.getInstance().getModContainer(YesSteveModel.MOD_ID)
+                    .flatMap(mod -> mod.findPath("assets/" + YesSteveModel.MOD_ID + "/builtin")).orElse(null);
 
             if (assetsBuiltin == null || !Files.isDirectory(assetsBuiltin)) return;
 
@@ -685,7 +686,7 @@ public final class ServerModelManager {
         initRateLimit();
         YSMThreadPool.submitSync(() -> {
             try {
-                MinecraftServer currentServer = GameInstance.getServer();
+                MinecraftServer currentServer = PlatformAPI.getServer();
                 if (currentServer == null) return;
 
                 for (UUID uuid : uuids) {
@@ -944,7 +945,7 @@ public final class ServerModelManager {
     }
 
     public static void requestPlayerAuth(ServerPlayer serverPlayer, @Nullable Consumer<UUIDComponentData> consumer) {
-        MinecraftServer currentServer = GameInstance.getServer();
+        MinecraftServer currentServer = PlatformAPI.getServer();
         currentServer.execute(() -> {
             List<ServerPlayer> players = currentServer.getPlayerList().getPlayers();
             ArrayList<FloatReferencePair<ServerPlayer>> arrayList = new ArrayList<>();
@@ -963,7 +964,7 @@ public final class ServerModelManager {
             if (consumer != null) {
                 consumer.accept(modelLoadResult);
             }
-            MinecraftServer currentServer = GameInstance.getServer();
+            MinecraftServer currentServer = PlatformAPI.getServer();
             if (currentServer == null) {
                 return;
             }
@@ -984,7 +985,7 @@ public final class ServerModelManager {
 
     private static void onModelLoadComplete(ModelLoadResult modelLoadResult, @Nullable Object obj) {
         Consumer<ModelLoadResult> consumer = (Consumer<ModelLoadResult>) obj;
-        MinecraftServer currentServer = GameInstance.getServer();
+        MinecraftServer currentServer = PlatformAPI.getServer();
         initialized = true;
         if (currentServer != null) {
             currentServer.execute(() -> {
@@ -1018,7 +1019,7 @@ public final class ServerModelManager {
 
     private static Connection getPlayerConnection(UUID uuid) {
         ServerPlayer player;
-        MinecraftServer currentServer = GameInstance.getServer();
+        MinecraftServer currentServer = PlatformAPI.getServer();
         if (currentServer == null || (player = currentServer.getPlayerList().getPlayer(uuid)) == null) {
             return null;
         }

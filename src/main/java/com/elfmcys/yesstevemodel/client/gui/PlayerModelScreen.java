@@ -46,7 +46,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import java.util.Optional;
-import dev.architectury.platform.Platform;
+import rip.ysm.api.PlatformAPI;
 import com.elfmcys.yesstevemodel.mixin.client.ScreenAccessor;
 import org.apache.commons.lang3.StringUtils;
 import rip.ysm.gpu.GpuCapability;
@@ -474,7 +474,7 @@ public class PlayerModelScreen extends Screen implements IGuiWidget {
         if(renderer.equals("SIMD") && GpuCapability.isAvailable() && GeneralConfig.USE_GPU_RENDERER.get()) {
             renderer = "GPU";
         }
-        String strVersionString = Platform.getMod(YesSteveModel.MOD_ID).getVersion();
+        String strVersionString = PlatformAPI.getModVersion(YesSteveModel.MOD_ID);
         guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(0.0f, 0.0f);
         guiGraphics.drawString(this.font, strVersionString + " (" + renderer + ")", this.guiLeft + 2, this.guiTop + 226, ChatFormatting.DARK_GRAY.getColor().intValue() | 0xFF000000);

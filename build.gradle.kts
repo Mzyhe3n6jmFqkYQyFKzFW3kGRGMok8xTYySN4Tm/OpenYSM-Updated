@@ -20,11 +20,8 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
-    maven("https://maven.architectury.dev/") {
-        name = "Architectury"
-        content {
-            includeGroup("dev.architectury")
-        }
+    maven("https://raw.githubusercontent.com/Fuzss/modresources/main/maven/") {
+        name = "Fuzs"
     }
     maven("https://jitpack.io") {
         name = "JitPack"
@@ -50,15 +47,9 @@ dependencies {
 
     modImplementation(libs.fabric.loader)
     modImplementation(libs.fabric.api)
-    include(libs.fabric.api)
 
     modImplementation(libs.fabric.language.kotlin)
     include(libs.fabric.language.kotlin)
-
-    modImplementation(libs.architectury.fabric) {
-        exclude(group = "net.fabricmc.fabric-api", module = "fabric-api")
-    }
-    include(libs.architectury.fabric)
 
     modImplementation(libs.forge.config.api.port)
     include(libs.forge.config.api.port)

@@ -1,6 +1,5 @@
 package com.elfmcys.yesstevemodel.util
 
-import dev.architectury.utils.GameInstance
 import net.minecraft.client.Minecraft
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.network.chat.Component
@@ -55,7 +54,7 @@ object YSMMessageFormatter {
 
     @JvmStatic
     fun sendServerMessage(commandSourceStack: CommandSourceStack?, component: Component, broadcastToOps: Boolean) {
-        val currentServer: MinecraftServer? = GameInstance.getServer() ?: return
+        val currentServer: MinecraftServer? = PlatformAPI.getServer() ?: return
         currentServer?.execute {
             var sourceStack: CommandSourceStack? = null
             val entity = commandSourceStack?.entity
