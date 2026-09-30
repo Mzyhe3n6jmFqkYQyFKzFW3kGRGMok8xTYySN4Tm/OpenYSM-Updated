@@ -2,14 +2,14 @@ package rip.ysm.compat.curios.fabric
 
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.binding.ContextBinding
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet
-import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.tags.TagKey
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.Item
+import rip.ysm.compat.curios.CuriosCompat
 
 object CuriosCompatImpl {
     @JvmStatic
-    fun isLoaded(): Boolean = FabricLoader.getInstance().isModLoaded("trinkets") || FabricLoader.getInstance().isModLoaded("accessories")
+    fun isLoaded(): Boolean = CuriosCompat.isLoaded()
 
     @JvmStatic
     fun hasItemInSlot(livingEntity: LivingEntity, str: String, set: ReferenceOpenHashSet<Item>): Boolean = false

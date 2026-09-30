@@ -2,15 +2,19 @@ package rip.ysm.compat.carryon
 
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.carryon.fabric.CarryOnDataHelperImpl
 
-object CarryOnDataHelper {
+object CarryOnDataHelper : ModCompat("carryon") {
     enum class CarryType {
         NONE,
         BLOCK,
         ENTITY,
         PLAYER
     }
+
+    @JvmStatic
+    fun isLoaded(): Boolean = isModLoaded
 
     @JvmStatic
     fun isPlayerCarrying(livingEntity: LivingEntity): Boolean = CarryOnDataHelperImpl.isPlayerCarrying(livingEntity)

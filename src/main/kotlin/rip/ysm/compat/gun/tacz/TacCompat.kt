@@ -10,11 +10,12 @@ import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.gun.tacz.fabric.TacCompatImpl
 
-object TacCompat {
+object TacCompat : ModCompat("tacz") {
     @JvmStatic
-    fun isLoaded(): Boolean = TacCompatImpl.isLoaded()
+    fun isLoaded(): Boolean = isModLoaded
 
     @JvmStatic
     fun registerControllerFunctions(binding: CtrlBinding) {

@@ -1,10 +1,11 @@
 package rip.ysm.compat.firstperson
 
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.firstperson.fabric.FirstPersonCompatImpl
 
-object FirstPersonCompat {
+object FirstPersonCompat : ModCompat("firstperson") {
     @JvmStatic
-    fun isLoaded(): Boolean = FirstPersonCompatImpl.isLoaded()
+    fun isLoaded(): Boolean = isModLoaded
 
     @JvmStatic
     fun isFirstPersonActive(): Boolean = FirstPersonCompatImpl.isFirstPersonActive()

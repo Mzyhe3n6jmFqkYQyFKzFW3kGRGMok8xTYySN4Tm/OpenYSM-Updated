@@ -4,12 +4,13 @@ import com.elfmcys.yesstevemodel.client.animation.molang.CtrlBinding
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
 import org.apache.commons.lang3.tuple.Pair
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.sbackpack.fabric.SBackpackCompatImpl
 import java.util.Optional
 
-object SBackpackCompat {
+object SBackpackCompat : ModCompat("sophisticatedbackpacks") {
     @JvmStatic
-    fun isLoaded(): Boolean = SBackpackCompatImpl.isLoaded()
+    fun isLoaded(): Boolean = isModLoaded
 
     @JvmStatic
     fun setupRenderLayers() {

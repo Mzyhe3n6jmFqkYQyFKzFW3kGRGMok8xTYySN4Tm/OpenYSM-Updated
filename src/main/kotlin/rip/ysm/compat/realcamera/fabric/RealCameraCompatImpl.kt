@@ -1,10 +1,10 @@
 package rip.ysm.compat.realcamera.fabric
 
-import net.fabricmc.loader.api.FabricLoader
+import rip.ysm.compat.realcamera.RealCameraCompat
 
 object RealCameraCompatImpl {
     @JvmStatic
-    fun isLoaded(): Boolean = FabricLoader.getInstance().isModLoaded("realcamera")
+    fun isLoaded(): Boolean = RealCameraCompat.isModLoaded
 
     @JvmStatic
     fun isActive(): Boolean = false

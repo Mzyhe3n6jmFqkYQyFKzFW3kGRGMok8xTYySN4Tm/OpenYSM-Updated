@@ -1,10 +1,10 @@
 package rip.ysm.compat.firstperson.fabric
 
-import net.fabricmc.loader.api.FabricLoader
+import rip.ysm.compat.firstperson.FirstPersonCompat
 
 object FirstPersonCompatImpl {
     @JvmStatic
-    fun isLoaded(): Boolean = FabricLoader.getInstance().isModLoaded("firstperson")
+    fun isLoaded(): Boolean = FirstPersonCompat.isModLoaded
 
     @JvmStatic
     fun isFirstPersonActive(): Boolean = false

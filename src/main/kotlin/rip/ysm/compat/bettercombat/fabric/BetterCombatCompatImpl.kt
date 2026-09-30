@@ -1,11 +1,11 @@
 package rip.ysm.compat.bettercombat.fabric
 
 import com.elfmcys.yesstevemodel.client.animation.molang.CtrlBinding
-import net.fabricmc.loader.api.FabricLoader
+import rip.ysm.compat.bettercombat.BetterCombatCompat
 
 object BetterCombatCompatImpl {
     @JvmStatic
-    fun isLoaded(): Boolean = FabricLoader.getInstance().isModLoaded("bettercombat")
+    fun isLoaded(): Boolean = BetterCombatCompat.isModLoaded
 
     @JvmStatic
     fun registerBindings(binding: CtrlBinding) {

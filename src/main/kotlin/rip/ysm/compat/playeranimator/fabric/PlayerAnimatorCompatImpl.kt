@@ -1,11 +1,11 @@
 package rip.ysm.compat.playeranimator.fabric
 
-import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.player.AbstractClientPlayer
+import rip.ysm.compat.playeranimator.PlayerAnimatorCompat
 
 object PlayerAnimatorCompatImpl {
     @JvmStatic
-    fun isLoaded(): Boolean = FabricLoader.getInstance().isModLoaded("player-animation-lib")
+    fun isLoaded(): Boolean = PlayerAnimatorCompat.isModLoaded
 
     @JvmStatic
     fun isPlayerAnimated(abstractClientPlayer: AbstractClientPlayer): Boolean = false
