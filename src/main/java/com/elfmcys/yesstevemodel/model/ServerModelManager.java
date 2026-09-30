@@ -1,13 +1,16 @@
 package com.elfmcys.yesstevemodel.model;
 
 import com.elfmcys.yesstevemodel.YesSteveModel;
+import com.elfmcys.yesstevemodel.access.ServerCommonPacketListenerImplAccessor;
 import com.elfmcys.yesstevemodel.capability.AuthModelsCapability;
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability;
 import com.elfmcys.yesstevemodel.client.ExportResult;
-import com.elfmcys.yesstevemodel.access.ServerCommonPacketListenerImplAccessor;
 import com.elfmcys.yesstevemodel.config.ServerConfig;
 import com.elfmcys.yesstevemodel.mixin.ConnectionAccessor;
-import com.elfmcys.yesstevemodel.model.format.*;
+import com.elfmcys.yesstevemodel.model.format.ServerAnimationInfo;
+import com.elfmcys.yesstevemodel.model.format.ServerModelData;
+import com.elfmcys.yesstevemodel.model.format.ServerModelInfo;
+import com.elfmcys.yesstevemodel.model.format.UUIDComponentData;
 import com.elfmcys.yesstevemodel.network.NetworkHandler;
 import com.elfmcys.yesstevemodel.network.message.S2CModelSyncPayload;
 import com.elfmcys.yesstevemodel.network.message.S2CSyncAuthModelsPacket;
@@ -24,13 +27,11 @@ import com.google.common.util.concurrent.RateLimiter;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.fabricmc.loader.api.FabricLoader;
-import rip.ysm.api.PlatformAPI;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.floats.FloatReferencePair;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.Connection;
-import net.minecraft.network.PacketSendListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.server.MinecraftServer;
@@ -39,6 +40,7 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import rip.ysm.api.PlatformAPI;
 import rip.ysm.legacy.YesModelUtils;
 import rip.ysm.security.YSMByteBuf;
 import rip.ysm.security.YsmCrypt;
@@ -273,9 +275,13 @@ public final class ServerModelManager {
         if (Files.isDirectory(BUILT)) {
             try (var s = Files.walk(BUILT)) {
                 s.sorted(Comparator.reverseOrder()).forEach(p -> {
-                    if (!p.equals(BUILT)) try { Files.deleteIfExists(p); } catch (IOException ignored) {}
+                    if (!p.equals(BUILT)) try {
+                        Files.deleteIfExists(p);
+                    } catch (IOException ignored) {
+                    }
                 });
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
         }
         try {
             Path assetsBuiltin = FabricLoader.getInstance().getModContainer(YesSteveModel.MOD_ID)
@@ -379,15 +385,41 @@ public final class ServerModelManager {
         }
     }
 
-    static class PlayerSyncState {
-        byte[] clientKey = new byte[56];
-        byte[] key1;
-        byte[] clientNextKey;
-        int step = 0;
-        List<ServerModelData> allowedModels = new ArrayList<>();
+    public static boolean nativeLoadModels(Object callback) {
+        try {
+            Map<String, ServerModelData> loadedModels = new LinkedHashMap<>();
+            Set<String> authIds = new HashSet<>();
+            Set<String> validCacheFiles = new HashSet<>();
 
-        // TODO: 未来可基于UUID持久化，这里目前每次加入生成固定clientKey
-        PlayerSyncState() {new Random(114514).nextBytes(clientKey);}
+            packs.clear();
+            scanDirectoryPacks(BUILT);
+            scanDirectoryPacks(CUSTOM);
+            scanDirectoryPacks(AUTH);
+
+            scanDirectoryModels(BUILT, CACHE_SERVER, loadedModels, authIds, validCacheFiles, false);
+            scanDirectoryModels(CUSTOM, CACHE_SERVER, loadedModels, authIds, validCacheFiles, false);
+            scanDirectoryModels(AUTH, CACHE_SERVER, loadedModels, authIds, validCacheFiles, true);
+            try (Stream<Path> stream = Files.list(CACHE_SERVER)) {
+                stream.forEach(file -> {
+                    if (!validCacheFiles.contains(file.getFileName().toString())) {
+                        try {
+                            Files.deleteIfExists(file);
+                        } catch (Exception ignored) {
+                        }
+                    }
+                });
+            } catch (Exception ignored) {
+            }
+
+            ModelLoadResult result = new ModelLoadResult(true, null, loadedModels, authIds.toArray(new String[0]));
+            AUTH_MODELS = authIds;
+
+            onModelLoadComplete(result, callback);
+            return true;
+        } catch (Exception e) {
+            YesSteveModel.LOGGER.error("[YSM] Model loading failed", e);
+            return false;
+        }
     }
 
     public static void nativeSendModelData(UUID uuid, @Nullable ByteBuffer data) {
@@ -447,39 +479,6 @@ public final class ServerModelManager {
         }
     }
 
-    public static boolean nativeLoadModels(Object callback) {
-        try {
-            Map<String, ServerModelData> loadedModels = new LinkedHashMap<>();
-            Set<String> authIds = new HashSet<>();
-            Set<String> validCacheFiles = new HashSet<>();
-
-            packs.clear();
-            scanDirectoryPacks(BUILT);
-            scanDirectoryPacks(CUSTOM);
-            scanDirectoryPacks(AUTH);
-
-            scanDirectoryModels(BUILT, CACHE_SERVER, loadedModels, authIds, validCacheFiles, false);
-            scanDirectoryModels(CUSTOM, CACHE_SERVER, loadedModels, authIds, validCacheFiles, false);
-            scanDirectoryModels(AUTH, CACHE_SERVER, loadedModels, authIds, validCacheFiles, true);
-            try (Stream<Path> stream = Files.list(CACHE_SERVER)) {
-                stream.forEach(file -> {
-                    if (!validCacheFiles.contains(file.getFileName().toString())) {
-                        try { Files.deleteIfExists(file); } catch (Exception ignored) {}
-                    }
-                });
-            } catch (Exception ignored) {}
-
-            ModelLoadResult result = new ModelLoadResult(true, null, loadedModels, authIds.toArray(new String[0]));
-            AUTH_MODELS = authIds;
-
-            onModelLoadComplete(result, callback);
-            return true;
-        } catch (Exception e) {
-            YesSteveModel.LOGGER.error("[YSM] Model loading failed", e);
-            return false;
-        }
-    }
-
     private static void scanDirectoryModels(Path baseDir, Path cacheDir, Map<String, ServerModelData> loaded, Set<String> authIds, Set<String> validCaches, boolean isAuth) {
         if (baseDir == null || !Files.isDirectory(baseDir)) return;
 
@@ -532,7 +531,8 @@ public final class ServerModelManager {
                         String modelId = baseDir.relativize(file).toString().replace('\\', '/');
                         byte[] raw = Files.readAllBytes(file);
                         int ysmCryptoVersion = YesModelUtils.getYsmCryptoVersion(raw);
-                        if (ysmCryptoVersion == -1) throw new IllegalStateException("Unknown YSM crypto version for file: " + file);
+                        if (ysmCryptoVersion == -1)
+                            throw new IllegalStateException("Unknown YSM crypto version for file: " + file);
 
                         RawYsmModel rawModel;
                         if (ysmCryptoVersion == 1 || ysmCryptoVersion == 2) { // 旧版加密模型
@@ -562,6 +562,71 @@ public final class ServerModelManager {
         } catch (IOException e) {
             YesSteveModel.LOGGER.error("Failed to walk directory tree: " + baseDir, e);
         }
+    }
+
+    private static void sendPacket05(UUID uuid, PlayerSyncState state, List<long[]> requestedHashes) {
+        YSMThreadPool.submitSync(() -> {
+            try {
+                threadLimiter.acquire();
+
+                PendingTransfer transfer = new PendingTransfer();
+
+                for (long[] hashes : requestedHashes) {
+                    long hash1 = hashes[0];
+                    long hash2 = hashes[1];
+                    String fileName = String.format("%016x%016x", hash1, hash2);
+                    Path file = ServerModelManager.CACHE_SERVER.resolve(fileName);
+
+                    if (!Files.exists(file)) continue;
+
+                    byte[] fileData = Files.readAllBytes(file);
+                    int totalSize = fileData.length;
+                    int maxChunkSize = 30720;
+                    int chunkCount = (totalSize + maxChunkSize - 1) / maxChunkSize;
+                    int chunkSize = (totalSize + chunkCount - 1) / chunkCount;
+
+                    int offset = 0;
+
+                    while (offset < totalSize) {
+                        int length = Math.min(chunkSize, totalSize - offset);
+
+                        int garbageLen = 16 + theRandom.nextInt(48);
+                        byte[] garbage = new byte[garbageLen];
+                        theRandom.nextBytes(garbage);
+
+                        try (YSMByteBuf outBuf = new YSMByteBuf(Unpooled.buffer())) {
+                            outBuf.writeGarbageHeader(garbageLen, garbage);
+                            outBuf.writeVarInt(5); // Type
+                            outBuf.writeVarLong(hash1);
+                            outBuf.writeVarLong(hash2);
+                            outBuf.writeVarInt(totalSize);
+                            outBuf.writeVarInt(offset);
+                            outBuf.writeVarInt(length);
+                            outBuf.getRawBuf().writeBytes(fileData, offset, length);
+                            YsmCrypt.EncryptedPacket result = YsmCrypt.encrypt(outBuf.toArray(), state.key1, false);
+
+//                            bandwidthLimiter.acquire(result.data().length); //TODO
+
+
+                            // Stream chunks
+                            boolean success = sendModelData(uuid, ByteBuffer.wrap(result.data()), transfer);
+                            if (success) {
+                                offset += length;
+                            } else {
+                                try {
+                                    Thread.sleep(5);
+                                } catch (InterruptedException e) {
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                YesSteveModel.LOGGER.error("Failed to send model chunks to " + uuid, e);
+            } finally {
+                threadLimiter.release();
+            }
+        });
     }
 
     private static void scanDirectoryPacks(Path baseDir) {
@@ -804,75 +869,13 @@ public final class ServerModelManager {
         }
     }
 
-    private static void sendPacket05(UUID uuid, PlayerSyncState state, List<long[]> requestedHashes) {
-        YSMThreadPool.submitSync(() -> {
-            try {
-                threadLimiter.acquire();
-
-                PendingTransfer transfer = new PendingTransfer();
-
-                for (long[] hashes : requestedHashes) {
-                    long hash1 = hashes[0];
-                    long hash2 = hashes[1];
-                    String fileName = String.format("%016x%016x", hash1, hash2);
-                    Path file = ServerModelManager.CACHE_SERVER.resolve(fileName);
-
-                    if (!Files.exists(file)) continue;
-
-                    byte[] fileData = Files.readAllBytes(file);
-                    int totalSize = fileData.length;
-                    int maxChunkSize = 30720;
-                    int chunkCount = (totalSize + maxChunkSize - 1) / maxChunkSize;
-                    int chunkSize = (totalSize + chunkCount - 1) / chunkCount;
-
-                    int offset = 0;
-
-                    while (offset < totalSize) {
-                        int length = Math.min(chunkSize, totalSize - offset);
-
-                        int garbageLen = 16 + theRandom.nextInt(48);
-                        byte[] garbage = new byte[garbageLen];
-                        theRandom.nextBytes(garbage);
-
-                        try (YSMByteBuf outBuf = new YSMByteBuf(Unpooled.buffer())) {
-                            outBuf.writeGarbageHeader(garbageLen, garbage);
-                            outBuf.writeVarInt(5); // Type
-                            outBuf.writeVarLong(hash1);
-                            outBuf.writeVarLong(hash2);
-                            outBuf.writeVarInt(totalSize);
-                            outBuf.writeVarInt(offset);
-                            outBuf.writeVarInt(length);
-                            outBuf.getRawBuf().writeBytes(fileData, offset, length);
-                            YsmCrypt.EncryptedPacket result = YsmCrypt.encrypt(outBuf.toArray(), state.key1, false);
-
-//                            bandwidthLimiter.acquire(result.data().length); //TODO
-
-
-                            // Stream chunks
-                            boolean success = sendModelData(uuid, ByteBuffer.wrap(result.data()), transfer);
-                            if (success) {
-                                offset += length;
-                            } else {
-                                try { Thread.sleep(5); } catch (InterruptedException e) {}
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                YesSteveModel.LOGGER.error("Failed to send model chunks to " + uuid, e);
-            } finally {
-                threadLimiter.release();
-            }
-        });
-    }
-
     public static void nativeExportModel(String modelID, @Nullable String extra, @Nullable Consumer<ExportResult> callback) {
         YSMThreadPool.submit(() -> {
             try {
                 ServerModelData modelData = CACHE_NAME_INFO.get(modelID);
                 if (modelData == null) {
                     if (callback != null) {
-                        callback.accept(new ExportResult(false, (Component) YSMNativeHelper.createTranslatableComponent("commands.yes_steve_model.export.failure",new Object[]{": " + modelID + "\n Model not found"}), "", "", 0));
+                        callback.accept(new ExportResult(false, (Component) YSMNativeHelper.createTranslatableComponent("commands.yes_steve_model.export.failure", new Object[]{": " + modelID + "\n Model not found"}), "", "", 0));
                     }
                     return;
                 }
@@ -930,6 +933,19 @@ public final class ServerModelManager {
                 }
             }
         });
+    }
+
+    static class PlayerSyncState {
+        byte[] clientKey = new byte[56];
+        byte[] key1;
+        byte[] clientNextKey;
+        int step = 0;
+        List<ServerModelData> allowedModels = new ArrayList<>();
+
+        // TODO: 未来可基于UUID持久化，这里目前每次加入生成固定clientKey
+        PlayerSyncState() {
+            new Random(114514).nextBytes(clientKey);
+        }
     }
 
     public static Optional<ServerModelData> getModelDefinition(String str) {
@@ -1064,7 +1080,7 @@ public final class ServerModelManager {
                 }
             } else {
                 try {
-                    connection.send((Packet<?>) obj, (io.netty.channel.ChannelFutureListener) future -> {
+                    connection.send((Packet<?>) obj, future -> {
                         if (future.isSuccess()) {
                             atomicInteger.set(1);
                         } else {
