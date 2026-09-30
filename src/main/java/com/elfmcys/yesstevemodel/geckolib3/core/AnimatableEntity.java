@@ -1,26 +1,25 @@
 package com.elfmcys.yesstevemodel.geckolib3.core;
 
 import com.elfmcys.yesstevemodel.audio.IAudioStreamFactory;
-import com.elfmcys.yesstevemodel.client.event.ClientTickEvent;
-import com.elfmcys.yesstevemodel.geckolib3.core.enums.AnimationState;
-import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel;
-import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel;
-import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController;
-import com.elfmcys.yesstevemodel.geckolib3.core.manager.AnimationData;
-import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController;
 import com.elfmcys.yesstevemodel.client.animation.molang.PhysicsManager;
+import com.elfmcys.yesstevemodel.client.entity.IPreviewAnimatable;
+import com.elfmcys.yesstevemodel.client.event.ClientTickEvent;
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer;
-import rip.ysm.api.entity.EntityDataBridge;
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.Animation;
+import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController;
+import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController;
+import com.elfmcys.yesstevemodel.geckolib3.core.enums.AnimationState;
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent;
+import com.elfmcys.yesstevemodel.geckolib3.core.manager.AnimationData;
+import com.elfmcys.yesstevemodel.geckolib3.core.molang.context.AnimationContext;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.storage.IForeignVariableStorage;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue;
 import com.elfmcys.yesstevemodel.geckolib3.core.processor.AnimationProcessor;
 import com.elfmcys.yesstevemodel.geckolib3.core.processor.IBone;
-import com.elfmcys.yesstevemodel.geckolib3.model.provider.data.EntityModelData;
-import com.elfmcys.yesstevemodel.client.entity.IPreviewAnimatable;
-import com.elfmcys.yesstevemodel.geckolib3.core.molang.context.AnimationContext;
 import com.elfmcys.yesstevemodel.geckolib3.core.util.RateLimiter;
+import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel;
+import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel;
+import com.elfmcys.yesstevemodel.geckolib3.model.provider.data.EntityModelData;
 import com.elfmcys.yesstevemodel.util.log.ILogger;
 import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
@@ -32,6 +31,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import rip.ysm.api.entity.EntityDataBridge;
 
 import java.util.List;
 import java.util.Map;
@@ -300,7 +300,7 @@ public abstract class AnimatableEntity<TEntity extends Entity> {
         if (!this.animationProcessor.isDisabled()) {
             this.isTickTriggered |= this.rateLimiter.request(this.seekTime / 20.0f);
             boolean z2 = (this.isTickTriggered && !this.hasUpdatedThisTick) || this.wasAnimationActiveLastTick || z;
-            boolean z3 = (z || (this.seekTime == 0.0f && !this.hasUpdatedThisTick)) && this.isTickTriggered && !this.hasUpdatedThisTick;
+            boolean z3 = (!z || (this.seekTime == 0.0f && !this.hasUpdatedThisTick)) && this.isTickTriggered && !this.hasUpdatedThisTick;
             resetHeadTracking(this.wasEvaluatedLastFrame);
             if (z2) {
                 if (z3) {
