@@ -29,7 +29,7 @@ English: An unofficial Fabric 1.21.11 fork of OpenYSM-Updated with Touhou Little
 | Java          | 21                |
 | 安装位置      | 客户端与服务端    |
 
-Fabric API、Architectury API、Cardinal Components API 与 Forge Config API Port 已包含在发布产物中，无需另行安装。
+Fabric Language Kotlin、Cardinal Components API 与 Forge Config API Port 已包含在发布产物中，Fabric API 作为标准前置依赖。
 
 ## 安装
 

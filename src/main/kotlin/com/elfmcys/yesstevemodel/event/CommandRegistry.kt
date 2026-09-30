@@ -11,8 +11,8 @@ import com.google.common.collect.Sets
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.suggestion.SuggestionProvider
 import com.mojang.brigadier.suggestion.Suggestions
-import dev.architectury.event.events.client.ClientCommandRegistrationEvent
-import dev.architectury.event.events.common.CommandRegistrationEvent
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.SharedSuggestionProvider
 import net.minecraft.commands.synchronization.SuggestionProviders
@@ -87,16 +87,18 @@ object CommandRegistry {
 
     @JvmStatic
     fun register() {
-        ClientCommandRegistrationEvent.EVENT.register(ClientCommandRegistrationEvent { dispatcher, _ ->
-            if (!YesSteveModel.isAvailable()) {
-                return@ClientCommandRegistrationEvent
-            }
-            OpenYSMClientCommand.registerClientCommands(dispatcher)
-        })
-        CommandRegistrationEvent.EVENT.register(CommandRegistrationEvent { dispatcher, _, _ ->
+        if (!PlatformAPI.isServer()) {
+            ClientCommandRegistrationCallback.EVENT.register(ClientCommandRegistrationCallback { dispatcher, _ ->
+                if (!YesSteveModel.isAvailable()) {
+                    return@ClientCommandRegistrationCallback
+                }
+                OpenYSMClientCommand.registerClientCommands(dispatcher)
+            })
+        }
+        CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher, _, _ ->
             if (!YesSteveModel.isAvailable()) {
                 RootCommand.registerFallbackCommands(dispatcher)
-                return@CommandRegistrationEvent
+                return@CommandRegistrationCallback
             }
             RootCommand.registerCommands(dispatcher)
             if (!PlatformAPI.isServer()) {

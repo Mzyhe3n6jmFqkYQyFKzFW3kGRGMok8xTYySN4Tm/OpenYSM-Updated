@@ -6,7 +6,6 @@ fabric-api = "0.141.3+1.21.11"
 fabric-language-kotlin = "1.14.1+kotlin.2.4.20"
 cardinal-components = "7.3.1"
 forge-config-api-port = "21.11.1"
-architectury-api = "19.0.1"
 night-config = "3.8.1"
 iris = "1.10.7+1.21.11-fabric"
 touhou-little-maid = "0.8.5-neo1.5.3+mc1.21.11"
@@ -22,8 +21,7 @@ minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
 fabric-language-kotlin = { module = "net.fabricmc:fabric-language-kotlin", version.ref = "fabric-language-kotlin" }
-architectury-fabric = { module = "dev.architectury:architectury-fabric", version.ref = "architectury-api" }
-forge-config-api-port = { module = "maven.modrinth:forge-config-api-port", version.ref = "forge-config-api-port" }
+forge-config-api-port = { module = "fuzs.forgeconfigapiport:forgeconfigapiport-fabric", version.ref = "forge-config-api-port" }
 night-config-core = { module = "com.electronwill.night-config:core", version.ref = "night-config" }
 night-config-toml = { module = "com.electronwill.night-config:toml", version.ref = "night-config" }
 cardinal-components-base = { module = "org.ladysnake.cardinal-components-api:cardinal-components-base", version.ref = "cardinal-components" }

@@ -7,7 +7,6 @@ import com.elfmcys.yesstevemodel.event.YsmEventBootstrap
 import com.elfmcys.yesstevemodel.util.obfuscate.Keep
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import dev.architectury.platform.Platform
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.Minecraft
@@ -48,9 +47,9 @@ object YesSteveModel {
 
     @Suppress("DEPRECATION", "removal")
     private fun initConfig() {
-        val oldConfig: File = Platform.getConfigFolder().resolve("yes_steve_model-common.toml").toFile()
+        val oldConfig: File = PlatformAPI.getConfigFolder().resolve("yes_steve_model-common.toml").toFile()
         if (oldConfig.isFile) {
-            val file2: File = Platform.getConfigFolder().resolve("yes_steve_model-client.toml").toFile()
+            val file2: File = PlatformAPI.getConfigFolder().resolve("yes_steve_model-client.toml").toFile()
             if (!file2.isFile) {
                 oldConfig.renameTo(file2)
             } else {
@@ -60,7 +59,7 @@ object YesSteveModel {
         ConfigRegistration.register(MOD_ID, ModConfig.Type.CLIENT, GeneralConfig.buildSpec())
         ConfigRegistration.register(MOD_ID, ModConfig.Type.SERVER, ServerConfig.buildSpec())
         if (!PlatformAPI.isServer()) {
-            ModSoundEvents.REGISTER.register()
+            ModSoundEvents.register()
         }
     }
 

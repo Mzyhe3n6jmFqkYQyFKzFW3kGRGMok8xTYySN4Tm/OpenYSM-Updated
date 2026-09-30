@@ -1,16 +1,24 @@
 package com.elfmcys.yesstevemodel.event.api;
 
 import com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity;
-import dev.architectury.event.Event;
-import dev.architectury.event.EventFactory;
-import dev.architectury.event.EventResult;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
+import rip.ysm.api.event.EventResult;
 
 public class SpecialPlayerRenderEvent {
 
-    public static final Event<RenderHandler> EVENT = EventFactory.createEventResult();
+    public static final Event<RenderHandler> EVENT = EventFactory.createArrayBacked(RenderHandler.class, listeners -> event -> {
+        for (RenderHandler listener : listeners) {
+            EventResult result = listener.onRender(event);
+            if (result != null && result.interrupts()) {
+                return result;
+            }
+        }
+        return EventResult.pass();
+    });
 
     @FunctionalInterface
     public interface RenderHandler {
@@ -59,7 +67,7 @@ public class SpecialPlayerRenderEvent {
         return this.textureLocation;
     }
 
-    public void setTextureLocation(@Nullable Identifier Identifier) {
-        this.textureLocation = Identifier;
+    public void setTextureLocation(@Nullable Identifier identifier) {
+        this.textureLocation = identifier;
     }
 }

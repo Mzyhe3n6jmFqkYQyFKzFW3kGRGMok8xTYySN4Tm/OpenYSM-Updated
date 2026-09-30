@@ -2,9 +2,12 @@ package com.elfmcys.yesstevemodel.client.animation.molang.functions.ysm;
 
 import com.elfmcys.yesstevemodel.molang.runtime.ExecutionContext;
 import com.elfmcys.yesstevemodel.molang.runtime.Function;
-import dev.architectury.platform.Platform;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 public class ModVersion implements Function {
     @Override
@@ -14,10 +17,11 @@ public class ModVersion implements Function {
         if (modid == null) {
             return null;
         }
-        if (!Platform.isModLoaded(modid)) {
+        Optional<ModContainer> container = FabricLoader.getInstance().getModContainer(modid);
+        if (container.isEmpty()) {
             return null;
         }
-        return Platform.getMod(modid).getVersion();
+        return container.get().getMetadata().getVersion().getFriendlyString();
     }
 
     @Override

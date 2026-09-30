@@ -3,7 +3,7 @@ package com.elfmcys.yesstevemodel.client.event;
 import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.client.ClientModelManager;
 import com.elfmcys.yesstevemodel.network.NetworkHandler;
-import dev.architectury.event.events.client.ClientPlayerEvent;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -17,8 +17,8 @@ public final class ClientPlayerJoinNotification {
     }
 
     public static void register() {
-        ClientPlayerEvent.CLIENT_PLAYER_JOIN.register(ClientPlayerJoinNotification::onPlayerJoin);
-        ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(ClientPlayerJoinNotification::onPlayerQuit);
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> onPlayerJoin(client.player));
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onPlayerQuit(client.player));
     }
 
     private static void onPlayerJoin(LocalPlayer player) {

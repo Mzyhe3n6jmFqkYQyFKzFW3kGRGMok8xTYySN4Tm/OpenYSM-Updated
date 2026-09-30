@@ -15,21 +15,21 @@ import com.elfmcys.yesstevemodel.network.message.S2CSyncProjectileModelPacket;
 import com.elfmcys.yesstevemodel.network.message.S2CSyncStarModelsPacket;
 import com.elfmcys.yesstevemodel.network.message.S2CSyncVehicleModelPacket;
 import com.elfmcys.yesstevemodel.network.message.S2CVersionCheckPacket;
-import rip.ysm.api.capability.CapabilityLifecycle;
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.EntityEvent;
-import dev.architectury.event.events.common.PlayerEvent;
-import dev.architectury.event.events.common.TickEvent;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import rip.ysm.api.capability.CapabilityLifecycle;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.level.Level;
 
 public final class CapabilityEvent {
 
@@ -37,9 +37,9 @@ public final class CapabilityEvent {
     }
 
     public static void register() {
-        PlayerEvent.PLAYER_CLONE.register(CapabilityEvent::onPlayerCloned);
-        EntityEvent.ADD.register(CapabilityEvent::onEntityAdd);
-        TickEvent.SERVER_POST.register(CapabilityEvent::onServerTick);
+        ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> onPlayerCloned(oldPlayer, newPlayer, !alive));
+        ServerEntityEvents.ENTITY_LOAD.register(CapabilityEvent::onEntityAdd);
+        ServerTickEvents.END_SERVER_TICK.register(CapabilityEvent::onServerTick);
     }
 
     private static void onPlayerCloned(ServerPlayer oldPlayer, ServerPlayer newPlayer, boolean wasDeath) {
@@ -68,9 +68,9 @@ public final class CapabilityEvent {
         });
     }
 
-    private static EventResult onEntityAdd(Entity entity, Level level) {
+    private static void onEntityAdd(Entity entity, ServerLevel level) {
         if (!YesSteveModel.isAvailable()) {
-            return EventResult.pass();
+            return;
         }
         if (entity instanceof ServerPlayer player) {
             getModelInfoCap(player).ifPresent(modelInfoCap -> {
@@ -92,7 +92,6 @@ public final class CapabilityEvent {
             });
             getStarModelsCap(player).ifPresent(starModelsCap -> NetworkHandler.sendToClientPlayer(new S2CSyncStarModelsPacket(starModelsCap.getStarModels()), player));
         }
-        return EventResult.pass();
     }
 
     private static void onServerTick(MinecraftServer server) {

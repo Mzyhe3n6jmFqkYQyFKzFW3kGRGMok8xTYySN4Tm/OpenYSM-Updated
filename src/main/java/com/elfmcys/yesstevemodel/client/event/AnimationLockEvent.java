@@ -5,13 +5,13 @@ import com.elfmcys.yesstevemodel.capability.PlayerCapability;
 import com.elfmcys.yesstevemodel.client.input.AnimationRouletteKey;
 import com.elfmcys.yesstevemodel.network.NetworkHandler;
 import com.elfmcys.yesstevemodel.network.message.C2SPlayAnimationPacket;
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.client.ClientRawInputEvent;
-import dev.architectury.event.events.client.ClientTickEvent;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.ClientInput;
 import net.minecraft.client.player.LocalPlayer;
 import rip.ysm.api.PlatformAPI;
+import rip.ysm.api.client.event.ClientRawInputEvent;
+import rip.ysm.api.event.EventResult;
 
 public class AnimationLockEvent {
 
@@ -27,7 +27,7 @@ public class AnimationLockEvent {
             }
             return EventResult.pass();
         });
-        ClientTickEvent.CLIENT_POST.register(AnimationLockEvent::onClientTick);
+        ClientTickEvents.END_CLIENT_TICK.register(AnimationLockEvent::onClientTick);
     }
 
     private static void onClientTick(Minecraft client) {

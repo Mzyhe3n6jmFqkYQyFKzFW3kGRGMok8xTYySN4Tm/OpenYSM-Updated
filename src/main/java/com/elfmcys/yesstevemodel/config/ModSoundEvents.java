@@ -1,16 +1,22 @@
 package com.elfmcys.yesstevemodel.config;
 
 import com.elfmcys.yesstevemodel.YesSteveModel;
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.RegistrySupplier;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 
+import java.util.function.Supplier;
+
 public class ModSoundEvents {
 
-    public static final DeferredRegister<SoundEvent> REGISTER = DeferredRegister.create(YesSteveModel.MOD_ID, Registries.SOUND_EVENT);
+    public static final Identifier CUSTOM_SOUND_ID = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "custom");
 
-    public static final RegistrySupplier<SoundEvent> CUSTOM_SOUND = REGISTER.register("custom",
-            () -> SoundEvent.createFixedRangeEvent(Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "custom"), 16.0f));
+    public static final SoundEvent CUSTOM_SOUND_EVENT = SoundEvent.createFixedRangeEvent(CUSTOM_SOUND_ID, 16.0f);
+
+    public static final Supplier<SoundEvent> CUSTOM_SOUND = () -> CUSTOM_SOUND_EVENT;
+
+    public static void register() {
+        Registry.register(BuiltInRegistries.SOUND_EVENT, CUSTOM_SOUND_ID, CUSTOM_SOUND_EVENT);
+    }
 }

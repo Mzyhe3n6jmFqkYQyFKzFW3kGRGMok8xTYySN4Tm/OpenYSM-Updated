@@ -51,7 +51,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import dev.architectury.platform.Platform;
+import net.fabricmc.loader.api.FabricLoader;
 import rip.ysm.api.attribute.ForgeAttributes;
 
 import java.util.ArrayList;
@@ -369,9 +369,14 @@ public class YSMBinding extends ContextBinding {
         if (!context.isDebugMode()) {
             return null;
         }
-        Platform.getMods().stream().sorted(Comparator.comparing(mod -> mod.getName())).forEach(mod -> {
-            context.logWarningComponent(Component.literal("Mod: display ").append(ComponentUtils.copyOnClickText(mod.getName())).append(Component.literal("  id ").append(ComponentUtils.copyOnClickText(mod.getModId()))));
-        });
+        FabricLoader.getInstance().getAllMods().stream()
+                .sorted(Comparator.comparing(mod -> mod.getMetadata().getName()))
+                .forEach(mod -> {
+                    context.logWarningComponent(Component.literal("Mod: display ")
+                            .append(ComponentUtils.copyOnClickText(mod.getMetadata().getName()))
+                            .append(Component.literal("  id "))
+                            .append(ComponentUtils.copyOnClickText(mod.getMetadata().getId())));
+                });
         return null;
     }
 

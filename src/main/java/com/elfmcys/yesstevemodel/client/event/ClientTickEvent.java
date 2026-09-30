@@ -6,6 +6,7 @@ import com.elfmcys.yesstevemodel.capability.PlayerCapability;
 import com.elfmcys.yesstevemodel.client.ClientModelManager;
 import com.elfmcys.yesstevemodel.client.upload.ModelUploadSession;
 import com.elfmcys.yesstevemodel.client.upload.UploadManager;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import rip.ysm.api.PlatformAPI;
@@ -20,7 +21,7 @@ public final class ClientTickEvent {
     }
 
     public static void register() {
-        dev.architectury.event.events.client.ClientTickEvent.CLIENT_PRE.register(ClientTickEvent::onClientPreTick);
+        ClientTickEvents.START_CLIENT_TICK.register(ClientTickEvent::onClientPreTick);
     }
 
     private static void onClientPreTick(Minecraft client) {
