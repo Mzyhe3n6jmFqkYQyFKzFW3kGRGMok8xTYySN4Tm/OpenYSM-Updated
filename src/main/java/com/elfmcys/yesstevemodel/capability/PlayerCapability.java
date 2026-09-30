@@ -43,8 +43,8 @@ public final class PlayerCapability extends CustomPlayerEntity {
         return com.elfmcys.yesstevemodel.capability.fabric.PlayerCapabilityImpl.get(player);
     }
 
-        public static Optional<PlayerCapability> get(Entity entity) {
-        throw new AssertionError();
+    public static Optional<PlayerCapability> get(Entity entity) {
+        return com.elfmcys.yesstevemodel.capability.fabric.PlayerCapabilityImpl.get(entity);
     }
 
     private final Int2ReferenceOpenHashMap<MolangVarHolder> molangVarsMap;

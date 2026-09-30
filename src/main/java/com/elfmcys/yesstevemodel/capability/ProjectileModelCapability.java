@@ -13,8 +13,8 @@ public class ProjectileModelCapability {
         return com.elfmcys.yesstevemodel.capability.fabric.ProjectileModelCapabilityImpl.get(entity);
     }
 
-        public static Optional<ProjectileModelCapability> get(Projectile projectile) {
-        throw new AssertionError();
+    public static Optional<ProjectileModelCapability> get(Projectile projectile) {
+        return com.elfmcys.yesstevemodel.capability.fabric.ProjectileModelCapabilityImpl.get(projectile);
     }
 
     private String ownerModelId = "default";

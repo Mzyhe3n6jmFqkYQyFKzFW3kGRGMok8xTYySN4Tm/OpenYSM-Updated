@@ -19,8 +19,8 @@ public class ProjectileCapability extends GeckoProjectileEntity {
         return com.elfmcys.yesstevemodel.capability.fabric.ProjectileCapabilityImpl.get(entity);
     }
 
-        public static Optional<ProjectileCapability> get(Projectile projectile) {
-        throw new AssertionError();
+    public static Optional<ProjectileCapability> get(Projectile projectile) {
+        return com.elfmcys.yesstevemodel.capability.fabric.ProjectileCapabilityImpl.get(projectile);
     }
 
     @Nullable
