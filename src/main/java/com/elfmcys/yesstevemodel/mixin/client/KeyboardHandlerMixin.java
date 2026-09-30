@@ -17,9 +17,9 @@ public class KeyboardHandlerMixin {
     @Shadow @Final private Minecraft minecraft;
 
     @Inject(method = "keyPress", at = @At("HEAD"), cancellable = true)
-    private void ysm$onKeyPress(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
+    private void ysm$onKeyPress(long window, int action, KeyEvent event, CallbackInfo ci) {
         if (window == this.minecraft.getWindow().handle()) {
-            EventResult result = ClientRawInputEvent.KEY_PRESSED.invoker().onKey(this.minecraft, action, new KeyEvent(key, scancode, modifiers));
+            EventResult result = ClientRawInputEvent.KEY_PRESSED.invoker().onKey(this.minecraft, action, event);
             if (result != null && result.isFalse()) {
                 ci.cancel();
             }
