@@ -108,3 +108,6 @@ gradle-app.setting
 
 # Architectury transformer 的构建产物
 .architectury-transformer/
+
+.temp
+.junie
