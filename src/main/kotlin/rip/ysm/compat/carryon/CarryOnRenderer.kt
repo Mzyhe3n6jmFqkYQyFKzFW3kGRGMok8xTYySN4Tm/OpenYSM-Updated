@@ -14,8 +14,5 @@ object CarryOnRenderer : ModCompat("carryon") {
         packedLight: Int,
         partialTick: Float,
         nodeCollector: SubmitNodeCollector
-    ): Boolean {
-        if (!isModLoaded) return false
-        return CarryOnRendererImpl.render(player, poseStack, packedLight, partialTick, nodeCollector)
-    }
+    ): Boolean = isModLoaded && CarryOnRendererImpl.render(player, poseStack, packedLight, partialTick, nodeCollector)
 }
