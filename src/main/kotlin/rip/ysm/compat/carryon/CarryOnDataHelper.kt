@@ -23,4 +23,10 @@ object CarryOnDataHelper : ModCompat("carryon") {
         if (!isModLoaded) return CarryType.NONE
         return CarryOnDataHelperImpl.getCarryType(player)
     }
+
+    @JvmStatic
+    fun isPrincess(player: Player): Boolean {
+        if (!isModLoaded) return false
+        return CarryOnDataHelperImpl.isPrincess(player)
+    }
 }
