@@ -1,6 +1,7 @@
 [versions]
 # Minecraft & Fabric Properties
 minecraft = "1.21.11"
+parchment-mappings = "2025.12.20"
 fabric-loader = "0.19.3"
 fabric-api = "0.141.3+1.21.11"
 fabric-language-kotlin = "1.14.1+kotlin.2.4.20"
@@ -9,7 +10,8 @@ forge-config-api-port = "21.11.1"
 night-config = "3.8.1"
 iris = "1.10.7+1.21.11-fabric"
 touhou-little-maid = "0.8.5-neo1.5.3+mc1.21.11"
-parchment-mappings = "2025.12.20"
+crawl = "0.15.0"
+modmenu = "17.0.1"
 
 # Build & Toolchain
 loom = "1.17-SNAPSHOT"
@@ -30,6 +32,8 @@ cardinal-components-entity = { module = "org.ladysnake.cardinal-components-api:c
 imagestream = { module = "com.github.TartaricAlkaline:ImageStream", version = "-SNAPSHOT" }
 iris = { module = "maven.modrinth:iris", version.ref = "iris" }
 touhoulittlemaid-fabric = { module = "libs:touhoulittlemaid-fabric", version.ref = "touhou-little-maid" }
+crawl = { module = "maven.modrinth:crawl", version.ref = "crawl" }
+modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 
 [plugins]
 fabric-loom = { id = "fabric-loom", version.ref = "loom" }
