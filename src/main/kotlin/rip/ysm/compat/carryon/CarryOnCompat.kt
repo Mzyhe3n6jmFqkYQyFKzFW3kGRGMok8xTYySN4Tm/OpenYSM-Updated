@@ -17,10 +17,7 @@ object CarryOnCompat : ModCompat("carryon") {
     }
 
     @JvmStatic
-    fun isPlayerCarrying(player: Player): Boolean {
-        if (!isModLoaded) return false
-        return CarryOnCompatImpl.isPlayerCarrying(player)
-    }
+    fun isPlayerCarrying(player: Player): Boolean = isModLoaded && CarryOnCompatImpl.isPlayerCarrying(player)
 
     @JvmStatic
     fun registerBindings(binding: CtrlBinding) {
