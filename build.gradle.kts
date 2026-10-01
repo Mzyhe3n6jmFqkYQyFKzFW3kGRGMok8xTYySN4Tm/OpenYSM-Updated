@@ -42,6 +42,9 @@ repositories {
     maven("https://maven.parchmentmc.org") {
         name = "Parchment"
     }
+    maven("https://maven.terraformersmc.com/") {
+        name = "Terraformers"
+    }
 }
 
 loom {
@@ -85,6 +88,7 @@ dependencies {
     modLocalRuntime(libs.touhoulittlemaid.fabric)
 
     modImplementation(libs.crawl)
+    modImplementation(libs.modmenu)
 }
 
 tasks.processResources {
