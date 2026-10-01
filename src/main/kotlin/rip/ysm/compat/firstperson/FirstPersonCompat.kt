@@ -5,16 +5,10 @@ import rip.ysm.compat.firstperson.fabric.FirstPersonCompatImpl
 
 object FirstPersonCompat : ModCompat("firstperson") {
     @JvmStatic
-    fun isFirstPersonActive(): Boolean {
-        if (!isModLoaded) return false
-        return FirstPersonCompatImpl.isFirstPersonActive()
-    }
+    fun isFirstPersonActive(): Boolean = isModLoaded && FirstPersonCompatImpl.isFirstPersonActive()
 
     @JvmStatic
-    fun shouldHideHead(): Boolean {
-        if (!isModLoaded) return false
-        return FirstPersonCompatImpl.shouldHideHead()
-    }
+    fun shouldHideHead(): Boolean = isModLoaded && FirstPersonCompatImpl.shouldHideHead()
 
     @JvmStatic
     fun setCameraDistance(distance: Float) {

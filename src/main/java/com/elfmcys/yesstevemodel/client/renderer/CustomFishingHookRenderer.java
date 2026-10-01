@@ -1,23 +1,22 @@
 package com.elfmcys.yesstevemodel.client.renderer;
 
 import com.elfmcys.yesstevemodel.capability.ProjectileCapability;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import rip.ysm.compat.oculus.OculusCompat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.phys.Vec3;
-import rip.ysm.api.item.ToolActionBridge;
 import org.spongepowered.asm.mixin.Unique;
+import rip.ysm.api.item.ToolActionBridge;
+import rip.ysm.compat.oculus.OculusCompat;
 
 public class CustomFishingHookRenderer {
     public static boolean tryRenderCustomHook(FishingHook fishingHook, EntityRenderState state, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
@@ -75,7 +74,7 @@ public class CustomFishingHookRenderer {
         for (int size = 0; size <= 16; size++) {
             stringVertex(startX, startY, startZ, buffer, poseLast, fraction(size), fraction(size + 1), color[0], color[1], color[2]);
         }
-        if (OculusCompat.isLoaded()) {
+        if (OculusCompat.INSTANCE.isModLoaded()) {
             buffer.addVertex(0.0f, 0.0f, 0.0f).setColor(0, 0, 0, 255).setNormal(0.0f, 0.0f, 0.0f);
         }
     }
