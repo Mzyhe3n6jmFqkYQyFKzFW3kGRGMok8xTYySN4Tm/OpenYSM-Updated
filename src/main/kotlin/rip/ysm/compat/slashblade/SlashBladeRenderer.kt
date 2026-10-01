@@ -10,9 +10,6 @@ import rip.ysm.compat.slashblade.fabric.SlashBladeRendererImpl
 
 object SlashBladeRenderer : ModCompat("slashblade") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
-
-    @JvmStatic
     fun renderOnEntity(
         livingEntity: LivingEntity,
         model: AnimatedGeoModel,
@@ -22,6 +19,7 @@ object SlashBladeRenderer : ModCompat("slashblade") {
         stack: ItemStack,
         partialTick: Float
     ) {
+        if (!isModLoaded) return
         SlashBladeRendererImpl.renderOnEntity(livingEntity, model, poseStack, bufferSource, packedLight, stack, partialTick)
     }
 
@@ -33,6 +31,7 @@ object SlashBladeRenderer : ModCompat("slashblade") {
         packedLight: Int,
         stack: ItemStack
     ) {
+        if (!isModLoaded) return
         SlashBladeRendererImpl.renderRightWaist(model, poseStack, bufferSource, packedLight, stack)
     }
 }

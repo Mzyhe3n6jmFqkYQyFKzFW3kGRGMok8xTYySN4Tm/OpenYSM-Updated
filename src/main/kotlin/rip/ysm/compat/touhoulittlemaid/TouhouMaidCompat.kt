@@ -8,33 +8,34 @@ import rip.ysm.compat.touhoulittlemaid.fabric.TouhouMaidCompatImpl
 
 object TouhouMaidCompat : ModCompat("touhou_little_maid") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
-
-    @JvmStatic
     fun init() {
         TouhouMaidCompatImpl.init()
     }
 
     @JvmStatic
-    fun isMaidEntity(entity: Entity): Boolean = TouhouMaidCompatImpl.isMaidEntity(entity)
+    fun isMaidEntity(entity: Entity): Boolean = isModLoaded && TouhouMaidCompatImpl.isMaidEntity(entity)
 
     @JvmStatic
     fun handleProjectileOwner(projectile: Projectile, entity: Entity) {
+        if (!isModLoaded) return
         TouhouMaidCompatImpl.handleProjectileOwner(projectile, entity)
     }
 
     @JvmStatic
     fun registerAnimationRoulette(entity: Entity, classify: String, index: Int) {
+        if (!isModLoaded) return
         TouhouMaidCompatImpl.registerAnimationRoulette(entity, classify, index)
     }
 
     @JvmStatic
     fun applyFeedback(entity: Entity, message: FeedbackData) {
+        if (!isModLoaded) return
         TouhouMaidCompatImpl.applyFeedback(entity, message)
     }
 
     @JvmStatic
     fun playMaidAnimation(entity: Entity, expression: String) {
+        if (!isModLoaded) return
         TouhouMaidCompatImpl.playMaidAnimation(entity, expression)
     }
 }

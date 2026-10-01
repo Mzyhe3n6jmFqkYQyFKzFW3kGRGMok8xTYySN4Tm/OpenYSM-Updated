@@ -10,12 +10,8 @@ import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
-import rip.ysm.compat.gun.swarfare.SWarfareCompat
 
 object SWarfareCompatImpl {
-    @JvmStatic
-    fun isLoaded(): Boolean = SWarfareCompat.isModLoaded
-
     @JvmStatic
     fun isGunItem(itemStack: ItemStack): Boolean = false
 

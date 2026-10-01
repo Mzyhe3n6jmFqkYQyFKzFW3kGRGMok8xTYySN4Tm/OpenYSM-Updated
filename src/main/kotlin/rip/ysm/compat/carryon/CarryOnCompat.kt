@@ -6,22 +6,25 @@ import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import net.minecraft.world.entity.player.Player
 import rip.ysm.compat.ModCompat
 import rip.ysm.compat.carryon.fabric.CarryOnCompatImpl
-import java.util.Optional
+import java.util.*
 import java.util.function.BiFunction
 
 object CarryOnCompat : ModCompat("carryon") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
+    fun getControllerFactory(): Optional<BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>> {
+        if (!isModLoaded) return Optional.empty()
+        return CarryOnCompatImpl.getControllerFactory()
+    }
 
     @JvmStatic
-    fun getControllerFactory(): Optional<BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>> =
-        CarryOnCompatImpl.getControllerFactory()
-
-    @JvmStatic
-    fun isPlayerCarrying(player: Player): Boolean = CarryOnCompatImpl.isPlayerCarrying(player)
+    fun isPlayerCarrying(player: Player): Boolean {
+        if (!isModLoaded) return false
+        return CarryOnCompatImpl.isPlayerCarrying(player)
+    }
 
     @JvmStatic
     fun registerBindings(binding: CtrlBinding) {
+        if (!isModLoaded) return
         CarryOnCompatImpl.registerBindings(binding)
     }
 }

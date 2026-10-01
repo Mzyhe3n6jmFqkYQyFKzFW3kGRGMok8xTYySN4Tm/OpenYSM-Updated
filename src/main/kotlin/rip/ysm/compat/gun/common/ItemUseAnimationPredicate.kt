@@ -7,14 +7,13 @@ import com.elfmcys.yesstevemodel.geckolib3.core.enums.PlayState
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.entity.LivingEntity
 import rip.ysm.compat.gun.swarfare.SWarfareCompat
 import rip.ysm.compat.gun.tacz.TacCompat
 
 class ItemUseAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>> {
     override fun predicate(event: AnimationEvent<LivingAnimatable<*>>, evaluator: ExpressionEvaluator<*>?): PlayState {
         val animatable = event.animatable
-        val livingEntity = (animatable as? LivingAnimatable<*>)?.entity as? LivingEntity
+        val livingEntity = animatable?.entity
         if (livingEntity == null || animatable is IPreviewAnimatable) {
             return PlayState.STOP
         }

@@ -7,8 +7,8 @@ import rip.ysm.compat.elytraslot.fabric.ElytraSlotCompatImpl
 
 object ElytraSlotCompat : ModCompat("elytraslot") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
-
-    @JvmStatic
-    fun getElytraItem(livingEntity: LivingEntity): ItemStack = ElytraSlotCompatImpl.getElytraItem(livingEntity)
+    fun getElytraItem(livingEntity: LivingEntity): ItemStack {
+        if (!isModLoaded) return ItemStack.EMPTY
+        return ElytraSlotCompatImpl.getElytraItem(livingEntity)
+    }
 }

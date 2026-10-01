@@ -15,10 +15,8 @@ import rip.ysm.compat.gun.tacz.fabric.TacCompatImpl
 
 object TacCompat : ModCompat("tacz") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
-
-    @JvmStatic
     fun registerControllerFunctions(binding: CtrlBinding) {
+        if (!isModLoaded) return
         TacCompatImpl.registerControllerFunctions(binding)
     }
 
@@ -31,6 +29,7 @@ object TacCompat : ModCompat("tacz") {
         packedLightIn: Int,
         partialTicks: Float
     ) {
+        if (!isModLoaded) return
         TacCompatImpl.applyItemTransform(stack, model, entity, poseStack, packedLightIn, partialTicks)
     }
 
@@ -40,30 +39,44 @@ object TacCompat : ModCompat("tacz") {
         event: AnimationEvent<out LivingAnimatable<*>>,
         animation: String,
         loopType: ILoopType
-    ): PlayState? = TacCompatImpl.handleTaczAnimState(entity, event, animation, loopType)
+    ): PlayState? {
+        if (!isModLoaded) return null
+        return TacCompatImpl.handleTaczAnimState(entity, event, animation, loopType)
+    }
 
     @JvmStatic
     fun handleGunHoldAnimState(
         stack: ItemStack,
         event: AnimationEvent<out LivingAnimatable<*>>
-    ): PlayState? = TacCompatImpl.handleGunHoldAnimState(stack, event)
+    ): PlayState? {
+        if (!isModLoaded) return null
+        return TacCompatImpl.handleGunHoldAnimState(stack, event)
+    }
 
     @JvmStatic
     fun handleGunActionAnimState(
         stack: ItemStack,
         event: AnimationEvent<out LivingAnimatable<*>>
-    ): PlayState? = TacCompatImpl.handleGunActionAnimState(stack, event)
+    ): PlayState? {
+        if (!isModLoaded) return null
+        return TacCompatImpl.handleGunActionAnimState(stack, event)
+    }
 
     @JvmStatic
     fun handleGunSound(entity: LivingEntity, stack: ItemStack) {
+        if (!isModLoaded) return
         TacCompatImpl.handleGunSound(entity, stack)
     }
 
     @JvmStatic
     fun handleItemSound(stack: ItemStack) {
+        if (!isModLoaded) return
         TacCompatImpl.handleItemSound(stack)
     }
 
     @JvmStatic
-    fun getGunTexture(stack: ItemStack): Identifier? = TacCompatImpl.getGunTexture(stack)
+    fun getGunTexture(stack: ItemStack): Identifier? {
+        if (!isModLoaded) return null
+        return TacCompatImpl.getGunTexture(stack)
+    }
 }

@@ -5,8 +5,7 @@ import rip.ysm.compat.realcamera.fabric.RealCameraCompatImpl
 
 object RealCameraCompat : ModCompat("realcamera") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
-
-    @JvmStatic
-    fun isActive(): Boolean = RealCameraCompatImpl.isActive()
+    fun isActive(): Boolean {
+        return isModLoaded && RealCameraCompatImpl.isActive()
+    }
 }

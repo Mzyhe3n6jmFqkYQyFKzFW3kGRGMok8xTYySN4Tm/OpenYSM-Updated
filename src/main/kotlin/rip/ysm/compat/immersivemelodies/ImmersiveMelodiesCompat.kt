@@ -13,17 +13,15 @@ object ImmersiveMelodiesCompat : ModCompat("immersive_melodies") {
         @JvmField var delta: Long = 0L
         @JvmField var time: Long = 0L
     }
-
-    @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
-
     @JvmStatic
     fun updateMelodyProgress(livingEntity: LivingEntity, imData: ImmersiveMelodiesData) {
+        if (!isModLoaded) return
         ImmersiveMelodiesCompatImpl.updateMelodyProgress(livingEntity, imData)
     }
 
     @JvmStatic
     fun registerBindings(binding: CtrlBinding) {
+        if (!isModLoaded) return
         ImmersiveMelodiesCompatImpl.registerBindings(binding)
     }
 }
