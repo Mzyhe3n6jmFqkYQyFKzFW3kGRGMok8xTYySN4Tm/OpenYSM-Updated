@@ -1,5 +1,6 @@
 package com.elfmcys.yesstevemodel.client;
 
+import com.elfmcys.yesstevemodel.Constants;
 import com.elfmcys.yesstevemodel.NativeLibLoader;
 import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.client.gui.IGuiWidget;
@@ -120,7 +121,7 @@ public class ClientModelManager {
             String resourcePath = "/assets/yes_steve_model/builtin/default";
             URL resourceUrl = YesSteveModel.class.getResource(resourcePath);
             if (resourceUrl == null) {
-                Constants.LOGGER.error("[YSM] Builtin default model not found in classpath: " + resourcePath);
+                Constants.LOGGER.error("[YSM] Builtin default model not found in classpath: {}", resourcePath);
                 return;
             }
             URI uri = resourceUrl.toURI();

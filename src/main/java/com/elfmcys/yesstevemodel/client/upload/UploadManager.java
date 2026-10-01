@@ -1,7 +1,7 @@
 package com.elfmcys.yesstevemodel.client.upload;
 
+import com.elfmcys.yesstevemodel.NameSpaces;
 import com.elfmcys.yesstevemodel.ResourceCleanupHelper;
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.client.texture.ITextureMap;
 import com.elfmcys.yesstevemodel.client.texture.OuterFileTexture;
 import com.google.common.collect.Queues;
@@ -144,7 +144,7 @@ public class UploadManager {
         }
 
         TextureLocatable(int resolution) {
-            this.identifier = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "textures/" + ++textureCounter);
+            this.identifier = NameSpaces.MOD.path("textures/" + ++textureCounter);
             this.resolution = resolution;
             this.registered = false;
         }

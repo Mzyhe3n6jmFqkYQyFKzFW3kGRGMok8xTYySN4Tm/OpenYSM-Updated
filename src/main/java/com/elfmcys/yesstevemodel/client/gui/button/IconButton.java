@@ -1,14 +1,13 @@
 package com.elfmcys.yesstevemodel.client.gui.button;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
+import com.elfmcys.yesstevemodel.NameSpaces;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 public class IconButton extends FlatColorButton {
 
-    private static final Identifier ICON_TEXTURE = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/icon.png");
+    private static final Identifier ICON_TEXTURE = NameSpaces.MOD.path("texture/icon.png");
 
     private final int iconU;
 

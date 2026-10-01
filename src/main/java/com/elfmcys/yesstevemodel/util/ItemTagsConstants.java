@@ -1,8 +1,7 @@
 package com.elfmcys.yesstevemodel.util;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
+import com.elfmcys.yesstevemodel.NameSpaces;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 
@@ -35,6 +34,6 @@ public class ItemTagsConstants {
     public static final TagKey<Item> PIKE = createTag("pike");
 
     private static TagKey<Item> createTag(String str) {
-        return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, str));
+        return TagKey.create(Registries.ITEM, NameSpaces.MOD.path(str));
     }
 }

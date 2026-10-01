@@ -1,18 +1,17 @@
 package com.elfmcys.yesstevemodel.client.gui;
 
+import com.elfmcys.yesstevemodel.NameSpaces;
 import com.elfmcys.yesstevemodel.client.gui.button.AuthorButton;
+import com.elfmcys.yesstevemodel.client.gui.button.FlatColorButton;
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly;
 import com.elfmcys.yesstevemodel.client.texture.OuterFileTexture;
-import com.elfmcys.yesstevemodel.YesSteveModel;
+import com.elfmcys.yesstevemodel.client.upload.IResourceLocatable;
 import com.elfmcys.yesstevemodel.client.upload.UploadManager;
+import com.elfmcys.yesstevemodel.mixin.client.ScreenAccessor;
+import com.elfmcys.yesstevemodel.model.format.ServerModelInfo;
 import com.elfmcys.yesstevemodel.resource.models.AuthorInfo;
 import com.elfmcys.yesstevemodel.resource.models.Metadata;
-import com.elfmcys.yesstevemodel.client.gui.button.FlatColorButton;
-import com.elfmcys.yesstevemodel.model.format.ServerModelInfo;
-import com.elfmcys.yesstevemodel.client.upload.IResourceLocatable;
-import com.elfmcys.yesstevemodel.mixin.client.ScreenAccessor;
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
@@ -21,6 +20,7 @@ import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +28,7 @@ import java.util.*;
 
 public class ModelInfoScreen extends Screen {
 
-    private static final Identifier DEFAULT_AVATAR = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/default_avatar.png");
+    private static final Identifier DEFAULT_AVATAR = NameSpaces.MOD.path("texture/default_avatar.png");
 
     private static final Map<String, Component> URL_LABELS = ImmutableMap.of("home", Component.translatable("gui.yes_steve_model.url.home"), "donate", Component.translatable("gui.yes_steve_model.url.donate"));
 
@@ -64,7 +64,7 @@ public class ModelInfoScreen extends Screen {
         for (int i = 0; i < authorInfo.size(); i++) {
             OuterFileTexture avatar = avatars.get(authorInfo.get(i).getName());
             if (avatar != null) {
-                textureManager.register(Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "avatars/" + i), avatar);
+                textureManager.register(NameSpaces.MOD.path("avatars/" + i), avatar);
                 avatar.load();
                 this.textureList.add(UploadManager.getOrCreateLocatable(avatar, true));
             } else {

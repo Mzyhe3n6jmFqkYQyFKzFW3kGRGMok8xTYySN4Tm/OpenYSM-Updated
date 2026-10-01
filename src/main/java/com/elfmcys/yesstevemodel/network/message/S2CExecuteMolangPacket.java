@@ -1,5 +1,6 @@
 package com.elfmcys.yesstevemodel.network.message;
 
+import com.elfmcys.yesstevemodel.Constants;
 import com.elfmcys.yesstevemodel.capability.PlayerCapability;
 import com.elfmcys.yesstevemodel.geckolib3.resource.GeckoLibCache;
 import com.elfmcys.yesstevemodel.molang.parser.ParseException;
@@ -56,7 +57,7 @@ public class S2CExecuteMolangPacket {
                     try {
                         cap.executeExpression(GeckoLibCache.parseSimpleExpression(message.expression), true, false, null);
                     } catch (ParseException e) {
-                        Constants.LOGGER.error("Failed to execute molang " + message.expression, e);
+                        Constants.LOGGER.error("Failed to execute molang {}", message.expression, e);
                     }
                 });
             } else if (TouhouMaidCompat.isMaidEntity(entity)) {

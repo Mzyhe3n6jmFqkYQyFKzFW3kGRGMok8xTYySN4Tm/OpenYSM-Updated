@@ -1,6 +1,6 @@
 package com.elfmcys.yesstevemodel.util;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
+import com.elfmcys.yesstevemodel.NameSpaces;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool;
 import com.google.common.collect.Sets;
 import it.unimi.dsi.fastutil.Pair;
@@ -61,7 +61,7 @@ public final class FileTypeUtil {
     }
 
     public static Identifier getPackIconLocation(String str) {
-        return Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "model_pack_icon/" + str.hashCode());
+        return NameSpaces.MOD.path("model_pack_icon/" + str.hashCode());
     }
 
     /**

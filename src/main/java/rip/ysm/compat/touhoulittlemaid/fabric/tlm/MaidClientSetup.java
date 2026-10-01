@@ -1,5 +1,6 @@
 package rip.ysm.compat.touhoulittlemaid.fabric.tlm;
 
+import com.elfmcys.yesstevemodel.Constants;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.event.OpenYsmMaidScreenEvent;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.event.YsmMaidClientTickEvent;
@@ -10,7 +11,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.TamableAnimal;
 import org.jetbrains.annotations.Nullable;
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.anim.MaidAnimationStates;
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.gui.MaidModelScreen;

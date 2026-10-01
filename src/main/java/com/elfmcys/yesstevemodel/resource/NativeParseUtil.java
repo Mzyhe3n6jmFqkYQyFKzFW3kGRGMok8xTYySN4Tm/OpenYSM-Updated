@@ -1,5 +1,6 @@
 package com.elfmcys.yesstevemodel.resource;
 
+import com.elfmcys.yesstevemodel.Constants;
 import com.elfmcys.yesstevemodel.resource.pojo.RawYsmModel;
 import com.ysm.parser.YSMParser;
 import com.ysm.parser.YSMParserNativeLoader;
@@ -36,7 +37,7 @@ public final class NativeParseUtil {
     public static RawYsmModel parseNative(byte[] raw, String modelId) {
         if (raw == null || raw.length == 0) return null;
         if (!YSMParserNativeLoader.load()) {
-            Constants.LOGGER.warn("[YSM] Native YSMParser unavailable, skipping model: " + modelId);
+            Constants.LOGGER.warn("[YSM] Native YSMParser unavailable, skipping model: {}", modelId);
             return null;
         }
 
@@ -45,13 +46,13 @@ public final class NativeParseUtil {
             tempDir = Files.createTempDirectory("ysm_v3_");
             boolean ok = YSMParser.parseBytes(raw, tempDir.toString());
             if (!ok) {
-                Constants.LOGGER.error("[YSM] YSMParser.parseBytes() failed for model: " + modelId);
+                Constants.LOGGER.error("[YSM] YSMParser.parseBytes() failed for model: {}", modelId);
                 return null;
             }
 
             Map<String, byte[]> flat = collectFlatFiles(tempDir);
             if (flat.isEmpty()) {
-                Constants.LOGGER.warn("[YSM] Native parser produced no files for model: " + modelId);
+                Constants.LOGGER.warn("[YSM] Native parser produced no files for model: {}", modelId);
                 return null;
             }
 
@@ -59,7 +60,7 @@ public final class NativeParseUtil {
                 return deserializer.deserialize();
             }
         } catch (Exception e) {
-            Constants.LOGGER.error("[YSM] Native parse failed for model: " + modelId, e);
+            Constants.LOGGER.error("[YSM] Native parse failed for model: {}", modelId, e);
             return null;
         } finally {
             if (tempDir != null) {

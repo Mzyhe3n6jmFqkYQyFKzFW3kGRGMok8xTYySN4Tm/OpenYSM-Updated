@@ -1,5 +1,6 @@
 package com.elfmcys.yesstevemodel.geckolib3.core.molang.value;
 
+import com.elfmcys.yesstevemodel.Constants;
 import com.elfmcys.yesstevemodel.molang.parser.ast.Expression;
 import com.elfmcys.yesstevemodel.molang.parser.ast.FloatExpression;
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator;

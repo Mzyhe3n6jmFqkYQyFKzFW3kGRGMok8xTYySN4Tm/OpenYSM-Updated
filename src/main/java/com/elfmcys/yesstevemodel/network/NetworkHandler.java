@@ -1,8 +1,8 @@
 package com.elfmcys.yesstevemodel.network;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
-import com.elfmcys.yesstevemodel.mixin.ConnectionAccessor;
+import com.elfmcys.yesstevemodel.NameSpaces;
 import com.elfmcys.yesstevemodel.access.ServerCommonPacketListenerImplAccessor;
+import com.elfmcys.yesstevemodel.mixin.ConnectionAccessor;
 import com.elfmcys.yesstevemodel.network.message.*;
 import io.netty.util.AttributeKey;
 import net.minecraft.client.Minecraft;
@@ -21,7 +21,7 @@ public final class NetworkHandler {
 
     public static final String VERSION = "2.6.0";
 
-    public static final Identifier CHANNEL_ID = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, VERSION.replace('.', '_'));
+    public static final Identifier CHANNEL_ID = NameSpaces.MOD.path(VERSION.replace('.', '_'));
 
     private static final AttributeKey<String> CHANNEL_VERSION_KEY = AttributeKey.valueOf("yes_steve_model_channel_version");
 

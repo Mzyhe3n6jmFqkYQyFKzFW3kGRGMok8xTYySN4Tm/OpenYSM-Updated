@@ -1,6 +1,6 @@
 package rip.ysm.gui.components;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
+import com.elfmcys.yesstevemodel.NameSpaces;
 import com.elfmcys.yesstevemodel.client.gui.ModelMetadataPresenter;
 import com.elfmcys.yesstevemodel.client.upload.IResourceLocatable;
 import com.elfmcys.yesstevemodel.resource.models.AuthorInfo;
@@ -21,7 +21,7 @@ import rip.ysm.gui.OptionRow;
 import java.util.List;
 
 public final class AuthorRow extends OptionRow<Object> {
-    private static final Identifier DEFAULT_AVATAR = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/default_avatar.png");
+    private static final Identifier DEFAULT_AVATAR = NameSpaces.MOD.path("texture/default_avatar.png");
     private static final int AVATAR_SIZE = 48;
 
     private final ModernModelInfoScreen owner;

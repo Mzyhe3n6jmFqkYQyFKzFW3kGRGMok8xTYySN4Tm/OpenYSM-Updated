@@ -1,6 +1,6 @@
 package rip.ysm.gui;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
+import com.elfmcys.yesstevemodel.NameSpaces;
 import com.elfmcys.yesstevemodel.capability.PlayerCapability;
 import com.elfmcys.yesstevemodel.client.event.AnimationLockEvent;
 import com.elfmcys.yesstevemodel.client.gui.ModelMetadataPresenter;
@@ -16,21 +16,19 @@ import com.elfmcys.yesstevemodel.network.message.C2SPlayAnimationPacket;
 import com.elfmcys.yesstevemodel.util.data.OrderedStringMap;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import org.lwjgl.opengl.GL11;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -39,6 +37,7 @@ import net.minecraft.world.entity.player.Player;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.lwjgl.opengl.GL11;
 import rip.ysm.api.client.KeyMappingFactory;
 import rip.ysm.gpu.BlurStack;
 import rip.ysm.gpu.Pie;
@@ -48,10 +47,9 @@ import java.util.List;
 import java.util.Map;
 
 public class ModernAnimationRouletteScreen extends Screen {
-
-    private static final Identifier settingsIcon = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/settings.png");
-    private static final Identifier lockIcon = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/lock.png");
-    private static final Identifier unlockIcon = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/unlock.png");
+    private static final Identifier settingsIcon = NameSpaces.MOD.path("texture/settings.png");
+    private static final Identifier lockIcon = NameSpaces.MOD.path("texture/lock.png");
+    private static final Identifier unlockIcon = NameSpaces.MOD.path("texture/unlock.png");
 
     private static final LinkedList<Pair<String, Integer>> navigationStack = Lists.newLinkedList();
     private static String lastModelId = StringPool.EMPTY;
@@ -387,7 +385,8 @@ public class ModernAnimationRouletteScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        if (scrollY < 0.0) nextPage(); else previousPage();
+        if (scrollY < 0.0) nextPage();
+        else previousPage();
         return true;
     }
 
@@ -411,7 +410,8 @@ public class ModernAnimationRouletteScreen extends Screen {
     private void navigateToSubmenu(String value) {
         if (navigationStack.size() > 5) {
             LocalPlayer p = Minecraft.getInstance().player;
-            if (p != null) p.displayClientMessage(Component.translatable("gui.yes_steve_model.roulette.too_long"), false);
+            if (p != null)
+                p.displayClientMessage(Component.translatable("gui.yes_steve_model.roulette.too_long"), false);
             return;
         }
         String sub = value.substring(1);
@@ -436,7 +436,8 @@ public class ModernAnimationRouletteScreen extends Screen {
             Pair<String, Integer> last = navigationStack.peekLast();
             String submenu = (last != null && StringUtils.isNotBlank(last.getLeft())) ? last.getLeft() : StringPool.EMPTY;
             Entity entity = animatableModel.getEntity();
-            if (entity instanceof Player) NetworkHandler.sendToServer(new C2SPlayAnimationPacket(hoveredIndex, submenu));
+            if (entity instanceof Player)
+                NetworkHandler.sendToServer(new C2SPlayAnimationPacket(hoveredIndex, submenu));
             else NetworkHandler.sendToServer(new C2SPlayAnimationPacket(hoveredIndex, submenu, entity.getId()));
         } else if (player != null) {
             PlayerCapability.get(player).ifPresent(cap -> cap.requestModelSwitch(key));
