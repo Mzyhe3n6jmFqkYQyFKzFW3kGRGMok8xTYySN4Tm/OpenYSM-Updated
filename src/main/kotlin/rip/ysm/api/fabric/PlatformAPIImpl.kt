@@ -21,19 +21,13 @@ object PlatformAPIImpl {
     }
 
     @JvmStatic
-    fun isServer(): Boolean {
-        return FabricLoader.getInstance().environmentType == EnvType.SERVER
-    }
+    fun isServer(): Boolean = FabricLoader.getInstance().environmentType == EnvType.SERVER
 
     @JvmStatic
-    fun getPlatformName(): String {
-        return "Fabric"
-    }
+    fun getPlatformName(): String = "Fabric"
 
     @JvmStatic
-    fun getConfigFolder(): Path {
-        return FabricLoader.getInstance().configDir
-    }
+    fun getConfigFolder(): Path = FabricLoader.getInstance().configDir
 
     @JvmStatic
     fun getGameFolder(): Path {
@@ -41,34 +35,21 @@ object PlatformAPIImpl {
     }
 
     @JvmStatic
-    fun isModLoaded(modId: String): Boolean {
-        return FabricLoader.getInstance().isModLoaded(modId)
-    }
+    fun isModLoaded(modId: String): Boolean = FabricLoader.getInstance().isModLoaded(modId)
 
     @JvmStatic
-    fun getModVersion(modId: String): String {
-        return FabricLoader.getInstance().getModContainer(modId)
-            .map { it.metadata.version.friendlyString }
-            .orElse("unknown")
-    }
+    fun getModVersion(modId: String): String = FabricLoader.getInstance().getModContainer(modId)
+        .map { it.metadata.version.friendlyString }
+        .orElse("unknown")!!
 
     @JvmStatic
-    fun isDevelopmentEnvironment(): Boolean {
-        return FabricLoader.getInstance().isDevelopmentEnvironment
-    }
+    fun isDevelopmentEnvironment(): Boolean = FabricLoader.getInstance().isDevelopmentEnvironment
 
     @JvmStatic
     fun getServer(): MinecraftServer? {
-        if (currentServer != null) {
-            return currentServer
-        }
-        if (!isServer()) {
-            return try {
-                Minecraft.getInstance().singleplayerServer
-            } catch (e: Throwable) {
-                null
-            }
-        }
+        if (currentServer != null) return currentServer
+        if (!isServer())
+            return runCatching { Minecraft.getInstance().singleplayerServer }.getOrNull()
         return null
     }
 }

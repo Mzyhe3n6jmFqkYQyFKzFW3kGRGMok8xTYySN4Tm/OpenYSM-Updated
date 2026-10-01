@@ -2,6 +2,7 @@
 
 package com.elfmcys.yesstevemodel
 
+import net.fabricmc.api.EnvType
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.server.MinecraftServer
@@ -29,6 +30,17 @@ object Constants {
         dir
     }
 
+    @JvmStatic
+    val MainConfigDir: Path by lazy {
+        val dir = FabricLoader.getInstance().configDir
+        dir.createDirectories()
+        dir
+    }
+
+    @JvmStatic
+    val IsServer: Boolean
+        get() = FabricLoader.getInstance().environmentType == EnvType.SERVER
+
     val ForceInitialize: Unit by lazy {
         doNothing()
     }
@@ -37,7 +49,9 @@ object Constants {
     private var getServer: MinecraftServer? = null
 
     val Server: MinecraftServer
-        get() = getServer ?: error("Server is not initialized")
+        get() {
+            return getServer ?: error("Server is not initialized")
+        }
 
     private fun doNothing(vararg objects: Any) {}
 }
