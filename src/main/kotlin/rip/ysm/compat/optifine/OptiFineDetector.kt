@@ -5,8 +5,5 @@ import rip.ysm.compat.optifine.fabric.OptiFineDetectorImpl
 
 object OptiFineDetector : ModCompat("optifabric") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
-
-    @JvmStatic
-    fun isOptifinePresent(): Boolean = OptiFineDetectorImpl.isOptifinePresent()
+    fun isOptifinePresent(): Boolean = isModLoaded && OptiFineDetectorImpl.isOptifinePresent()
 }

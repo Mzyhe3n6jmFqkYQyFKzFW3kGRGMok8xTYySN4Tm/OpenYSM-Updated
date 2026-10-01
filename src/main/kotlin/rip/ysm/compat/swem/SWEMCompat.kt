@@ -7,16 +7,17 @@ import rip.ysm.compat.swem.fabric.SWEMCompatImpl
 
 object SWEMCompat : ModCompat("swem") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
+    fun isRidingSWEM(livingEntity: LivingEntity): Boolean = isModLoaded && SWEMCompatImpl.isRidingSWEM(livingEntity)
 
     @JvmStatic
-    fun isRidingSWEM(livingEntity: LivingEntity): Boolean = SWEMCompatImpl.isRidingSWEM(livingEntity)
-
-    @JvmStatic
-    fun getHorseGaitName(livingEntity: LivingEntity): String = SWEMCompatImpl.getHorseGaitName(livingEntity)
+    fun getHorseGaitName(livingEntity: LivingEntity): String {
+        if (!isModLoaded) return ""
+        return SWEMCompatImpl.getHorseGaitName(livingEntity)
+    }
 
     @JvmStatic
     fun registerControllerFunctions(binding: CtrlBinding) {
+        if (!isModLoaded) return
         SWEMCompatImpl.registerControllerFunctions(binding)
     }
 }

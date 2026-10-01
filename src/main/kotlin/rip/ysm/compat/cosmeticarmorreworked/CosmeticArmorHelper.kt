@@ -8,9 +8,6 @@ import rip.ysm.compat.cosmeticarmorreworked.fabric.CosmeticArmorHelperImpl
 
 object CosmeticArmorHelper : ModCompat("cosmeticarmorreworked") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
-
-    @JvmStatic
     fun getArmorItem(entity: LivingEntity, slot: EquipmentSlot): ItemStack =
         CosmeticArmorHelperImpl.getArmorItem(entity, slot)
 

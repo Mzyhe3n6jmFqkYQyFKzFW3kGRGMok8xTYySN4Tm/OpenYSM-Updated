@@ -5,12 +5,8 @@ import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet
 import net.minecraft.tags.TagKey
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.Item
-import rip.ysm.compat.curios.CuriosCompat
 
 object CuriosCompatImpl {
-    @JvmStatic
-    fun isLoaded(): Boolean = CuriosCompat.isLoaded()
-
     @JvmStatic
     fun hasItemInSlot(livingEntity: LivingEntity, str: String, set: ReferenceOpenHashSet<Item>): Boolean = false
 

@@ -7,28 +7,36 @@ import net.minecraft.world.entity.player.Player
 import org.apache.commons.lang3.tuple.Pair
 import rip.ysm.compat.ModCompat
 import rip.ysm.compat.parcool.fabric.ParcoolCompatImpl
-import java.util.Optional
+import java.util.*
 import java.util.function.BiFunction
 
 object ParcoolCompat : ModCompat("parcool") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
+    fun getInCompatibleInfo(): Optional<Pair<String, String>> {
+        if (!isModLoaded) return Optional.empty()
+        return ParcoolCompatImpl.getInCompatibleInfo()
+    }
 
     @JvmStatic
-    fun getInCompatibleInfo(): Optional<Pair<String, String>> = ParcoolCompatImpl.getInCompatibleInfo()
+    fun getControllerFactory(): Optional<BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>> {
+        if (!isModLoaded) return Optional.empty()
+        return ParcoolCompatImpl.getControllerFactory()
+    }
 
     @JvmStatic
-    fun getControllerFactory(): Optional<BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>> =
-        ParcoolCompatImpl.getControllerFactory()
+    fun isPlayerParcooling(player: Player): Boolean {
+        return isModLoaded && ParcoolCompatImpl.isPlayerParcooling(player)
+    }
 
     @JvmStatic
-    fun isPlayerParcooling(player: Player): Boolean = ParcoolCompatImpl.isPlayerParcooling(player)
-
-    @JvmStatic
-    fun getActionName(player: Player): String = ParcoolCompatImpl.getActionName(player)
+    fun getActionName(player: Player): String {
+        if (!isModLoaded) return ""
+        return ParcoolCompatImpl.getActionName(player)
+    }
 
     @JvmStatic
     fun registerBindings(binding: CtrlBinding) {
+        if (!isModLoaded) return
         ParcoolCompatImpl.registerBindings(binding)
     }
 }

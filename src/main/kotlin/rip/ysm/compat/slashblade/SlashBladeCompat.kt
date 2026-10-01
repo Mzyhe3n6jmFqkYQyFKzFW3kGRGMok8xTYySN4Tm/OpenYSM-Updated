@@ -14,19 +14,18 @@ import rip.ysm.compat.slashblade.fabric.SlashBladeCompatImpl
 
 object SlashBladeCompat : ModCompat("slashblade") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
+    fun isSlashBladeItem(stack: ItemStack): Boolean = isModLoaded && SlashBladeCompatImpl.isSlashBladeItem(stack)
 
     @JvmStatic
-    fun isSlashBladeItem(stack: ItemStack): Boolean = SlashBladeCompatImpl.isSlashBladeItem(stack)
+    fun hasSlashBlade(livingEntity: LivingEntity): Boolean =
+        isModLoaded && SlashBladeCompatImpl.hasSlashBlade(livingEntity)
 
     @JvmStatic
-    fun hasSlashBlade(livingEntity: LivingEntity): Boolean = SlashBladeCompatImpl.hasSlashBlade(livingEntity)
-
-    @JvmStatic
-    fun isCarry(livingEntity: LivingEntity): Boolean = SlashBladeCompatImpl.isCarry(livingEntity)
+    fun isCarry(livingEntity: LivingEntity): Boolean = isModLoaded && SlashBladeCompatImpl.isCarry(livingEntity)
 
     @JvmStatic
     fun registerControllerFunctions(binding: CtrlBinding) {
+        if (!isModLoaded) return
         SlashBladeCompatImpl.registerControllerFunctions(binding)
     }
 
@@ -36,10 +35,14 @@ object SlashBladeCompat : ModCompat("slashblade") {
         event: AnimationEvent<CustomPlayerEntity>,
         str: String,
         loopType: ILoopType
-    ): PlayState? =
-        SlashBladeCompatImpl.handleSlashBladeAnim(player, event, str, loopType)
+    ): PlayState? {
+        if (!isModLoaded) return null
+        return SlashBladeCompatImpl.handleSlashBladeAnim(player, event, str, loopType)
+    }
 
     @JvmStatic
-    fun getComboAnimName(event: AnimationEvent<LivingAnimatable<*>>): String =
-        SlashBladeCompatImpl.getComboAnimName(event)
+    fun getComboAnimName(event: AnimationEvent<LivingAnimatable<*>>): String {
+        if (!isModLoaded) return ""
+        return SlashBladeCompatImpl.getComboAnimName(event)
+    }
 }

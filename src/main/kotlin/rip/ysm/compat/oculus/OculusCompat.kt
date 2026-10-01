@@ -5,19 +5,19 @@ import rip.ysm.compat.oculus.fabric.OculusCompatImpl
 
 object OculusCompat : ModCompat("iris") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
-
-    @JvmStatic
-    fun isPBRActive(): Boolean = OculusCompatImpl.isPBRActive()
+    fun isPBRActive(): Boolean {
+        return isModLoaded && OculusCompatImpl.isPBRActive()
+    }
 
     @JvmStatic
     fun updatePBRState() {
+        if (!isModLoaded) return
         OculusCompatImpl.updatePBRState()
     }
 
     @JvmStatic
-    fun isShaderPackInUse(): Boolean = OculusCompatImpl.isShaderPackInUse()
+    fun isShaderPackInUse(): Boolean = isModLoaded && OculusCompatImpl.isShaderPackInUse()
 
     @JvmStatic
-    fun isRenderingShadowPass(): Boolean = OculusCompatImpl.isRenderingShadowPass()
+    fun isRenderingShadowPass(): Boolean = isModLoaded && OculusCompatImpl.isRenderingShadowPass()
 }
