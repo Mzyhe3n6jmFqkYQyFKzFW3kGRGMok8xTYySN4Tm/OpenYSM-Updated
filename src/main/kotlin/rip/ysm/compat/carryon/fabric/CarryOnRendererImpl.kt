@@ -13,11 +13,5 @@ object CarryOnRendererImpl {
         packedLight: Int,
         partialTick: Float,
         nodeCollector: SubmitNodeCollector
-    ): Boolean {
-        return try {
-            CarriedObjectRender.draw(player, poseStack, packedLight, partialTick, nodeCollector, false)
-        } catch (_: Throwable) {
-            false
-        }
-    }
+    ): Boolean = CarriedObjectRender.draw(player, poseStack, packedLight, partialTick, nodeCollector, false)
 }
