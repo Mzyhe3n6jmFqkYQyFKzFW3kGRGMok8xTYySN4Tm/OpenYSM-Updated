@@ -17,7 +17,6 @@ object Constants {
         ServerLifecycleEvents.SERVER_STOPPED.register { getServer = null }
     }
 
-    const val MOD_ID: String = "yes_steve_model"
     const val MOD_NAME: String = "Open YSM"
 
     @JvmField
@@ -34,6 +33,7 @@ object Constants {
         doNothing()
     }
 
+    @Volatile
     private var getServer: MinecraftServer? = null
 
     val Server: MinecraftServer
