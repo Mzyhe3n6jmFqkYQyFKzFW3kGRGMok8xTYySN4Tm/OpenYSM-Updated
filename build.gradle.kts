@@ -107,6 +107,7 @@ tasks.processResources {
             "loader_version" to libs.versions.fabric.loader.get(),
             "fabric_kotlin_version" to libs.versions.fabric.language.kotlin.get(),
             "fabric_api_version" to libs.versions.fabric.api.get(),
+            "mod_menu_version" to libs.versions.modmenu.get(),
         )
     }
 }
