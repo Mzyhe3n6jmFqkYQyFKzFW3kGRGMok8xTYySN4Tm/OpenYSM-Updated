@@ -113,7 +113,7 @@ tasks.processResources {
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    options.release.set(libs.versions.jvm.target.get().toInt())
+    options.release = libs.versions.jvm.target.get().toInt()
     options.compilerArgs.addAll(
         listOf(
             "-Xlint:none",
@@ -128,7 +128,7 @@ tasks.withType<JavaCompile>().configureEach {
 kotlin {
     jvmToolchain(libs.versions.jvm.toolchain.get().toInt())
     compilerOptions {
-        jvmTarget.set(JvmTarget.fromTarget(libs.versions.jvm.target.get()))
+        jvmTarget = JvmTarget.fromTarget(libs.versions.jvm.target.get())
     }
     sourceSets {
         main {
