@@ -11,6 +11,9 @@ import java.util.function.BiFunction
 
 object CarryOnCompat : ModCompat("carryon") {
     @JvmStatic
+    fun isLoaded(): Boolean = isModLoaded
+
+    @JvmStatic
     fun getControllerFactory(): Optional<BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>> {
         if (!isModLoaded) return Optional.empty()
         return CarryOnCompatImpl.getControllerFactory()
