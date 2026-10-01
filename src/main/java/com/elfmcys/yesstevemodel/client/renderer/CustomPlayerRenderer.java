@@ -11,6 +11,7 @@ import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat;
 import rip.ysm.compat.gun.swarfare.SWarfareCompat;
 import com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity;
 import com.elfmcys.yesstevemodel.client.renderer.layer.CustomPlayerArmorLayer;
+import com.elfmcys.yesstevemodel.client.renderer.layer.CustomPlayerCarryOnLayer;
 import com.elfmcys.yesstevemodel.client.renderer.layer.CustomPlayerElytraLayer;
 import com.elfmcys.yesstevemodel.client.renderer.layer.CustomPlayerItemInHandLayer;
 import com.elfmcys.yesstevemodel.client.renderer.layer.CustomPlayerParrotLayer;
@@ -39,6 +40,7 @@ public class CustomPlayerRenderer extends GeoReplacedEntityRenderer<Player, Cust
         addLayerRenderer(new CustomPlayerElytraLayer(context));
         addLayerRenderer(new CustomPlayerParrotLayer(context));
         addLayerRenderer(new CustomPlayerArmorLayer(context));
+        addLayerRenderer(new CustomPlayerCarryOnLayer());
     }
 
     public void render(Player player, AvatarRenderState renderState, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
