@@ -25,8 +25,5 @@ object CarryOnDataHelper : ModCompat("carryon") {
     }
 
     @JvmStatic
-    fun isPrincess(player: Player): Boolean {
-        if (!isModLoaded) return false
-        return CarryOnDataHelperImpl.isPrincess(player)
-    }
+    fun isPrincess(player: Player): Boolean = isModLoaded && CarryOnDataHelperImpl.isPrincess(player)
 }
