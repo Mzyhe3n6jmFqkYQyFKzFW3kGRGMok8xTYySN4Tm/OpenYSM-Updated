@@ -23,6 +23,9 @@ public class PlayerAnimationPredicate implements IAnimationPredicate<CustomPlaye
         if (player.getPose() == Pose.FALL_FLYING && player.isFallFlying()) {
             return PlayState.STOP;
         }
+        if (CarryOnDataHelper.isPrincess(player)) {
+            return IAnimationPredicate.playLoopAnimation(event, "carryon:princess");
+        }
         return switch (CarryOnDataHelper.getCarryType(player)) {
             case ENTITY -> IAnimationPredicate.playLoopAnimation(event, "carryon:entity");
             case BLOCK -> IAnimationPredicate.playLoopAnimation(event, "carryon:block");
