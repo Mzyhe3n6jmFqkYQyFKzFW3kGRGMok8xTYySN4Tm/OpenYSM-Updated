@@ -57,9 +57,7 @@ dependencies {
 
     modImplementation(libs.fabric.loader)
     modImplementation(libs.fabric.api)
-
     modImplementation(libs.fabric.language.kotlin)
-    include(libs.fabric.language.kotlin)
 
     modImplementation(libs.forge.config.api.port)
     include(libs.forge.config.api.port)
@@ -79,6 +77,8 @@ dependencies {
 
     modCompileOnly(libs.touhoulittlemaid.fabric)
     modLocalRuntime(libs.touhoulittlemaid.fabric)
+
+    modImplementation(libs.crawl)
 }
 
 tasks.processResources {
