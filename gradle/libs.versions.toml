@@ -14,6 +14,7 @@ crawl = "Ias4IRqo"
 modmenu = "17.0.1"
 concentus = "1.0.0"
 vorbis-java = "0.8"
+carryon = "2.9.2"
 
 # Build & Toolchain
 loom = "1.17-SNAPSHOT"
@@ -38,6 +39,7 @@ crawl = { module = "maven.modrinth:crawl", version.ref = "crawl" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 concentus = { module = "com.plasmoverse:concentus", version.ref = "concentus" }
 vorbis-java-core = { module = "org.gagravarr:vorbis-java-core", version.ref = "vorbis-java" }
+carryon = { module = "tschipp.carryon:carryon-fabric-1.21.11", version.ref = "carryon" }
 
 [plugins]
 fabric-loom = { id = "fabric-loom", version.ref = "loom" }
