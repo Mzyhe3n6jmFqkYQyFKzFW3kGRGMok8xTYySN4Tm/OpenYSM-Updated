@@ -11,7 +11,6 @@ version = "${providers.gradleProperty("version").get()}+${libs.versions.minecraf
 base.archivesName = providers.gradleProperty("archives_name").get()
 
 repositories {
-    mavenCentral()
     flatDir {
         dirs(file("libs"))
     }
