@@ -15,8 +15,7 @@ object CarryOnDataHelper : ModCompat("carryon") {
 
     @JvmStatic
     fun isPlayerCarrying(livingEntity: LivingEntity): Boolean {
-        if (!isModLoaded) return false
-        return CarryOnDataHelperImpl.isPlayerCarrying(livingEntity)
+        return isModLoaded && CarryOnDataHelperImpl.isPlayerCarrying(livingEntity)
     }
 
     @JvmStatic
