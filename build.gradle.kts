@@ -45,6 +45,12 @@ repositories {
     maven("https://maven.terraformersmc.com/") {
         name = "Terraformers"
     }
+    maven("https://maven.blamejared.com/") {
+        name = "Blamejared"
+    }
+    maven("https://maven.shedaniel.me/") {
+        name = "Shedaniel"
+    }
 }
 
 loom {
@@ -95,6 +101,7 @@ dependencies {
 
     modImplementation(libs.crawl)
     modImplementation(libs.modmenu)
+    modImplementation(libs.carryon)
 }
 
 tasks.processResources {
