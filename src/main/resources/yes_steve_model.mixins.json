@@ -3,7 +3,7 @@
   "minVersion": "0.8",
   "package": "com.elfmcys.yesstevemodel.mixin",
   "plugin": "com.elfmcys.yesstevemodel.mixin.plugin.MixinTweaker",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "injectors": {
     "defaultRequire": 1
   },
@@ -13,6 +13,7 @@
     "client.EntityRenderDispatcherMixin",
     "client.EntityRendererMixin",
     "client.FishingHookAccessor",
+    "client.GlBufferAccessor",
     "client.GuiEntityRendererMixin",
     "client.InventoryScreenMixin",
     "client.KeyboardHandlerMixin",
@@ -22,8 +23,7 @@
     "client.PauseScreenMixin",
     "client.ScreenAccessor",
     "client.ThrowableItemProjectileAccessor",
-    "client.WorldRendererMixin",
-    "client.GlBufferAccessor"
+    "client.WorldRendererMixin"
   ],
   "mixins": [
     "AbstractArrowEntityMixin",
