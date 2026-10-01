@@ -1,6 +1,5 @@
 package com.elfmcys.yesstevemodel.molang.runtime;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.molang.parser.ast.Expression;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +18,7 @@ public interface ExecutionContext<TEntity> {
         try {
             return eval(expression2);
         } catch (Exception e) {
-            YesSteveModel.LOGGER.debug("Failed to evaluate molang expression.", e);
+            Constants.LOGGER.debug("Failed to evaluate molang expression.", e);
             return null;
         }
     }
@@ -29,7 +28,7 @@ public interface ExecutionContext<TEntity> {
         try {
             return evalAll(iterable, z);
         } catch (Exception e) {
-            YesSteveModel.LOGGER.debug("Failed to evaluate molang expression.", e);
+            Constants.LOGGER.debug("Failed to evaluate molang expression.", e);
             return null;
         }
     }

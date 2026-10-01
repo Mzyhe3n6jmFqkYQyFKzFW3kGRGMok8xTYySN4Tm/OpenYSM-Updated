@@ -122,7 +122,7 @@ public final class ServerModelManager {
 
                 limitsInitialized = true;
             } catch (Exception e) {
-                YesSteveModel.LOGGER.error("[YSM] Failed to initialize limits from config", e);
+                Constants.LOGGER.error("[YSM] Failed to initialize limits from config", e);
                 bandwidthLimiter = RateLimiter.create(5 * 131072.0);
                 threadLimiter = new Semaphore(Math.max(2, Runtime.getRuntime().availableProcessors() - 1));
                 limitsInitialized = true;
@@ -300,12 +300,12 @@ public final class ServerModelManager {
                             }
                         }
                     } catch (IOException e) {
-                        YesSteveModel.LOGGER.warn("Failed to extract builtin: " + src.getFileName(), e);
+                        Constants.LOGGER.warn("Failed to extract builtin: " + src.getFileName(), e);
                     }
                 });
             }
         } catch (Exception e) {
-            YesSteveModel.LOGGER.error("Failed to extract builtin models", e);
+            Constants.LOGGER.error("Failed to extract builtin models", e);
         }
     }
 
@@ -414,7 +414,7 @@ public final class ServerModelManager {
             onModelLoadComplete(result, callback);
             return true;
         } catch (Exception e) {
-            YesSteveModel.LOGGER.error("[YSM] Model loading failed", e);
+            Constants.LOGGER.error("[YSM] Model loading failed", e);
             return false;
         }
     }
@@ -472,7 +472,7 @@ public final class ServerModelManager {
                 }
             }
         } catch (Exception e) {
-            YesSteveModel.LOGGER.error("[YSM] Server sync error for " + uuid, e);
+            Constants.LOGGER.error("[YSM] Server sync error for " + uuid, e);
         }
     }
 
@@ -495,7 +495,7 @@ public final class ServerModelManager {
                             try (YSMFolderDeserializer deserializer = new YSMFolderDeserializer(dir)) {
                                 rawModel = deserializer.deserialize();
                             } catch (Exception e) {
-                                YesSteveModel.LOGGER.error("Failed to load model at: " + dir, e);
+                                Constants.LOGGER.error("Failed to load model at: " + dir, e);
                             }
 
                             if (rawModel != null) {
@@ -507,14 +507,14 @@ public final class ServerModelManager {
                                         if (isAuth) authIds.add(modelId);
                                     }
                                 } catch (Exception e) {
-                                    YesSteveModel.LOGGER.error("Failed to process model at: " + dir, e);
+                                    Constants.LOGGER.error("Failed to process model at: " + dir, e);
                                 }
                             }
 
                             return FileVisitResult.SKIP_SUBTREE;
                         }
                     } catch (Exception e) {
-                        YesSteveModel.LOGGER.error("Error checking directory: " + dir, e);
+                        Constants.LOGGER.error("Error checking directory: " + dir, e);
                     }
 
                     return FileVisitResult.CONTINUE;
@@ -560,13 +560,13 @@ public final class ServerModelManager {
                             }
                         }
                     } catch (Exception e) {
-                        YesSteveModel.LOGGER.error("Failed to load binary model at: " + file, e);
+                        Constants.LOGGER.error("Failed to load binary model at: " + file, e);
                     }
                     return FileVisitResult.CONTINUE;
                 }
             });
         } catch (IOException e) {
-            YesSteveModel.LOGGER.error("Failed to walk directory tree: " + baseDir, e);
+            Constants.LOGGER.error("Failed to walk directory tree: " + baseDir, e);
         }
     }
 
@@ -628,7 +628,7 @@ public final class ServerModelManager {
                     }
                 }
             } catch (Exception e) {
-                YesSteveModel.LOGGER.error("Failed to send model chunks to " + uuid, e);
+                Constants.LOGGER.error("Failed to send model chunks to " + uuid, e);
             } finally {
                 threadLimiter.release();
             }
@@ -676,12 +676,12 @@ public final class ServerModelManager {
                         }
                         packs.put(packData.folderPath, packData);
                     } catch (Exception e) {
-                        YesSteveModel.LOGGER.error("Failed to load pack metadata: " + packJson, e);
+                        Constants.LOGGER.error("Failed to load pack metadata: " + packJson, e);
                     }
                 }
             });
         } catch (Exception e) {
-            YesSteveModel.LOGGER.error("Failed to walk directory for packs: " + baseDir, e);
+            Constants.LOGGER.error("Failed to walk directory for packs: " + baseDir, e);
         }
     }
 
@@ -731,7 +731,7 @@ public final class ServerModelManager {
 
             return mapToDataClass(modelId, model, isAuth, isCustomSkinModel);
         } catch (Exception e) {
-            YesSteveModel.LOGGER.error("Failed to process and cache model: " + modelId, e);
+            Constants.LOGGER.error("Failed to process and cache model: " + modelId, e);
             return null;
         }
     }
@@ -794,7 +794,7 @@ public final class ServerModelManager {
                 }
 //                if (callback != null) onAuthDataReceived(null, callback);
             } catch (Exception e) {
-                YesSteveModel.LOGGER.error("[YSM] Sync initiation failed", e);
+                Constants.LOGGER.error("[YSM] Sync initiation failed", e);
             }
         });
     }

@@ -1,6 +1,5 @@
 package com.elfmcys.yesstevemodel.geckolib3.core.molang.value;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator;
 import com.elfmcys.yesstevemodel.molang.runtime.binding.ValueConversions;
 
@@ -23,7 +22,7 @@ public interface IValue {
         try {
             return evalUnsafe(evaluator);
         } catch (Throwable th) {
-            YesSteveModel.LOGGER.debug("Failed to evaluate molang expression.", th);
+            Constants.LOGGER.debug("Failed to evaluate molang expression.", th);
             return null;
         }
     }

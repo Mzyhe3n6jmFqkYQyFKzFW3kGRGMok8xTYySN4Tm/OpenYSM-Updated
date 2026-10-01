@@ -1,6 +1,5 @@
 package rip.ysm.compat.touhoulittlemaid.fabric.tlm;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.geckolib3.resource.GeckoLibCache;
 import com.elfmcys.yesstevemodel.model.ServerModelManager;
 import com.elfmcys.yesstevemodel.molang.parser.ParseException;
@@ -34,7 +33,7 @@ public final class MaidModelHandler {
             try {
                 animatable.executeExpression(GeckoLibCache.parseSimpleExpression(expression), true, false, null);
             } catch (ParseException e) {
-                YesSteveModel.LOGGER.error("Failed to execute molang {}", expression, e);
+                Constants.LOGGER.error("Failed to execute molang {}", expression, e);
             }
         });
     }

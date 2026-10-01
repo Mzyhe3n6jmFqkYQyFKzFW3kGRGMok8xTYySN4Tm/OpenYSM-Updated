@@ -1,17 +1,16 @@
 package com.elfmcys.yesstevemodel.network.message;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.capability.PlayerCapability;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import rip.ysm.compat.touhoulittlemaid.TouhouMaidCompat;
 import com.elfmcys.yesstevemodel.geckolib3.resource.GeckoLibCache;
 import com.elfmcys.yesstevemodel.molang.parser.ParseException;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import rip.ysm.api.network.PacketContext;
+import rip.ysm.compat.touhoulittlemaid.TouhouMaidCompat;
 
 public class S2CExecuteMolangPacket {
 
@@ -57,7 +56,7 @@ public class S2CExecuteMolangPacket {
                     try {
                         cap.executeExpression(GeckoLibCache.parseSimpleExpression(message.expression), true, false, null);
                     } catch (ParseException e) {
-                        YesSteveModel.LOGGER.error("Failed to execute molang " + message.expression, e);
+                        Constants.LOGGER.error("Failed to execute molang " + message.expression, e);
                     }
                 });
             } else if (TouhouMaidCompat.isMaidEntity(entity)) {

@@ -1,6 +1,5 @@
 package rip.ysm.gpu;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.util.log.ChatLogger;
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.lwjgl.opengl.GL20;
@@ -30,7 +29,7 @@ public final class BoneXformCompute {
             return true;
         } catch (Throwable t) {
             ChatLogger.INSTANCE.logFormatted("Failed to compile shader program, please check the log");
-            YesSteveModel.LOGGER.error("Failed to compile shader program.", t);
+            Constants.LOGGER.error("Failed to compile shader program.", t);
             failed = true;
             return false;
         }

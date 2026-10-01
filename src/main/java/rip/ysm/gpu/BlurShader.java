@@ -1,11 +1,10 @@
 package rip.ysm.gpu;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.util.log.ChatLogger;
+import com.mojang.blaze3d.opengl.DirectStateAccess;
 import com.mojang.blaze3d.opengl.GlDevice;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.opengl.GlTextureView;
-import com.mojang.blaze3d.opengl.DirectStateAccess;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.textures.GpuTextureView;
@@ -77,7 +76,7 @@ public final class BlurShader {
             return true;
         } catch (Throwable t) {
             ChatLogger.INSTANCE.logFormatted("Failed to compile shader program, please check the log");
-            YesSteveModel.LOGGER.error("Failed to compile shader program.", t);
+            Constants.LOGGER.error("Failed to compile shader program.", t);
             failed = true;
             return false;
         }
