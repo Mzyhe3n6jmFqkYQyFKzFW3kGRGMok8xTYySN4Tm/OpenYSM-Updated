@@ -10,26 +10,18 @@ object CarryOnDataHelperImpl {
     @JvmStatic
     fun isPlayerCarrying(livingEntity: LivingEntity): Boolean {
         if (livingEntity !is Player) return false
-        return try {
-            val carryData = CarryOnDataManager.getCarryData(livingEntity)
-            carryData != null && carryData.isCarrying
-        } catch (_: Throwable) {
-            false
-        }
+        val carryData = CarryOnDataManager.getCarryData(livingEntity)
+        return carryData != null && carryData.isCarrying
     }
 
     @JvmStatic
     fun getCarryType(player: Player): CarryType {
-        return try {
-            val carryData = CarryOnDataManager.getCarryData(player) ?: return CarryType.NONE
-            when (carryData.type) {
-                CarryOnData.CarryType.BLOCK -> CarryType.BLOCK
-                CarryOnData.CarryType.ENTITY -> CarryType.ENTITY
-                CarryOnData.CarryType.PLAYER -> CarryType.PLAYER
-                else -> CarryType.NONE
-            }
-        } catch (_: Throwable) {
-            CarryType.NONE
+        val carryData = CarryOnDataManager.getCarryData(player) ?: return CarryType.NONE
+        return when (carryData.type) {
+            CarryOnData.CarryType.BLOCK -> CarryType.BLOCK
+            CarryOnData.CarryType.ENTITY -> CarryType.ENTITY
+            CarryOnData.CarryType.PLAYER -> CarryType.PLAYER
+            else -> CarryType.NONE
         }
     }
 
