@@ -44,6 +44,12 @@ repositories {
     }
 }
 
+loom {
+    val aw = file("src/main/resources/${providers.gradleProperty("mod_id").get()}.aw")
+    if (aw.exists())
+        accessWidenerPath = aw
+}
+
 dependencies {
     minecraft(libs.minecraft)
     mappings(loom.layered {
@@ -82,10 +88,22 @@ dependencies {
 }
 
 tasks.processResources {
-    inputs.property("version", project.version)
+    val version = version
+    inputs.property("version", version)
+    inputs.property("minecraft_version", libs.versions.minecraft.get())
+    inputs.property("loader_version", libs.versions.fabric.loader.get())
+    filteringCharset = "UTF-8"
 
     filesMatching("fabric.mod.json") {
-        expand("version" to project.version)
+        expand(
+            "version" to version,
+            "mod_id" to providers.gradleProperty("mod_id").get(),
+            "mod_name" to providers.gradleProperty("mod_name").get(),
+            "minecraft_version" to libs.versions.minecraft.get(),
+            "loader_version" to libs.versions.fabric.loader.get(),
+            "fabric_kotlin_version" to libs.versions.fabric.language.kotlin.get(),
+            "fabric_api_version" to libs.versions.fabric.api.get(),
+        )
     }
 }
 

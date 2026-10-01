@@ -1,12 +1,15 @@
 {
   "schemaVersion": 1,
-  "id": "yes_steve_model",
+  "id": "${mod_id}",
   "version": "${version}",
-  "name": "Yes Steve Model",
+  "name": "${mod_name}",
   "description": "",
-  "authors": ["Tianjin Accessible Care Innovation Development Co., Ltd."],
+  "authors": [
+    "Tianjin Accessible Care Innovation Development Co., Ltd."
+  ],
   "contact": {
-    "homepage": ""  },
+    "homepage": ""
+  },
   "license": "MIT",
   "icon": "yesstevemodel.png",
   "environment": "*",
@@ -22,12 +25,12 @@
     ]
   },
   "mixins": [
-    "yes_steve_model.mixins.json",
-    "yes_steve_model_fabric.mixins.json"
+    "{mod_id}.mixins.json",
+    "{mod_id}_fabric.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.17.0",
-    "fabric-language-kotlin": ">=1.14.1",
+    "fabricloader": "*",
+    "fabric-language-kotlin": "*",
     "fabric-api": "*",
     "minecraft": "~1.21.8",
     "java": ">=21"
@@ -40,11 +43,11 @@
   },
   "custom": {
     "cardinal-components": [
-      "yes_steve_model:star_models",
-      "yes_steve_model:auth_models",
-      "yes_steve_model:model_info",
-      "yes_steve_model:projectile_model",
-      "yes_steve_model:vehicle_model"
+      "{mod_id}:star_models",
+      "{mod_id}:auth_models",
+      "{mod_id}:model_info",
+      "{mod_id}:projectile_model",
+      "{mod_id}:vehicle_model"
     ]
   }
 }
