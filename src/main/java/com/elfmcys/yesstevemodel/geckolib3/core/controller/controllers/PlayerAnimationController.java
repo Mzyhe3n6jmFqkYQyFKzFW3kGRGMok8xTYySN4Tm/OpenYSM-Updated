@@ -1,27 +1,26 @@
 package com.elfmcys.yesstevemodel.geckolib3.core.controller.controllers;
 
 import com.elfmcys.yesstevemodel.client.animation.AnimationManager;
+import com.elfmcys.yesstevemodel.client.animation.StopAnimationPredicate;
 import com.elfmcys.yesstevemodel.client.animation.condition.ConditionArmor;
 import com.elfmcys.yesstevemodel.client.animation.predicate.*;
-import rip.ysm.compat.gun.common.ItemUseAnimationPredicate;
 import com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity;
-import rip.ysm.compat.carryon.CarryOnCompat;
-import rip.ysm.compat.parcool.ParcoolCompat;
+import com.elfmcys.yesstevemodel.client.entity.IPreviewAnimatable;
 import com.elfmcys.yesstevemodel.client.model.AnimationDataProvider;
+import com.elfmcys.yesstevemodel.client.model.ModelResourceBundle;
 import com.elfmcys.yesstevemodel.client.model.PlayerModelBundle;
 import com.elfmcys.yesstevemodel.client.model.processor.*;
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.Animation;
-import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController;
-import com.elfmcys.yesstevemodel.client.entity.IPreviewAnimatable;
-import com.elfmcys.yesstevemodel.client.animation.StopAnimationPredicate;
-import com.elfmcys.yesstevemodel.geckolib3.core.controller.PredicateBasedController;
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController;
-import com.elfmcys.yesstevemodel.client.model.ModelResourceBundle;
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.CompositeAnimationController;
-import com.elfmcys.yesstevemodel.client.model.processor.ArmorSlotProcessor;
+import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController;
+import com.elfmcys.yesstevemodel.geckolib3.core.controller.PredicateBasedController;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
 import net.minecraft.world.entity.EquipmentSlot;
 import org.apache.commons.lang3.function.TriFunction;
+import rip.ysm.compat.carryon.CarryOnCompat;
+import rip.ysm.compat.gun.common.ItemUseAnimationPredicate;
+import rip.ysm.compat.parcool.ParcoolCompat;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -48,7 +47,7 @@ public class PlayerAnimationController {
         registerController("hold_offhand", (animationEntryKey, entity) -> new CompositeAnimationController(entity, animationEntryKey, 0.1f, new OffHandHoldPredicate()));
         registerController("hold_mainhand", (animationEntryKey, entity) -> new CompositeAnimationController(entity, animationEntryKey, 0.1f, new MainHandHoldPredicate()));
         registerSlotController("post_hold", (animationEntryKey, entity) -> new CompositeAnimationController(entity, animationEntryKey, 0.0f, new StopAnimationPredicate()));
-        if (ItemUseAnimationPredicate.isLoaded()) {
+        if (ItemUseAnimationPredicate.isModLoaded()) {
             registerController("fire", (animationEntryKey, entity) -> new CompositeAnimationController(entity, animationEntryKey, 0.0f, new ItemUseAnimationPredicate()));
         }
         registerSlotController("pre_swing", (animationEntryKey, entity) -> new CompositeAnimationController(entity, animationEntryKey, 0.0f, new StopAnimationPredicate()));

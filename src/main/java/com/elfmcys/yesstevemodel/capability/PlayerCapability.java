@@ -2,19 +2,15 @@ package com.elfmcys.yesstevemodel.capability;
 
 import com.elfmcys.yesstevemodel.client.animation.molang.struct.RoamingStruct;
 import com.elfmcys.yesstevemodel.client.animation.molang.struct.RoamingSyncBatch;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import rip.ysm.compat.bettercombat.BetterCombatCompat;
-import rip.ysm.compat.firstperson.FirstPersonCompat;
-import com.elfmcys.yesstevemodel.client.entity.PlayerEntityFrameState;
-import com.elfmcys.yesstevemodel.client.entity.LivingAnimatable;
-import com.elfmcys.yesstevemodel.client.model.ModelAssembly;
 import com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity;
-import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel;
+import com.elfmcys.yesstevemodel.client.entity.LivingAnimatable;
+import com.elfmcys.yesstevemodel.client.entity.PlayerEntityFrameState;
+import com.elfmcys.yesstevemodel.client.model.ModelAssembly;
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity;
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool;
 import com.elfmcys.yesstevemodel.geckolib3.core.processor.IBone;
+import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel;
 import com.elfmcys.yesstevemodel.molang.runtime.Int2FloatOpenHashMapStruct;
 import com.elfmcys.yesstevemodel.molang.runtime.Struct;
 import com.elfmcys.yesstevemodel.network.NetworkHandler;
@@ -27,19 +23,22 @@ import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import rip.ysm.compat.bettercombat.BetterCombatCompat;
+import rip.ysm.compat.firstperson.FirstPersonCompat;
 
 import java.util.Optional;
 
 @Environment(EnvType.CLIENT)
 public final class PlayerCapability extends CustomPlayerEntity {
 
-        public static Optional<PlayerCapability> get(Player player) {
+    public static Optional<PlayerCapability> get(Player player) {
         return com.elfmcys.yesstevemodel.capability.fabric.PlayerCapabilityImpl.get(player);
     }
 
@@ -111,7 +110,7 @@ public final class PlayerCapability extends CustomPlayerEntity {
     public void applyHeadTracking(AnimationEvent<? extends AnimatableEntity<Player>> event, boolean wasAnimEvaluated) {
         super.applyHeadTracking(event, wasAnimEvaluated);
         AnimatedGeoModel model2 = getCurrentModel();
-        if (model2 != null && isLocalPlayerModel() && !event.isFirstPerson() && FirstPersonCompat.isLoaded()) {
+        if (model2 != null && isLocalPlayerModel() && !event.isFirstPerson() && FirstPersonCompat.INSTANCE.isModLoaded()) {
             if (model2.allHeadBone() != null) {
                 model2.allHeadBone().setHidden(FirstPersonCompat.shouldHideHead());
             }
@@ -129,7 +128,7 @@ public final class PlayerCapability extends CustomPlayerEntity {
         super.resetHeadTracking(wasAnimEvaluated);
         AnimatedGeoModel model2 = getCurrentModel();
         if (model2 != null && isLocalPlayerModel()) {
-            if ((FirstPersonCompat.isLoaded() || BetterCombatCompat.isLoaded()) && model2.allHeadBone() != null) {
+            if ((FirstPersonCompat.INSTANCE.isModLoaded() || BetterCombatCompat.INSTANCE.isModLoaded()) && model2.allHeadBone() != null) {
                 model2.allHeadBone().setHidden(false);
             }
         }

@@ -30,6 +30,6 @@ class ItemUseAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>> {
 
     companion object {
         @JvmStatic
-        fun isLoaded(): Boolean = TacCompat.isLoaded() || SWarfareCompat.isLoaded()
+        val isModLoaded by lazy { TacCompat.isModLoaded || SWarfareCompat.isModLoaded }
     }
 }
