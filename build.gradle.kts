@@ -11,6 +11,7 @@ version = "${providers.gradleProperty("version").get()}+${libs.versions.minecraf
 base.archivesName = providers.gradleProperty("archives_name").get()
 
 repositories {
+    mavenCentral()
     flatDir {
         dirs(file("libs"))
     }
@@ -81,6 +82,12 @@ dependencies {
 
     implementation(libs.imagestream)
     include(libs.imagestream)
+
+    implementation(libs.concentus)
+    include(libs.concentus)
+
+    implementation(libs.vorbis.java.core)
+    include(libs.vorbis.java.core)
 
     modCompileOnly(libs.iris)
 
