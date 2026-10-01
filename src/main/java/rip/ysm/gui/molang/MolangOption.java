@@ -1,6 +1,5 @@
 package rip.ysm.gui.molang;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.config.ServerConfig;
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity;
 import com.elfmcys.yesstevemodel.geckolib3.resource.GeckoLibCache;
@@ -57,7 +56,7 @@ public final class MolangOption {
         try {
             animatable.executeExpression(GeckoLibCache.parseSimpleExpression(expr), true, false, consumer);
         } catch (ParseException e) {
-            YesSteveModel.LOGGER.error(e);
+            Constants.LOGGER.error(e);
         }
     }
 
@@ -68,7 +67,7 @@ public final class MolangOption {
                 NetworkHandler.sendToServer(new C2SRequestExecuteMolangPacket(expr, animatable.getEntity().getId()));
             }
         } catch (ParseException e) {
-            YesSteveModel.LOGGER.error(e);
+            Constants.LOGGER.error(e);
         }
     }
 }

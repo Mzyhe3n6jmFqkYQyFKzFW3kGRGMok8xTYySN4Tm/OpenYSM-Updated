@@ -23,7 +23,7 @@ public final class CommonEvent {
 
     public static void register() {
         if (!YesSteveModel.isAvailable()) {
-            YesSteveModel.LOGGER.error(YesSteveModel.getErrorMessage());
+            Constants.LOGGER.error(YesSteveModel.getErrorMessage());
             return;
         }
         NetworkHandler.init();

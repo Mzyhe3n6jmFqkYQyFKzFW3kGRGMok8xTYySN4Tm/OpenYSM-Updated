@@ -1,6 +1,5 @@
 package com.elfmcys.yesstevemodel.client.gui;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.capability.PlayerCapability;
 import com.elfmcys.yesstevemodel.client.event.AnimationLockEvent;
 import com.elfmcys.yesstevemodel.client.gui.button.AnimationSlider;
@@ -28,7 +27,6 @@ import com.elfmcys.yesstevemodel.network.message.C2SRequestExecuteMolangPacket;
 import com.elfmcys.yesstevemodel.resource.models.ModelProperties;
 import com.elfmcys.yesstevemodel.util.data.OrderedStringMap;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -404,7 +402,7 @@ public class AnimationRouletteScreen extends Screen {
         try {
             this.animatableModel.executeExpression(GeckoLibCache.parseSimpleExpression(str), true, false, consumer);
         } catch (ParseException e) {
-            YesSteveModel.LOGGER.error(e);
+            Constants.LOGGER.error(e);
         }
     }
 

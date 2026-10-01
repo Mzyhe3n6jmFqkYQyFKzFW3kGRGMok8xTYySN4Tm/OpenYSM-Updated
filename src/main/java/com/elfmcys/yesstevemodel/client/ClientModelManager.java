@@ -115,12 +115,12 @@ public class ClientModelManager {
     }
 
     public static void loadDefaultModel() {
-        YesSteveModel.LOGGER.info("[YSM] Loading builtin default model...");
+        Constants.LOGGER.info("[YSM] Loading builtin default model...");
         try {
             String resourcePath = "/assets/yes_steve_model/builtin/default";
             URL resourceUrl = YesSteveModel.class.getResource(resourcePath);
             if (resourceUrl == null) {
-                YesSteveModel.LOGGER.error("[YSM] Builtin default model not found in classpath: " + resourcePath);
+                Constants.LOGGER.error("[YSM] Builtin default model not found in classpath: " + resourcePath);
                 return;
             }
             URI uri = resourceUrl.toURI();
@@ -144,12 +144,12 @@ public class ClientModelManager {
 
 
                 onModelDataReceived(parsedBundle, "default", true, false);
-                YesSteveModel.LOGGER.info("[YSM] Successfully pushed Default Model to render queue.");
+                Constants.LOGGER.info("[YSM] Successfully pushed Default Model to render queue.");
             } catch (Exception e) {
-                YesSteveModel.LOGGER.error("[YSM] Failed to dispatch Default Model", e);
+                Constants.LOGGER.error("[YSM] Failed to dispatch Default Model", e);
             }
         } catch (Exception e) {
-            YesSteveModel.LOGGER.error("[YSM] Failed to load builtin default model", e);
+            Constants.LOGGER.error("[YSM] Failed to load builtin default model", e);
         }
     }
 
@@ -188,7 +188,7 @@ public class ClientModelManager {
                 }
             }
         } catch (Exception e) {
-            YesSteveModel.LOGGER.error("[YSM] Sync Error at step " + syncStep, e);
+            Constants.LOGGER.error("[YSM] Sync Error at step " + syncStep, e);
         }
     }
 
@@ -197,7 +197,7 @@ public class ClientModelManager {
         System.arraycopy(decryptedBuffer, decryptedBuffer.length - 56, key1, 0, 56);
         syncStep = 2;
 
-        YesSteveModel.LOGGER.info("[YSM] Exchanged Key1. Preparing to send Packet 02.");
+        Constants.LOGGER.info("[YSM] Exchanged Key1. Preparing to send Packet 02.");
         onSyncProgress(-1); // Preparing GUI stage
 
         int garbageLen = 16 + SECURE_RANDOM.nextInt(48);
@@ -269,7 +269,7 @@ public class ClientModelManager {
             boolean alreadyInMemory = modelAssemblyMap != null && modelAssemblyMap.containsKey(modelId);
 
             if (isFileValid) {
-                YesSteveModel.LOGGER.info("[YSM] Cache HIT & Validated: " + ctx.uuid);
+                Constants.LOGGER.info("[YSM] Cache HIT & Validated: " + ctx.uuid);
                 if (alreadyInMemory) {
                     previousModelIds.add(modelId);
                     updatedModelIds.add(modelId);
@@ -283,12 +283,12 @@ public class ClientModelManager {
                             byte[] decompressed = YsmCrypt.read(fileBytes, clientKey);
                             parseAndLoadModel(decompressed, modelId, isAuth);
                         } catch (Exception e) {
-                            YesSteveModel.LOGGER.error("[YSM] Failed to parse and load cached model: " + modelId, e);
+                            Constants.LOGGER.error("[YSM] Failed to parse and load cached model: " + modelId, e);
                         }
                     });
                 }
             } else {
-                YesSteveModel.LOGGER.info("[YSM] Cache MISS or Invalid: " + ctx.uuid + " -> Requesting...");
+                Constants.LOGGER.info("[YSM] Cache MISS or Invalid: " + ctx.uuid + " -> Requesting...");
                 modelsToRequest.add(mHash);
             }
         }
@@ -363,7 +363,7 @@ public class ClientModelManager {
                     updatedModelIds.isEmpty() ? null : updatedModelIds.toArray(new String[0]),
                     readyArr
             );
-            YesSteveModel.LOGGER.info("[YSM] Cleaned up {} outdated models and updated {} existing models during sync.", modelsToRemove.size(), previousModelIds.size());
+            Constants.LOGGER.info("[YSM] Cleaned up {} outdated models and updated {} existing models during sync.", modelsToRemove.size(), previousModelIds.size());
         }
 
         syncStep = 3;
@@ -389,7 +389,7 @@ public class ClientModelManager {
 
         if (pendingModelsCount.get() == 0) {
             modelPhraseExecutor.submit(() -> {
-                YesSteveModel.LOGGER.info("[YSM] All models loaded from local cache. Handshake complete!");
+                Constants.LOGGER.info("[YSM] All models loaded from local cache. Handshake complete!");
                 onSyncComplete();
             });
         }
@@ -406,7 +406,7 @@ public class ClientModelManager {
 
         ServerModelContext ctx = serverModels.get(uuid);
         if (ctx == null) {
-            YesSteveModel.LOGGER.warn("[YSM] Received unexpected file chunk for model: " + uuid);
+            Constants.LOGGER.warn("[YSM] Received unexpected file chunk for model: " + uuid);
             return;
         }
 
@@ -443,15 +443,15 @@ public class ClientModelManager {
                         fos.write(cachedFileData);
                     }
 
-                    YesSteveModel.LOGGER.info("[YSM] Downloaded & Cached: " + outFile.getAbsolutePath());
+                    Constants.LOGGER.info("[YSM] Downloaded & Cached: " + outFile.getAbsolutePath());
                     byte[] decompressed = YsmCrypt.read(cachedFileData, clientKey);
 
                     parseAndLoadModel(decompressed, ctx.modelId, ctx.isAuth);
                 } catch (Exception e) {
-                    YesSteveModel.LOGGER.error("[YSM] Failed to save/parse downloaded model: " + ctx.modelId, e);
+                    Constants.LOGGER.error("[YSM] Failed to save/parse downloaded model: " + ctx.modelId, e);
                 } finally {
                     if (pendingModelsCount.decrementAndGet() <= 0) {
-                        YesSteveModel.LOGGER.info("[YSM] All missing models downloaded and loaded successfully!");
+                        Constants.LOGGER.info("[YSM] All missing models downloaded and loaded successfully!");
                         onSyncComplete();
                     }
                 }
@@ -489,7 +489,7 @@ public class ClientModelManager {
                 onModelDataReceived(parsedBundle, modelId, false, isAuth);
             }
         } catch (Exception e) {
-            YesSteveModel.LOGGER.error("[YSM] Failed to parse and load model: " + modelId, e);
+            Constants.LOGGER.error("[YSM] Failed to parse and load model: " + modelId, e);
         }
     }
 
@@ -808,7 +808,7 @@ public class ClientModelManager {
                 }
             } catch (Exception e) {
                 if (isPrimary) throw e;
-                YesSteveModel.LOGGER.error(
+                Constants.LOGGER.error(
                         new StringFormattedMessage("Failed to process {}", modelId), e);
                 return;
             }
@@ -856,7 +856,7 @@ public class ClientModelManager {
                 if (Minecraft.getInstance().player != null) {
                     Minecraft.getInstance().player.displayClientMessage(component, false);
                 }
-                YesSteveModel.LOGGER.error(component.getString(256));
+                Constants.LOGGER.error(component.getString(256));
             }
         });
     }
@@ -997,10 +997,10 @@ public class ClientModelManager {
                             Files.write(exportPath, finalEncrypted);
 
                             successCount++;
-                            YesSteveModel.LOGGER.info("[YSM] Successfully exported cached model to: " + exportPath);
+                            Constants.LOGGER.info("[YSM] Successfully exported cached model to: " + exportPath);
                         }
                     } catch (Exception e) {
-                        YesSteveModel.LOGGER.error("[YSM] Failed to export cached model: " + file.getName(), e);
+                        Constants.LOGGER.error("[YSM] Failed to export cached model: " + file.getName(), e);
                     }
                 }
 
@@ -1013,7 +1013,7 @@ public class ClientModelManager {
                     }
                 }
             } catch (Exception e) {
-                YesSteveModel.LOGGER.error("[YSM] Error during batch export", e);
+                Constants.LOGGER.error("[YSM] Error during batch export", e);
                 if (callback != null) {
                     callback.accept(new ExportResult(false, Component.literal("批量导出过程发生严重错误: " + e.getMessage()), "", "", 0));
                 }

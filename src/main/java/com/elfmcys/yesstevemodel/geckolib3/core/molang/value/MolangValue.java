@@ -1,6 +1,5 @@
 package com.elfmcys.yesstevemodel.geckolib3.core.molang.value;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.molang.parser.ast.Expression;
 import com.elfmcys.yesstevemodel.molang.parser.ast.FloatExpression;
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator;
@@ -48,7 +47,7 @@ public class MolangValue implements IValue {
             try {
                 return evaluator.evalAsFloat(this.single);
             } catch (Throwable th) {
-                YesSteveModel.LOGGER.debug("Failed to evaluate molang expression.", th);
+                Constants.LOGGER.debug("Failed to evaluate molang expression.", th);
                 return 0.0f;
             }
         }
@@ -64,7 +63,7 @@ public class MolangValue implements IValue {
             try {
                 return evaluator.evalAsBoolean(this.single);
             } catch (Throwable th) {
-                YesSteveModel.LOGGER.debug("Failed to evaluate molang expression.", th);
+                Constants.LOGGER.debug("Failed to evaluate molang expression.", th);
                 return false;
             }
         }

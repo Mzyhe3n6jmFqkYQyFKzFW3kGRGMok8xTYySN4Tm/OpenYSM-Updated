@@ -1,17 +1,16 @@
 package rip.ysm.compat.touhoulittlemaid.fabric.tlm;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.EntityMaidRenderer;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.event.OpenYsmMaidScreenEvent;
 import com.github.tartaricacid.touhoulittlemaid.compat.ysm.event.YsmMaidClientTickEvent;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
-import net.minecraft.world.entity.TamableAnimal;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
 import org.jetbrains.annotations.Nullable;
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.anim.MaidAnimationStates;
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.gui.MaidModelScreen;
@@ -50,7 +49,7 @@ public final class MaidClientSetup {
         MaidAnimationStates.register();
         registerTickHandler();
         registerScreenHandler();
-        YesSteveModel.LOGGER.info("[YSM-TLM] 女仆渲染钩子已装载，动画状态 / tick / 模型选择屏均已接线");
+        Constants.LOGGER.info("[YSM-TLM] 女仆渲染钩子已装载，动画状态 / tick / 模型选择屏均已接线");
     }
 
     /**
@@ -90,7 +89,7 @@ public final class MaidClientSetup {
             // 基准写 localPlayer.getUUID().equals(maid.getOwnerUUID())，但 getOwnerUUID 已被
             // vanilla 1.21.11 删除（TLM 的 getOwner() 注释专门记了这点）。改按属主引用取裸 UUID
             // 直接比较——与基准语义完全一致，且不经实体解析（客户端上实体解析可能失败）。
-            EntityReference<LivingEntity> ownerRef = ((TamableAnimal) maid).getOwnerReference();
+            EntityReference<LivingEntity> ownerRef = maid.getOwnerReference();
             UUID ownerUuid = ownerRef != null ? ownerRef.getUUID() : null;
             if (localPlayer.getUUID().equals(ownerUuid)) {
                 MaidRenderStore.getOrCreate(maid);

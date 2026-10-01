@@ -1,10 +1,9 @@
 package com.elfmcys.yesstevemodel.geckolib3.core.molang;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.client.renderer.AnimationDebugOverlay;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.binding.PrimaryBinding;
-import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.FloatValue;
+import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.MolangValue;
 import com.elfmcys.yesstevemodel.molang.MolangEngine;
 import com.elfmcys.yesstevemodel.molang.parser.ParseException;
@@ -30,10 +29,10 @@ public class MolangParser {
             return parseExpressionUnsafe(molangExpression, isScript);
         } catch (Exception e) {
             if (AnimationDebugOverlay.isDebugActive()) {
-                YesSteveModel.LOGGER.error("Failed to parse molang expression: {}\n{}", e.getMessage(), molangExpression);
+                Constants.LOGGER.error("Failed to parse molang expression: {}\n{}", e.getMessage(), molangExpression);
                 ChatLogger.INSTANCE.logComponent(Component.translatable("error.yes_steve_model.parse_molang_exp").append(e.getMessage()).append("\n----------------------\n").append(molangExpression.replace("\r\n", "\n").replace("\r", "\n")).append("\n----------------------"));
             } else {
-                YesSteveModel.LOGGER.debug("Failed to parse molang expression: {}\n{}", e.getMessage(), molangExpression);
+                Constants.LOGGER.debug("Failed to parse molang expression: {}\n{}", e.getMessage(), molangExpression);
             }
             return FloatValue.ZERO;
         }

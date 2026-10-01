@@ -1,7 +1,6 @@
 package com.elfmcys.yesstevemodel;
 
 import com.sun.jna.NativeLibrary;
-import rip.ysm.api.PlatformAPI;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
 import org.apache.commons.io.FileUtils;
@@ -10,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import rip.ysm.api.PlatformAPI;
 
 import java.io.File;
 import java.io.IOException;
@@ -126,12 +126,12 @@ public final class NativeLibLoader {
         }
         try {
             long start = System.currentTimeMillis();
-            YesSteveModel.LOGGER.info("Begin load native library");
+            Constants.LOGGER.info("Begin load native library");
             System.load(path);
-            YesSteveModel.LOGGER.info("Successfully load native library in {}ms", System.currentTimeMillis() - start);
+            Constants.LOGGER.info("Successfully load native library in {}ms", System.currentTimeMillis() - start);
             return true;
         } catch (Throwable th) {
-            YesSteveModel.LOGGER.error("Failed to load native lib: " + path, th);
+            Constants.LOGGER.error("Failed to load native lib: " + path, th);
             setUnsatisfiedRuntimeError(th.getMessage());
             return false;
         }

@@ -1,6 +1,5 @@
 package com.elfmcys.yesstevemodel.audio;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +49,7 @@ public class OggOpusAudioStream implements IAudioStreamSupport {
                 this.cacheBuilder.flushToCache();
             }
             if (i2 < 0) {
-                YesSteveModel.LOGGER.error("Decoder error: {}", Integer.valueOf(i2));
+                Constants.LOGGER.error("Decoder error: {}", Integer.valueOf(i2));
             }
             this.endOfStream = true;
             return EMPTY_BUFFER;

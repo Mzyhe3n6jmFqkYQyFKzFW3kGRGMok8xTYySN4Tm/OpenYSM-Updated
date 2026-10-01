@@ -1,6 +1,7 @@
 package com.elfmcys.yesstevemodel.client.gui.button;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
+import com.elfmcys.yesstevemodel.Constants;
+import com.elfmcys.yesstevemodel.NameSpaces;
 import com.elfmcys.yesstevemodel.client.gui.ISpecialWidget;
 import com.elfmcys.yesstevemodel.config.ServerConfig;
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity;
@@ -18,7 +19,7 @@ import java.text.DecimalFormat;
 
 public class AnimationSlider extends RangedSliderWidget implements ISpecialWidget {
 
-    private static final Identifier ROULETTE_TEXTURE = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/roulette.png");
+    private static final Identifier ROULETTE_TEXTURE = NameSpaces.MOD.path("texture/roulette.png");
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 
@@ -41,7 +42,7 @@ public class AnimationSlider extends RangedSliderWidget implements ISpecialWidge
                 NetworkHandler.sendToServer(new C2SRequestExecuteMolangPacket(str, this.model.getEntity().getId()));
             }
         } catch (ParseException e) {
-            YesSteveModel.LOGGER.error(e);
+            Constants.LOGGER.error(e);
         }
     }
 
