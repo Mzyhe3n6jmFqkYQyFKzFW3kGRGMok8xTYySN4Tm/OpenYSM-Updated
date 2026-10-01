@@ -1,6 +1,6 @@
 package com.elfmcys.yesstevemodel.client.gui.button;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
+import com.elfmcys.yesstevemodel.NameSpaces;
 import com.elfmcys.yesstevemodel.client.gui.ISpecialWidget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,13 +12,12 @@ import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
-
 import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
 public class ConfigCheckBox extends AbstractButton implements ISpecialWidget {
 
-    private static final Identifier TEXTURE = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/roulette.png");
+    private static final Identifier TEXTURE = NameSpaces.MOD.path("texture/roulette.png");
 
     private final Consumer<Boolean> consumer2;
 

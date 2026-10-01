@@ -1,6 +1,6 @@
 package com.elfmcys.yesstevemodel.command.subcommands;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
+import com.elfmcys.yesstevemodel.NameSpaces;
 import com.elfmcys.yesstevemodel.network.NetworkHandler;
 import com.elfmcys.yesstevemodel.network.message.S2CVersionCheckPacket;
 import com.mojang.brigadier.Command;
@@ -23,7 +23,7 @@ public class PingCommand {
 
     private static int executePing(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer playerOrException = context.getSource().getPlayerOrException();
-        playerOrException.sendSystemMessage(Component.translatable("message.yes_steve_model.client.ping_result", PlatformAPI.getModVersion(YesSteveModel.MOD_ID)));
+        playerOrException.sendSystemMessage(Component.translatable("message.yes_steve_model.client.ping_result", PlatformAPI.getModVersion(NameSpaces.MOD.invoke())));
         if (!NetworkHandler.isPlayerConnected(playerOrException)) {
             NetworkHandler.sendToClientPlayer(new S2CVersionCheckPacket(), playerOrException);
             return Command.SINGLE_SUCCESS;

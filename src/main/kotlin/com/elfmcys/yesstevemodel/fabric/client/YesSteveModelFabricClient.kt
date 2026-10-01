@@ -15,7 +15,7 @@ class YesSteveModelFabricClient : ClientModInitializer {
         val debugOverlay: HudOverlay = AnimationDebugOverlay.createOverlay()
         val loadingOverlay: HudOverlay = ExtraPlayerOverlay()
         val syncOverlay: HudOverlay = ModelSyncStateOverlay()
-        HudRenderCallback.EVENT.register(HudRenderCallback { guiGraphics, tickDelta ->
+        HudRenderCallback.EVENT.register { guiGraphics, tickDelta ->
             val mc = Minecraft.getInstance()
             val w = mc.window.guiScaledWidth
             val h = mc.window.guiScaledHeight
@@ -23,7 +23,7 @@ class YesSteveModelFabricClient : ClientModInitializer {
             debugOverlay.render(guiGraphics, mc.font, partial, w, h)
             loadingOverlay.render(guiGraphics, mc.font, partial, w, h)
             syncOverlay.render(guiGraphics, mc.font, partial, w, h)
-        })
+        }
 
         // TLM 兼容的客户端装配。必须在此阶段完成：TLM 的 EntityMaidRenderer 构造时读静态钩子，
         // 而渲染器由 EntityRenderDispatcher 在启动后期构造——晚于此处赋值即静默失效。

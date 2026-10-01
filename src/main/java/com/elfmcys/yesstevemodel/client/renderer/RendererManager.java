@@ -1,5 +1,6 @@
 package com.elfmcys.yesstevemodel.client.renderer;
 
+import com.elfmcys.yesstevemodel.NameSpaces;
 import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.mixin.client.EntityRenderDispatcherAccessor;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -33,7 +34,7 @@ public class RendererManager {
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
             public Identifier getFabricId() {
-                return Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "renderer_manager");
+                return NameSpaces.MOD.path("renderer_manager");
             }
 
             @Override

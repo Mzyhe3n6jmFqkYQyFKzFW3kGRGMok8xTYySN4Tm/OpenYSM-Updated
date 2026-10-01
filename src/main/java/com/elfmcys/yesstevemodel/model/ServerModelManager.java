@@ -1,6 +1,7 @@
 package com.elfmcys.yesstevemodel.model;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
+import com.elfmcys.yesstevemodel.Constants;
+import com.elfmcys.yesstevemodel.NameSpaces;
 import com.elfmcys.yesstevemodel.access.ServerCommonPacketListenerImplAccessor;
 import com.elfmcys.yesstevemodel.capability.AuthModelsCapability;
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability;
@@ -64,7 +65,7 @@ public final class ServerModelManager {
     /**
      * 配置相关文件夹
      */
-    public static final Path FOLDER = Paths.get("config", YesSteveModel.MOD_ID);
+    public static final Path FOLDER = Paths.get("config", NameSpaces.MOD.invoke());
 
     /**
      * 自定义模型所放置的文件夹
@@ -281,8 +282,8 @@ public final class ServerModelManager {
             }
         }
         try {
-            Path assetsBuiltin = FabricLoader.getInstance().getModContainer(YesSteveModel.MOD_ID)
-                    .flatMap(mod -> mod.findPath("assets/" + YesSteveModel.MOD_ID + "/builtin")).orElse(null);
+            Path assetsBuiltin = FabricLoader.getInstance().getModContainer(NameSpaces.MOD.invoke())
+                    .flatMap(mod -> mod.findPath("assets/" + NameSpaces.MOD.invoke() + "/builtin")).orElse(null);
 
             if (assetsBuiltin == null || !Files.isDirectory(assetsBuiltin)) return;
 

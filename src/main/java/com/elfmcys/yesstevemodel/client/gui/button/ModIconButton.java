@@ -1,6 +1,6 @@
 package com.elfmcys.yesstevemodel.client.gui.button;
 
-import com.elfmcys.yesstevemodel.YesSteveModel;
+import com.elfmcys.yesstevemodel.NameSpaces;
 import com.elfmcys.yesstevemodel.capability.PlayerCapability;
 import com.elfmcys.yesstevemodel.capability.StarModelsCapability;
 import com.elfmcys.yesstevemodel.network.NetworkHandler;
@@ -14,7 +14,7 @@ import net.minecraft.resources.Identifier;
 
 public class ModIconButton extends FlatColorButton {
 
-    private static final Identifier ICON_TEXTURE = Identifier.fromNamespaceAndPath(YesSteveModel.MOD_ID, "texture/icon.png");
+    private static final Identifier ICON_TEXTURE = NameSpaces.MOD.path("texture/icon.png");
 
     public ModIconButton(int x, int y) {
         super(x, y, 20, 20, Component.empty(), button -> {

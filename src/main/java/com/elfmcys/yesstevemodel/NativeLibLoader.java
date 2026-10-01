@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import rip.ysm.api.PlatformAPI;
 
 import java.io.File;
 import java.io.IOException;
@@ -121,7 +120,7 @@ public final class NativeLibLoader {
     }
 
     private static boolean loadNativeLib(String path) {
-        if(System.getProperty("OYSM_DISABLE_SMID") != null) {
+        if (System.getProperty("OYSM_DISABLE_SMID") != null) {
             return false;
         }
         try {
@@ -159,7 +158,7 @@ public final class NativeLibLoader {
             if (!Files.isDirectory(path)) Files.createDirectories(path);
             return path;
         } catch (Throwable th) {
-            return PlatformAPI.getConfigFolder().resolve(YesSteveModel.MOD_ID).resolve("cache");
+            return Constants.getConfigDir().resolve("cache");
         }
     }
 

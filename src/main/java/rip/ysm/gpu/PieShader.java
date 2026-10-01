@@ -1,5 +1,6 @@
 package rip.ysm.gpu;
 
+import com.elfmcys.yesstevemodel.Constants;
 import com.elfmcys.yesstevemodel.util.log.ChatLogger;
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.lwjgl.opengl.GL20;
