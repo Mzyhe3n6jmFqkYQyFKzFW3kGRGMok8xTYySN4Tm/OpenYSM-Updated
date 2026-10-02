@@ -40,9 +40,9 @@ object YesSteveModel {
 
     @Suppress("DEPRECATION")
     private fun initConfig() {
-        val oldConfig: File = PlatformAPI.getConfigFolder().resolve("yes_steve_model-common.toml").toFile()
+        val oldConfig: File = Constants.MainConfigDir.resolve("yes_steve_model-common.toml").toFile()
         if (oldConfig.isFile) {
-            val file2: File = PlatformAPI.getConfigFolder().resolve("yes_steve_model-client.toml").toFile()
+            val file2: File = Constants.MainConfigDir.resolve("yes_steve_model-client.toml").toFile()
             if (!file2.isFile) {
                 oldConfig.renameTo(file2)
             } else {
@@ -71,16 +71,16 @@ object YesSteveModel {
     @JvmStatic
     fun sendUnavailableMessage() {
         val localPlayer: LocalPlayer? = Minecraft.getInstance().player
-        localPlayer?.displayClientMessage(getUnavailableComponent(), false)
+        getUnavailableComponent()?.let { localPlayer?.displayClientMessage(it, false) }
     }
 
     @JvmStatic
-    fun getUnavailableComponent(): Component {
+    fun getUnavailableComponent(): Component? {
         return NativeLibLoader.getErrorComponent()
     }
 
     @JvmStatic
-    fun getErrorMessage(): String {
+    fun getErrorMessage(): String? {
         return NativeLibLoader.getErrorMessage()
     }
 }
