@@ -14,13 +14,12 @@ open class PlayerGeoEntity(
     player: LocalPlayer,
     val playerCapability: PlayerCapability
 ) : GeoEntity<LocalPlayer>(player, false) {
-
     init {
         setModelId(playerCapability.getModelId())
     }
 
     override fun registerAnimationControllers() {
-        getModelAssembly()?.animationBundle?.armControllerInstaller?.accept(this)
+        getModelAssembly()?.animationBundle?.armControllerInstaller?.invoke(this)
     }
 
     override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean {

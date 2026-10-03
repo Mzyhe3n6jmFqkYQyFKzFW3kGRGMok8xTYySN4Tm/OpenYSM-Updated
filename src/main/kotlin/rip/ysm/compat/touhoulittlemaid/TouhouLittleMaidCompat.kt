@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.Item
 import rip.ysm.compat.touhoulittlemaid.fabric.TouhouLittleMaidCompatImpl
+import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 
 object TouhouLittleMaidCompat {
     @JvmStatic
@@ -58,6 +59,9 @@ object TouhouLittleMaidCompat {
     }
 
     @JvmStatic
-    fun buildControllers(modelBundle: PlayerModelBundle, resourceBundle: ModelResourceBundle): java.util.function.Consumer<rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable>? =
+    fun buildControllers(
+        modelBundle: PlayerModelBundle,
+        resourceBundle: ModelResourceBundle
+    ): ((MaidAnimatable) -> Unit)? =
         TouhouLittleMaidCompatImpl.buildControllers(modelBundle, resourceBundle)
 }
