@@ -82,7 +82,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     }
 
     open fun setForceDisabled(forceDisabled: Boolean) {
-        forceDisabled = forceDisabled
+        this.forceDisabled = forceDisabled
     }
 
     open fun isForceDisabled(): Boolean {
@@ -162,17 +162,12 @@ abstract class LivingAnimatable<T : LivingEntity>(
         }
     }
 
-    override fun getAnimationProcessor(): GeoModel {
-        return getModelAssembly()!!.animationBundle.getMainModel()
-    }
+    override fun getAnimationProcessor(): GeoModel = getModelAssembly()!!.animationBundle.mainModel
 
-    override fun getAnimation(str: String): Animation? {
-        return getModelAssembly()?.animationBundle?.getMainAnimations()?.get(str)
-    }
+    override fun getAnimation(str: String): Animation? = getModelAssembly()?.animationBundle?.mainAnimations?.get(str)
 
-    override fun getAnimationEntries(str: String): AnimationController? {
-        return getModelAssembly()?.animationBundle?.getAnimationEntries()?.get(str)
-    }
+    override fun getAnimationEntries(str: String): AnimationController? =
+        getModelAssembly()?.animationBundle?.animationEntries?.get(str)
 
     open fun getCurrentTextureName(): String? {
         return if (isModelReady()) currentTextureName else getModelAssembly()?.animationBundle?.textures
@@ -253,8 +248,6 @@ abstract class LivingAnimatable<T : LivingEntity>(
             currentTexture = UploadManager.getOrCreateLocatableWithSize(abstractTexture, true, textureResolution)
         }
 
-        override fun isValid(): Boolean {
-            return currentTexture.getResourceLocation().isPresent()
-        }
+        override fun isValid(): Boolean = currentTexture.getResourceLocation() != null
     }
 }

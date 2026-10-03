@@ -132,9 +132,7 @@ abstract class GeoEntity<T : Entity>(
         }
     }
 
-    fun getRenderShape(): ModelWrapper? {
-        return renderShape
-    }
+    fun getRenderShape(): ModelWrapper? = renderShape
 
     open fun onModelLoaded(modelAssembly: ModelAssembly) {
         renderShape?.audioProvider = AudioStreamCache.getOrCreateProvider(modelAssembly)
