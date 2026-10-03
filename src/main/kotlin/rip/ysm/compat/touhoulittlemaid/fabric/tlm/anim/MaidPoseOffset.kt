@@ -35,38 +35,25 @@ object MaidPoseOffset {
 
     private fun resolveSeated(maid: EntityMaid, animatable: MaidAnimatable, vehicle: Entity): Float {
         val living: LivingEntity = vanilla(maid)
-        if (StringUtils.isNoneBlank(SWEMCompat.getHorseGaitName(living))) {
-            return SEAT_UNMEASURED
-        }
+        if (StringUtils.isNoneBlank(SWEMCompat.getHorseGaitName(living))) return SEAT_UNMEASURED
         val conditionManager: ConditionManager? = animatable.getModelConfig()
         val conditionChair: ConditionChair? = conditionManager?.chair
-        if (conditionChair != null && StringUtils.isNoneBlank(conditionChair.doTest(living))) {
-            return SEAT_UNMEASURED
-        }
+        if (conditionChair != null && StringUtils.isNoneBlank(conditionChair.doTest(living))) return SEAT_UNMEASURED
         val conditionVehicle: ConditionVehicle? = conditionManager?.vehicle
-        if (conditionVehicle != null && StringUtils.isNoneBlank(conditionVehicle.doTest(living))) {
-            return SEAT_UNMEASURED
+        if (conditionVehicle != null && StringUtils.isNoneBlank(conditionVehicle.doTest(living))) return SEAT_UNMEASURED
+        return when (vehicle) {
+            is Pig -> POSE_RIDE_PIG - attachmentHeight(vehicle, living)
+            is Mob if vehicle.isSaddled -> POSE_RIDE - attachmentHeight(vehicle, living)
+            is Boat -> POSE_BOAT - attachmentHeight(vehicle, living)
+            else -> SEAT_UNMEASURED
         }
-        if (vehicle is Pig) {
-            return POSE_RIDE_PIG - attachmentHeight(vehicle, living)
-        }
-        if (vehicle is Mob && vehicle.isSaddled) {
-            return POSE_RIDE - attachmentHeight(vehicle, living)
-        }
-        if (vehicle is Boat) {
-            return POSE_BOAT - attachmentHeight(vehicle, living)
-        }
-        return SEAT_UNMEASURED
     }
 
-    private fun attachmentHeight(vehicle: Entity, passenger: LivingEntity): Float {
-        return (vehicle.getPassengerRidingPosition(passenger).y - vehicle.y).toFloat()
-    }
+    private fun attachmentHeight(vehicle: Entity, passenger: LivingEntity): Float =
+        (vehicle.getPassengerRidingPosition(passenger).y - vehicle.y).toFloat()
 
     private fun isStandbySitPlaying(maid: EntityMaid): Boolean {
-        if (!maid.isMaidInSittingPose) {
-            return false
-        }
+        if (!maid.isMaidInSittingPose) return false
         val living: LivingEntity = vanilla(maid)
         return !living.isDeadOrDying
                 && living.pose != Pose.SLEEPING
