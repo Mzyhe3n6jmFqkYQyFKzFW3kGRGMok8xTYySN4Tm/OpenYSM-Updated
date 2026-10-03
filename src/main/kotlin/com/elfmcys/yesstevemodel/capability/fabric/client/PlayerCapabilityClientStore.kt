@@ -3,6 +3,7 @@ package com.elfmcys.yesstevemodel.capability.fabric.client
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
 import net.minecraft.client.player.AbstractClientPlayer
 import net.minecraft.world.entity.player.Player
+import rip.ysm.api.capability.CapabilityLifecycle
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
@@ -18,6 +19,11 @@ object PlayerCapabilityClientStore {
         val existing = STORE[uuid]
         if (existing != null && existing.entity == player) return existing
         val fresh = PlayerCapability(player)
+        if (existing != null) {
+            CapabilityLifecycle.revive(existing.entity)
+            fresh.copyFrom(existing)
+            CapabilityLifecycle.invalidate(existing.entity)
+        }
         STORE[uuid] = fresh
         return fresh
     }
