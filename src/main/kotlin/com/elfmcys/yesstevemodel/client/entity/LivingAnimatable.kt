@@ -140,7 +140,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     }
 
     open fun getModelConfig(): ConditionManager? {
-        return getModelAssembly()?.animationBundle?.getConditionManager()
+        return getModelAssembly()?.animationBundle?.conditionManager
     }
 
     private fun updateCurrentTexture() {
@@ -176,10 +176,10 @@ abstract class LivingAnimatable<T : LivingEntity>(
 
     override fun getTextureLocation(): Identifier {
         return if (isModelReady()) {
-            ((getRenderShape() as LivingAnimatable<*>.TexturedModelWrapper).currentTexture.getResourceLocation()
-                .get() as Identifier)
+            (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.currentTexture?.getResourceLocation()
+                ?: ClientModelManager.getDefaultTexture()
         } else {
-            ClientModelManager.defaultTexture
+            ClientModelManager.getDefaultTexture()
         }
     }
 
@@ -191,15 +191,15 @@ abstract class LivingAnimatable<T : LivingEntity>(
     }
 
     override fun getWidthScale(): Float {
-        return getModelAssembly()?.getModelData()?.modelProperties?.widthScale ?: 1.0f
+        return getModelAssembly()?.modelData?.modelProperties?.widthScale ?: 1.0f
     }
 
     override fun getHeightScale(): Float {
-        return getModelAssembly()?.getModelData()?.modelProperties?.heightScale ?: 1.0f
+        return getModelAssembly()?.modelData?.modelProperties?.heightScale ?: 1.0f
     }
 
     open fun isRenderLayersFirst(): Boolean {
-        return getModelAssembly()?.getModelData()?.modelProperties?.renderLayersFirst ?: false
+        return getModelAssembly()?.modelData?.modelProperties?.renderLayersFirst ?: false
     }
 
     open fun isExtraRenderFlag(): Boolean {
@@ -207,7 +207,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     }
 
     open fun setExtraRenderFlag(extraRenderFlag: Boolean) {
-        extraRenderFlag = extraRenderFlag
+        this.extraRenderFlag = extraRenderFlag
     }
 
     open inner class TexturedModelWrapper(
@@ -218,15 +218,18 @@ abstract class LivingAnimatable<T : LivingEntity>(
         private val textureResolution: Int
     ) : ModelWrapper(modelAssembly, isActive) {
         @JvmField
-        var currentTexture: IResourceLocatable
+        var currentTexture: IResourceLocatable?
         val allTextures: MutableList<IResourceLocatable>?
 
         init {
             val abstractTexture =
                 modelAssembly.animationBundle.textures[this@LivingAnimatable.currentTextureName]
                     ?: modelAssembly.animationBundle.defaultTexture
-            currentTexture =
+            currentTexture = if (abstractTexture != null) {
                 UploadManager.getOrCreateLocatableWithSize(abstractTexture, registerImmediately, textureResolution)
+            } else {
+                null
+            }
             if (collectAllTextures) {
                 val list = ArrayList<IResourceLocatable>()
                 for (texture in modelAssembly.animationBundle.textures.values) {
@@ -248,6 +251,6 @@ abstract class LivingAnimatable<T : LivingEntity>(
             currentTexture = UploadManager.getOrCreateLocatableWithSize(abstractTexture, true, textureResolution)
         }
 
-        override fun isValid(): Boolean = currentTexture.getResourceLocation() != null
+        override fun isValid(): Boolean = currentTexture?.getResourceLocation() != null
     }
 }

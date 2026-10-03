@@ -34,24 +34,43 @@ import rip.ysm.api.entity.EntityDataBridge
 import java.util.*
 import java.util.function.Consumer
 
-abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
+abstract class AnimatableEntity<TEntity : Entity>(entity: TEntity) {
+    @JvmField
+    val entity: TEntity = entity
+    @JvmField
     var positionTracker: EntityFrameStateTracker<TEntity> = createPositionTracker(entity)
+    @JvmField
     var currentModel: AnimatedGeoModel? = null
+    @JvmField
     var animationMap: Object2ReferenceMap<String, MutableList<IValue>>? = null
+    @JvmField
     var wasAnimationActiveLastTick: Boolean = false
+    @JvmField
     var hasUpdatedThisTick: Boolean = false
+    @JvmField
     var isTickTriggered: Boolean = false
+    @JvmField
     var wasEvaluatedLastFrame: Boolean = false
+    @JvmField
     var seekTime: Float = 0.0f
+    @JvmField
     val manager: AnimationData = AnimationData()
+    @JvmField
     var lastTick: Float = -1.0f
+    @JvmField
     var isFirstFrameAfterReset: Boolean = true
+    @JvmField
     var needsReset: Boolean = false
+    @JvmField
     var modelInitialized: Boolean = false
+    @JvmField
     var animationStates: MutableMap<String, AnimationState> = Maps.newHashMap()
+    @JvmField
     val animationProcessor: AnimationProcessor<TEntity> = AnimationProcessor(this)
+    @JvmField
     val rateLimiter: RateLimiter = RateLimiter().apply { setRefreshRate(getRefreshRate()) }
-    val physicsManager: PhysicsManager = PhysicsManager()
+    @JvmField
+    protected val defaultPhysicsManager: PhysicsManager = PhysicsManager()
 
     abstract fun getTextureLocation(): Identifier
     abstract fun isModelReady(): Boolean
@@ -64,7 +83,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
         currentModel = null
         animationMap = null
         animationProcessor.reset()
-        physicsManager.clear()
+        defaultPhysicsManager.clear()
         rateLimiter.reset()
         manager.clear()
         positionTracker.reset()
@@ -97,7 +116,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
 
     fun getAnimationExpressions(str: String): MutableList<IValue>? = animationMap?.get(str)
 
-    open fun getPhysicsManager(): PhysicsManager = physicsManager
+    open fun getPhysicsManager(): PhysicsManager = defaultPhysicsManager
 
     open fun getAnimationEntries(str: String): AnimationController? = null
 
@@ -107,8 +126,6 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
 
     open fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {}
     open fun afterSetupAnim(seekTime: Float, isFirstPerson: Boolean) {}
-
-    fun getEntity(): TEntity = entity
 
     open fun hasCustomTexture(): Boolean = false
 
@@ -286,9 +303,11 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
         executeBeforeAnimation: Boolean,
         consumer: Consumer<String>?
     ) {
-        consumer?.let {
-            animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, it)
-        } ?: animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, null)
+        if (consumer != null) {
+            animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, consumer)
+        } else {
+            animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, null as Consumer<String>?)
+        }
     }
 
     open fun getPropertyGetter(): IForeignVariableStorage = animationProcessor.getPublicVariableStorage()

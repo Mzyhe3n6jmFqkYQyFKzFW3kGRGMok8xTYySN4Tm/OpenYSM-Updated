@@ -46,7 +46,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
 
     override fun onModelLoaded(context: ModelAssembly) {
         super.onModelLoaded(context)
-        currentModelHashId = getModelAssembly()?.modelData?.hashId
+        currentModelHashId = getModelAssembly()?.modelData?.hashId ?: 0
     }
 
     override fun clearModel() {

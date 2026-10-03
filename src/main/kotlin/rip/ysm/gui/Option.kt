@@ -11,17 +11,17 @@ open class Option<T>(
     val getter: () -> T,
     val setter: (T) -> Unit
 ) {
-    var pending: T = getter()
-    var dirty: Boolean = false
+    protected var pendingValue: T = getter()
+    protected var dirty: Boolean = false
 
     open fun getLabel(): Component = Component.translatable("gui.yes_steve_model.config.$translationKey")
 
     open fun getDescription(): Component = Component.translatable("gui.yes_steve_model.config.$translationKey.desc")
 
-    open fun get(): T = pending
+    open fun get(): T = pendingValue
 
     open fun setPending(value: T) {
-        pending = value
+        pendingValue = value
         dirty = !Objects.equals(value, getter())
     }
 
@@ -31,13 +31,13 @@ open class Option<T>(
 
     open fun apply() {
         if (dirty) {
-            setter(pending)
+            setter(pendingValue)
             dirty = false
         }
     }
 
     open fun undo() {
-        pending = getter()
+        pendingValue = getter()
         dirty = false
     }
 

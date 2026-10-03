@@ -204,7 +204,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         if (nextState == null && curr == null) {
             return
         }
-        playbackFlags.getAudioPlayerManager()?.stopAll()
+        playbackFlags.audioPlayerManager?.stopAll()
         evaluator.entity().setIsClientSide(true)
         if (curr != null) {
             if (curr.subName != null && childController != null) {
@@ -220,7 +220,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             }
             for (str in nextState.soundEffects) {
                 if (StringUtils.isNotBlank(str)) {
-                    playbackFlags.getAudioPlayerManager()
+                    playbackFlags.audioPlayerManager
                         ?.playSound(evaluator.entity().geoInstance(), 0, str, false, null)
                 }
             }
@@ -292,7 +292,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             animationSlot.animationControllerInstance.fullReset()
         }
         animationSlots.clear()
-        playbackFlags.getAudioPlayerManager()?.stopAll()
+        playbackFlags.audioPlayerManager?.stopAll()
     }
 
     private class AnimationSlot(entity: AnimatableEntity<*>, f: Float) {
@@ -333,7 +333,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         fun isActive(): Boolean = active
     }
 
-    private class BoneBlendState(val boneTarget: BoneTopLevelSnapshot) : BoneTransformProvider {
+    private class BoneBlendState(private val boneTarget: BoneTopLevelSnapshot) : BoneTransformProvider {
         private val blendSources: ReferenceArrayList<Pair<ConditionalEvaluator, BoneAnimationQueue>> =
             ReferenceArrayList(4)
         private var isMarked: Boolean = false

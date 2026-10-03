@@ -94,7 +94,7 @@ object AnimationDebugOverlay {
         clearActiveModel()
         activeModel = WeakReference(geoEntity)
         geoEntity.setBoneLookup(MOLANG_WATCH)
-        val entity: Entity = geoEntity.getEntity()
+        val entity: Entity = geoEntity.entity
         val localPlayer: LocalPlayer? = Minecraft.getInstance().player
         if (localPlayer != null) {
             val mutableComponentAppend: MutableComponent =

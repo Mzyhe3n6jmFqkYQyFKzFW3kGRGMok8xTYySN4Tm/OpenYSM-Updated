@@ -47,7 +47,7 @@ abstract class GeoEntityRenderer<TEntity : Entity, T : AnimatableEntity<TEntity>
         val minecraft = Minecraft.getInstance()
         val player = minecraft.player
         if (event != null && player != null) {
-            val entity = t.getEntity()
+            val entity = t.entity
             val z = !entity.isInvisibleTo(player)
             val zShouldEntityAppearGlowing = minecraft.shouldEntityAppearGlowing(entity)
             val currentModel = t.getCurrentModel() ?: return

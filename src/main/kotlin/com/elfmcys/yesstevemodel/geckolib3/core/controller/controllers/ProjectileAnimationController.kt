@@ -64,7 +64,7 @@ object ProjectileAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.INSTANCE,
+                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.getInstance(),
                 true
             )
         }

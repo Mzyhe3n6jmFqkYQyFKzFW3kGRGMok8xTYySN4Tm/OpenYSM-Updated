@@ -26,19 +26,19 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 
 open class AnimationContext<TEntity>(
-    val entity: TEntity,
-    val instance: AnimatableEntity<*>,
-    val animationEvent: AnimationEvent<*>,
-    val data: EntityModelData
+    @JvmField val entity: TEntity,
+    @JvmField val instance: AnimatableEntity<*>,
+    @JvmField val animationEvent: AnimationEvent<*>,
+    @JvmField val data: EntityModelData
 ) : IContext<TEntity> {
-    var animationControllerContext: AnimationControllerContext? = null
-    var playbackFlags: PlaybackFlags? = null
-    var audioPlayerManager: AudioPlayerManager? = null
-    var random: RandomSource? = null
-    var storage: VariableStorage? = null
-    var foreignStorage: IForeignVariableStorage? = null
-    var logger: ILogger? = null
-    var isClientSide: Boolean = false
+    @JvmField var animationControllerContext: AnimationControllerContext? = null
+    @JvmField var playbackFlags: PlaybackFlags? = null
+    @JvmField var audioPlayerManager: AudioPlayerManager? = null
+    @JvmField var random: RandomSource? = null
+    @JvmField var storage: VariableStorage? = null
+    @JvmField var foreignStorage: IForeignVariableStorage? = null
+    @JvmField var logger: ILogger? = null
+    @JvmField var isClientSide: Boolean = false
 
     constructor(entity: TEntity, context: AnimationContext<*>) : this(
         entity,

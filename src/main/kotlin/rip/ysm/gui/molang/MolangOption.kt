@@ -72,7 +72,7 @@ object MolangOption {
         runCatching {
             animatable.executeExpression(GeckoLibCache.parseSimpleExpression(expr), true, false, null)
             if (!GeckoLibCache.isRoamingVariableAssignment(expr) && NetworkHandler.isClientConnected() && !ServerConfig.LOW_BANDWIDTH_USAGE.get()) {
-                NetworkHandler.sendToServer(C2SRequestExecuteMolangPacket(expr, animatable.getEntity().id))
+                NetworkHandler.sendToServer(C2SRequestExecuteMolangPacket(expr, animatable.entity.id))
             }
         }.onFailure { e ->
             Constants.LOGGER.error(e)

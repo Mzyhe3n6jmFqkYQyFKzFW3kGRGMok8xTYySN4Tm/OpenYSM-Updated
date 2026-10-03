@@ -31,7 +31,7 @@ class PlayerPreviewEntity : CustomPlayerEntity(DummyPlayer(), false, false), IPr
     }
 
     override fun getPhysicsManager(): PhysicsManager {
-        return physicsManager
+        return defaultPhysicsManager
     }
 
     override fun setCustomAnimationActive(active: Boolean) {

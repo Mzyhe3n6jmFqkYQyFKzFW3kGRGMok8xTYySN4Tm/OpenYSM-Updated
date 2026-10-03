@@ -34,7 +34,7 @@ open class CustomPlayerArmorLayer(context: EntityRendererProvider.Context) : Geo
         netHeadYaw: Float,
         headPitch: Float
     ) {
-        val player: Player = entityLivingBaseIn.getEntity()
+        val player: Player = entityLivingBaseIn.entity
         val model: AnimatedGeoModel? = entityLivingBaseIn.getCurrentModel()
         if (model != null && !model.headBones().isEmpty()) {
             val itemBySlot: ItemStack = player.getItemBySlot(EquipmentSlot.HEAD)

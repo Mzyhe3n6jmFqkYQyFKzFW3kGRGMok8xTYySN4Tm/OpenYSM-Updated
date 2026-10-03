@@ -20,12 +20,8 @@ open class MaidAnimatable(entityMaid: EntityMaid, isActive: Boolean) :
 
     private var maidModelInfo: MaidModelInfo = MaidModelInfo()
 
-    @Suppress("UNCHECKED_CAST")
     override fun registerAnimationControllers() {
-        when (val installer = getModelAssembly()?.animationBundle?.maidControllerInstaller) {
-            is Consumer<*> -> (installer as Consumer<MaidAnimatable>).accept(this)
-            is Function1<*, *> -> (installer as (MaidAnimatable) -> Unit).invoke(this)
-        }
+        getModelAssembly()?.animationBundle?.maidControllerInstaller?.accept(this)
     }
 
     override fun buildRenderShape(modelAssembly: ModelAssembly, isActive: Boolean): ModelWrapper {

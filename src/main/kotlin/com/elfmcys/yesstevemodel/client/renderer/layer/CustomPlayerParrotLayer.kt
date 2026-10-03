@@ -36,7 +36,7 @@ open class CustomPlayerParrotLayer(context: EntityRendererProvider.Context) : Ge
         netHeadYaw: Float,
         headPitch: Float
     ) {
-        val player: Player = entityLivingBaseIn.getEntity()
+        val player: Player = entityLivingBaseIn.entity
         val model: AnimatedGeoModel? = entityLivingBaseIn.getCurrentModel()
         if (model == null) {
             return

@@ -23,7 +23,8 @@ class ServerModelData(
         projectiles?.let { array ->
             for (obj in array) {
                 if (obj is Array<*>) {
-                    entityTypes.addAll(FileTypeUtil.resolveEntityTypes(obj))
+                    @Suppress("UNCHECKED_CAST")
+                    entityTypes.addAll(FileTypeUtil.resolveEntityTypes(obj as Array<String>))
                 }
             }
             projectiles = null
@@ -35,7 +36,8 @@ class ServerModelData(
         vehicles?.let { array ->
             for (obj in array) {
                 if (obj is Array<*>) {
-                    excludedEntityTypes.addAll(FileTypeUtil.resolveEntityTypes(obj))
+                    @Suppress("UNCHECKED_CAST")
+                    excludedEntityTypes.addAll(FileTypeUtil.resolveEntityTypes(obj as Array<String>))
                 }
             }
             vehicles = null

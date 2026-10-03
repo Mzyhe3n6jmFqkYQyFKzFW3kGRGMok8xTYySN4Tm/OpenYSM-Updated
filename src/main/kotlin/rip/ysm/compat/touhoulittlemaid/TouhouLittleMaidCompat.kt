@@ -58,6 +58,6 @@ object TouhouLittleMaidCompat {
     }
 
     @JvmStatic
-    fun buildControllers(modelBundle: PlayerModelBundle, resourceBundle: ModelResourceBundle): Any? =
+    fun buildControllers(modelBundle: PlayerModelBundle, resourceBundle: ModelResourceBundle): java.util.function.Consumer<rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable>? =
         TouhouLittleMaidCompatImpl.buildControllers(modelBundle, resourceBundle)
 }

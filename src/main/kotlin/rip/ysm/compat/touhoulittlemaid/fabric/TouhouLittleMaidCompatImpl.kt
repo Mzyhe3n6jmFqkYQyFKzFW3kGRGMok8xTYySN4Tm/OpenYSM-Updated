@@ -104,7 +104,7 @@ object TouhouLittleMaidCompatImpl {
     }
 
     @JvmStatic
-    fun buildControllers(modelBundle: PlayerModelBundle, resourceBundle: ModelResourceBundle): Any? {
+    fun buildControllers(modelBundle: PlayerModelBundle, resourceBundle: ModelResourceBundle): java.util.function.Consumer<MaidAnimatable>? {
         if (!isLoaded()) {
             return null
         }

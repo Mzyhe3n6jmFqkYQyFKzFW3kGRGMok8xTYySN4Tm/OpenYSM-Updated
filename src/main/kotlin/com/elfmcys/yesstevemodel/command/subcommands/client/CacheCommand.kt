@@ -29,7 +29,7 @@ object CacheCommand {
             exportResult.message?.let {
                 player.displayClientMessage(YSMMessageFormatter.withPrefix(it), false)
             }
-            if (exportResult.isSuccess()) {
+            if (exportResult.success) {
                 player.displayClientMessage(
                     Component.translatable(
                         "commands.yes_steve_model.export.success",

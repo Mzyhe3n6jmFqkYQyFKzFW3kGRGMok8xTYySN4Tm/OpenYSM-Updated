@@ -20,17 +20,7 @@ import java.util.*
 
 class ModelInfoCapability {
     private var modelId2: String? = null
-    private var modelId: String
-        get() = modelId2 ?: ServerModelManager.getDefaultModelConfig().getLeft()
-        set(value) {
-            modelId2 = value
-        }
     private var selectTexture2: String? = null
-    private var selectTexture: String
-        get() = selectTexture2 ?: ServerModelManager.getDefaultModelConfig().getRight()
-        set(value) {
-            selectTexture2 = value
-        }
     private var mandatory: Boolean = false
     private var molangStorage: Int2ReferenceOpenHashMap<Object2FloatOpenHashMap<String>> = Int2ReferenceOpenHashMap()
     private var animSync: PlayerStateSynchronizer = PlayerStateSynchronizer()
@@ -38,10 +28,28 @@ class ModelInfoCapability {
     private var dirty: Boolean = false
     private val pendingCallbacks: ArrayDeque<(Object2FloatOpenHashMap<String>) -> Unit> = ArrayDeque()
 
+    fun getModelId(): String = modelId2 ?: ServerModelManager.getDefaultModelConfig().getLeft()
+
+    fun setModelId(str: String) {
+        if (modelId2 != str) {
+            modelId2 = str
+            markDirty()
+        }
+    }
+
+    fun getSelectTexture(): String = selectTexture2 ?: ServerModelManager.getDefaultModelConfig().getRight()
+
+    fun setSelectTexture(str: String) {
+        if (selectTexture2 != str) {
+            selectTexture2 = str
+            markDirty()
+        }
+    }
+
     fun setModelAndTexture(str: String, str2: String) {
-        if (modelId == str && selectTexture == str2) return
-        modelId = str
-        selectTexture = str2
+        if (getModelId() == str && getSelectTexture() == str2) return
+        modelId2 = str
+        selectTexture2 = str2
         markDirty()
     }
 
@@ -52,27 +60,13 @@ class ModelInfoCapability {
 
     fun copyFrom(source: ModelInfoCapability) {
         molangStorage = source.molangStorage
-        modelId = source.modelId
-        selectTexture = source.selectTexture
+        modelId2 = source.modelId2
+        selectTexture2 = source.selectTexture2
         mandatory = source.mandatory
         animSync = source.animSync
         pendingCallbacks.addAll(source.pendingCallbacks)
         disabled = source.disabled
         source.pendingCallbacks.clear()
-        markDirty()
-    }
-
-    fun getModelId(): String = modelId
-
-    fun setModelId(str: String) {
-        modelId = str
-        markDirty()
-    }
-
-    fun getSelectTexture(): String = selectTexture
-
-    fun setSelectTexture(str: String) {
-        selectTexture = str
         markDirty()
     }
 
@@ -91,7 +85,7 @@ class ModelInfoCapability {
     }
 
     fun createSyncMessage(serverPlayer: ServerPlayer, fullSync: Boolean): S2CSetModelAndTexturePacket? =
-        ServerModelManager[modelId]?.let {
+        ServerModelManager[getModelId()]?.let {
             val molangVars =
                 molangStorage.computeIfAbsent(it.getLoadedModelData().hashId) { Object2FloatOpenHashMap(0) }
 
@@ -102,8 +96,8 @@ class ModelInfoCapability {
 
             S2CSetModelAndTexturePacket(
                 serverPlayer.id,
-                modelId,
-                selectTexture,
+                getModelId(),
+                getSelectTexture(),
                 disabled,
                 animSync.buildFullSyncMessage(serverPlayer, fullSync)
                     .setMolangVars(it.getLoadedModelData().hashId, molangVars)
@@ -111,7 +105,7 @@ class ModelInfoCapability {
         }
 
     fun withMolangVars(consumer: (Object2FloatOpenHashMap<String>) -> Unit) {
-        ServerModelManager.getModelDefinition(modelId).ifPresentOrElse({ value ->
+        ServerModelManager.getModelDefinition(getModelId()).ifPresentOrElse({ value ->
             consumer(molangStorage.computeIfAbsent(value.getLoadedModelData().hashId) {
                 Object2FloatOpenHashMap(0)
             })
@@ -120,7 +114,7 @@ class ModelInfoCapability {
         })
     }
 
-    fun getMolangVars(): Object2FloatOpenHashMap<String>? = ServerModelManager[modelId]?.let { serverModelData ->
+    fun getMolangVars(): Object2FloatOpenHashMap<String>? = ServerModelManager[getModelId()]?.let { serverModelData ->
         molangStorage.computeIfAbsent(serverModelData.getLoadedModelData().hashId) {
             Object2FloatOpenHashMap(0)
         }
@@ -174,8 +168,8 @@ class ModelInfoCapability {
 
     fun serializeNBT(): CompoundTag {
         val compoundTag = CompoundTag()
-        compoundTag.putString("model_id", modelId)
-        compoundTag.putString("select_texture", selectTexture)
+        compoundTag.putString("model_id", getModelId())
+        compoundTag.putString("select_texture", getSelectTexture())
         compoundTag.putBoolean("mandatory", mandatory)
         compoundTag.putBoolean("disabled", disabled)
         val compoundTag2 = CompoundTag()
@@ -191,11 +185,12 @@ class ModelInfoCapability {
     }
 
     fun deserializeNBT(compoundTag: CompoundTag) {
-        modelId = compoundTag.getStringOr("model_id", "")
+        val modelIdStr = compoundTag.getStringOr("model_id", "")
+        setModelId(modelIdStr)
         var selectTextureStr = compoundTag.getStringOr("select_texture", "")
         if (selectTextureStr.length > 4 && selectTextureStr.lowercase().endsWith(".png"))
             selectTextureStr = selectTextureStr.substring(0, selectTextureStr.length - 4)
-        selectTexture = selectTextureStr
+        setSelectTexture(selectTextureStr)
         mandatory = compoundTag.getBooleanOr("mandatory", false)
         disabled = compoundTag.getBooleanOr("disabled", false)
         molangStorage.clear()

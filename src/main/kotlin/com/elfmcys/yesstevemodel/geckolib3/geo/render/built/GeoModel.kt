@@ -21,7 +21,7 @@ open class GeoModel(
     geoBones: Array<GeoBone>,
     strArr: Array<Array<String>>,
     zArr: BooleanArray,
-    val properties: GeometryDescription,
+    @JvmField val properties: GeometryDescription,
     zArr2: BooleanArray,
 ) {
     @JvmField

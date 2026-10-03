@@ -29,7 +29,7 @@ open class HandItemRenderer {
         partialTick: Float
     ) {
         val currentGeoModel = geoModel
-        val currentOrNewGeoModel = if (currentGeoModel == null || currentGeoModel.getEntity() != localPlayer) {
+        val currentOrNewGeoModel = if (currentGeoModel == null || currentGeoModel.entity != localPlayer) {
             val newGeoModel = PlayerGeoEntity(localPlayer, capability)
             geoModel = newGeoModel
             newGeoModel

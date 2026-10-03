@@ -6,9 +6,17 @@ import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import net.minecraft.world.entity.LivingEntity
 
-object StopAnimationPredicate : IAnimationPredicate<AnimatableEntity<LivingEntity>> {
+open class StopAnimationPredicate : IAnimationPredicate<AnimatableEntity<*>> {
     override fun predicate(
-        event: AnimationEvent<AnimatableEntity<LivingEntity>>,
+        event: AnimationEvent<AnimatableEntity<*>>,
         evaluator: ExpressionEvaluator<*>?
     ): PlayState = PlayState.STOP
+
+    companion object {
+        @JvmField
+        val INSTANCE: StopAnimationPredicate = StopAnimationPredicate()
+
+        @JvmStatic
+        fun getInstance(): StopAnimationPredicate = INSTANCE
+    }
 }

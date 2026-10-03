@@ -51,7 +51,7 @@ abstract class GeoEntity<T : Entity>(
 
     override fun getPhysicsManager(): PhysicsManager {
         if (ModelPreviewRenderer.isFirstPerson() || ModelPreviewRenderer.isExtraPlayer()) {
-            return physicsManager
+            return defaultPhysicsManager
         }
         val currentBones = bones
         if (currentBones == null) {

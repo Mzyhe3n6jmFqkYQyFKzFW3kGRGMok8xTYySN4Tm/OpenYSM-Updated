@@ -3,6 +3,7 @@ package rip.ysm.gui
 import net.minecraft.network.chat.Component
 
 open class OptionGroup(val translationKey: String) {
+    @JvmField
     val rows: MutableList<OptionRow<*>> = ArrayList()
 
     open fun getTitle(): Component =

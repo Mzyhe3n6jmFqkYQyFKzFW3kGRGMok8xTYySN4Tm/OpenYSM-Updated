@@ -25,9 +25,4 @@ class AudioTrackData(
         2 -> AudioCodec.OPUS
         else -> AudioCodec.UNDEFINED
     }
-
-    fun getDuration(): Long = duration
-    fun getSampleRate(): Int = sampleRate
-    fun getCodec(): AudioCodec = codec
-    fun getData(): ByteBuffer? = data
 }

@@ -30,7 +30,7 @@ open class InstructionKeyFrameExecutor(private val list: MutableList<EventKeyFra
     open fun executeRemaining(evaluator: ExpressionEvaluator<AnimationContext<*>>, isClientSide: Boolean) {
         evaluator.entity().setIsClientSide(isClientSide)
         for (i in nextIndex until list.size) {
-            evalValues(evaluator, list[i].getEventData())
+            evalValues(evaluator, list[i].eventData)
         }
         evaluator.entity().setIsClientSide(false)
         nextIndex = list.size

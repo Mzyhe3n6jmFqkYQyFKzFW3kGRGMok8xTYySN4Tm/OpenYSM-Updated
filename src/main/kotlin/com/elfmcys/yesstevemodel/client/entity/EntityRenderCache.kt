@@ -32,7 +32,7 @@ object EntityRenderCache {
             } else {
                 geoEntity.tickModel()
                 if (geoEntity.supportsAsync() && geoEntity.isModelInitialized() && geoEntity.isModelReady()) {
-                    val entity = geoEntity.getEntity()
+                    val entity = geoEntity.entity
                     if (entity is AbstractClientPlayer) {
                         if (entity is LocalPlayer) {
                             if (!GeneralConfig.DISABLE_SELF_MODEL.get()) {

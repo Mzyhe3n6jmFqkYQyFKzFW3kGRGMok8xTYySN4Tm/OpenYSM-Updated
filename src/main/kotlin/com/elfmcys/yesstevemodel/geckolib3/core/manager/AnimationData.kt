@@ -7,12 +7,15 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 open class AnimationData {
     @JvmField
     var limbSwing: Float = 0.0f
+    @JvmField
     val animationControllers: MutableList<IAnimationController<*>> = ReferenceArrayList(0)
+    @JvmField
     val animationControllerMap: Object2ReferenceOpenHashMap<String, IAnimationController<*>> =
         Object2ReferenceOpenHashMap(0)
 
     @JvmField
     var startTick: Float = -1.0f
+    @JvmField
     var resetTickLength: Float = 3.0f
 
     open fun addAnimationController(value: IAnimationController<*>) {

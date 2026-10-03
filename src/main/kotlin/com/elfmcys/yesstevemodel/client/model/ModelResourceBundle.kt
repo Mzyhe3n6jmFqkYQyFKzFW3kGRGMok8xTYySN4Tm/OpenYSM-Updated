@@ -11,5 +11,4 @@ open class ModelResourceBundle(
     val translations: Map<String, Map<String, String>>
 ) {
     val metadata: Map<String, Map<String, String>> get() = translations
-    fun getMetadata(): Map<String, Map<String, String>> = translations
 }

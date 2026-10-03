@@ -131,7 +131,7 @@ object ModelPreviewRenderer {
         renderGround: Boolean
     ) {
         setPreviewMode(true)
-        val livingEntity = animatableEntity.getEntity() as LivingEntity
+        val livingEntity = animatableEntity.entity as LivingEntity
         val modelViewStack: Matrix4fStack = RenderSystem.getModelViewStack()
         modelViewStack.pushMatrix()
         modelViewStack.translate(x, y, 1250.0f)
@@ -266,7 +266,7 @@ object ModelPreviewRenderer {
         entityRenderDispatcher: EntityRenderDispatcher,
         bufferSource: MultiBufferSource
     ) {
-        val entity: Entity = animatableEntity.getEntity()
+        val entity: Entity = animatableEntity.entity
         val animationTracker: AnimationTracker = (animatableEntity as IPreviewAnimatable).getAnimationStateMachine()
         if (animationTracker.isCurrentAnimation("ride")) {
             AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.HORSE)) {
@@ -312,7 +312,7 @@ object ModelPreviewRenderer {
     ) {
         val savedEquipment: Array<ItemStack?>?
         setPreviewMode(true)
-        val livingEntity: LivingEntity = animatable.getEntity()
+        val livingEntity: LivingEntity = animatable.entity as LivingEntity
         val modelViewStack: Matrix4fStack = RenderSystem.getModelViewStack()
         modelViewStack.pushMatrix()
         modelViewStack.translate(x, y, 1050.0f)
@@ -415,7 +415,7 @@ object ModelPreviewRenderer {
         disablePreviewRotation: Boolean,
         hideEquipment: Boolean
     ) {
-        val entity: LivingEntity = animatable.getEntity()
+        val entity: LivingEntity = animatable.entity as LivingEntity
         val savedEquipment: Array<ItemStack?>?
         if (hideEquipment && entity is Player) {
             val slots = EquipmentSlot.entries
@@ -501,7 +501,7 @@ object ModelPreviewRenderer {
         renderGround: Boolean,
         partialTick: Float
     ) {
-        val entity: LivingEntity = animatable.getEntity()
+        val entity: LivingEntity = animatable.entity as LivingEntity
         val tracker: AnimationTracker = animatable.getAnimationStateMachine()
         val oldPose: Pose = entity.pose
         var newPose: Pose = oldPose

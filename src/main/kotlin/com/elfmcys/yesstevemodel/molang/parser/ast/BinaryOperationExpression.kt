@@ -1,8 +1,8 @@
 package com.elfmcys.yesstevemodel.molang.parser.ast
 
 open class BinaryOperationExpression(
-    val left: Expression,
-    val right: Expression
+    @JvmField val left: Expression,
+    @JvmField val right: Expression
 ) : Expression {
 
     override fun <R> visit(visitor: ExpressionVisitor<R>): R {

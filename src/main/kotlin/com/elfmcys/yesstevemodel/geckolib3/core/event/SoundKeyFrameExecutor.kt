@@ -13,11 +13,11 @@ open class SoundKeyFrameExecutor(
     open fun playSound(entity: AnimatableEntity<*>, currentTick: Float, playAudio: Boolean) {
         while (!reachEnd()) {
             val sound: EventKeyFrame<String> = soundKeyFrames[nextIndex]
-            if (sound.getStartTick() > currentTick) {
+            if (sound.startTick > currentTick) {
                 return
             }
             nextIndex++
-            val eventData = sound.getEventData()
+            val eventData = sound.eventData
             if (playAudio && eventData.isNotEmpty()) {
                 audioPlayerManager?.playSound(entity, 0, eventData, false, null)
             }

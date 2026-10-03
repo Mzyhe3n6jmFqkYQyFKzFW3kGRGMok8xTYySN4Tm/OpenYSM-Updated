@@ -5,14 +5,13 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 
-open class EntityFrameStateTracker<T : Entity>(var entity: T) {
+open class EntityFrameStateTracker<T : Entity>(@JvmField var entity: T) {
     private var currentTick: Int = 0
     private var lastPosition: Vec3? = null
-    var cachedModelId: String? = null
+    @JvmField var cachedModelId: String? = null
     @JvmField var currentTime: Float = 0.0f
     @JvmField var timeDelta: Float = 0.0f
-    var positionDelta: Vec3 = Vec3.ZERO
-        private set
+    @JvmField var positionDelta: Vec3 = Vec3.ZERO
     private val animatedEntities: IntOpenHashSet = IntOpenHashSet()
 
     open fun reset() {

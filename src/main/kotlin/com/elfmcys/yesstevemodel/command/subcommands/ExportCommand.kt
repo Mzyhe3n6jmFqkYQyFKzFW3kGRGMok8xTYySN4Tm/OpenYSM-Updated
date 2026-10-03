@@ -50,7 +50,7 @@ object ExportCommand {
             exportResult.message?.let {
                 YSMMessageFormatter.sendServerMessage(sourceStack, YSMMessageFormatter.withPrefix(it), false)
             }
-            if (exportResult.isSuccess()) {
+            if (exportResult.success) {
                 YSMMessageFormatter.sendServerMessage(
                     sourceStack,
                     Component.translatable("commands.yes_steve_model.export.success", exportResult.filePath),

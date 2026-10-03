@@ -26,25 +26,25 @@ import org.joml.Vector3f
 import kotlin.math.max
 
 open class AnimationControllerInstance(
-    var animatable: AnimatableEntity<*>,
+    @JvmField var animatable: AnimatableEntity<*>,
     transitionLengthTicks: Float,
-    var isScaleTransitionSpecial: Boolean = false
+    @JvmField var isScaleTransitionSpecial: Boolean = false
 ) {
-    val boneAnimationQueues: Int2ReferenceOpenHashMap<BoneAnimationQueue> = Int2ReferenceOpenHashMap()
-    val activeBoneAnimationQueues: ReferenceArrayList<BoneAnimationQueue> = ReferenceArrayList()
-    val context: AnimationControllerContext = AnimationControllerContext()
-    val defaultTransitionTick: Float = 3.0f
-    var animationState: AnimationState = AnimationState.IDLE
-    var tickOffset: Float = 0.0f
-    var transitionInterpolator: IInterpolable = TicksInterpolator(transitionLengthTicks)
-    var savedEndingTick: Float = 0.0f
-    var lastRequestedAnimation: Pair<ILoopType, String>? = null
-    var pendingAnimation: Pair<ILoopType, Animation>? = null
-    var currentAnimation: Animation? = null
-    var currentAnimationLoop: ILoopType? = null
-    var instructionExecutor: InstructionKeyFrameExecutor? = null
-    var soundExecutor: SoundKeyFrameExecutor? = null
-    var isAnimationFinished: Boolean = true
+    @JvmField val boneAnimationQueues: Int2ReferenceOpenHashMap<BoneAnimationQueue> = Int2ReferenceOpenHashMap()
+    @JvmField val activeBoneAnimationQueues: ReferenceArrayList<BoneAnimationQueue> = ReferenceArrayList()
+    @JvmField val context: AnimationControllerContext = AnimationControllerContext()
+    @JvmField val defaultTransitionTick: Float = 3.0f
+    @JvmField var animationState: AnimationState = AnimationState.IDLE
+    @JvmField var tickOffset: Float = 0.0f
+    @JvmField var transitionInterpolator: IInterpolable = TicksInterpolator(transitionLengthTicks)
+    @JvmField var savedEndingTick: Float = 0.0f
+    @JvmField var lastRequestedAnimation: Pair<ILoopType, String>? = null
+    @JvmField var pendingAnimation: Pair<ILoopType, Animation>? = null
+    @JvmField var currentAnimation: Animation? = null
+    @JvmField var currentAnimationLoop: ILoopType? = null
+    @JvmField var instructionExecutor: InstructionKeyFrameExecutor? = null
+    @JvmField var soundExecutor: SoundKeyFrameExecutor? = null
+    @JvmField var isAnimationFinished: Boolean = true
 
     constructor(animatable: AnimatableEntity<*>, transitionLengthTicks: Float) : this(animatable, transitionLengthTicks, false)
 

@@ -36,15 +36,6 @@ class AnimationState(
     val preExpressions: List<IValue> = ReferenceLists.unmodifiable(ReferenceArrayList.wrap(onEntry))
     val postExpressions: List<IValue> = ReferenceLists.unmodifiable(ReferenceArrayList.wrap(onExit))
 
-    fun getHashId(): Int = hashId
-    fun getName(): String = name
-    fun getAnimations(): List<Pair<String, IValue>> = animations
-    fun getTransitions(): List<IntReferenceImmutablePair<IValue>> = transitions
-    fun getSoundEffects(): List<String> = soundEffects
-    fun getPreExpressions(): List<IValue> = preExpressions
-    fun getPostExpressions(): List<IValue> = postExpressions
-    fun getBlendTransition(): IInterpolable = blendTransition
-
     companion object {
         private val BUILTIN_ID = StringPool.computeIfAbsent("ysm-builtin")
         private const val ENTRY_PREFIX = "ysm-entry-"

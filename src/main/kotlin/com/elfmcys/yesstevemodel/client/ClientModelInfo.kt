@@ -16,11 +16,5 @@ class ClientModelInfo(
     val avatarTextures: MutableMap<String, OuterFileTexture>,
     val guiTextures: MutableMap<String, OuterFileTexture>
 ) {
-    fun getMainModelData(): MainModelData = mainModelData
     fun getExtraItemModels(): Array<ProjectileModelFiles> = projectileModelFiles
-    fun getVehicleModelFiles(): Array<VehicleModelFiles> = vehicleModelFiles
-    fun getExtraResources(): ModelExtraResourcesFile = extraResources
-    fun getAvatarTextures(): MutableMap<String, OuterFileTexture> = avatarTextures
-    fun getGuiTextures(): MutableMap<String, OuterFileTexture> = guiTextures
-    fun getInfo(): ServerModelInfo = info
 }
