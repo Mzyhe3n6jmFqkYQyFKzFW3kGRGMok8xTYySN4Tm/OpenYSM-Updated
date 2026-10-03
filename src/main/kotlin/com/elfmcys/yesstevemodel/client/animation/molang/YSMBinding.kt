@@ -11,7 +11,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.context.IContext
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.variable.IValueEvaluator
 import com.elfmcys.yesstevemodel.geckolib3.util.MathInterpolation
-import com.elfmcys.yesstevemodel.mixin.client.ThrowableItemProjectileAccessor
 import com.elfmcys.yesstevemodel.util.CameraUtil
 import com.elfmcys.yesstevemodel.util.accessors.ProjectileStateAccessor
 import net.fabricmc.loader.api.FabricLoader
@@ -368,11 +367,8 @@ object YSMBinding : ContextBinding() {
     @JvmStatic
     fun getThrowableItemId(context: IContext<ThrowableItemProjectile>): String {
         val projectile = context.entity()
-        if (projectile is ThrowableItemProjectileAccessor) {
-            val key = BuiltInRegistries.ITEM.getKey(projectile.invokeGetDefaultItem())
-            return key.toString()
-        }
-        return StringPool.EMPTY
+        val key = BuiltInRegistries.ITEM.getKey(projectile.defaultItem)
+        return key.toString()
     }
 
     @JvmStatic
@@ -485,6 +481,7 @@ object YSMBinding : ContextBinding() {
         return null
     }
 
+    // TODO: Always null don't know why
     @JvmStatic
     fun dumpMods(context: IContext<*>): Any? {
         if (!context.isDebugMode()) return null

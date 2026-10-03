@@ -2,7 +2,6 @@ package com.elfmcys.yesstevemodel.network
 
 import com.elfmcys.yesstevemodel.NameSpaces
 import com.elfmcys.yesstevemodel.access.ServerCommonPacketListenerImplAccessor
-import com.elfmcys.yesstevemodel.mixin.ConnectionAccessor
 import com.elfmcys.yesstevemodel.network.message.*
 import io.netty.util.AttributeKey
 import net.minecraft.client.Minecraft
@@ -28,9 +27,8 @@ object NetworkHandler {
     var clientHandshakeComplete: Boolean = false
 
     @JvmStatic
-    fun setChannelVersion(connection: Connection, str: String): Boolean {
-        return (connection as ConnectionAccessor).`ysm$getChannel`().attr(CHANNEL_VERSION_KEY).compareAndSet(null, str)
-    }
+    fun setChannelVersion(connection: Connection, str: String): Boolean =
+        connection.channel.attr(CHANNEL_VERSION_KEY).compareAndSet(null, str)
 
     @JvmStatic
     fun markClientHandshakeComplete() {
@@ -44,7 +42,7 @@ object NetworkHandler {
 
     @JvmStatic
     fun isPlayerConnected(serverPlayer: ServerPlayer): Boolean {
-        return serverPlayer.connection != null && isConnectionValid((serverPlayer.connection as ServerCommonPacketListenerImplAccessor).`ysm$getConnection`())
+        return isConnectionValid((serverPlayer.connection as ServerCommonPacketListenerImplAccessor).`ysm$getConnection`())
     }
 
     @JvmStatic
@@ -57,11 +55,10 @@ object NetworkHandler {
     }
 
     @JvmStatic
-    fun isConnectionValid(connection: Connection?): Boolean {
-        return connection != null && (connection as ConnectionAccessor).`ysm$getChannel`() != null && VERSION == (connection as ConnectionAccessor).`ysm$getChannel`()
-            .attr(CHANNEL_VERSION_KEY).get()
-    }
+    fun isConnectionValid(connection: Connection?): Boolean =
+        connection?.channel != null && VERSION == connection.channel.attr(CHANNEL_VERSION_KEY).get()
 
+    // TODO: Replace init to kotlin init
     @JvmStatic
     fun init() {
         YSMChannel.init(CHANNEL_ID, VERSION)

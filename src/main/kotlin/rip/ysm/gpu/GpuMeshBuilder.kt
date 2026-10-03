@@ -1,8 +1,8 @@
 package rip.ysm.gpu
 
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
-import com.elfmcys.yesstevemodel.mixin.client.GlBufferAccessor
 import com.mojang.blaze3d.buffers.GpuBuffer
+import com.mojang.blaze3d.opengl.GlBuffer
 import com.mojang.blaze3d.opengl.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import org.lwjgl.opengl.*
@@ -28,10 +28,6 @@ object GpuMeshBuilder {
 
         val vbuf = GeoModel.nGetGpuMeshVertexBuffer(handle)
         val ibuf = GeoModel.nGetGpuMeshIndexBuffer(handle)
-        if (vbuf == null || ibuf == null) {
-            GeoModel.nFreeGpuMesh(handle)
-            return null
-        }
         vbuf.order(ByteOrder.nativeOrder())
         ibuf.order(ByteOrder.nativeOrder())
 
@@ -43,7 +39,7 @@ object GpuMeshBuilder {
             ibuf
         )
         val ssbo = GlStateManager._glGenBuffers()
-        val iboHandle = (ibo as GlBufferAccessor).`ysm$getHandle`()
+        val iboHandle = (ibo as GlBuffer).handle
 
         GL30.glBindVertexArray(vao)
         GlStateManager._glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo)
@@ -70,7 +66,22 @@ object GpuMeshBuilder {
         GlStateManager._glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, 0)
         GeoModel.nReleaseGpuMeshScratch(handle)
 
-        return GpuMesh(handle, vao, vbo, ibo, ssbo, vertexCount, indexCount, boneCount, meta[3], meta[4], meta[5], meta[6], meta[7], meta[8])
+        return GpuMesh(
+            handle,
+            vao,
+            vbo,
+            ibo,
+            ssbo,
+            vertexCount,
+            indexCount,
+            boneCount,
+            meta[3],
+            meta[4],
+            meta[5],
+            meta[6],
+            meta[7],
+            meta[8]
+        )
     }
 
     private fun serializeModel(model: GeoModel): ByteBuffer {

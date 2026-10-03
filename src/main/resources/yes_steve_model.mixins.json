@@ -11,21 +11,16 @@
     "client.BufferSourceMixin",
     "client.EntityRenderDispatcherMixin",
     "client.EntityRendererMixin",
-    "client.GlBufferAccessor",
     "client.GuiEntityRendererMixin",
     "client.InventoryScreenMixin",
     "client.KeyboardHandlerMixin",
-    "client.LivingEntityAccessor",
     "client.LivingRendererMixin",
     "client.MouseHandlerMixin",
     "client.PauseScreenMixin",
-    "client.ScreenAccessor",
-    "client.ThrowableItemProjectileAccessor",
     "client.WorldRendererMixin"
   ],
   "mixins": [
     "AbstractArrowEntityMixin",
-    "ConnectionAccessor",
     "ProjectileEntityMixin",
     "ServerCommonPacketListenerImplMixin",
     "ServerPlayerMixin"

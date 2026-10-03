@@ -1,7 +1,8 @@
+@file:Suppress("unused")
+
 package rip.ysm.gpu
 
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
-import com.elfmcys.yesstevemodel.mixin.client.GlBufferAccessor
 import com.mojang.blaze3d.buffers.GpuBufferSlice
 import com.mojang.blaze3d.opengl.*
 import com.mojang.blaze3d.pipeline.RenderTarget
@@ -171,7 +172,7 @@ object GpuRenderPath {
         val lightsSlice: GpuBufferSlice? = RenderSystem.getShaderLights()
         val lightsBuf = lightsSlice?.buffer()
         if (lightsBuf is GlBuffer) {
-            val lightsHandle = (lightsBuf as GlBufferAccessor).`ysm$getHandle`()
+            val lightsHandle = lightsBuf.handle
             GL30.glBindBufferRange(
                 GL31.GL_UNIFORM_BUFFER,
                 BoneSkinShader.LIGHT_UBO_BINDING,
@@ -184,7 +185,7 @@ object GpuRenderPath {
         val projSlice: GpuBufferSlice? = RenderSystem.getProjectionMatrixBuffer()
         val projBuf = projSlice?.buffer()
         if (projBuf is GlBuffer) {
-            val projHandle = (projBuf as GlBufferAccessor).`ysm$getHandle`()
+            val projHandle = projBuf.handle
             GL30.glBindBufferRange(
                 GL31.GL_UNIFORM_BUFFER,
                 BoneSkinShader.PROJ_UBO_BINDING,

@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AvatarRenderer.class)
 public abstract class ItemInHandRendererMixin {
-
     @Inject(method = "renderRightHand", at = @At("HEAD"), cancellable = true)
     public void ysm$onRenderPlayerArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, Identifier identifier, boolean bl, CallbackInfo ci) {
         if (ysm$dispatchHandRender(poseStack, submitNodeCollector, packedLight, HumanoidArm.RIGHT)) ci.cancel();

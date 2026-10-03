@@ -8,7 +8,6 @@ import com.elfmcys.yesstevemodel.client.gui.button.TextureButton
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
-import com.elfmcys.yesstevemodel.mixin.client.ScreenAccessor
 import com.elfmcys.yesstevemodel.util.data.OrderedStringMap
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
@@ -158,7 +157,8 @@ open class PlayerTextureScreen(
                 colorButton.setTooltipLines(
                     mutableListOf(
                         Component.translatable(descKey).withStyle(ChatFormatting.GOLD),
-                        Component.translatable("gui.yes_steve_model.texture.button.animation_name", animKey).withStyle(ChatFormatting.GRAY)
+                        Component.translatable("gui.yes_steve_model.texture.button.animation_name", animKey)
+                            .withStyle(ChatFormatting.GRAY)
                     )
                 )
             }
@@ -186,7 +186,7 @@ open class PlayerTextureScreen(
         if (!modelHolder.getAnimationStateMachine().isCurrentAnimation(currentAnimation)) {
             modelHolder.getAnimationStateMachine().setCurrentAnimation(currentAnimation)
         }
-        renderTexturePreview(guiGraphics, minecraft.deltaTracker?.getGameTimeDeltaPartialTick(false) ?: partialTick)
+        renderTexturePreview(guiGraphics, minecraft.deltaTracker.getGameTimeDeltaPartialTick(false) ?: partialTick)
 
         val texPageStr = "${textureCurrentPage + 1}/${textureMaxPage + 1}"
         val texPageX = guiLeft + 302 + ((118 - font.width(texPageStr)) / 2)
@@ -200,7 +200,6 @@ open class PlayerTextureScreen(
 
         super.render(guiGraphics, mouseX, mouseY, partialTick)
 
-        val renderables = (this as ScreenAccessor).`ysm$getRenderables`()
         renderables.forEach { renderable ->
             if (renderable is FlatColorButton) {
                 renderable.renderTooltip(guiGraphics, this, mouseX, mouseY)

@@ -9,7 +9,6 @@ import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
 import com.elfmcys.yesstevemodel.client.ExportResult
 import com.elfmcys.yesstevemodel.config.ServerConfig
-import com.elfmcys.yesstevemodel.mixin.ConnectionAccessor
 import com.elfmcys.yesstevemodel.model.format.ServerAnimationInfo
 import com.elfmcys.yesstevemodel.model.format.ServerModelData
 import com.elfmcys.yesstevemodel.model.format.UUIDComponentData
@@ -1189,42 +1188,26 @@ object ServerModelManager {
     private fun sendPacketReliably(connection: Connection, obj: Any, pendingTransfer: PendingTransfer): Boolean {
         if (!pendingTransfer.hasStarted) {
             pendingTransfer.hasStarted = true
-            pendingTransfer.pendingBytes =
-                (connection as ConnectionAccessor).`ysm$getChannel`().unsafe().outboundBuffer()
-                    .totalPendingWriteBytes() + 65536
+            pendingTransfer.pendingBytes = connection.channel.unsafe().outboundBuffer().totalPendingWriteBytes() + 65536
         }
 
         val atomicInteger = AtomicInteger(0)
         while (connection.isConnected) {
-            if ((connection as ConnectionAccessor).`ysm$getChannel`().unsafe().outboundBuffer()
-                    .size() > pendingTransfer.pendingBytes
-            ) {
-                if (!YSMThreadPool.awaitTermination(10)) {
-                    return false
-                }
+            if (connection.channel.unsafe().outboundBuffer().size() > pendingTransfer.pendingBytes) {
+                if (!YSMThreadPool.awaitTermination(10)) return false
             } else {
-                try {
+                runCatching {
                     connection.send(obj as Packet<*>) { future ->
-                        if (future.isSuccess) {
-                            atomicInteger.set(1)
-                        } else {
-                            atomicInteger.set(-1)
-                        }
+                        if (future.isSuccess) atomicInteger.set(1) else atomicInteger.set(-1)
                     }
                     while (atomicInteger.get() == 0) {
-                        if (!YSMThreadPool.awaitTermination(5)) {
-                            return false
-                        }
+                        if (!YSMThreadPool.awaitTermination(5)) return false
                     }
-                    if (atomicInteger.get() == 1) {
-                        return true
-                    }
-                    if (!YSMThreadPool.awaitTermination(100)) {
-                        return false
-                    }
+                    if (atomicInteger.get() == 1) return true
+                    if (!YSMThreadPool.awaitTermination(100)) return false
                     atomicInteger.set(0)
-                } catch (th: Throwable) {
-                    th.printStackTrace()
+                }.onFailure {
+                    Constants.LOGGER.error("Failed to send packet: ${it.localizedMessage}", it)
                     return false
                 }
             }

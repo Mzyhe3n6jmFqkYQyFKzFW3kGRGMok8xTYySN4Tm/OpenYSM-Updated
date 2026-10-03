@@ -1,8 +1,10 @@
+@file:Suppress("unused")
+
 package rip.ysm.gpu
 
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
-import com.elfmcys.yesstevemodel.mixin.client.GlBufferAccessor
 import com.mojang.blaze3d.buffers.GpuBuffer
+import com.mojang.blaze3d.opengl.GlBuffer
 import com.mojang.blaze3d.opengl.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import org.lwjgl.opengl.GL45
@@ -55,15 +57,13 @@ class GpuMesh(
         return self + partMask3Count
     }
 
-    fun iboHandle(): Int {
-        return (ibo as GlBufferAccessor).`ysm$getHandle`()
-    }
+    fun iboHandle(): Int = (ibo as GlBuffer).handle
 
     fun xformVbo(): GpuBuffer? = xformVbo
 
     fun xformVboHandle(): Int {
         val buffer = xformVbo ?: return 0
-        return (buffer as GlBufferAccessor).`ysm$getHandle`()
+        return (buffer as GlBuffer).handle
     }
 
     fun ensureXformBuffers() {
