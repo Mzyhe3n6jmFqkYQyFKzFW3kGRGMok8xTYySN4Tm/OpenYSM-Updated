@@ -1,7 +1,6 @@
 package com.elfmcys.yesstevemodel.mixin;
 
 import com.elfmcys.yesstevemodel.YesSteveModel;
-import rip.ysm.compat.touhoulittlemaid.TouhouMaidCompat;
 import com.elfmcys.yesstevemodel.event.CapabilityEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -10,12 +9,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import rip.ysm.compat.touhoulittlemaid.TouhouMaidCompat;
 
 @Mixin(Projectile.class)
 public class ProjectileEntityMixin {
     @Inject(at = @At("RETURN"), method = "setOwner(Lnet/minecraft/world/entity/Entity;)V")
     private void onSetOwner(Entity entity, CallbackInfo callbackInfo) {
-        Projectile projectile = (Projectile) (Object) this;
+        var projectile = (Projectile) (Object) this;
         if (!YesSteveModel.isAvailable() || projectile == null || projectile.level() == null || projectile.level().isClientSide())
             return;
         if (entity instanceof ServerPlayer) {

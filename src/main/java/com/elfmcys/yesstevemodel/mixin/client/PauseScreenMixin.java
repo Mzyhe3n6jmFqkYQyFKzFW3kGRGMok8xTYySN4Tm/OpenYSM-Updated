@@ -1,7 +1,6 @@
 package com.elfmcys.yesstevemodel.mixin.client;
 
 import com.elfmcys.yesstevemodel.client.gui.PauseScreenButtonBuilder;
-import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -20,7 +19,7 @@ public abstract class PauseScreenMixin extends Screen {
     private void init(CallbackInfo callbackInfo) {
         var buttons = PauseScreenButtonBuilder.createButtons((PauseScreen) (Object) this);
         if (buttons != null && !buttons.isEmpty()) {
-            for (Button button : buttons) {
+            for (var button : buttons) {
                 addRenderableWidget(button);
             }
         }

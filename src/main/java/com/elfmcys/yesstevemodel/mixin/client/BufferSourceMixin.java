@@ -20,7 +20,7 @@ public class BufferSourceMixin implements BufferSourceAccessor {
     @Override
     @Unique
     public void ysm$initialize() {
-        for (RenderType renderType : fixedBuffers.keySet()) {
+        for (var renderType : fixedBuffers.keySet()) {
             ((MultiBufferSource.BufferSource) (Object) this).endBatch(renderType);
         }
     }
