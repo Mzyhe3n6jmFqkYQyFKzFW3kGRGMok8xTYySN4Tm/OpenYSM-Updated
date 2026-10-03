@@ -16,7 +16,7 @@ interface IAnimationController<T : AnimatableEntity<*>> {
         object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>
     )
 
-    fun process(event: AnimationEvent<T>, evaluator: ExpressionEvaluator<AnimationContext<*>>, isFirstPerson: Boolean)
+    fun process(event: AnimationEvent<T>, evaluator: ExpressionEvaluator<AnimationContext<*>>, isSomething: Boolean)
     fun forEachTransform(consumer: (BoneTransformProvider) -> Unit)
     fun reset()
     fun isDeprecatedMode(): Boolean = false

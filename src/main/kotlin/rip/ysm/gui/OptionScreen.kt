@@ -50,10 +50,10 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
     private var draggingRowScrollbar: Boolean = false
     private var draggingTabScrollbar: Boolean = false
 
-    var applyBtn: FooterButton? = null
-    var undoBtn: FooterButton? = null
-    var saveBtn: FooterButton? = null
-    var cancelBtn: FooterButton? = null
+    lateinit var applyBtn: FooterButton
+    lateinit var undoBtn: FooterButton
+    lateinit var saveBtn: FooterButton
+    lateinit var cancelBtn: FooterButton
 
     protected abstract fun registerGroups()
 
@@ -145,7 +145,7 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
             ::onCancel
         )
         saveBtn = FooterButton(
-            cancelBtn!!.x - btnW - gap,
+            cancelBtn.x - btnW - gap,
             footerY,
             btnW,
             btnH,
@@ -153,7 +153,7 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
             ::onSave
         )
         applyBtn = FooterButton(
-            saveBtn!!.x - btnW - gap,
+            saveBtn.x - btnW - gap,
             footerY,
             btnW,
             btnH,
@@ -168,10 +168,10 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
             Component.translatable("gui.yes_steve_model.config.undo"),
             ::onUndo
         )
-        addRenderableWidget(undoBtn!!)
-        addRenderableWidget(applyBtn!!)
-        addRenderableWidget(saveBtn!!)
-        addRenderableWidget(cancelBtn!!)
+        addRenderableWidget(undoBtn)
+        addRenderableWidget(applyBtn)
+        addRenderableWidget(saveBtn)
+        addRenderableWidget(cancelBtn)
 
         if (groups.isNotEmpty()) {
             var toSelect = groups[0]
@@ -199,12 +199,8 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
     open fun showTabs(): Boolean = true
 
     open fun selectGroup(group: OptionGroup) {
-        if (activeGroup == group && activeRows.isNotEmpty()) {
-            return
-        }
-        for (r in activeRows) {
-            r.closeOverlay()
-        }
+        if (activeGroup == group && activeRows.isNotEmpty()) return
+        for (r in activeRows) r.closeOverlay()
         activeRows.clear()
         activeGroup = group
         lastSelectedGroup[javaClass] = group.translationKey
@@ -213,9 +209,7 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
             val tb = tabButtons[i]
             val isSelected = tb.group == group
             tb.selected = isSelected
-            if (isSelected) {
-                selectedIndex = i
-            }
+            if (isSelected) selectedIndex = i
         }
         if (selectedIndex >= 0 && maxTabScroll > 0) {
             val sel = tabButtons[selectedIndex]
@@ -287,7 +281,7 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
         if (lastFrameNanos == 0L) {
             lastFrameNanos = now
         }
-        val dt = min(0.1f, (now - lastFrameNanos) / 1.0e9f.toFloat())
+        val dt = min(0.1f, (now - lastFrameNanos) / 1.0e9f)
         lastFrameNanos = now
         val lerp = 1.0f - exp(-dt * 18.0f)
         rowScrollDisplay += (rowScrollOffset - rowScrollDisplay) * lerp
@@ -311,8 +305,8 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
             }
         }
         val dirty = anyDirty()
-        applyBtn?.active = dirty
-        undoBtn?.active = activeGroup?.isDirty() == true
+        applyBtn.active = dirty
+        undoBtn.active = activeGroup?.isDirty() == true
         super.render(g, mouseX, mouseY, partialTick)
         if (tabButtons.isNotEmpty()) {
             val inTabArea = mouseX in tabAreaLeft until tabAreaRight && mouseY in tabAreaTop until tabAreaBottom
@@ -568,18 +562,16 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
-        val delta = scrollY
         for (row in activeRows) {
-            if (row.isOverlayOpen() && row.overlayMouseScrolled(mouseX, mouseY, delta, rowScrollDisplay)) {
+            if (row.isOverlayOpen() && row.overlayMouseScrolled(mouseX, mouseY, scrollY, rowScrollDisplay))
                 return true
-            }
         }
         if (mouseX >= tabAreaLeft && mouseX < tabAreaRight && mouseY >= tabAreaTop && mouseY < tabAreaBottom) {
-            tabScrollOffset = Mth.clamp((tabScrollOffset - delta * 20).toInt(), 0, maxTabScroll)
+            tabScrollOffset = Mth.clamp((tabScrollOffset - scrollY * 20).toInt(), 0, maxTabScroll)
             return true
         }
         if (mouseX >= rowAreaLeft && mouseX < rowAreaRight && mouseY >= rowAreaTop && mouseY < rowAreaBottom) {
-            rowScrollOffset = Mth.clamp((rowScrollOffset - delta * 20).toInt(), 0, maxRowScroll)
+            rowScrollOffset = Mth.clamp((rowScrollOffset - scrollY * 20).toInt(), 0, maxRowScroll)
             return true
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
@@ -622,9 +614,7 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
 
     override fun shouldCloseOnEsc(): Boolean = true
 
-    override fun onClose() {
-        onCancel()
-    }
+    override fun onClose() = onCancel()
 
     override fun isPauseScreen(): Boolean = false
 

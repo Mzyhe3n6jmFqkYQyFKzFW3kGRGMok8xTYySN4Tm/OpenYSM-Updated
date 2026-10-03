@@ -7,14 +7,14 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Util
-import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-class ModelUploadScreen(private val parentScreen: Screen?) : Screen(Component.literal("upload")), ModelUploadSession.Listener {
+class ModelUploadScreen(private val parentScreen: Screen?) : Screen(Component.literal("upload")),
+    ModelUploadSession.Listener {
     private var lastFlashTime = 0L
     private var error = ""
     private var displayedProgress = 0f
@@ -24,7 +24,7 @@ class ModelUploadScreen(private val parentScreen: Screen?) : Screen(Component.li
         clearWidgets()
         ModelUploadSession.addListener(this)
         addRenderableWidget(FlatColorButton(width - 70, 10, 60, 18, Component.literal("Back")) {
-            minecraft?.setScreen(parentScreen)
+            minecraft.setScreen(parentScreen)
         })
     }
 
@@ -54,7 +54,7 @@ class ModelUploadScreen(private val parentScreen: Screen?) : Screen(Component.li
             return
         }
 
-        val data: ByteArray = runCatching {
+        val data = runCatching {
             Files.readAllBytes(path)
         }.getOrElse { e ->
             error = "Failed to read file: ${e.message}"
@@ -124,7 +124,9 @@ class ModelUploadScreen(private val parentScreen: Screen?) : Screen(Component.li
         guiGraphics.drawString(font, sub, cx - sw / 2, cy + 22, 0xFFAAAAAA.toInt())
 
         if (ModelUploadSession.hasServerLimits()) {
-            val limit = Component.literal("Size limit: " + ModelUploadSession.formatBytes(ModelUploadSession.lastMaxTotalBytes)).withStyle(ChatFormatting.DARK_GRAY)
+            val limit =
+                Component.literal("Size limit: " + ModelUploadSession.formatBytes(ModelUploadSession.lastMaxTotalBytes))
+                    .withStyle(ChatFormatting.DARK_GRAY)
             val lw = font.width(limit)
             guiGraphics.drawString(font, limit, cx - lw / 2, cy + 36, 0xFFFFFFFF.toInt())
         }
@@ -186,7 +188,8 @@ class ModelUploadScreen(private val parentScreen: Screen?) : Screen(Component.li
         guiGraphics.fill(barX, barY, barX + 1, barY + barH, -1)
         guiGraphics.fill(barX + barW - 1, barY, barX + barW, barY + barH, -1)
 
-        val stat = "${ModelUploadSession.formatBytes(session.getSentBytes())} / ${ModelUploadSession.formatBytes(session.getTotalBytes())}"
+        val stat =
+            "${ModelUploadSession.formatBytes(session.getSentBytes())} / ${ModelUploadSession.formatBytes(session.getTotalBytes())}"
         val statW = font.width(stat)
         guiGraphics.drawString(font, stat, cx - statW / 2, barY + barH + 6, 0xFFAAAAAA.toInt())
     }
@@ -194,7 +197,7 @@ class ModelUploadScreen(private val parentScreen: Screen?) : Screen(Component.li
     override fun isPauseScreen(): Boolean = false
 
     override fun onClose() {
-        minecraft?.setScreen(parentScreen)
+        minecraft.setScreen(parentScreen)
     }
 
     companion object {

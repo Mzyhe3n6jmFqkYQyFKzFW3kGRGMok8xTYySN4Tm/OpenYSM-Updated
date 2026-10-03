@@ -3,9 +3,7 @@ package com.elfmcys.yesstevemodel.network.message
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import com.elfmcys.yesstevemodel.model.ServerModelManager
-import com.elfmcys.yesstevemodel.util.data.OrderedStringMap
 import net.minecraft.network.FriendlyByteBuf
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import org.apache.commons.lang3.StringUtils
 import rip.ysm.api.network.PacketContext
@@ -52,7 +50,7 @@ class C2SPlayAnimationPacket(
         @JvmStatic
         fun handleCapability(message: C2SPlayAnimationPacket, sender: ServerPlayer) {
             if (message.entityId != -1) {
-                val entity = (sender.level() as ServerLevel).getEntity(message.entityId) ?: return
+                val entity = sender.level().getEntity(message.entityId) ?: return
                 if (TouhouMaidCompat.isMaidEntity(entity)) {
                     TouhouMaidCompat.registerAnimationRoulette(entity, message.category, message.animationIndex)
                 }
@@ -65,9 +63,9 @@ class C2SPlayAnimationPacket(
                     ServerModelManager[modelInfoCap.getModelId()]?.let { serverModelCap ->
                         val modelProperties = serverModelCap.getLoadedModelData().modelProperties
                         val extraAnimationClassify = modelProperties.extraAnimationClassify
-                        val extraAnimations: OrderedStringMap<String, String> =
+                        val extraAnimations =
                             if (StringUtils.isNotBlank(message.category) && extraAnimationClassify.containsKey(message.category)) {
-                                extraAnimationClassify[message.category]!!
+                                extraAnimationClassify[message.category] ?: return@let
                             } else {
                                 modelProperties.extraAnimation
                             }

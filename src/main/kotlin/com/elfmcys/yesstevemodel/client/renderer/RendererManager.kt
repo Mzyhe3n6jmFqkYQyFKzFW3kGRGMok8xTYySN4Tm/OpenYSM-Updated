@@ -5,7 +5,6 @@ import com.elfmcys.yesstevemodel.YesSteveModel
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.resources.Identifier
 import net.minecraft.server.packs.PackType
@@ -29,6 +28,7 @@ object RendererManager {
     @JvmStatic
     fun register() {
         if (PlatformAPI.isServer()) return
+        // TODO: interface ResourceManagerHelper : Any' is deprecated. Deprecated in Java.
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES)
             .registerReloadListener(object : SimpleSynchronousResourceReloadListener {
                 override fun getFabricId(): Identifier =
@@ -54,7 +54,7 @@ object RendererManager {
             return
         }
         val minecraft = Minecraft.getInstance()
-        val entityRenderDispatcher: EntityRenderDispatcher = minecraft.entityRenderDispatcher
+        val entityRenderDispatcher = minecraft.entityRenderDispatcher
         val context = EntityRendererProvider.Context(
             entityRenderDispatcher,
             minecraft.itemModelResolver,

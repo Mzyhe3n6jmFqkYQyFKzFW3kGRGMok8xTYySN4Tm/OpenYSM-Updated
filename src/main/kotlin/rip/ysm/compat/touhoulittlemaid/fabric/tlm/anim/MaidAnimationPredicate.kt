@@ -17,19 +17,12 @@ import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 
 @Environment(EnvType.CLIENT)
 open class MaidAnimationPredicate : IAnimationPredicate<MaidAnimatable> {
-
     override fun predicate(event: AnimationEvent<MaidAnimatable>, evaluator: ExpressionEvaluator<*>?): PlayState {
         val entity: EntityMaid = event.getAnimatable().entity
-        if (entity == null || event.getAnimatable() is IPreviewAnimatable) {
-            return PlayState.STOP
-        }
-        if (entity.renderState != MaidRenderState.ENTITY) {
-            return PlayState.STOP
-        }
+        if (event.getAnimatable() is IPreviewAnimatable) return PlayState.STOP
+        if (entity.renderState != MaidRenderState.ENTITY) return PlayState.STOP
         val vehicle = (entity as LivingEntity).vehicle
-        if (vehicle != null && vehicle.isAlive) {
-            return PlayState.STOP
-        }
+        if (vehicle != null && vehicle.isAlive) return PlayState.STOP
         for (priority in 0 until PRIORITY_BUCKETS) {
             for (animationState in PRIORITY_HANDLERS[priority]) {
                 if (animationState.predicate.test(entity, event)) {

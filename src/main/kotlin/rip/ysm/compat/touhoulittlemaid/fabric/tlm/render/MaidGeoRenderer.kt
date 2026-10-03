@@ -3,15 +3,11 @@ package rip.ysm.compat.touhoulittlemaid.fabric.tlm.render
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
 import com.elfmcys.yesstevemodel.client.renderer.RenderContext
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
-import com.elfmcys.yesstevemodel.geckolib3.core.util.Color
 import com.elfmcys.yesstevemodel.geckolib3.geo.IGeoRenderer
-import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel
-import com.elfmcys.yesstevemodel.geckolib3.model.provider.data.EntityModelData
 import com.elfmcys.yesstevemodel.geckolib3.util.EModelRenderCycle
 import com.elfmcys.yesstevemodel.geckolib3.util.IRenderCycle
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.gecko.YsmMaidLayerBridge
 import com.github.tartaricacid.touhoulittlemaid.client.renderer.entity.state.EntityMaidRenderState
-import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.GeoLayerRenderer
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.IGeoEntity
 import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.IGeoEntityRenderer
@@ -24,17 +20,15 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.SubmitNodeCollector
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState
-import net.minecraft.client.renderer.rendertype.RenderType
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.Direction
-import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.Pose
 import org.joml.Matrix4f
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidRenderStore
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.anim.MaidPoseOffset
+import kotlin.math.cos
 
 @Environment(EnvType.CLIENT)
 open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<EntityMaidRenderState> {
@@ -45,10 +39,7 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
     private var currentModelRenderCycle: IRenderCycle = EModelRenderCycle.INITIAL
 
     override fun getGeoEntity(state: EntityMaidRenderState): IGeoEntity? {
-        val maid: EntityMaid? = state.maid
-        if (maid == null) {
-            return null
-        }
+        val maid = state.maid ?: return null
         return MaidRenderStore.getOrCreate(maid)
     }
 
@@ -64,11 +55,8 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
         collector: SubmitNodeCollector,
         packedLight: Int
     ) {
-        val maid: EntityMaid? = state.maid
-        if (maid == null) {
-            return
-        }
-        val animatable: MaidAnimatable = MaidRenderStore.getOrCreate(maid)
+        val maid = state.maid ?: return
+        val animatable = MaidRenderStore.getOrCreate(maid)
 
         val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
         RenderContext.enter(collector, state.camera)
@@ -91,12 +79,7 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
         collector: SubmitNodeCollector,
         packedLight: Int
     ) {
-        val maid: EntityMaid = animatable.entity
-        if (maid == null) {
-            return
-        }
-
-        val vanillaMaid: LivingEntity = maid
+        val maid = animatable.entity
         val vanillaState: LivingEntityRenderState = state
         val syncRotationsForPreview = ModelPreviewRenderer.isPreview()
         var savedYBodyRot = 0.0f
@@ -108,25 +91,25 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
         var savedXRot = 0.0f
         var savedXRotO = 0.0f
         if (syncRotationsForPreview) {
-            savedYBodyRot = vanillaMaid.yBodyRot
-            savedYBodyRotO = vanillaMaid.yBodyRotO
-            savedYHeadRot = vanillaMaid.yHeadRot
-            savedYHeadRotO = vanillaMaid.yHeadRotO
-            savedYRot = vanillaMaid.yRot
-            savedYRotO = vanillaMaid.yRotO
-            savedXRot = vanillaMaid.xRot
-            savedXRotO = vanillaMaid.xRotO
+            savedYBodyRot = maid.yBodyRot
+            savedYBodyRotO = maid.yBodyRotO
+            savedYHeadRot = maid.yHeadRot
+            savedYHeadRotO = maid.yHeadRotO
+            savedYRot = maid.yRot
+            savedYRotO = maid.yRotO
+            savedXRot = maid.xRot
+            savedXRotO = maid.xRotO
 
             val bodyRot = vanillaState.bodyRot
             val headYaw = vanillaState.bodyRot + vanillaState.yRot
-            vanillaMaid.yBodyRot = bodyRot
-            vanillaMaid.yBodyRotO = bodyRot
-            vanillaMaid.yHeadRot = headYaw
-            vanillaMaid.yHeadRotO = headYaw
-            vanillaMaid.yRot = headYaw
-            vanillaMaid.yRotO = headYaw
-            vanillaMaid.xRot = vanillaState.xRot
-            vanillaMaid.xRotO = vanillaState.xRot
+            maid.yBodyRot = bodyRot
+            maid.yBodyRotO = bodyRot
+            maid.yHeadRot = headYaw
+            maid.yHeadRotO = headYaw
+            maid.yRot = headYaw
+            maid.yRotO = headYaw
+            maid.xRot = vanillaState.xRot
+            maid.xRotO = vanillaState.xRot
         }
 
         val event: AnimationEvent<*>?
@@ -134,14 +117,14 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
             event = animatable.processAnimation(partialTick)
         } finally {
             if (syncRotationsForPreview) {
-                vanillaMaid.yBodyRot = savedYBodyRot
-                vanillaMaid.yBodyRotO = savedYBodyRotO
-                vanillaMaid.yHeadRot = savedYHeadRot
-                vanillaMaid.yHeadRotO = savedYHeadRotO
-                vanillaMaid.yRot = savedYRot
-                vanillaMaid.yRotO = savedYRotO
-                vanillaMaid.xRot = savedXRot
-                vanillaMaid.xRotO = savedXRotO
+                maid.yBodyRot = savedYBodyRot
+                maid.yBodyRotO = savedYBodyRotO
+                maid.yHeadRot = savedYHeadRot
+                maid.yHeadRotO = savedYHeadRotO
+                maid.yRot = savedYRot
+                maid.yRotO = savedYRotO
+                maid.xRot = savedXRot
+                maid.xRotO = savedXRotO
             }
         }
 
@@ -150,15 +133,15 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
             return
         }
 
-        val modelData: EntityModelData = event.getModelData()
+        val modelData = event.getModelData()
         dispatchedMat.set(poseStack.last().pose())
         setCurrentModelRenderCycle(EModelRenderCycle.INITIAL)
 
         poseStack.pushPose()
         if (vanillaState.hasPose(Pose.SLEEPING)) {
-            val bedOrientation: Direction? = vanillaState.bedOrientation
+            val bedOrientation = vanillaState.bedOrientation
             if (bedOrientation != null) {
-                val eyeHeight: Float = vanillaMaid.getEyeHeight(Pose.STANDING) - 0.1f
+                val eyeHeight = maid.getEyeHeight(Pose.STANDING) - 0.1f
                 poseStack.translate(
                     (-bedOrientation.stepX).toFloat() * eyeHeight,
                     0.0f,
@@ -178,22 +161,22 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
         preRenderCallback(poseStack)
         poseStack.translate(0.0f, 0.01f, 0.0f)
 
-        val geoModel: AnimatedGeoModel = animatable.getCurrentModel() ?: run {
+        val geoModel = animatable.getCurrentModel() ?: run {
             poseStack.popPose()
             return
         }
         val textureIndex = animatable.getTextureIndex()
-        val texture: Identifier = animatable.getTextureLocation()
+        val texture = animatable.getTextureLocation()
         val bodyVisible = !vanillaState.isInvisible
-        val renderType: RenderType? = getRenderType(
+        val renderType = getRenderType(
             texture,
             bodyVisible,
-            minecraft.shouldEntityAppearGlowing(vanillaMaid),
+            minecraft.shouldEntityAppearGlowing(maid),
             geoModel.getGeoModel().isTranslucentTexture(textureIndex)
         )
 
         val layersFirst = animatable.isRenderLayersFirst()
-        val color: Color = getRenderColor(animatable, partialTick, poseStack, bufferSource, null, packedLight)
+        val color = getRenderColor(animatable, partialTick, poseStack, bufferSource, null, packedLight)
         val overlay = packOverlayCoords(state)
 
         renderWithBone(
@@ -254,15 +237,14 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
 
     private fun setupRotations(state: LivingEntityRenderState, poseStack: PoseStack, bodyRot: Float, scale: Float) {
         var rot = bodyRot
-        if (state.isFullyFrozen) {
-            rot += (Math.cos((Mth.floor(state.ageInTicks) * 3.25f).toDouble()) * Math.PI * 0.4f).toFloat()
-        }
+        if (state.isFullyFrozen)
+            rot += (cos((Mth.floor(state.ageInTicks) * 3.25f).toDouble()) * Math.PI * 0.4f).toFloat()
         val sleeping = state.hasPose(Pose.SLEEPING)
         if (!sleeping) {
             poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - rot))
         }
         if (sleeping) {
-            val bedOrientation: Direction? = state.bedOrientation
+            val bedOrientation = state.bedOrientation
             val sleepRot = if (bedOrientation != null) sleepDirectionToRotation(bedOrientation) else rot
             poseStack.mulPose(Axis.YP.rotationDegrees(sleepRot))
             poseStack.mulPose(Axis.ZP.rotationDegrees(FLIP_DEGREES))

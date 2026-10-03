@@ -110,7 +110,7 @@ open class CustomPlayerRenderer(context: EntityRendererProvider.Context) :
     }
 
     override fun setupRotations(
-        player: Player,
+        entity: Player,
         state: AvatarRenderState,
         poseStack: PoseStack,
         ageInTicks: Float,
@@ -118,8 +118,8 @@ open class CustomPlayerRenderer(context: EntityRendererProvider.Context) :
         partialTicks: Float,
         scale: Float
     ) {
-        super.setupRotations(player, state, poseStack, ageInTicks, rotationYaw, partialTicks, scale)
-        val vehicle: Entity? = player.vehicle
+        super.setupRotations(entity, state, poseStack, ageInTicks, rotationYaw, partialTicks, scale)
+        val vehicle: Entity? = entity.vehicle
         if (vehicle != null && (TouhouLittleMaidCompat.isSimplePlanesEntity(vehicle) || TouhouLittleMaidCompat.isImmersiveAircraftEntity(
                 vehicle
             ))

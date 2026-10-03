@@ -22,30 +22,23 @@ import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import org.apache.commons.lang3.function.TriFunction
 import java.util.function.BiFunction
-import java.util.function.Consumer
 
 object VehicleAnimationController {
     object VehicleAnimationDataProvider : AnimationDataProvider<VehicleModelBundle> {
         override fun getAnimationEntries(
-            modelBundle: VehicleModelBundle,
+            t: VehicleModelBundle,
             resourceBundle: ModelResourceBundle
-        ): Object2ReferenceMap<String, AnimationController> {
-            return modelBundle.animationControllers
-        }
+        ): Object2ReferenceMap<String, AnimationController> = t.animationControllers
 
         override fun getAnimations(
-            modelBundle: VehicleModelBundle,
+            t: VehicleModelBundle,
             resourceBundle: ModelResourceBundle
-        ): Object2ReferenceMap<String, Animation> {
-            return modelBundle.animations
-        }
+        ): Object2ReferenceMap<String, Animation> = t.animations
 
         override fun getConditionArmor(
-            modelBundle: VehicleModelBundle,
+            t: VehicleModelBundle,
             resourceBundle: ModelResourceBundle
-        ): ConditionArmor? {
-            return null
-        }
+        ): ConditionArmor? = null
     }
 
     private const val VEHICLE_PREFIX: String = "vehicle"
@@ -101,10 +94,8 @@ object VehicleAnimationController {
     fun buildControllers(
         modelBundle: VehicleModelBundle,
         resourceBundle: ModelResourceBundle
-    ): Consumer<GeckoVehicleEntity> {
-        if (REGISTRY.isEmpty()) {
-            registerControllers()
-        }
+    ): (GeckoVehicleEntity) -> Unit {
+        if (REGISTRY.isEmpty()) registerControllers()
         return REGISTRY.buildAll(modelBundle, resourceBundle)
     }
 
@@ -115,7 +106,7 @@ object VehicleAnimationController {
     ): ModelProcessor<GeckoVehicleEntity, VehicleModelBundle> {
         val controllerKey = "$VEHICLE_PREFIX.$controllerName"
         return REGISTRY.register { _, _ ->
-            { entity, consumer -> consumer.accept(controllerFactory.apply(controllerKey, entity)) }
+            { entity, consumer -> consumer(controllerFactory.apply(controllerKey, entity)) }
         }
     }
 

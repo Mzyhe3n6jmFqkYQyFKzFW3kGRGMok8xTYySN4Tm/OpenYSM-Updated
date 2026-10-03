@@ -4,8 +4,7 @@ import com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.state.EntityRenderState
-import java.util.IdentityHashMap
-import java.util.Map
+import java.util.*
 
 object PreviewEntityRegistry {
 
@@ -13,6 +12,7 @@ object PreviewEntityRegistry {
         fun render(poseStack: PoseStack, bufferSource: MultiBufferSource, packedLight: Int)
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     data class Entry(
         val animatable: CustomPlayerEntity,
         val beforeEntity: SceneryRenderer? = null,
@@ -30,7 +30,7 @@ object PreviewEntityRegistry {
 
     @JvmStatic
     fun register(state: EntityRenderState, animatable: CustomPlayerEntity) {
-        ENTRIES[state] = Entry(animatable, null, null, 0.0f)
+        ENTRIES[state] = Entry(animatable)
     }
 
     @JvmStatic
@@ -40,7 +40,7 @@ object PreviewEntityRegistry {
         beforeEntity: SceneryRenderer?,
         afterEntity: SceneryRenderer?
     ) {
-        ENTRIES[state] = Entry(animatable, beforeEntity, afterEntity, 0.0f)
+        ENTRIES[state] = Entry(animatable, beforeEntity, afterEntity)
     }
 
     @JvmStatic

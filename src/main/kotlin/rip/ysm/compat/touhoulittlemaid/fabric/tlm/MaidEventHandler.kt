@@ -32,9 +32,7 @@ object MaidEventHandler {
     }
 
     @JvmStatic
-    fun isMaidFishing(livingEntity: LivingEntity): Boolean {
-        return livingEntity is EntityMaid && livingEntity.fishing != null
-    }
+    fun isMaidFishing(livingEntity: LivingEntity): Boolean = livingEntity is EntityMaid
 
     @JvmStatic
     fun isGohei(item: Item): Boolean = item is ItemHakureiGohei

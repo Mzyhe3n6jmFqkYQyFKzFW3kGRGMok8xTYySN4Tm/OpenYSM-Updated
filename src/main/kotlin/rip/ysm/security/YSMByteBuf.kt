@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets
 
 @Suppress("unused")
 class YSMByteBuf(buf: ByteBuf) : AutoCloseable {
+    // TODO: 'fun order(p0: ByteOrder!): ByteBuf!' is deprecated. Deprecated in Java.
     private val buf: ByteBuf = buf.order(ByteOrder.LITTLE_ENDIAN)
 
     fun getRawBuf(): ByteBuf = buf

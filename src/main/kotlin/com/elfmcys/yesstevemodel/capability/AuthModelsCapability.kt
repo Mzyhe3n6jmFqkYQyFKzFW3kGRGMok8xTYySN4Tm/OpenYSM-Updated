@@ -36,7 +36,7 @@ class AuthModelsCapability {
     fun deserializeNBT(listTag: ListTag) {
         authModels.clear()
         for (tag in listTag) {
-            authModels.add(tag.asString().orElse("") ?: return)
+            tag.asString().orElse("")?.let { authModels.add(it) }
         }
     }
 

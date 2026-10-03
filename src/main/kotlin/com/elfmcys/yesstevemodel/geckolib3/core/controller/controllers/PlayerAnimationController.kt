@@ -22,7 +22,6 @@ import rip.ysm.compat.carryon.CarryOnCompat
 import rip.ysm.compat.gun.common.ItemUseAnimationPredicate
 import rip.ysm.compat.parcool.ParcoolCompat
 import java.util.function.BiFunction
-import java.util.function.Consumer
 
 object PlayerAnimationController {
     object PlayerAnimationDataProvider : AnimationDataProvider<PlayerModelBundle> {
@@ -243,10 +242,8 @@ object PlayerAnimationController {
     fun buildControllers(
         modelBundle: PlayerModelBundle,
         resourceBundle: ModelResourceBundle
-    ): Consumer<CustomPlayerEntity> {
-        if (REGISTRY.isEmpty()) {
-            registerControllers()
-        }
+    ): (CustomPlayerEntity) -> Unit {
+        if (REGISTRY.isEmpty()) registerControllers()
         return REGISTRY.buildAll(modelBundle, resourceBundle)
     }
 
@@ -264,9 +261,9 @@ object PlayerAnimationController {
         guiOnly: Boolean,
         controllerFactory: BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>
     ) {
-        val controllerKey: String = "$PLAYER_PREFIX.$controllerName"
+        val controllerKey = "$PLAYER_PREFIX.$controllerName"
         var processor: ModelProcessor<CustomPlayerEntity, PlayerModelBundle> =
-            { _, _ -> { entity, consumer -> consumer.accept(controllerFactory.apply(controllerKey, entity)) } }
+            { _, _ -> { entity, consumer -> consumer(controllerFactory.apply(controllerKey, entity)) } }
         if (guiOnly) {
             processor = processor.withFilter { entity -> entity is IPreviewAnimatable }
         }

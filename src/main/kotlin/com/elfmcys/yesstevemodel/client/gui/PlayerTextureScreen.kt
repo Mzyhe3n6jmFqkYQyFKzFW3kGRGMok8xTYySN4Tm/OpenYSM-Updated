@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.texture.AbstractTexture
 import net.minecraft.client.resources.language.I18n
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.MutableComponent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.util.Mth
 
@@ -145,7 +144,7 @@ open class PlayerTextureScreen(
             val animButtonY = guiTop + 27 + (17 * animSlot)
             val btnKey = "gui.yes_steve_model.texture.button.${animKey.replace(":", ".")}"
             val descKey = "gui.yes_steve_model.texture.button.${animKey.replace(":", ".")}.desc"
-            val label: MutableComponent = if (I18n.exists(btnKey)) {
+            val label = if (I18n.exists(btnKey)) {
                 Component.translatable(btnKey)
             } else {
                 Component.literal(animKey)
@@ -186,7 +185,7 @@ open class PlayerTextureScreen(
         if (!modelHolder.getAnimationStateMachine().isCurrentAnimation(currentAnimation)) {
             modelHolder.getAnimationStateMachine().setCurrentAnimation(currentAnimation)
         }
-        renderTexturePreview(guiGraphics, minecraft.deltaTracker.getGameTimeDeltaPartialTick(false) ?: partialTick)
+        renderTexturePreview(guiGraphics, minecraft.deltaTracker.getGameTimeDeltaPartialTick(false))
 
         val texPageStr = "${textureCurrentPage + 1}/${textureMaxPage + 1}"
         val texPageX = guiLeft + 302 + ((118 - font.width(texPageStr)) / 2)
@@ -237,9 +236,7 @@ open class PlayerTextureScreen(
         val mouseX = event.x()
         val mouseY = event.y()
         val button = event.button()
-        if (minecraft == null || !isInPreviewArea(mouseX, mouseY)) {
-            return false
-        }
+        if (!isInPreviewArea(mouseX, mouseY)) return false
         if (button == LEFT_MOUSE_BUTTON) {
             yaw += (1.5 * dragX).toFloat()
             adjustPitch(dragY.toFloat())
@@ -253,65 +250,64 @@ open class PlayerTextureScreen(
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
-        if (minecraft == null) return false
-        if (scrollY != 0.0) {
-            if (isInPreviewArea(mouseX, mouseY)) {
-                adjustZoom((scrollY.toFloat()) * 0.07f)
-                return true
+        if (scrollY != 0.0)
+            when {
+                isInPreviewArea(mouseX, mouseY) -> {
+                    adjustZoom((scrollY.toFloat()) * 0.07f)
+                    return true
+                }
+
+                isInAnimationArea(mouseX, mouseY) -> {
+                    scrollAnimationPage(scrollY)
+                    return true
+                }
+
+                isInTextureArea(mouseX, mouseY) -> {
+                    scrollTexturePage(scrollY)
+                    return true
+                }
             }
-            if (isInAnimationArea(mouseX, mouseY)) {
-                return scrollAnimationPage(scrollY)
-            }
-            if (isInTextureArea(mouseX, mouseY)) {
-                return scrollTexturePage(scrollY)
-            }
-        }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
     }
 
-    private fun scrollTexturePage(delta: Double): Boolean {
+    private fun scrollTexturePage(delta: Double) {
         if (delta > 0.0 && textureCurrentPage > 0) {
             textureCurrentPage--
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
             init()
-            return true
+            return
         }
         if (delta < 0.0 && textureCurrentPage < textureMaxPage) {
             textureCurrentPage++
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
             init()
-            return true
+            return
         }
-        return true
     }
 
-    private fun scrollAnimationPage(delta: Double): Boolean {
+    private fun scrollAnimationPage(delta: Double) {
         if (delta > 0.0 && animationCurrentPage > 0) {
             animationCurrentPage--
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
             init()
-            return true
+            return
         }
         if (delta < 0.0 && animationCurrentPage < animationMaxPage) {
             animationCurrentPage++
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
             init()
-            return true
+            return
         }
-        return true
     }
 
-    private fun isInPreviewArea(mouseX: Double, mouseY: Double): Boolean {
-        return mouseX > (guiLeft + 93) && mouseX < (guiLeft + 299) && mouseY > guiTop && mouseY < (guiTop + 235)
-    }
+    private fun isInPreviewArea(mouseX: Double, mouseY: Double): Boolean =
+        mouseX > (guiLeft + 93) && mouseX < (guiLeft + 299) && mouseY > guiTop && mouseY < (guiTop + 235)
 
-    private fun isInAnimationArea(mouseX: Double, mouseY: Double): Boolean {
-        return mouseX > guiLeft && mouseX < (guiLeft + 90) && mouseY > (guiTop + 22) && mouseY < (guiTop + 235)
-    }
+    private fun isInAnimationArea(mouseX: Double, mouseY: Double): Boolean =
+        mouseX > guiLeft && mouseX < (guiLeft + 90) && mouseY > (guiTop + 22) && mouseY < (guiTop + 235)
 
-    private fun isInTextureArea(mouseX: Double, mouseY: Double): Boolean {
-        return mouseX > (guiLeft + 302) && mouseX < (guiLeft + 420) && mouseY > guiTop && mouseY < (guiTop + 235)
-    }
+    private fun isInTextureArea(mouseX: Double, mouseY: Double): Boolean =
+        mouseX > (guiLeft + 302) && mouseX < (guiLeft + 420) && mouseY > guiTop && mouseY < (guiTop + 235)
 
     private fun adjustPitch(deltaY: Float) {
         pitch = when {

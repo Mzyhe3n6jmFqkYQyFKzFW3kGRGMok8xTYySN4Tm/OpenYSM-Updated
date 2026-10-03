@@ -29,9 +29,10 @@ object CustomFishingHookRenderer {
     ): Boolean {
         val cap = ProjectileCapability[fishingHook]
         if (cap != null && cap.isModelInitialized() && cap.isModelReady()) {
-            fishingHook.setXRot(0.0f)
+            fishingHook.xRot = 0.0f
             fishingHook.xRotO = 0.0f
-            RendererManager.getProjectileRenderer().render(cap.entity, state, partialTick, poseStack, bufferSource, packedLight)
+            RendererManager.getProjectileRenderer()
+                .render(cap.entity, state, partialTick, poseStack, bufferSource, packedLight)
             val playerOwner: Player? = fishingHook.playerOwner
             if (playerOwner != null) {
                 poseStack.pushPose()
@@ -52,10 +53,8 @@ object CustomFishingHookRenderer {
         player: Player
     ) {
         var hand = if (player.mainArm == HumanoidArm.RIGHT) 1 else -1
-        if (!ToolActionBridge.canFishingRodCast(player.mainHandItem)) {
-            hand = -hand
-        }
-        val swingProgressSqrt = Mth.sin(Mth.sqrt(player.getAttackAnim(partialTick)).toDouble() * Math.PI).toFloat()
+        if (!ToolActionBridge.canFishingRodCast(player.mainHandItem)) hand = -hand
+        val swingProgressSqrt = Mth.sin(Mth.sqrt(player.getAttackAnim(partialTick)).toDouble() * Math.PI)
         val yawOffset = Mth.lerp(partialTick, player.yBodyRotO, player.yBodyRot) * 0.017453292f
         val dSin = Mth.sin(yawOffset.toDouble())
         val dCos = Mth.cos(yawOffset.toDouble())
@@ -65,9 +64,9 @@ object CustomFishingHookRenderer {
         val anglerZ: Double
         val anglerEye: Float
         val entityRenderDispatcher: EntityRenderDispatcher = Minecraft.getInstance().entityRenderDispatcher
-        val options: Options? = entityRenderDispatcher.options
+        val options: Options = entityRenderDispatcher.options
         val camera = entityRenderDispatcher.camera
-        if (options == null || camera == null || !options.cameraType.isFirstPerson || player != Minecraft.getInstance().player) {
+        if (camera == null || !options.cameraType.isFirstPerson || player != Minecraft.getInstance().player) {
             anglerX = Mth.lerp(partialTick.toDouble(), player.xo, player.x) - dCos * handOffset - dSin * 0.8
             anglerY = player.yo + player.eyeHeight.toDouble() + (player.y - player.yo) * partialTick.toDouble() - 0.45
             anglerZ = Mth.lerp(partialTick.toDouble(), player.zo, player.z) - dSin * handOffset + dCos * 0.8
@@ -83,28 +82,35 @@ object CustomFishingHookRenderer {
             anglerEye = player.eyeHeight
         }
         val startX = (anglerX - Mth.lerp(partialTick.toDouble(), fishingHook.xo, fishingHook.x)).toFloat()
-        val startY = (anglerY - (Mth.lerp(partialTick.toDouble(), fishingHook.yo, fishingHook.y) + 0.25)).toFloat() + anglerEye
+        val startY =
+            (anglerY - (Mth.lerp(partialTick.toDouble(), fishingHook.yo, fishingHook.y) + 0.25)).toFloat() + anglerEye
         val startZ = (anglerZ - Mth.lerp(partialTick.toDouble(), fishingHook.zo, fishingHook.z)).toFloat()
         val color = lineColor(fishingHook)
         val buffer: VertexConsumer = bufferSource.getBuffer(RenderTypes.lines())
         val poseLast: PoseStack.Pose = poseStack.last()
         for (size in 0..16) {
-            stringVertex(startX, startY, startZ, buffer, poseLast, fraction(size), fraction(size + 1), color[0], color[1], color[2])
+            stringVertex(
+                startX,
+                startY,
+                startZ,
+                buffer,
+                poseLast,
+                fraction(size),
+                fraction(size + 1),
+                color[0],
+                color[1],
+                color[2]
+            )
         }
-        if (OculusCompat.isModLoaded) {
+        if (OculusCompat.isModLoaded)
             buffer.addVertex(0.0f, 0.0f, 0.0f).setColor(0, 0, 0, 255).setNormal(0.0f, 0.0f, 0.0f)
-        }
     }
 
     @JvmStatic
-    fun lineColor(fishingHook: FishingHook): FloatArray {
-        return floatArrayOf(0.0f, 0.0f, 0.0f)
-    }
+    fun lineColor(fishingHook: FishingHook): FloatArray = floatArrayOf(0.0f, 0.0f, 0.0f)
 
     @JvmStatic
-    fun fraction(i: Int): Float {
-        return i / 16.0f
-    }
+    fun fraction(i: Int): Float = i / 16.0f
 
     @JvmStatic
     fun stringVertex(
@@ -126,6 +132,7 @@ object CustomFishingHookRenderer {
         val dy = y * (endFrac * endFrac + endFrac) * 0.5f + 0.25f - vy
         val dz = z * endFrac - vz
         val length = Mth.sqrt(dx * dx + dy * dy + dz * dz)
-        vertexConsumer.addVertex(pose, vx, vy, vz).setColor(red, green, blue, 1.0f).setNormal(pose, dx / length, dy / length, dz / length)
+        vertexConsumer.addVertex(pose, vx, vy, vz).setColor(red, green, blue, 1.0f)
+            .setNormal(pose, dx / length, dy / length, dz / length)
     }
 }

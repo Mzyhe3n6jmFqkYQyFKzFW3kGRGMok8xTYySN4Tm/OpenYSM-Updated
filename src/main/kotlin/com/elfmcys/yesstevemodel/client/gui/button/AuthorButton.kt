@@ -5,7 +5,6 @@ import com.elfmcys.yesstevemodel.client.model.ModelAssembly
 import com.elfmcys.yesstevemodel.resource.models.AuthorInfo
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.ConfirmLinkScreen
@@ -14,7 +13,6 @@ import net.minecraft.client.input.InputWithModifiers
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.FormattedText
-import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.Identifier
 import net.minecraft.util.Util
 
@@ -38,11 +36,17 @@ class AuthorButton(
     }
 
     override fun renderContents(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        val font: Font = Minecraft.getInstance().font
+        val font = Minecraft.getInstance().font
         if (authorInfo == null || modelAssembly == null || avatarLocation == null) {
             guiGraphics.fillGradient(x, y, x + width, y + height, -1891417534, -1891417534)
             val grayColor = ChatFormatting.GRAY.color ?: 0xAAAAAA
-            guiGraphics.drawCenteredString(font, Component.literal(""), x + (width / 2), y + (height / 2), grayColor or 0xFF000000.toInt())
+            guiGraphics.drawCenteredString(
+                font,
+                Component.literal(""),
+                x + (width / 2),
+                y + (height / 2),
+                grayColor or 0xFF000000.toInt()
+            )
             return
         }
         if (isHoveredOrFocused) {
@@ -51,9 +55,21 @@ class AuthorButton(
             guiGraphics.fillGradient(x, y, x + width, y + height, -1891417534, -1891417534)
         }
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, avatarLocation, x + 3, y + 3, 0.0f, 0.0f, 64, 64, 64, 64)
-        val name = ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "metadata.authors.$authorIndex.name", authorInfo.name)
-        val role = ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "metadata.authors.$authorIndex.role", authorInfo.role)
-        val comment = ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "metadata.authors.$authorIndex.comment", authorInfo.comment)
+        val name = ModelMetadataPresenter.getLocalizedModelString(
+            modelAssembly,
+            "metadata.authors.$authorIndex.name",
+            authorInfo.name
+        )
+        val role = ModelMetadataPresenter.getLocalizedModelString(
+            modelAssembly,
+            "metadata.authors.$authorIndex.role",
+            authorInfo.role
+        )
+        val comment = ModelMetadataPresenter.getLocalizedModelString(
+            modelAssembly,
+            "metadata.authors.$authorIndex.comment",
+            authorInfo.comment
+        )
         val goldColor = ChatFormatting.GOLD.color ?: 0xFFAA00
         val greenColor = ChatFormatting.GREEN.color ?: 0x55FF55
         guiGraphics.drawString(font, name, x + 2, y + 72, goldColor or 0xFF000000.toInt(), false)
@@ -61,8 +77,15 @@ class AuthorButton(
         drawWrappedText(guiGraphics, Component.literal(comment), x + 3, y + 95, 64, -1)
     }
 
-    private fun drawWrappedText(guiGraphics: GuiGraphics, formattedText: FormattedText, textX: Int, textY: Int, wrapWidth: Int, color: Int) {
-        val font: Font = Minecraft.getInstance().font
+    private fun drawWrappedText(
+        guiGraphics: GuiGraphics,
+        formattedText: FormattedText,
+        textX: Int,
+        textY: Int,
+        wrapWidth: Int,
+        color: Int
+    ) {
+        val font = Minecraft.getInstance().font
         var currentY = textY
         for (formattedCharSequence in font.split(formattedText, wrapWidth)) {
             guiGraphics.drawString(font, formattedCharSequence, textX, currentY, color, false)
@@ -108,14 +131,20 @@ class AuthorButton(
         if (authorInfo == null) return
         componentList.clear()
         for (i in 0 until authorInfo.contact.size) {
-            val component: MutableComponent = Component.literal("${authorInfo.contact.getKeyAt(i)}: ${authorInfo.contact.getValueAt(i)}")
+            val component =
+                Component.literal("${authorInfo.contact.getKeyAt(i)}: ${authorInfo.contact.getValueAt(i)}")
             if (i == selectedContactIndex) {
-                component.append(Component.literal(if (copied) " ✓" else " ◀").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD))
+                component.append(
+                    Component.literal(if (copied) " ✓" else " ◀").withStyle(ChatFormatting.YELLOW, ChatFormatting.BOLD)
+                )
             }
             componentList.add(component)
         }
         if (componentList.isNotEmpty()) {
-            componentList.add(Component.translatable("gui.yes_steve_model.model.info.contact.click_hint").withStyle(ChatFormatting.DARK_GRAY))
+            componentList.add(
+                Component.translatable("gui.yes_steve_model.model.info.contact.click_hint")
+                    .withStyle(ChatFormatting.DARK_GRAY)
+            )
         }
     }
 
@@ -126,7 +155,7 @@ class AuthorButton(
             i = 0
         }
         if (i < 0 || i >= authorInfo.contact.size) return
-        val link = authorInfo.contact.getValueAt(i) ?: return
+        val link = authorInfo.contact.getValueAt(i)
         if (link.startsWith("http://") || link.startsWith("https://")) {
             Minecraft.getInstance().setScreen(
                 ConfirmLinkScreen({ confirmed ->

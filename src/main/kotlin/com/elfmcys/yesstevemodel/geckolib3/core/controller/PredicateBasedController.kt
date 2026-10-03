@@ -7,7 +7,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.builder.ILoopType
 import com.elfmcys.yesstevemodel.geckolib3.core.enums.AnimationState
 import com.elfmcys.yesstevemodel.geckolib3.core.enums.PlayState
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
-import com.elfmcys.yesstevemodel.geckolib3.core.keyframe.AnimationPoint
 import com.elfmcys.yesstevemodel.geckolib3.core.keyframe.BoneAnimationQueue
 import com.elfmcys.yesstevemodel.geckolib3.core.keyframe.ConstantPoint
 import com.elfmcys.yesstevemodel.geckolib3.core.keyframe.TransitionPoint
@@ -21,18 +20,17 @@ import com.elfmcys.yesstevemodel.geckolib3.util.IInterpolable
 import com.elfmcys.yesstevemodel.geckolib3.util.TicksInterpolator
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
-import org.joml.Vector3f
 import java.util.*
-import java.util.function.Consumer
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("unused")
 open class PredicateBasedController<T : AnimatableEntity<*>>(
-    private val animatable: T,
+    animatable: T,
     private val name: String,
     private val transitionLengthTicks: Float,
     predicate: IAnimationPredicate<*>,
     private val deprecatedMode: Boolean = false
 ) : IAnimationController<T> {
+    // TODO: Unchecked cast of 'IAnimationPredicate<*>' to 'IAnimationPredicate<T (of class PredicateBasedController<T : AnimatableEntity<*>>)>'.
     private val predicate: IAnimationPredicate<T> = predicate as IAnimationPredicate<T>
     private val transitionInterpolator: AnimationControllerInstance =
         AnimationControllerInstance(animatable, transitionLengthTicks, true)
@@ -40,39 +38,31 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
     private var soundIValue: IValue? = null
     private var needsReset: Boolean = false
 
-    constructor(animatable: T, name: String, transitionLengthTicks: Float, predicate: IAnimationPredicate<*>) : this(
-        animatable,
-        name,
-        transitionLengthTicks,
-        predicate,
-        false
-    )
-
     override fun process(
         event: AnimationEvent<T>,
         evaluator: ExpressionEvaluator<AnimationContext<*>>,
-        isMoving: Boolean
+        isSomething: Boolean
     ) {
         event.setController(this)
-        var playState: PlayState? = handleSoundExpression(evaluator)
+        var playState = handleSoundExpression(evaluator)
         if (playState == null) {
             playState = predicate.predicate(event, evaluator)
         }
         event.setController(null)
         when (playState) {
             PlayState.CONTINUE -> {
-                transitionInterpolator.process(event.currentTick, evaluator, isMoving)
+                transitionInterpolator.process(event.currentTick, evaluator, isSomething)
                 needsReset = false
             }
 
             PlayState.STOP -> {
-                val state: AnimationState = transitionInterpolator.animationState
+                val state = transitionInterpolator.animationState
                 if (state == AnimationState.BEGINNING_TRANSITION || state == AnimationState.RUNNING) {
                     transitionInterpolator.beginEndingTransition(event.currentTick)
                     transitionInterpolator.resetRequestedAnimation()
                 }
                 if (state == AnimationState.ENDING_TRANSITION) {
-                    transitionInterpolator.process(event.currentTick, evaluator, isMoving)
+                    transitionInterpolator.process(event.currentTick, evaluator, isSomething)
                 }
                 needsReset = false
             }
@@ -93,7 +83,7 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
         expressionEvaluator.entity().setPlaybackFlags(playbackFlags)
         expressionEvaluator.entity().setAnimationControllerContext(transitionInterpolator.context)
         expressionEvaluator.entity().setIsClientSide(true)
-        val state: Int = soundExpr.evalAsInt(expressionEvaluator)
+        val state = soundExpr.evalAsInt(expressionEvaluator)
         expressionEvaluator.entity().setIsClientSide(false)
         expressionEvaluator.entity().setAnimationControllerContext(null)
         expressionEvaluator.entity().setPlaybackFlags(null)
@@ -112,7 +102,7 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
         transitionInterpolator.initBoneQueues(list)
         transitionInterpolator.setTransitionInterpolator(TicksInterpolator(transitionLengthTicks))
         soundIValue = null
-        val list2: MutableList<IValue>? = object2ReferenceMap.get(name.replace(".", "_ctrl_"))
+        val list2 = object2ReferenceMap[name.replace(".", "_ctrl_")]
         if (!list2.isNullOrEmpty()) {
             soundIValue = list2[0]
         }
@@ -149,12 +139,12 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
         transitionInterpolator.executeRenderLayers(evaluator)
     }
 
-    override fun forEachTransform(consumer: Consumer<BoneTransformProvider>) {
+    override fun forEachTransform(consumer: (BoneTransformProvider) -> Unit) {
         if (!needsReset) {
             val queues = transitionInterpolator.activeBoneAnimationQueues
             val size = queues.size
             for (i in 0 until size) {
-                consumer.accept(queues.get(i).transformProviderRecord)
+                consumer(queues[i].transformProviderRecord)
             }
         }
     }
@@ -189,21 +179,21 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
 
     class TransformProviderRecord(private val data: BoneAnimationQueue) : BoneTransformProvider {
         private val mutableVector: TransitionVector3f = TransitionVector3f(0f, 0f, 0f)
-        private val rotScratch: EulerNlerpScratch = EulerNlerpScratch()
+        private val rotScratch = EulerNlerpScratch()
 
         override fun getBoneTarget(): BoneTopLevelSnapshot = data.topLevelSnapshot
 
         override fun getRotation(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
-            val point: AnimationPoint = data.rotationQueue ?: return null
+            val point = data.rotationQueue ?: return null
             if (point is ConstantPoint) {
                 mutableVector.set(point.getLerpPoint(evaluator))
                 mutableVector.setPercentCompleted(point.getPercentCompleted())
-                val blendWeight: Float = data.getBlendWeight()
+                val blendWeight = data.getBlendWeight()
                 if (blendWeight != 1.0f) {
                     mutableVector.mul(blendWeight)
                 }
             } else if (point is TransitionPoint) {
-                val vector3fMul: Vector3f = point.evaluateRaw(evaluator).mul(data.getBlendWeight())
+                val vector3fMul = point.evaluateRaw(evaluator).mul(data.getBlendWeight())
                 MathUtil.nlerpEulerAngles(
                     point.getLerpFactor(),
                     point.getOffsetPoint(),
@@ -216,7 +206,7 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
                 mutableVector.setPercentCompleted(0.0f)
             } else {
                 mutableVector.set(point.getLerpPoint(evaluator))
-                val blendWeight2: Float = data.getBlendWeight()
+                val blendWeight2 = data.getBlendWeight()
                 if (blendWeight2 != 1.0f) {
                     mutableVector.mul(blendWeight2)
                 }
@@ -226,9 +216,9 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
         }
 
         override fun getPosition(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
-            val point: AnimationPoint = data.positionQueue ?: return null
+            val point = data.positionQueue ?: return null
             mutableVector.set(point.getLerpPoint(evaluator))
-            var blendWeight: Float = data.getBlendWeight()
+            var blendWeight = data.getBlendWeight()
             if (point is ConstantPoint) {
                 mutableVector.setPercentCompleted(point.getPercentCompleted())
             } else {
@@ -244,9 +234,9 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
         }
 
         override fun getScale(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
-            val point: AnimationPoint = data.scaleQueue ?: return null
+            val point = data.scaleQueue ?: return null
             mutableVector.set(point.getLerpPoint(evaluator))
-            var blendWeight: Float = data.getBlendWeight()
+            var blendWeight = data.getBlendWeight()
             if (point is ConstantPoint) {
                 mutableVector.setPercentCompleted(point.getPercentCompleted())
             } else {

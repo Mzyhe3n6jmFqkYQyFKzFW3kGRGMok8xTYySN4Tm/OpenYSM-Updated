@@ -2,14 +2,11 @@ package com.elfmcys.yesstevemodel.client.renderer
 
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
 import com.elfmcys.yesstevemodel.capability.VehicleCapability
-import com.elfmcys.yesstevemodel.client.animation.AnimationTracker
 import com.elfmcys.yesstevemodel.client.entity.IPreviewAnimatable
 import com.elfmcys.yesstevemodel.client.entity.LivingAnimatable
 import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
-import com.elfmcys.yesstevemodel.geckolib3.core.processor.IBone
 import com.elfmcys.yesstevemodel.geckolib3.geo.GeoReplacedEntityRenderer
-import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel
 import com.elfmcys.yesstevemodel.geckolib3.util.RenderUtils
 import com.elfmcys.yesstevemodel.util.AnimatableCacheUtil
 import com.mojang.blaze3d.systems.RenderSystem
@@ -20,11 +17,8 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.SubmitNodeCollector
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher
 import net.minecraft.client.renderer.entity.state.AvatarRenderState
-import net.minecraft.client.renderer.entity.state.EntityRenderState
-import net.minecraft.client.renderer.state.CameraRenderState
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.*
@@ -32,7 +26,6 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.Blocks
-import org.joml.Matrix4fStack
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import rip.ysm.compat.firstperson.FirstPersonCompat
@@ -91,24 +84,26 @@ object ModelPreviewRenderer {
         if (vehicle != null) {
             val cap = VehicleCapability[vehicle]
             if (cap != null) {
-                if (!cap.isModelInitialized() || !cap.isModelReady()) {
-                    return
-                }
+                if (!cap.isModelInitialized() || !cap.isModelReady()) return
                 val index = vehicle.passengers.indexOf(entity)
-                val model: AnimatedGeoModel? = cap.getCurrentModel()
-                if (index < 0 || model == null || model.passengerGroupChains().isEmpty() || index >= model.passengerGroupChains().size) {
-                    return
-                }
-                val list: List<IBone>? = model.passengerGroupChains()[index]
-                if (list == null) {
-                    return
-                }
-                val bodyRotation = CustomVehicleRenderer.getBodyRotation(vehicle, Mth.lerp(partialTick, vehicle.yRotO, vehicle.yRot), partialTick)
+                val model = cap.getCurrentModel()
+                if (index < 0 || model == null || model.passengerGroupChains()
+                        .isEmpty() || index >= model.passengerGroupChains().size
+                ) return
+                val list = model.passengerGroupChains()[index]
+                val bodyRotation = CustomVehicleRenderer.getBodyRotation(
+                    vehicle,
+                    Mth.lerp(partialTick, vehicle.yRotO, vehicle.yRot),
+                    partialTick
+                )
                 poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - bodyRotation))
                 RenderUtils.prepMatrixForLocator(poseStack, list)
                 poseStack.mulPose(Axis.YN.rotationDegrees(180.0f - bodyRotation))
                 var myRidingOffset = -(vehicle.getPassengerRidingPosition(entity).y - vehicle.y)
-                if ((entity is Player && PlayerCapability[entity] != null) || TouhouLittleMaidCompat.isMaidRideable(entity)) {
+                if ((entity is Player && PlayerCapability[entity] != null) || TouhouLittleMaidCompat.isMaidRideable(
+                        entity
+                    )
+                ) {
                     myRidingOffset -= 0.5
                 }
                 poseStack.translate(0.0, myRidingOffset, 0.0)
@@ -132,7 +127,7 @@ object ModelPreviewRenderer {
     ) {
         setPreviewMode(true)
         val livingEntity = animatableEntity.entity as LivingEntity
-        val modelViewStack: Matrix4fStack = RenderSystem.getModelViewStack()
+        val modelViewStack = RenderSystem.getModelViewStack()
         modelViewStack.pushMatrix()
         modelViewStack.translate(x, y, 1250.0f)
         modelViewStack.scale(1.0f, 1.0f, -1.0f)
@@ -140,19 +135,19 @@ object ModelPreviewRenderer {
         poseStack.translate(0.0, 0.0, 1000.0)
         poseStack.scale(scale, scale, scale)
         poseStack.translate(0.0, 0.8, 0.0)
-        val rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.0f)
-        val rotationX: Quaternionf = Axis.XP.rotationDegrees(10.0f + pitch)
+        val rotationZ = Axis.ZP.rotationDegrees(180.0f)
+        val rotationX = Axis.XP.rotationDegrees(10.0f + pitch)
         rotationZ.mul(rotationX)
         poseStack.mulPose(rotationZ)
-        val oldBodyRot: Float = livingEntity.yBodyRot
-        val oldBodyRotO: Float = livingEntity.yBodyRotO
-        val oldYRot: Float = livingEntity.yRot
-        val oldYRotO: Float = livingEntity.yRotO
-        val oldXRot: Float = livingEntity.xRot
-        val oldXRotO: Float = livingEntity.xRotO
-        val oldHeadRotO: Float = livingEntity.yHeadRotO
-        val oldHeadRot: Float = livingEntity.yHeadRot
-        val oldPose: Pose = livingEntity.pose
+        val oldBodyRot = livingEntity.yBodyRot
+        val oldBodyRotO = livingEntity.yBodyRotO
+        val oldYRot = livingEntity.yRot
+        val oldYRotO = livingEntity.yRotO
+        val oldXRot = livingEntity.xRot
+        val oldXRotO = livingEntity.xRotO
+        val oldHeadRotO = livingEntity.yHeadRotO
+        val oldHeadRot = livingEntity.yHeadRot
+        val oldPose = livingEntity.pose
         livingEntity.yBodyRot = -yaw
         livingEntity.yBodyRotO = -yaw
         livingEntity.yRot = 180.0f
@@ -161,11 +156,11 @@ object ModelPreviewRenderer {
         livingEntity.xRotO = 0.0f
         livingEntity.yHeadRot = -yaw
         livingEntity.yHeadRotO = -yaw
-        val entityRenderDispatcher: EntityRenderDispatcher = Minecraft.getInstance().entityRenderDispatcher
+        val entityRenderDispatcher = Minecraft.getInstance().entityRenderDispatcher
         rotationX.conjugate()
         poseStack.mulPose(rotationX)
-        val bufferSource: MultiBufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
-        val animationTracker: AnimationTracker = (animatableEntity as IPreviewAnimatable).getAnimationStateMachine()
+        val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
+        val animationTracker = (animatableEntity as IPreviewAnimatable).getAnimationStateMachine()
         if (animationTracker.isCurrentAnimation("sleep")) {
             poseStack.mulPose(Axis.YP.rotationDegrees(yaw - 90.0f))
             poseStack.translate(0.5, 0.5625, 0.0)
@@ -196,6 +191,7 @@ object ModelPreviewRenderer {
         if (renderGround) {
             renderGroundPreview(scale, pitch, yaw, bufferSource)
         }
+        // TODO: Fix UNCHECKED_CAST
         @Suppress("UNCHECKED_CAST")
         (renderer as GeoReplacedEntityRenderer<LivingEntity, LivingAnimatable<LivingEntity>, AvatarRenderState>).renderEntity(
             animatableEntity as LivingAnimatable<LivingEntity>,
@@ -225,12 +221,18 @@ object ModelPreviewRenderer {
         poseStack.translate(0.0, 0.0, 1000.0)
         poseStack.scale(scale, scale, scale)
         poseStack.translate(0.0, 0.8, 0.0)
-        val rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.0f)
+        val rotationZ = Axis.ZP.rotationDegrees(180.0f)
         rotationZ.mul(Axis.XP.rotationDegrees(10.0f + pitch))
         poseStack.mulPose(rotationZ)
         poseStack.mulPose(Axis.YP.rotationDegrees(yaw + 180.0f))
         poseStack.translate(-0.5, 0.0, 0.5)
-        Minecraft.getInstance().blockRenderer.renderSingleBlock(Blocks.RED_BED.defaultBlockState(), poseStack, bufferSource, 15728880, OverlayTexture.NO_OVERLAY)
+        Minecraft.getInstance().blockRenderer.renderSingleBlock(
+            Blocks.RED_BED.defaultBlockState(),
+            poseStack,
+            bufferSource,
+            15728880,
+            OverlayTexture.NO_OVERLAY
+        )
     }
 
     @JvmStatic
@@ -239,7 +241,7 @@ object ModelPreviewRenderer {
         poseStack.translate(0.0, 0.0, 1000.0)
         poseStack.scale(scale, scale, scale)
         poseStack.translate(0.0, 0.8, 0.0)
-        val rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.0f)
+        val rotationZ = Axis.ZP.rotationDegrees(180.0f)
         rotationZ.mul(Axis.XP.rotationDegrees(10.0f + pitch))
         poseStack.mulPose(rotationZ)
         poseStack.mulPose(Axis.YP.rotationDegrees(yaw))
@@ -247,14 +249,32 @@ object ModelPreviewRenderer {
         for (i in 0 until 3) {
             for (j in 0 until 3) {
                 poseStack.translate(0.0f, 0.0f, 1.0f)
-                Minecraft.getInstance().blockRenderer.renderSingleBlock(Blocks.GRASS_BLOCK.defaultBlockState(), poseStack, bufferSource, 15728880, OverlayTexture.NO_OVERLAY)
+                Minecraft.getInstance().blockRenderer.renderSingleBlock(
+                    Blocks.GRASS_BLOCK.defaultBlockState(),
+                    poseStack,
+                    bufferSource,
+                    15728880,
+                    OverlayTexture.NO_OVERLAY
+                )
             }
             poseStack.translate(1.0f, 0.0f, -3.0f)
         }
         poseStack.translate(-1.0f, 1.0f, 1.0f)
-        Minecraft.getInstance().blockRenderer.renderSingleBlock(Blocks.SHORT_GRASS.defaultBlockState(), poseStack, bufferSource, 15728880, OverlayTexture.NO_OVERLAY)
+        Minecraft.getInstance().blockRenderer.renderSingleBlock(
+            Blocks.SHORT_GRASS.defaultBlockState(),
+            poseStack,
+            bufferSource,
+            15728880,
+            OverlayTexture.NO_OVERLAY
+        )
         poseStack.translate(0.0f, 0.0f, 1.0f)
-        Minecraft.getInstance().blockRenderer.renderSingleBlock(Blocks.RED_TULIP.defaultBlockState(), poseStack, bufferSource, 15728880, OverlayTexture.NO_OVERLAY)
+        Minecraft.getInstance().blockRenderer.renderSingleBlock(
+            Blocks.RED_TULIP.defaultBlockState(),
+            poseStack,
+            bufferSource,
+            15728880,
+            OverlayTexture.NO_OVERLAY
+        )
     }
 
     @JvmStatic
@@ -266,20 +286,50 @@ object ModelPreviewRenderer {
         entityRenderDispatcher: EntityRenderDispatcher,
         bufferSource: MultiBufferSource
     ) {
-        val entity: Entity = animatableEntity.entity
-        val animationTracker: AnimationTracker = (animatableEntity as IPreviewAnimatable).getAnimationStateMachine()
+        val entity = animatableEntity.entity
+        val animationTracker = (animatableEntity as IPreviewAnimatable).getAnimationStateMachine()
         if (animationTracker.isCurrentAnimation("ride")) {
             AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.HORSE)) {
                 EntityType.HORSE.create(entity.level(), EntitySpawnReason.LOAD)
-            }?.let { renderVehicleEntity(yaw, entity, poseStack, entityRenderDispatcher, bufferSource, it, partialTick) }
+            }.let {
+                renderVehicleEntity(
+                    yaw,
+                    entity,
+                    poseStack,
+                    entityRenderDispatcher,
+                    bufferSource,
+                    it,
+                    partialTick
+                )
+            }
         } else if (animationTracker.isCurrentAnimation("ride_pig")) {
             AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.PIG)) {
                 EntityType.PIG.create(entity.level(), EntitySpawnReason.LOAD)
-            }?.let { renderVehicleEntity(yaw, entity, poseStack, entityRenderDispatcher, bufferSource, it, partialTick) }
+            }.let {
+                renderVehicleEntity(
+                    yaw,
+                    entity,
+                    poseStack,
+                    entityRenderDispatcher,
+                    bufferSource,
+                    it,
+                    partialTick
+                )
+            }
         } else if (animationTracker.isCurrentAnimation("boat")) {
             AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.OAK_BOAT)) {
                 EntityType.OAK_BOAT.create(entity.level(), EntitySpawnReason.LOAD)
-            }?.let { renderVehicleEntity(yaw, entity, poseStack, entityRenderDispatcher, bufferSource, it, partialTick) }
+            }.let {
+                renderVehicleEntity(
+                    yaw,
+                    entity,
+                    poseStack,
+                    entityRenderDispatcher,
+                    bufferSource,
+                    it,
+                    partialTick
+                )
+            }
         }
     }
 
@@ -312,27 +362,27 @@ object ModelPreviewRenderer {
     ) {
         val savedEquipment: Array<ItemStack?>?
         setPreviewMode(true)
-        val livingEntity: LivingEntity = animatable.entity as LivingEntity
-        val modelViewStack: Matrix4fStack = RenderSystem.getModelViewStack()
+        val livingEntity = animatable.entity as LivingEntity
+        val modelViewStack = RenderSystem.getModelViewStack()
         modelViewStack.pushMatrix()
         modelViewStack.translate(x, y, 1050.0f)
         modelViewStack.scale(1.0f, 1.0f, -1.0f)
         val poseStack = PoseStack()
         poseStack.translate(0.0, if (disablePreviewRotation) 5.5 else 0.0, 1000.0)
         poseStack.scale(scale, scale, scale)
-        val rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.0f)
-        val rotationX: Quaternionf = Axis.XP.rotationDegrees(if (disablePreviewRotation) 0.0f else -10.0f)
+        val rotationZ = Axis.ZP.rotationDegrees(180.0f)
+        val rotationX = Axis.XP.rotationDegrees(if (disablePreviewRotation) 0.0f else -10.0f)
         rotationZ.mul(rotationX)
         poseStack.mulPose(rotationZ)
-        val oldBodyRot: Float = livingEntity.yBodyRot
-        val oldBodyRotO: Float = livingEntity.yBodyRotO
-        val oldYRot: Float = livingEntity.yRot
-        val oldYRotO: Float = livingEntity.yRotO
-        val oldXRot: Float = livingEntity.xRot
-        val oldXRotO: Float = livingEntity.xRotO
-        val oldHeadRotO: Float = livingEntity.yHeadRotO
-        val oldHeadRot: Float = livingEntity.yHeadRot
-        if (hideEquipment && livingEntity is Player) {
+        val oldBodyRot = livingEntity.yBodyRot
+        val oldBodyRotO = livingEntity.yBodyRotO
+        val oldYRot = livingEntity.yRot
+        val oldYRotO = livingEntity.yRotO
+        val oldXRot = livingEntity.xRot
+        val oldXRotO = livingEntity.xRotO
+        val oldHeadRotO = livingEntity.yHeadRotO
+        val oldHeadRot = livingEntity.yHeadRot
+        if (hideEquipment) {
             val slots = EquipmentSlot.entries
             savedEquipment = arrayOfNulls(slots.size)
             for ((slotIndex, equipmentSlot) in slots.withIndex()) {
@@ -342,7 +392,7 @@ object ModelPreviewRenderer {
         } else {
             savedEquipment = null
         }
-        val previewYaw: Float = if (disablePreviewRotation) 180.0f else 200.0f
+        val previewYaw = if (disablePreviewRotation) 180.0f else 200.0f
         livingEntity.yBodyRot = previewYaw
         livingEntity.yBodyRotO = previewYaw
         livingEntity.yRot = previewYaw
@@ -360,7 +410,7 @@ object ModelPreviewRenderer {
         }
         rotationX.conjugate()
         poseStack.mulPose(rotationX)
-        val bufferSource: MultiBufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
+        val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
         renderer.renderEntity(animatable, state, 0.0f, partialTick, poseStack, bufferSource, 15728880)
         livingEntity.yBodyRot = oldBodyRot
         livingEntity.yBodyRotO = oldBodyRotO
@@ -370,9 +420,9 @@ object ModelPreviewRenderer {
         livingEntity.xRotO = oldXRotO
         livingEntity.yHeadRotO = oldHeadRotO
         livingEntity.yHeadRot = oldHeadRot
-        if (savedEquipment != null && livingEntity is Player) {
+        if (savedEquipment != null) {
             for ((slotIndex, equipmentSlot) in EquipmentSlot.entries.withIndex()) {
-                val itemStack: ItemStack? = savedEquipment[slotIndex]
+                val itemStack = savedEquipment[slotIndex]
                 if (itemStack != null) {
                     livingEntity.setItemSlot(equipmentSlot, itemStack)
                 }
@@ -383,17 +433,32 @@ object ModelPreviewRenderer {
     }
 
     @JvmStatic
-    fun renderPlayerOverlay(guiGraphics: GuiGraphics, localPlayer: LocalPlayer, x: Double, y: Double, scale: Float, yawOffset: Float, zDepth: Int, partialTick: Float) {
+    fun renderPlayerOverlay(
+        guiGraphics: GuiGraphics,
+        localPlayer: LocalPlayer,
+        x: Double,
+        y: Double,
+        scale: Float,
+        yawOffset: Float,
+        zDepth: Int,
+        partialTick: Float
+    ) {
         setExtraPlayerMode(true)
-        val modelViewStack: Matrix4fStack = RenderSystem.getModelViewStack()
+        val modelViewStack = RenderSystem.getModelViewStack()
         modelViewStack.pushMatrix()
         modelViewStack.translate((x + scale * 0.5f).toFloat(), (y + scale * 2.0f).toFloat(), 0.0f)
         modelViewStack.scale(1.0f, 1.0f, -1.0f)
         val poseStack = PoseStack()
         poseStack.translate(0.0f, 0.0f, -zDepth.toFloat())
         poseStack.scale(scale, scale, scale)
-        val rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.1f)
-        val rotationY: Quaternionf = Axis.YP.rotationDegrees(Mth.lerp(partialTick, localPlayer.yBodyRotO, localPlayer.yBodyRot) + yawOffset - 180.0f)
+        val rotationZ = Axis.ZP.rotationDegrees(180.1f)
+        val rotationY = Axis.YP.rotationDegrees(
+            Mth.lerp(
+                partialTick,
+                localPlayer.yBodyRotO,
+                localPlayer.yBodyRot
+            ) + yawOffset - 180.0f
+        )
         rotationZ.mul(rotationY)
         poseStack.mulPose(rotationZ)
         rotationY.conjugate()
@@ -415,9 +480,9 @@ object ModelPreviewRenderer {
         disablePreviewRotation: Boolean,
         hideEquipment: Boolean
     ) {
-        val entity: LivingEntity = animatable.entity as LivingEntity
+        val entity = animatable.entity as LivingEntity
         val savedEquipment: Array<ItemStack?>?
-        if (hideEquipment && entity is Player) {
+        if (hideEquipment) {
             val slots = EquipmentSlot.entries
             savedEquipment = arrayOfNulls(slots.size)
             for ((i, slot) in slots.withIndex()) {
@@ -427,26 +492,26 @@ object ModelPreviewRenderer {
         } else {
             savedEquipment = null
         }
-        val renderer: CustomPlayerRenderer = RendererManager.getPlayerRenderer()
+        val renderer = RendererManager.getPlayerRenderer()
         val state = AvatarRenderState()
         renderer.extractRenderState(entity as Player, state, partialTick)
         state.lightCoords = LightTexture.FULL_BRIGHT
-        val previewYaw: Float = if (disablePreviewRotation) 180.0f else 200.0f
+        val previewYaw = if (disablePreviewRotation) 180.0f else 200.0f
         state.bodyRot = previewYaw
         state.yRot = 0.0f
         state.xRot = 0.0f
         PreviewEntityRegistry.register(state, animatable)
-        val rotation: Quaternionf = Quaternionf().rotateZ(Math.PI.toFloat())
+        val rotation = Quaternionf().rotateZ(Math.PI.toFloat())
         var cameraTilt: Quaternionf? = null
         if (!disablePreviewRotation) {
             cameraTilt = Quaternionf().rotateX((-10.0 * Math.PI / 180.0).toFloat())
             rotation.mul(cameraTilt)
         }
-        val entityScale: Float = entity.scale
-        val yOffsetPx: Float = if (disablePreviewRotation) 5.5f else 0.0f
-        val yOffsetModel: Float = yOffsetPx * entityScale / displaySize.toFloat()
+        val entityScale = entity.scale
+        val yOffsetPx = if (disablePreviewRotation) 5.5f else 0.0f
+        val yOffsetModel = yOffsetPx * entityScale / displaySize.toFloat()
         val translation = Vector3f(0.0f, entity.bbHeight / 2.0f + yOffsetModel, 0.0f)
-        val submitScale: Float = displaySize.toFloat() / entityScale
+        val submitScale = displaySize.toFloat() / entityScale
         guiGraphics.enableScissor(x0, y0, x1, y1)
         guiGraphics.submitEntityRenderState(state, submitScale, translation, rotation, cameraTilt, x0, y0, x1, y1)
         guiGraphics.disableScissor()
@@ -461,27 +526,35 @@ object ModelPreviewRenderer {
     }
 
     @JvmStatic
-    fun submitPlayerOverlay(guiGraphics: GuiGraphics, localPlayer: LocalPlayer, x: Double, y: Double, scale: Float, yawOffset: Float, partialTick: Float) {
-        val cap: PlayerCapability = PlayerCapability[localPlayer] ?: return
+    fun submitPlayerOverlay(
+        guiGraphics: GuiGraphics,
+        localPlayer: LocalPlayer,
+        x: Double,
+        y: Double,
+        scale: Float,
+        yawOffset: Float,
+        partialTick: Float
+    ) {
+        val cap = PlayerCapability[localPlayer] ?: return
         cap.tickModel()
-        val cx: Float = (x + scale * 0.6f).toFloat()
-        val cy: Float = (y + scale * 1.0f).toFloat()
-        val halfW: Int = (scale * 2.0f).toInt()
-        val halfH: Int = (scale * 2.5f).toInt()
-        val x0: Int = cx.toInt() - halfW
-        val x1: Int = cx.toInt() + halfW
-        val y0: Int = cy.toInt() - halfH
-        val y1: Int = cy.toInt() + halfH
-        val renderer: CustomPlayerRenderer = RendererManager.getPlayerRenderer()
+        val cx = (x + scale * 0.6f).toFloat()
+        val cy = (y + scale * 1.0f).toFloat()
+        val halfW = (scale * 2.0f).toInt()
+        val halfH = (scale * 2.5f).toInt()
+        val x0 = cx.toInt() - halfW
+        val x1 = cx.toInt() + halfW
+        val y0 = cy.toInt() - halfH
+        val y1 = cy.toInt() + halfH
+        val renderer = RendererManager.getPlayerRenderer()
         val state = AvatarRenderState()
         renderer.extractRenderState(localPlayer, state, partialTick)
         state.lightCoords = LightTexture.FULL_BRIGHT
         PreviewEntityRegistry.register(state, cap)
         state.bodyRot = 180.0f
-        val rotation: Quaternionf = Quaternionf().rotateZ(Math.PI.toFloat())
-        val entityScale: Float = localPlayer.scale
+        val rotation = Quaternionf().rotateZ(Math.PI.toFloat())
+        val entityScale = localPlayer.scale
         val translation = Vector3f(0.0f, localPlayer.bbHeight / 2.0f, 0.0f)
-        val submitScale: Float = scale / entityScale
+        val submitScale = scale / entityScale
         guiGraphics.submitEntityRenderState(state, submitScale, translation, rotation, null, x0, y0, x1, y1)
     }
 
@@ -501,59 +574,95 @@ object ModelPreviewRenderer {
         renderGround: Boolean,
         partialTick: Float
     ) {
-        val entity: LivingEntity = animatable.entity as LivingEntity
-        val tracker: AnimationTracker = animatable.getAnimationStateMachine()
-        val oldPose: Pose = entity.pose
-        var newPose: Pose = oldPose
+        val entity = animatable.entity as LivingEntity
+        val tracker = animatable.getAnimationStateMachine()
+        val oldPose = entity.pose
+        var newPose = oldPose
         var poseYOffset = 0.0f
-        if (tracker.isCurrentAnimation("sleep")) {
-            newPose = Pose.SLEEPING
-            poseYOffset = 0.5625f
-        } else if (tracker.isCurrentAnimation("swim") || tracker.isCurrentAnimation("swim_stand")) {
-            newPose = Pose.SWIMMING
-        } else if (tracker.isCurrentAnimation("sneak") || tracker.isCurrentAnimation("sneaking")) {
-            newPose = Pose.CROUCHING
-        } else if (tracker.isCurrentAnimation("sit")) {
-            poseYOffset = -0.5f
-        } else if (tracker.isCurrentAnimation("ride")) {
-            poseYOffset = 0.85f
-        } else if (tracker.isCurrentAnimation("ride_pig")) {
-            poseYOffset = 0.3125f
-        } else if (tracker.isCurrentAnimation("boat")) {
-            poseYOffset = -0.45f
+        when {
+            tracker.isCurrentAnimation("sleep") -> {
+                newPose = Pose.SLEEPING
+                poseYOffset = 0.5625f
+            }
+
+            tracker.isCurrentAnimation("swim") || tracker.isCurrentAnimation("swim_stand") -> {
+                newPose = Pose.SWIMMING
+            }
+
+            tracker.isCurrentAnimation("sneak") || tracker.isCurrentAnimation("sneaking") -> {
+                newPose = Pose.CROUCHING
+            }
+
+            tracker.isCurrentAnimation("sit") -> {
+                poseYOffset = -0.5f
+            }
+
+            tracker.isCurrentAnimation("ride") -> {
+                poseYOffset = 0.85f
+            }
+
+            tracker.isCurrentAnimation("ride_pig") -> {
+                poseYOffset = 0.3125f
+            }
+
+            tracker.isCurrentAnimation("boat") -> {
+                poseYOffset = -0.45f
+            }
         }
-        val poseChanged: Boolean = newPose != oldPose
+        val poseChanged = newPose != oldPose
         if (poseChanged) {
             entity.pose = newPose
         }
-        val renderer: CustomPlayerRenderer = RendererManager.getPlayerRenderer()
+        val renderer = RendererManager.getPlayerRenderer()
         val state = AvatarRenderState()
         renderer.extractRenderState(entity as Player, state, partialTick)
         state.lightCoords = LightTexture.FULL_BRIGHT
         state.bodyRot = -yaw
         state.yRot = Mth.wrapDegrees(180.0f + yaw)
         state.xRot = 0.0f
-        val capturedYaw: Float = yaw
-        val wantGround: Boolean = renderGround
-        val wantBed: Boolean = tracker.isCurrentAnimation("sleep")
-        val wantHorse: Boolean = tracker.isCurrentAnimation("ride")
-        val wantPig: Boolean = tracker.isCurrentAnimation("ride_pig")
-        val wantBoat: Boolean = tracker.isCurrentAnimation("boat")
+        val wantBed = tracker.isCurrentAnimation("sleep")
+        val wantHorse = tracker.isCurrentAnimation("ride")
+        val wantPig = tracker.isCurrentAnimation("ride_pig")
+        val wantBoat = tracker.isCurrentAnimation("boat")
         var scenery: PreviewEntityRegistry.SceneryRenderer? = null
-        if (wantGround || wantBed || wantHorse || wantPig || wantBoat) {
+        if (renderGround || wantBed || wantHorse || wantPig || wantBoat) {
             scenery = PreviewEntityRegistry.SceneryRenderer { poseStack, bufferSource, packedLight ->
                 if (wantHorse) {
-                    renderVehicleScenery(poseStack, bufferSource, packedLight, capturedYaw, partialTick, entity, EntityType.HORSE)
+                    renderVehicleScenery(
+                        poseStack,
+                        bufferSource,
+                        packedLight,
+                        yaw,
+                        partialTick,
+                        entity,
+                        EntityType.HORSE
+                    )
                 } else if (wantPig) {
-                    renderVehicleScenery(poseStack, bufferSource, packedLight, capturedYaw, partialTick, entity, EntityType.PIG)
+                    renderVehicleScenery(
+                        poseStack,
+                        bufferSource,
+                        packedLight,
+                        yaw,
+                        partialTick,
+                        entity,
+                        EntityType.PIG
+                    )
                 } else if (wantBoat) {
-                    renderVehicleScenery(poseStack, bufferSource, packedLight, capturedYaw, partialTick, entity, EntityType.OAK_BOAT)
+                    renderVehicleScenery(
+                        poseStack,
+                        bufferSource,
+                        packedLight,
+                        yaw,
+                        partialTick,
+                        entity,
+                        EntityType.OAK_BOAT
+                    )
                 }
                 if (wantBed) {
-                    renderBedScenery(poseStack, bufferSource, packedLight, capturedYaw)
+                    renderBedScenery(poseStack, bufferSource, packedLight, yaw)
                 }
-                if (wantGround) {
-                    renderGroundScenery(poseStack, bufferSource, packedLight, capturedYaw)
+                if (renderGround) {
+                    renderGroundScenery(poseStack, bufferSource, packedLight, yaw)
                 }
             }
         }
@@ -562,14 +671,14 @@ object ModelPreviewRenderer {
         } else {
             PreviewEntityRegistry.register(state, animatable)
         }
-        val cameraTilt: Quaternionf = Quaternionf().rotateX(Math.toRadians((-10.0 + pitch)).toFloat())
-        val rotation: Quaternionf = Quaternionf().rotateZ(Math.PI.toFloat()).mul(cameraTilt)
-        val entityScale: Float = entity.scale
-        val submitScale: Float = zoom / entityScale
-        val rectCenterX: Float = (x0 + x1) / 2.0f
-        val rectCenterY: Float = (y0 + y1) / 2.0f
-        val translationX: Float = (anchorX - rectCenterX) / submitScale
-        val translationY: Float = (anchorY - rectCenterY) / submitScale + 0.8f
+        val cameraTilt = Quaternionf().rotateX(Math.toRadians((-10.0 + pitch)).toFloat())
+        val rotation = Quaternionf().rotateZ(Math.PI.toFloat()).mul(cameraTilt)
+        val entityScale = entity.scale
+        val submitScale = zoom / entityScale
+        val rectCenterX = (x0 + x1) / 2.0f
+        val rectCenterY = (y0 + y1) / 2.0f
+        val translationX = (anchorX - rectCenterX) / submitScale
+        val translationY = (anchorY - rectCenterY) / submitScale + 0.8f
         if (wantBed) {
             state.bodyRot = yaw - 90
         }
@@ -583,7 +692,12 @@ object ModelPreviewRenderer {
     }
 
     @JvmStatic
-    private fun renderGroundScenery(poseStack: PoseStack, bufferSource: MultiBufferSource, packedLight: Int, yaw: Float) {
+    private fun renderGroundScenery(
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
+        packedLight: Int,
+        yaw: Float
+    ) {
         val blockRenderer = Minecraft.getInstance().blockRenderer
         poseStack.pushPose()
         poseStack.mulPose(Axis.YP.rotationDegrees(yaw))
@@ -591,23 +705,38 @@ object ModelPreviewRenderer {
         for (i in 0 until 3) {
             for (j in 0 until 3) {
                 poseStack.translate(0.0f, 0.0f, 1.0f)
-                blockRenderer.renderSingleBlock(Blocks.GRASS_BLOCK.defaultBlockState(), poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY)
+                blockRenderer.renderSingleBlock(
+                    Blocks.GRASS_BLOCK.defaultBlockState(),
+                    poseStack,
+                    bufferSource,
+                    packedLight,
+                    OverlayTexture.NO_OVERLAY
+                )
             }
             poseStack.translate(1.0f, 0.0f, -3.0f)
         }
         poseStack.translate(-1.0f, 1.0f, 1.0f)
-        blockRenderer.renderSingleBlock(Blocks.SHORT_GRASS.defaultBlockState(), poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY)
+        blockRenderer.renderSingleBlock(
+            Blocks.SHORT_GRASS.defaultBlockState(),
+            poseStack,
+            bufferSource,
+            packedLight,
+            OverlayTexture.NO_OVERLAY
+        )
         poseStack.translate(0.0f, 0.0f, 1.0f)
-        blockRenderer.renderSingleBlock(Blocks.RED_TULIP.defaultBlockState(), poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY)
+        blockRenderer.renderSingleBlock(
+            Blocks.RED_TULIP.defaultBlockState(),
+            poseStack,
+            bufferSource,
+            packedLight,
+            OverlayTexture.NO_OVERLAY
+        )
         poseStack.popPose()
     }
 
     @JvmStatic
     private fun renderBedScenery(poseStack: PoseStack, bufferSource: MultiBufferSource, packedLight: Int, yaw: Float) {
-        val collector: SubmitNodeCollector? = RenderContext.collector()
-        if (collector == null) {
-            return
-        }
+        val collector = RenderContext.collector() ?: return
         poseStack.pushPose()
         poseStack.mulPose(Axis.YP.rotationDegrees(yaw + 180.0f))
         poseStack.translate(-0.5, 0.0, 0.5)
@@ -625,9 +754,6 @@ object ModelPreviewRenderer {
 
     @JvmStatic
     private fun cachedVehicle(rider: LivingEntity, vehicleType: EntityType<out Entity>): Entity? {
-        if (rider.level() == null) {
-            return null
-        }
         return runCatching {
             AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(vehicleType)) {
                 vehicleType.create(rider.level(), EntitySpawnReason.LOAD)
@@ -646,16 +772,16 @@ object ModelPreviewRenderer {
         vehicleType: EntityType<out Entity>
     ) {
         val vehicle = cachedVehicle(rider, vehicleType) ?: return
-        val collector: SubmitNodeCollector? = RenderContext.collector()
-        val cameraState: CameraRenderState? = RenderContext.camera()
+        val collector = RenderContext.collector()
+        val cameraState = RenderContext.camera()
         if (collector == null || cameraState == null) {
             return
         }
-        val dispatcher: EntityRenderDispatcher = Minecraft.getInstance().entityRenderDispatcher
+        val dispatcher = Minecraft.getInstance().entityRenderDispatcher
         poseStack.pushPose()
         poseStack.mulPose(Axis.YP.rotationDegrees(yaw))
         val yOffset = 0.0
-        val vehicleState: EntityRenderState = dispatcher.extractEntity(vehicle, partialTick)
+        val vehicleState = dispatcher.extractEntity(vehicle, partialTick)
         vehicleState.lightCoords = packedLight
         vehicleState.shadowRadius = 0.0f
         vehicleState.shadowPieces.clear()

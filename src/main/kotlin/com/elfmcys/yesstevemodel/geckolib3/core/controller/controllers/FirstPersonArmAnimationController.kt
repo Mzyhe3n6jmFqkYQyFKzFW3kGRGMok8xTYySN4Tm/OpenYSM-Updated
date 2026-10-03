@@ -18,8 +18,8 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import net.minecraft.world.entity.EquipmentSlot
 import org.apache.commons.lang3.function.TriFunction
 import java.util.function.BiFunction
-import java.util.function.Consumer
 
+@Suppress("unused")
 object FirstPersonArmAnimationController {
     object DefaultBoneExpressionProvider : AnimationDataProvider<PlayerModelBundle> {
         override fun getAnimationEntries(
@@ -71,10 +71,8 @@ object FirstPersonArmAnimationController {
     fun buildControllers(
         modelBundle: PlayerModelBundle,
         resourceBundle: ModelResourceBundle
-    ): Consumer<PlayerGeoEntity> {
-        if (processorRegistry.isEmpty()) {
-            registerDefaultProcessors()
-        }
+    ): (PlayerGeoEntity) -> Unit {
+        if (processorRegistry.isEmpty()) registerDefaultProcessors()
         return processorRegistry.buildAll(modelBundle, resourceBundle)
     }
 
@@ -94,7 +92,7 @@ object FirstPersonArmAnimationController {
     ) {
         val animationEntryKey = "$FP_ARM_PREFIX.$slotName"
         var processor: ModelProcessor<PlayerGeoEntity, PlayerModelBundle> = { _, _ ->
-            { entity, consumer -> consumer.accept(controllerFactory.apply(animationEntryKey, entity)) }
+            { entity, consumer -> consumer(controllerFactory.apply(animationEntryKey, entity)) }
         }
         if (skipOnPreview) {
             processor = processor.withFilter { entity -> entity is IPreviewAnimatable }

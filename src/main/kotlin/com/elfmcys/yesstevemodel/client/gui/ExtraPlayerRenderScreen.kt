@@ -10,7 +10,6 @@ import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.MutableComponent
 import kotlin.math.min
 
 class ExtraPlayerRenderScreen : Screen(Component.literal("YSM Extra Player Render Config GUI")) {
@@ -34,7 +33,7 @@ class ExtraPlayerRenderScreen : Screen(Component.literal("YSM Extra Player Rende
             )
             i = -60
         }
-        val label: MutableComponent = Component.translatable("gui.yes_steve_model.hide_or_show")
+        val label = Component.translatable("gui.yes_steve_model.hide_or_show")
         val labelWidth = font.width(label) + 24
         addRenderableWidget(
             Checkbox.builder(label, font)
@@ -66,12 +65,35 @@ class ExtraPlayerRenderScreen : Screen(Component.literal("YSM Extra Player Rende
         guiGraphics.hLine(boxLeft, boxRight, boxBottom, -65536)
 
         guiGraphics.fillGradient(boxLeft, boxTop, boxRight, boxBottom, 1342177279, 1342177279)
-        guiGraphics.fillGradient(boxLeft - offsetX, boxTop - offsetX, boxLeft + offsetX, boxTop + offsetX, -16711777, -16711777)
-        guiGraphics.fillGradient(boxRight - offsetX, boxBottom - offsetX, boxRight + offsetX, boxBottom + offsetX, -16777057, -16777057)
+        guiGraphics.fillGradient(
+            boxLeft - offsetX,
+            boxTop - offsetX,
+            boxLeft + offsetX,
+            boxTop + offsetX,
+            -16711777,
+            -16711777
+        )
+        guiGraphics.fillGradient(
+            boxRight - offsetX,
+            boxBottom - offsetX,
+            boxRight + offsetX,
+            boxBottom + offsetX,
+            -16777057,
+            -16777057
+        )
 
         var tipY = 15
-        for (formattedCharSequence in font.split(Component.translatable("gui.yes_steve_model.extra_player_render.tips"), 500)) {
-            guiGraphics.drawString(font, formattedCharSequence, (width - 15) - font.width(formattedCharSequence), tipY, -1)
+        for (formattedCharSequence in font.split(
+            Component.translatable("gui.yes_steve_model.extra_player_render.tips"),
+            500
+        )) {
+            guiGraphics.drawString(
+                font,
+                formattedCharSequence,
+                (width - 15) - font.width(formattedCharSequence),
+                tipY,
+                -1
+            )
             tipY += 10
         }
 
@@ -84,7 +106,7 @@ class ExtraPlayerRenderScreen : Screen(Component.literal("YSM Extra Player Rende
                 mouseStartY.toDouble(),
                 rotationX,
                 rotationY,
-                minecraft?.deltaTracker?.getGameTimeDeltaPartialTick(false) ?: partialTick
+                minecraft.deltaTracker.getGameTimeDeltaPartialTick(false)
             )
         }
         super.render(guiGraphics, mouseX, mouseY, partialTick)
@@ -104,8 +126,10 @@ class ExtraPlayerRenderScreen : Screen(Component.literal("YSM Extra Player Rende
         }
         val rightHandleX = (mouseStartX + rotationX).toInt()
         val rightHandleY = (mouseStartY + (rotationX * 2.0f)).toInt()
-        val inRightHandleX = (rightHandleX - offsetX).toDouble() < mouseX && mouseX < (rightHandleX + offsetX).toDouble()
-        val inRightHandleY = (rightHandleY - offsetX).toDouble() < mouseY && mouseY < (rightHandleY + offsetX).toDouble()
+        val inRightHandleX =
+            (rightHandleX - offsetX).toDouble() < mouseX && mouseX < (rightHandleX + offsetX).toDouble()
+        val inRightHandleY =
+            (rightHandleY - offsetX).toDouble() < mouseY && mouseY < (rightHandleY + offsetX).toDouble()
         if (button == 0 && inRightHandleX && inRightHandleY) {
             isRightDragging = true
         }
@@ -161,6 +185,6 @@ class ExtraPlayerRenderScreen : Screen(Component.literal("YSM Extra Player Rende
     }
 
     companion object {
-        const val RESET_KEY: Char = 'r'
+        const val RESET_KEY = 'r'
     }
 }

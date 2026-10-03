@@ -32,16 +32,11 @@ open class MaidTextureButton(
     init {
         val animatable = MaidRenderStore.getOrCreate(maid)
         val assembly: ModelAssembly? = animatable.getModelAssembly()
-        this.modelId = animatable.getModelId()
-        this.displayName = if (assembly != null && this.modelId != null) {
-            ComponentUtil.getDisplayName(assembly, this.modelId)
-        } else {
-            Component.literal(this.modelId)
-        }
-        this.textureName = assembly?.animationBundle?.textures?.getKeyAt(textureIndex)
-        if (this.modelId != null && this.textureName != null) {
-            previewEntity.initModelWithTexture(this.modelId, this.textureName)
-        }
+        modelId = animatable.getModelId()
+        displayName =
+            if (assembly != null) ComponentUtil.getDisplayName(assembly, modelId) else Component.literal(modelId)
+        textureName = assembly?.animationBundle?.textures?.getKeyAt(textureIndex)
+        if (textureName != null) previewEntity.initModelWithTexture(modelId, textureName)
     }
 
     override fun onPress(input: InputWithModifiers) {

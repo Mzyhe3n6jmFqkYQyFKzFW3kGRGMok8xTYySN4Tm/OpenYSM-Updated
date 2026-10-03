@@ -5,7 +5,7 @@ import io.airlift.compress.zstd.ZstdDecompressor
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.util.Arrays
+import java.util.*
 
 object YsmZstd {
     @JvmStatic
@@ -53,7 +53,7 @@ object YsmZstd {
                 ((data[base + 1].toInt() and 0xFF) shl 8) or
                 ((data[base + 2].toInt() and 0xFF) shl 16) or
                 ((data[base + 3].toInt() and 0xFF) shl 24)
-        if (magic != (0xFD2FB528).toInt().toInt()) {
+        if (magic != (0xFD2FB528).toInt()) {
             throw IllegalArgumentException("Not a standard ZSTD Magic Number. May be skippable frame or unknown.")
         }
 

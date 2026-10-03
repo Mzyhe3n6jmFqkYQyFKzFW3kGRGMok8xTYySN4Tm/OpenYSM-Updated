@@ -20,9 +20,17 @@ class PackIconButton(
     y: Int,
     width: Int,
     height: Int,
-    val packData: ModelPackData,
+    private val packData: ModelPackData,
     onPress: OnPress
-) : Button(x, y, width, height, Component.literal(ModelMetadataPresenter.getLocalizedString(packData, "name", packData.name)), onPress, DEFAULT_NARRATION) {
+) : Button(
+    x,
+    y,
+    width,
+    height,
+    Component.literal(ModelMetadataPresenter.getLocalizedString(packData, "name", packData.name)),
+    onPress,
+    DEFAULT_NARRATION
+) {
 
     override fun renderContents(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         val minecraft = Minecraft.getInstance()
@@ -30,7 +38,7 @@ class PackIconButton(
         guiGraphics.fillGradient(x, y, x + width, y + height, -6598176, -6598176)
         val location = FileTypeUtil.getPackIconLocation(packData.path)
         val texture = minecraft.textureManager.getTexture(location)
-        val missing = texture == null || location == MissingTextureAtlasSprite.getLocation()
+        val missing = location == MissingTextureAtlasSprite.getLocation()
         val iconToDraw = if (missing) DEFAULT_PACK_ICON else location
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, iconToDraw, x, y, 0.0f, 0.0f, width, height, width, height)
 
@@ -54,7 +62,12 @@ class PackIconButton(
         val str = ModelMetadataPresenter.getLocalizedString(packData, "description", desc ?: "")
         if (str.isBlank()) return
         if (isHovered) {
-            guiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, listOf(Component.literal(str)), mouseX, mouseY)
+            guiGraphics.setComponentTooltipForNextFrame(
+                Minecraft.getInstance().font,
+                listOf(Component.literal(str)),
+                mouseX,
+                mouseY
+            )
         }
     }
 
@@ -62,13 +75,34 @@ class PackIconButton(
         val DEFAULT_PACK_ICON: Identifier = NameSpaces.MOD.path("texture/default_pack_icon.png")
 
         @JvmStatic
-        fun drawCenteredString(guiGraphics: GuiGraphics, font: Font, component: Component, centerX: Int, y: Int, color: Int) {
+        fun drawCenteredString(
+            guiGraphics: GuiGraphics,
+            font: Font,
+            component: Component,
+            centerX: Int,
+            y: Int,
+            color: Int
+        ) {
             guiGraphics.drawString(font, component, centerX - (font.width(component) / 2), y, color, false)
         }
 
         @JvmStatic
-        fun drawCenteredString(guiGraphics: GuiGraphics, font: Font, formattedCharSequence: FormattedCharSequence, centerX: Int, y: Int, color: Int) {
-            guiGraphics.drawString(font, formattedCharSequence, centerX - (font.width(formattedCharSequence) / 2), y, color, false)
+        fun drawCenteredString(
+            guiGraphics: GuiGraphics,
+            font: Font,
+            formattedCharSequence: FormattedCharSequence,
+            centerX: Int,
+            y: Int,
+            color: Int
+        ) {
+            guiGraphics.drawString(
+                font,
+                formattedCharSequence,
+                centerX - (font.width(formattedCharSequence) / 2),
+                y,
+                color,
+                false
+            )
         }
     }
 }

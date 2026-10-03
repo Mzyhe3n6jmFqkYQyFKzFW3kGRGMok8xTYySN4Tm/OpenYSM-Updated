@@ -26,7 +26,7 @@ data class C2SCompleteFeedbackPacket(val feedbackData: FeedbackData) {
             val sender = ctx.sender
             if (ctx.isServerSide() && sender != null) {
                 ctx.enqueueWork {
-                    handleOnServer(message, sender.level() as ServerLevel)
+                    handleOnServer(message, sender.level())
                 }
             }
         }

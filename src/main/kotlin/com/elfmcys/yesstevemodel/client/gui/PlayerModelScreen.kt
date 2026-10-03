@@ -34,7 +34,6 @@ import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.FormattedText
-import net.minecraft.network.chat.MutableComponent
 import net.minecraft.sounds.SoundEvents
 import org.apache.commons.lang3.StringUtils
 import rip.ysm.api.PlatformAPI
@@ -77,16 +76,14 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
     }
 
     open fun createTextureScreen(other: PlayerModelScreen, str: String, modelAssembly: ModelAssembly): Screen {
-        if (GeneralConfig.TEXTURE_SCREEN_MODE != null && GeneralConfig.TEXTURE_SCREEN_MODE.get() == GeneralConfig.TextureScreenMode.MODERN) {
+        if (GeneralConfig.TEXTURE_SCREEN_MODE.get() == GeneralConfig.TextureScreenMode.MODERN)
             return ModernPlayerTextureScreen(other, str, modelAssembly)
-        }
         return PlayerTextureScreen(other, str, modelAssembly)
     }
 
     open fun createModelInfoScreen(other: PlayerModelScreen, modelAssembly: ModelAssembly): Screen {
-        if (GeneralConfig.MODEL_INFO_SCREEN_MODE != null && GeneralConfig.MODEL_INFO_SCREEN_MODE.get() == GeneralConfig.ModelInfoScreenMode.MODERN) {
+        if (GeneralConfig.MODEL_INFO_SCREEN_MODE.get() == GeneralConfig.ModelInfoScreenMode.MODERN)
             return ModernModelInfoScreen(other, modelAssembly)
-        }
         return ModelInfoScreen(other, modelAssembly)
     }
 
@@ -230,7 +227,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                     .lowercase(Locale.ENGLISH).contains(search)) && matchesAuthorSearch(modelAssembly, search, metadata)
     }
 
-    fun getParentPath(str: String?): String {
+    private fun getParentPath(str: String?): String {
         if (str.isNullOrEmpty()) return StringPool.EMPTY
         val trimmed = if (str.endsWith("/")) str.substring(0, str.length - 1) else str
         val lastSlash = trimmed.lastIndexOf('/')
@@ -416,7 +413,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             }
 
             val modelSlot = slotIndex - sortedPackKeys.size
-            if (modelSlot in 0 until sortedModelKeys.size) {
+            if (modelSlot in sortedModelKeys.indices) {
                 val modelId = sortedModelKeys[modelSlot]
                 val previewEntity = previewHolders[i]
                 previewEntity.resetModel()
@@ -445,7 +442,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             guiGraphics,
             mouseX,
             mouseY,
-            minecraft.deltaTracker?.getGameTimeDeltaPartialTick(false) ?: partialTick
+            minecraft.deltaTracker.getGameTimeDeltaPartialTick(false)
         )
 
         val box = searchBox
@@ -483,9 +480,8 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         guiGraphics.pose().popMatrix()
 
         if (currentPath.isNotBlank()) {
-            var lineIndex = 0
             val listSplit = font.split(Component.literal("📂 $currentPath").withStyle(ChatFormatting.GRAY), 270)
-            for (line in listSplit) {
+            for ((lineIndex, line) in listSplit.withIndex()) {
                 guiGraphics.drawString(
                     font,
                     line,
@@ -493,7 +489,6 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                     guiTop + ((-(listSplit.size - lineIndex) * 10) - 2),
                     0xFFF3F0E0.toInt()
                 )
-                lineIndex++
             }
         }
 
@@ -519,7 +514,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
 
     private fun renderSyncStatus(guiGraphics: GuiGraphics) {
         val currentState = ClientModelManager.getSyncStatus()
-        val text: MutableComponent = when (currentState.currentState) {
+        val text = when (currentState.currentState) {
             ClientModelManager.SyncState.WAITING -> Component.translatable("gui.yes_steve_model.sync_hint.waiting")
             ClientModelManager.SyncState.LOADING -> Component.translatable("gui.yes_steve_model.sync_hint.loading")
             ClientModelManager.SyncState.PREPARING -> Component.translatable("gui.yes_steve_model.sync_hint.preparing")
@@ -653,10 +648,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
-        if (minecraft == null) return false
-        if (scrollY != 0.0 && isInModelArea(mouseX, mouseY)) {
-            return handleScrollPage(scrollY)
-        }
+        if (scrollY != 0.0 && isInModelArea(mouseX, mouseY)) return handleScrollPage(scrollY)
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
     }
 
@@ -674,6 +666,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         }
     }
 
+    // TODO: Always true
     private fun handleScrollPage(delta: Double): Boolean {
         val currentPage = getCurrentPage()
         if (delta > 0.0 && currentPage > 0) {
@@ -691,13 +684,13 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         return true
     }
 
-    fun getCurrentPage(): Int = pageIndexMap.getOrDefault(currentPath, 0)
+    private fun getCurrentPage(): Int = pageIndexMap.getOrDefault(currentPath, 0)
 
-    fun setCurrentPage(page: Int) {
+    private fun setCurrentPage(page: Int) {
         pageIndexMap.put(currentPath, page)
     }
 
-    fun resetCurrentPage() {
+    private fun resetCurrentPage() {
         pageIndexMap.put(currentPath, 0)
     }
 

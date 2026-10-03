@@ -11,10 +11,8 @@ object PlayerLogoutEvent {
             if (!YesSteveModel.isAvailable()) {
                 return@register
             }
-            val player = handler.player ?: return@register
-            if (NetworkHandler.isPlayerConnected(player)) {
-                ServerModelManager.syncModelToPlayer(player.uuid)
-            }
+            val player = handler.player
+            if (NetworkHandler.isPlayerConnected(player)) ServerModelManager.syncModelToPlayer(player.uuid)
         }
     }
 }

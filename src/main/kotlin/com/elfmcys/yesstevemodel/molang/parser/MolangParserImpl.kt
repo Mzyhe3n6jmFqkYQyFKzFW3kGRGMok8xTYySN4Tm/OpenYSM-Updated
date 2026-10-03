@@ -28,25 +28,29 @@ class MolangParserImpl(
         return expr
     }
 
-    fun parseSingle(lexer: MolangLexer): Expression {
+    private fun parseSingle(lexer: MolangLexer): Expression {
         var token = lexer.current()
         when (token.kind) {
             TokenKind.FLOAT -> {
                 lexer.next()
                 return FloatExpression(token.value!!.toFloat())
             }
+
             TokenKind.STRING -> {
                 lexer.next()
                 return StringExpression(token.value!!)
             }
+
             TokenKind.TRUE -> {
                 lexer.next()
                 return FloatExpression.ONE
             }
+
             TokenKind.FALSE -> {
                 lexer.next()
                 return FloatExpression.ZERO
             }
+
             TokenKind.LPAREN -> {
                 lexer.next()
                 val expression = parseCompoundExpression(lexer, 0)
@@ -57,6 +61,7 @@ class MolangParserImpl(
                 lexer.next()
                 return expression
             }
+
             TokenKind.LBRACE -> {
                 lexer.next()
                 token = lexer.current()
@@ -82,18 +87,21 @@ class MolangParserImpl(
                 lexer.next()
                 return ExecutionScopeExpression(expressions)
             }
+
             TokenKind.BREAK -> {
                 lexer.next()
                 return StatementExpression(StatementExpression.Op.BREAK)
             }
+
             TokenKind.CONTINUE -> {
                 lexer.next()
                 return StatementExpression(StatementExpression.Op.CONTINUE)
             }
+
             TokenKind.IDENTIFIER -> {
                 var lastTarget = binding.getProperty(token.value!!)
                     ?: throw ParseException("Failed to get property: ${token.value}", lexer.cursor())
-                var expr = IdentifierExpression.get(token.value!!, lastTarget)
+                var expr = IdentifierExpression.get(token.value, lastTarget)
                 token = lexer.next()
                 if (token.kind == TokenKind.DOT) {
                     token = lexer.next()
@@ -106,15 +114,17 @@ class MolangParserImpl(
                         throw ParseException("Illegal access to : ${token.value}", lexer.cursor())
                     } ?: throw ParseException("Failed to get property: ${token.value}", lexer.cursor())
 
-                    expr = IdentifierExpression.get(token.value!!, lastTarget)
+                    expr = IdentifierExpression.get(token.value, lastTarget)
                     lexer.next()
                 }
                 return expr
             }
+
             TokenKind.PLUS -> {
                 lexer.next()
                 return parseCompoundExpression(lexer, UnaryExpression.Op.PLUS.precedence)
             }
+
             TokenKind.SUB -> {
                 lexer.next()
                 return UnaryExpression(
@@ -122,6 +132,7 @@ class MolangParserImpl(
                     parseCompoundExpression(lexer, UnaryExpression.Op.ARITHMETICAL_NEGATION.precedence)
                 )
             }
+
             TokenKind.BANG -> {
                 lexer.next()
                 return UnaryExpression(
@@ -129,6 +140,7 @@ class MolangParserImpl(
                     parseCompoundExpression(lexer, UnaryExpression.Op.LOGICAL_NEGATION.precedence)
                 )
             }
+
             TokenKind.RETURN -> {
                 lexer.next()
                 return UnaryExpression(
@@ -136,11 +148,12 @@ class MolangParserImpl(
                     parseCompoundExpression(lexer, UnaryExpression.Op.RETURN.precedence)
                 )
             }
+
             else -> throw ParseException("Expected an expression.", lexer.cursor())
         }
     }
 
-    fun parseCompoundExpression(lexer: MolangLexer, lastPrecedence: Int): Expression {
+    private fun parseCompoundExpression(lexer: MolangLexer, lastPrecedence: Int): Expression {
         var expr = parseSingle(lexer)
         while (true) {
             val compoundExpr = parseCompound(lexer, expr, lastPrecedence)
@@ -154,7 +167,7 @@ class MolangParserImpl(
         }
     }
 
-    fun parseCompound(lexer: MolangLexer, left: Expression, lastPrecedence: Int): Expression {
+    private fun parseCompound(lexer: MolangLexer, left: Expression, lastPrecedence: Int): Expression {
         var current = lexer.current()
         if (left is CallExpression) {
             if (current.kind == TokenKind.LPAREN) {
@@ -204,6 +217,7 @@ class MolangParserImpl(
                 val right = parseCompoundExpression(lexer, BinaryExpression.Op.MUL.precedence)
                 return BinaryExpression(BinaryExpression.Op.MUL, left, right)
             }
+
             TokenKind.QUES -> {
                 if (lastPrecedence > PRECEDENCE_QUES) {
                     return left
@@ -217,6 +231,7 @@ class MolangParserImpl(
                     BinaryExpression(BinaryExpression.Op.CONDITIONAL, left, trueValue)
                 }
             }
+
             TokenKind.LBRACKET -> {
                 lexer.next()
                 val indexExpression = parseCompoundExpression(lexer, 0)
@@ -226,6 +241,7 @@ class MolangParserImpl(
                 }
                 throw ParseException("Expect a ']' after array index", lexer.cursor())
             }
+
             else -> {}
         }
 

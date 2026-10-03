@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.util.data
 
 import it.unimi.dsi.fastutil.objects.*
@@ -15,7 +17,7 @@ class OrderedStringMap<K, V> : Map<K, V> {
         this.hashMap = Object2ObjectOpenHashMap(this.arrayMap)
     }
 
-    // TODO: Remove Suppress
+    // TODO: Fix UNCHECKED_CAST
     @Suppress("UNCHECKED_CAST")
     constructor(object2ObjectArrayMap: Object2ObjectArrayMap<K, V>) {
         val array = object2ObjectArrayMap.keys.toTypedArray()
