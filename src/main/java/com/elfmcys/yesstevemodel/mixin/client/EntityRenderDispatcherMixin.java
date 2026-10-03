@@ -23,16 +23,16 @@ import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.entity.projectile.Projectile;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin implements IEntityRenderDispatcher {
-
     @Override
     @Unique
-    public Entity ysm$getEntityForState(EntityRenderState state) {
+    public Entity ysm$getEntityForState(@NonNull EntityRenderState state) {
         return EntityRenderStateBindings.get(state);
     }
 
@@ -53,10 +53,8 @@ public abstract class EntityRenderDispatcherMixin implements IEntityRenderDispat
         if (!YesSteveModel.isAvailable()) {
             return true;
         }
-        Entity entity = EntityRenderStateBindings.get(state);
-        if (entity == null) {
-            return true;
-        }
+        var entity = EntityRenderStateBindings.get(state);
+        if (entity == null) return true;
 
         float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();

@@ -15,6 +15,7 @@ modmenu = "17.0.1"
 concentus = "1.0.0"
 vorbis-java = "0.8"
 carryon = "2.9.2"
+aircompressor = "0.27"
 
 # Build & Toolchain
 loom = "1.17-SNAPSHOT"
@@ -40,6 +41,7 @@ modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 concentus = { module = "com.plasmoverse:concentus", version.ref = "concentus" }
 vorbis-java-core = { module = "org.gagravarr:vorbis-java-core", version.ref = "vorbis-java" }
 carryon = { module = "tschipp.carryon:carryon-fabric-1.21.11", version.ref = "carryon" }
+aircompressor = { module = "io.airlift:aircompressor", version.ref = "aircompressor" }
 
 [plugins]
 fabric-loom = { id = "fabric-loom", version.ref = "loom" }

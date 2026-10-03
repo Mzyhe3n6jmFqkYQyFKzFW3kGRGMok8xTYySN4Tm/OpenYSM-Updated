@@ -13,11 +13,10 @@ import java.util.function.BiFunction
 
 object CarryOnCompatImpl {
     @JvmStatic
-    fun getControllerFactory(): Optional<BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>> {
-        return Optional.of(BiFunction { animationEntryKey, entity ->
+    fun getControllerFactory(): Optional<BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>> =
+        Optional.of(BiFunction { animationEntryKey, entity ->
             CompositeAnimationController(entity, animationEntryKey, 0.1f, PlayerAnimationPredicate())
         })
-    }
 
     @JvmStatic
     fun isPlayerCarrying(player: Player): Boolean = CarryOnDataHelper.isPlayerCarrying(player)
@@ -26,16 +25,13 @@ object CarryOnCompatImpl {
     fun registerBindings(binding: CtrlBinding) {
         binding.livingEntityVar("carryon_type") {
             val entity = it.entity()
-            if (entity is Player) {
+            if (entity is Player)
                 when (CarryOnDataHelper.getCarryType(entity)) {
                     CarryOnDataHelper.CarryType.BLOCK -> "block"
                     CarryOnDataHelper.CarryType.ENTITY -> "entity"
                     CarryOnDataHelper.CarryType.PLAYER -> "player"
                     CarryOnDataHelper.CarryType.NONE -> StringPool.EMPTY
-                }
-            } else {
-                StringPool.EMPTY
-            }
+                } else StringPool.EMPTY
         }
         binding.livingEntityVar("carryon_is_princess") {
             val entity = it.entity()

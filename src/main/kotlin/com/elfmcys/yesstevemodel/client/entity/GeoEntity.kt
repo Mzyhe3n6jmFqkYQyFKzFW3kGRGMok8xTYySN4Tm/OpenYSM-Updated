@@ -1,0 +1,250 @@
+package com.elfmcys.yesstevemodel.client.entity
+
+import com.elfmcys.yesstevemodel.audio.*
+import com.elfmcys.yesstevemodel.client.ClientModelManager
+import com.elfmcys.yesstevemodel.client.animation.molang.MolangEventDispatcher
+import com.elfmcys.yesstevemodel.client.animation.molang.MolangWatchRegistry
+import com.elfmcys.yesstevemodel.client.animation.molang.PhysicsManager
+import com.elfmcys.yesstevemodel.client.model.ModelAssembly
+import com.elfmcys.yesstevemodel.client.renderer.AnimationDebugOverlay
+import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
+import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
+import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
+import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue
+import com.elfmcys.yesstevemodel.geckolib3.core.processor.AnimationProcessor
+import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
+import com.elfmcys.yesstevemodel.util.UnsafeUtil
+import com.elfmcys.yesstevemodel.util.YSMThreadPool
+import com.elfmcys.yesstevemodel.util.log.ChatLogger
+import com.elfmcys.yesstevemodel.util.log.ILogger
+import com.mojang.blaze3d.systems.RenderSystem
+import net.minecraft.world.entity.Entity
+import rip.ysm.compat.oculus.OculusCompat
+import java.util.Optional
+import java.util.concurrent.Future
+
+abstract class GeoEntity<T : Entity>(
+    t: T,
+    registerWithCache: Boolean
+) : AnimatableEntity<T>(t) {
+    private var modelId: String = "default"
+    private var modelAssembly: ModelAssembly? = null
+    private var renderShape: ModelWrapper? = null
+    private var loaded: Boolean = false
+    private var updateTicks: Int = 0
+    private var bones: PhysicsManager? = null
+    private var boneLookup: MolangWatchRegistry? = null
+    private var renderLayers: List<IValue>? = null
+    private var modelFuture: Future<AnimationEvent<*>?>? = null
+
+    init {
+        if (registerWithCache) {
+            EntityRenderCache.register(this)
+        }
+    }
+
+    abstract fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper?
+    abstract fun getAnimationProcessor(): GeoModel
+
+    override fun getPhysicsManager(): PhysicsManager {
+        if (ModelPreviewRenderer.isFirstPerson() || ModelPreviewRenderer.isExtraPlayer()) {
+            return physicsManager
+        }
+        val currentBones = bones
+        if (currentBones == null) {
+            val newBones = PhysicsManager()
+            bones = newBones
+            return newBones
+        }
+        return currentBones
+    }
+
+    open fun getRenderLayers(): List<IValue>? {
+        return renderLayers
+    }
+
+    open fun setBoneLookup(watchRegistry: MolangWatchRegistry?) {
+        boneLookup = watchRegistry
+    }
+
+    override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
+        super.setupAnim(seekTime, isFirstPerson)
+        val lookup = boneLookup
+        if (lookup != null) {
+            val processor: AnimationProcessor<T> = getEvaluationContext()
+            processor.execute({ evaluator ->
+                lookup.evaluatePreAnimation(evaluator)
+                null
+            }, false, true) {}
+            processor.execute({ evaluator ->
+                lookup.evaluatePostAnimation(evaluator)
+                null
+            }, false, false) {}
+        }
+    }
+
+    open fun tickModel() {
+        if (updateTicks < entity.tickCount) {
+            refreshModel()
+            updateTicks = entity.tickCount
+        }
+    }
+
+    fun getModelAssembly(): ModelAssembly? {
+        return modelAssembly
+    }
+
+    fun setModelId(str: String) {
+        modelId = str
+        refreshModel()
+    }
+
+    private fun refreshModel() {
+        ClientModelManager.getModelContext(modelId).ifPresentOrElse({ assembly ->
+            val shape = renderShape
+            if (shape == null || shape.isDefault || assembly != shape.context) {
+                renderShape = buildRenderShape(assembly, false)
+            }
+        }, {
+            val localAssembly = ClientModelManager.getLocalModelContext()
+            val shape = renderShape
+            if (shape == null || !shape.isDefault || localAssembly != shape.context) {
+                renderShape = buildRenderShape(localAssembly, true)
+            }
+        })
+
+        val shape = renderShape
+        if (shape != null) {
+            if ((shape.context != modelAssembly || shape.isDefault != loaded) && shape.isValid()) {
+                modelAssembly = shape.context
+                loaded = shape.isDefault
+                modelAssembly?.let { onModelLoaded(it) }
+                initAnimationControllers(getAnimationProcessor(), shape.context.getExpressionCache().getEvents())
+                return
+            }
+            return
+        }
+        if (modelAssembly != null) {
+            clearModel()
+        }
+    }
+
+    fun getRenderShape(): ModelWrapper? {
+        return renderShape
+    }
+
+    open fun onModelLoaded(modelAssembly: ModelAssembly) {
+        renderShape?.audioProvider = AudioStreamCache.getOrCreateProvider(modelAssembly)
+        renderLayers = modelAssembly.getExpressionCache().getEvents().get(MolangEventDispatcher.DEFER)
+    }
+
+    open fun clearModel() {
+        modelAssembly = null
+        renderLayers = null
+        renderShape = null
+        loaded = false
+        reset()
+    }
+
+    override fun reset() {
+        super.reset()
+        bones = null
+        updateTicks = 0
+    }
+
+    open fun resetModel() {
+        modelId = "default"
+        modelInitialized = false
+        clearModel()
+    }
+
+    fun getModelId(): String {
+        return modelId
+    }
+
+    override fun isModelReady(): Boolean {
+        val shape = renderShape
+        return shape != null && !shape.isDefault && shape.isValid()
+    }
+
+    override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean {
+        return event.isFirstPerson() || OculusCompat.isPBRActive()
+    }
+
+    override fun resolveExpression(str: String): IValue? {
+        return getModelAssembly()?.getExpressionCache()?.getFunctions()?.get(str)
+    }
+
+    override fun getAudioStreamFactory(str: String): Optional<IAudioStreamFactory> {
+        val shape = renderShape ?: return Optional.empty()
+        val provider = shape.audioProvider ?: return Optional.empty()
+        val trackData = getModelAssembly()?.getExpressionCache()?.getSoundEffects()?.get(str)
+        if (trackData != null && trackData.data != null && trackData.codec != AudioCodec.UNDEFINED) {
+            return Optional.of(IAudioStreamFactory { provider.createAudioStream(trackData) })
+        }
+        return Optional.empty()
+    }
+
+    override fun getLogger(): ILogger? {
+        if (AnimationDebugOverlay.isDebugActive()) {
+            return ChatLogger
+        }
+        return null
+    }
+
+    open fun submitAsyncUpdate(partialTick: Float) {
+        UnsafeUtil.getUnsafe().storeFence()
+        modelFuture = YSMThreadPool.submitCallable {
+            try {
+                val event: AnimationEvent<*>? = super.processAnimationImpl(partialTick, true)
+                UnsafeUtil.getUnsafe().storeFence()
+                event
+            } catch (th: Throwable) {
+                UnsafeUtil.getUnsafe().storeFence()
+                throw th
+            }
+        }
+    }
+
+    override fun processAnimationImpl(partialTick: Float, isFirstPerson: Boolean): AnimationEvent<*>? {
+        RenderSystem.assertOnRenderThread()
+        if (isFirstPerson && modelFuture != null) {
+            return awaitAsyncResult()
+        }
+        awaitAsyncResult()
+        return super.processAnimationImpl(partialTick, isFirstPerson)
+    }
+
+    open fun awaitAsyncResult(): AnimationEvent<*>? {
+        val future = modelFuture
+        if (future != null) {
+            var event: AnimationEvent<*>? = null
+            try {
+                event = future.get()
+                UnsafeUtil.getUnsafe().loadFence()
+            } catch (e: InterruptedException) {
+            } catch (th: Throwable) {
+                th.printStackTrace()
+            }
+            modelFuture = null
+            return event
+        }
+        return null
+    }
+
+    open fun supportsAsync(): Boolean {
+        return true
+    }
+
+    open class ModelWrapper(
+        @JvmField val context: ModelAssembly,
+        @JvmField val isDefault: Boolean
+    ) {
+        @JvmField
+        var audioProvider: IAudioStreamProvider? = null
+
+        open fun isValid(): Boolean {
+            return true
+        }
+    }
+}

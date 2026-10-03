@@ -15,7 +15,6 @@ import java.util.Collection;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityEffectMixin {
-
     @Inject(method = "onEffectAdded", at = @At("TAIL"))
     private void ysm$onEffectAdded(MobEffectInstance instance, Entity source, CallbackInfo ci) {
         LivingEntity self = (LivingEntity) (Object) this;

@@ -20,31 +20,23 @@ public abstract class ItemInHandRendererMixin {
 
     @Inject(method = "renderRightHand", at = @At("HEAD"), cancellable = true)
     public void ysm$onRenderPlayerArm(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, Identifier identifier, boolean bl, CallbackInfo ci) {
-        if (ysm$dispatchHandRender(poseStack, submitNodeCollector, packedLight, HumanoidArm.RIGHT)) {
-            ci.cancel();
-        }
+        if (ysm$dispatchHandRender(poseStack, submitNodeCollector, packedLight, HumanoidArm.RIGHT)) ci.cancel();
     }
 
     @Inject(method = "renderLeftHand", at = @At("HEAD"), cancellable = true)
     public void ysm$onRenderMapHand(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, Identifier identifier, boolean bl, CallbackInfo ci) {
-        if (ysm$dispatchHandRender(poseStack, submitNodeCollector, packedLight, HumanoidArm.LEFT)) {
-            ci.cancel();
-        }
+        if (ysm$dispatchHandRender(poseStack, submitNodeCollector, packedLight, HumanoidArm.LEFT)) ci.cancel();
     }
 
     @Unique
     private boolean ysm$dispatchHandRender(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, HumanoidArm humanoidArm) {
         Minecraft minecraft = Minecraft.getInstance();
-        if (minecraft.player == null) {
-            return false;
-        }
+        if (minecraft.player == null) return false;
         MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
         RenderContext.enter(submitNodeCollector, null);
         try {
             boolean cancelled = ReplacePlayerHandRenderEvent.onRenderArm(minecraft.player, humanoidArm, poseStack, bufferSource, packedLight);
-            if (cancelled) {
-                bufferSource.endBatch();
-            }
+            if (cancelled) bufferSource.endBatch();
             return cancelled;
         } finally {
             RenderContext.exit();

@@ -1,0 +1,84 @@
+package com.elfmcys.yesstevemodel.client.entity
+
+import com.elfmcys.yesstevemodel.client.model.ModelAssembly
+import com.elfmcys.yesstevemodel.client.model.ProjectileModelBundle
+import com.elfmcys.yesstevemodel.client.upload.IResourceLocatable
+import com.elfmcys.yesstevemodel.client.upload.UploadManager
+import com.elfmcys.yesstevemodel.geckolib3.core.builder.Animation
+import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController
+import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite
+import net.minecraft.resources.Identifier
+import net.minecraft.world.entity.projectile.Projectile
+
+open class GeckoProjectileEntity(
+    projectile: Projectile
+) : GeoEntity<Projectile>(projectile, true) {
+    private var projectileModelContext: ProjectileModelBundle? = null
+
+    override fun registerAnimationControllers() {
+        projectileModelContext?.getControllerInitializer()?.accept(this)
+    }
+
+    override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper? {
+        if (!isDefault) {
+            val key = entity.type.builtInRegistryHolder().key().identifier()
+            val modelBundle = modelAssembly.getProjectileModels()[key]
+            if (modelBundle != null) {
+                return ProjectileModelWrapper(modelAssembly, false, modelBundle)
+            }
+        }
+        return null
+    }
+
+    override fun onModelLoaded(modelAssembly: ModelAssembly) {
+        super.onModelLoaded(modelAssembly)
+        val key = entity.type.builtInRegistryHolder().key().identifier()
+        projectileModelContext = modelAssembly.getProjectileModels()[key]
+    }
+
+    override fun clearModel() {
+        super.clearModel()
+        projectileModelContext = null
+    }
+
+    override fun getAnimationProcessor(): GeoModel {
+        return projectileModelContext!!.getModel()
+    }
+
+    override fun getTextureLocation(): Identifier {
+        return (getRenderShape() as ProjectileModelWrapper).textureLocatable.getResourceLocation().orElseGet(MissingTextureAtlasSprite::getLocation)
+    }
+
+    override fun getAnimation(str: String): Animation? {
+        return projectileModelContext?.getAnimations()?.get(str)
+    }
+
+    override fun getAnimationEntries(str: String): AnimationController? {
+        return projectileModelContext?.getAnimationControllers()?.get(str)
+    }
+
+    override fun isModelReady(): Boolean {
+        return super.isModelReady() && projectileModelContext != null && (getRenderShape()?.isValid() == true)
+    }
+
+    override fun getHeightScale(): Float {
+        return 0.7f
+    }
+
+    override fun getWidthScale(): Float {
+        return 0.7f
+    }
+
+    private class ProjectileModelWrapper(
+        modelAssembly: ModelAssembly,
+        isDefault: Boolean,
+        modelBundle: ProjectileModelBundle
+    ) : ModelWrapper(modelAssembly, isDefault) {
+        val textureLocatable: IResourceLocatable = UploadManager.getOrCreateLocatable(modelBundle.getTexture(), true)
+
+        override fun isValid(): Boolean {
+            return textureLocatable.getResourceLocation().isPresent
+        }
+    }
+}

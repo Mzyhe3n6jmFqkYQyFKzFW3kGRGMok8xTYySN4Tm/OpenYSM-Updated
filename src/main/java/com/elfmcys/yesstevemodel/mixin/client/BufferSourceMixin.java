@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.Unique;
 import java.util.Iterator;
 import java.util.SequencedMap;
 
-@Mixin({MultiBufferSource.BufferSource.class})
+@Mixin(MultiBufferSource.BufferSource.class)
 public class BufferSourceMixin implements BufferSourceAccessor {
 
     @Shadow
@@ -21,10 +21,9 @@ public class BufferSourceMixin implements BufferSourceAccessor {
 
     @Override
     @Unique
-    public void initialize() {
-        Iterator<RenderType> it = this.fixedBuffers.keySet().iterator();
-        while (it.hasNext()) {
-            ((MultiBufferSource.BufferSource) (Object) this).endBatch(it.next());
+    public void ysm$initialize() {
+        for (RenderType renderType : fixedBuffers.keySet()) {
+            ((MultiBufferSource.BufferSource) (Object) this).endBatch(renderType);
         }
     }
 }

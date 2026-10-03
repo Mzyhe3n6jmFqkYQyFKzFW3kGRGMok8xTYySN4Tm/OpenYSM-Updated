@@ -9,5 +9,6 @@ object ToolActionBridge {
     fun canFishingRodCast(stack: ItemStack): Boolean = ToolActionBridgeImpl.canFishingRodCast(stack)
 
     @JvmStatic
-    fun onEntitySwing(stack: ItemStack, entity: LivingEntity): Boolean = ToolActionBridgeImpl.onEntitySwing(stack, entity)
+    fun onEntitySwing(stack: ItemStack, entity: LivingEntity): Boolean =
+        ToolActionBridgeImpl.onEntitySwing(stack, entity)
 }

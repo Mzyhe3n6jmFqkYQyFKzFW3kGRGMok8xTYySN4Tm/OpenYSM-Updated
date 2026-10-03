@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
@@ -20,7 +21,7 @@ public abstract class LivingRendererMixin extends EntityRenderer<LivingEntity, L
 
     @Unique
     @Override
-    public void tlm$renderNameTag(LivingEntityRenderState state, PoseStack pPoseStack, SubmitNodeCollector collector, CameraRenderState cameraState) {
+    public void tlm$renderNameTag(@NonNull LivingEntityRenderState state, @NonNull PoseStack pPoseStack, @NonNull SubmitNodeCollector collector, @NonNull CameraRenderState cameraState) {
         super.submitNameTag(state, pPoseStack, collector, cameraState);
     }
 }

@@ -1,34 +1,29 @@
 package com.elfmcys.yesstevemodel.event
 
-import com.elfmcys.yesstevemodel.client.event.AnimationLockEvent
-import com.elfmcys.yesstevemodel.client.event.ClientPlayerCloneEvent
-import com.elfmcys.yesstevemodel.client.event.ClientPlayerJoinNotification
-import com.elfmcys.yesstevemodel.client.event.ClientSetupEvent
-import com.elfmcys.yesstevemodel.client.event.ClientTickEvent
-import com.elfmcys.yesstevemodel.client.event.PlayerSkinTextureManager
-import com.elfmcys.yesstevemodel.client.input.AnimationRouletteKey
-import com.elfmcys.yesstevemodel.client.input.DebugAnimationKey
-import com.elfmcys.yesstevemodel.client.input.ExtraAnimationKey
-import com.elfmcys.yesstevemodel.client.input.ExtraPlayerRenderKey
-import com.elfmcys.yesstevemodel.client.input.InputStateKey
-import com.elfmcys.yesstevemodel.client.input.PlayerModelToggleKey
+import com.elfmcys.yesstevemodel.Constants
+import com.elfmcys.yesstevemodel.client.event.*
+import com.elfmcys.yesstevemodel.client.input.*
 import com.elfmcys.yesstevemodel.client.renderer.RendererManager
 import rip.ysm.api.PlatformAPI
 
+// TODO
 object YsmEventBootstrap {
-    @JvmStatic
-    fun register() {
-        ServerStartupEvent.register()
-        EnterServerEvent.register()
-        PlayerLogoutEvent.register()
-        CommonEvent.register()
-        CommandRegistry.register()
-        CapabilityEvent.register()
+    init {
+        Constants.doNothing(
+            ServerStartupEvent,
+            EnterServerEvent,
+            PlayerLogoutEvent,
+            CommonEvent,
+            CommandRegistry,
+            CapabilityEvent
+        )
 
         if (!PlatformAPI.isServer()) {
-            EntityJoinCallbackEvent.register()
+            Constants.doNothing(
+                EntityJoinCallbackEvent,
+                ClientSetupEvent
+            )
 
-            ClientSetupEvent.register()
             ClientTickEvent.register()
             ClientPlayerJoinNotification.register()
             ClientPlayerCloneEvent.register()

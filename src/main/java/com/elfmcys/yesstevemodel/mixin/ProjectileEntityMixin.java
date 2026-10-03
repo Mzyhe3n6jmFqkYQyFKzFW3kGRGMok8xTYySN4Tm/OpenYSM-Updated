@@ -11,14 +11,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin({Projectile.class})
+@Mixin(Projectile.class)
 public class ProjectileEntityMixin {
-    @Inject(at = {@At("RETURN")}, method = {"setOwner(Lnet/minecraft/world/entity/Entity;)V"})
+    @Inject(at = @At("RETURN"), method = "setOwner(Lnet/minecraft/world/entity/Entity;)V")
     private void onSetOwner(Entity entity, CallbackInfo callbackInfo) {
-        Projectile projectile;
-        if (!YesSteveModel.isAvailable() || (projectile = (Projectile) (Object) this) == null || projectile.level() == null || projectile.level().isClientSide()) {
+        Projectile projectile = (Projectile) (Object) this;
+        if (!YesSteveModel.isAvailable() || projectile == null || projectile.level() == null || projectile.level().isClientSide())
             return;
-        }
         if (entity instanceof ServerPlayer) {
             CapabilityEvent.syncProjectileModel(projectile, (ServerPlayer) entity);
         } else if (TouhouMaidCompat.isMaidEntity(entity)) {

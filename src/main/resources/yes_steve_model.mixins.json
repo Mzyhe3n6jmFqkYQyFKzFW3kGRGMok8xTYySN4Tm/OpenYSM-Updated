@@ -9,10 +9,8 @@
   },
   "client": [
     "client.BufferSourceMixin",
-    "client.EntityRenderDispatcherAccessor",
     "client.EntityRenderDispatcherMixin",
     "client.EntityRendererMixin",
-    "client.FishingHookAccessor",
     "client.GlBufferAccessor",
     "client.GuiEntityRendererMixin",
     "client.InventoryScreenMixin",

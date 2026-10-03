@@ -1,0 +1,45 @@
+package com.elfmcys.yesstevemodel.network.message
+
+import com.elfmcys.yesstevemodel.capability.PlayerCapability
+import it.unimi.dsi.fastutil.floats.FloatArrayList
+import net.minecraft.client.Minecraft
+import net.minecraft.network.FriendlyByteBuf
+import rip.ysm.api.network.PacketContext
+
+class S2CSyncAnimationExpressionPacket(
+    val entityId: Int,
+    val floatData: FloatArrayList
+) {
+    companion object {
+        @JvmStatic
+        fun encode(message: S2CSyncAnimationExpressionPacket, buf: FriendlyByteBuf) {
+            buf.writeVarInt(message.entityId)
+            buf.writeByte(message.floatData.size)
+            for (floatDatum in message.floatData) {
+                buf.writeFloat(floatDatum)
+            }
+        }
+
+        @JvmStatic
+        fun decode(buf: FriendlyByteBuf): S2CSyncAnimationExpressionPacket {
+            val entityId = buf.readVarInt()
+            val count = buf.readByte().toInt()
+            val floatArrayList = FloatArrayList(count)
+            for (i in 0 until count) {
+                floatArrayList.add(buf.readFloat())
+            }
+            return S2CSyncAnimationExpressionPacket(entityId, floatArrayList)
+        }
+
+        @JvmStatic
+        fun handleCapability(message: S2CSyncAnimationExpressionPacket, ctx: PacketContext) {
+            if (ctx.isClientSide()) {
+                ctx.enqueueWork {
+                    val level = Minecraft.getInstance().level ?: return@enqueueWork
+                    val entity = level.getEntity(message.entityId) ?: return@enqueueWork
+                    PlayerCapability[entity]?.executeAnimationExpression(message.floatData)
+                }
+            }
+        }
+    }
+}

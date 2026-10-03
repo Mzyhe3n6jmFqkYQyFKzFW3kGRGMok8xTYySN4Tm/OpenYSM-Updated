@@ -8,8 +8,7 @@
   },
   "client": [
     "client.ItemInHandRendererMixin",
-    "client.PlayerRendererMixin",
-    "client.YSMSoundInstanceFabricMixin"
+    "client.PlayerRendererMixin"
   ],
   "mixins": [
     "LivingEntityEffectMixin"

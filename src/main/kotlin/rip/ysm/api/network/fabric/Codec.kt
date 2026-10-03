@@ -5,7 +5,7 @@ import rip.ysm.api.network.PacketContext
 import java.util.function.BiConsumer
 import java.util.function.Function
 
-data class Codec<T>(
+data class Codec<T : Any>(
     val type: Class<T>,
     val encoder: BiConsumer<T, FriendlyByteBuf>,
     val decoder: Function<FriendlyByteBuf, T>,

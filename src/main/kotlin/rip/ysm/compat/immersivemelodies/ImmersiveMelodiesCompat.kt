@@ -7,12 +7,22 @@ import rip.ysm.compat.immersivemelodies.fabric.ImmersiveMelodiesCompatImpl
 
 object ImmersiveMelodiesCompat : ModCompat("immersive_melodies") {
     class ImmersiveMelodiesData {
-        @JvmField var pitch: Float = 0f
-        @JvmField var volume: Float = 0f
-        @JvmField var current: Float = 0f
-        @JvmField var delta: Long = 0L
-        @JvmField var time: Long = 0L
+        @JvmField
+        var pitch: Float = 0f
+
+        @JvmField
+        var volume: Float = 0f
+
+        @JvmField
+        var current: Float = 0f
+
+        @JvmField
+        var delta: Long = 0L
+
+        @JvmField
+        var time: Long = 0L
     }
+
     @JvmStatic
     fun updateMelodyProgress(livingEntity: LivingEntity, imData: ImmersiveMelodiesData) {
         if (!isModLoaded) return
