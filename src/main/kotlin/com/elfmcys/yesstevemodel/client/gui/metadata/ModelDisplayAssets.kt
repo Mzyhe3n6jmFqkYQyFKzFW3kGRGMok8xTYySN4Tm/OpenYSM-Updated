@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.texture.AbstractTexture
 
 data class ModelDisplayAssets(
     val selectedTexture: String,
-    val isAuthModel: Boolean,
+    var isAuthModel: Boolean,
     val authorAvatars: Map<String, OuterFileTexture>,
     private val guiTextures: Map<String, AbstractTexture>
 ) {

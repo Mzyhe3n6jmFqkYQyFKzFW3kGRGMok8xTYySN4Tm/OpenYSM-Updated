@@ -13,140 +13,148 @@ import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
 import rip.ysm.gui.ModernPlayerTextureScreen
 import rip.ysm.gui.OptionRow
-import java.util.ArrayList
-import java.util.List
+import kotlin.math.max
+import kotlin.math.min
 
-class TextureGrid : OptionRow<Any>() {
-    var owner: ModernPlayerTextureScreen = null
-    var textureNames: MutableList<String> = null
-    var holders: Array<PlayerPreviewEntity> = null
-    constructor(owner: ModernPlayerTextureScreen) {
-        super(0, 0, 0, 0, null)
-        this.owner = owner
-        this.textureNames = ArrayList(owner.textureMap.size())
-        var i = 0
-        while (i < owner.textureMap.size()) {
-            this.textureNames.add(owner.textureMap.getKeyAt(i))
-            i++
+class TextureGrid(private val owner: ModernPlayerTextureScreen) : OptionRow<Any?>(0, 0, 0, 0, null) {
+
+    private val textureNames: List<String>
+    private val holders: Array<PlayerPreviewEntity>
+
+    init {
+        val names = ArrayList<String>(owner.textureMap.size)
+        for (i in 0 until owner.textureMap.size) {
+            names.add(owner.textureMap.getKeyAt(i))
         }
-        this.holders = arrayOfNulls<PlayerPreviewEntity>(textureNames.size())
-        var i = 0
-        while (i < holders.length) {
-            holders[i] = PlayerPreviewEntity()
-            holders[i].resetModel()
-            holders[i].getAnimationStateMachine().setCurrentAnimation("idle")
-            holders[i].initModelWithTexture(owner.modelId, textureNames.get(i))
-            i++
+        this.textureNames = names
+        this.holders = Array(names.size) { i ->
+            PlayerPreviewEntity().apply {
+                resetModel()
+                getAnimationStateMachine().setCurrentAnimation("idle")
+                initModelWithTexture(owner.modelId, names[i])
+            }
         }
     }
-    open fun cols(): Int {
-        return Math.max(1, width + TEX_GAP / TEX_BTN_W + TEX_GAP)
+
+    private fun cols(): Int {
+        return max(1, (width + TEX_GAP) / (TEX_BTN_W + TEX_GAP))
     }
-    open fun rows(): Int {
-        return textureNames.size() + cols() - 1 / cols()
+
+    private fun rows(): Int {
+        return (textureNames.size + cols() - 1) / cols()
     }
-    open fun setWidth(w: Int) {
+
+    override fun setWidth(w: Int) {
         super.setWidth(w)
-        this.height = rows() * TEX_BTN_H + TEX_GAP - TEX_GAP
+        this.height = rows() * (TEX_BTN_H + TEX_GAP) - TEX_GAP
     }
-    open fun collectBlurRegions(out: MutableList<IntArray>, rowScroll: Int, areaTop: Int, areaBottom: Int) {
-        var c: Int = cols()
-        var slotW: Int = TEX_BTN_W + TEX_GAP
-        var slotH: Int = TEX_BTN_H + TEX_GAP
-        var i = 0
-        while (i < textureNames.size()) {
-            var col: Int = i % c
-            var row: Int = i / c
-            var x: Int = getX() + col * slotW
-            var y: Int = getY() + row * slotH - rowScroll
-            var yBot: Int = y + TEX_BTN_H
+
+    fun collectBlurRegions(out: MutableList<IntArray>, rowScroll: Int, areaTop: Int, areaBottom: Int) {
+        val c = cols()
+        val slotW = TEX_BTN_W + TEX_GAP
+        val slotH = TEX_BTN_H + TEX_GAP
+        for (i in textureNames.indices) {
+            val col = i % c
+            val row = i / c
+            val x = x + col * slotW
+            val y = y + row * slotH - rowScroll
+            val yBot = y + TEX_BTN_H
             if (yBot <= areaTop || y >= areaBottom) {
                 continue
             }
-            var top: Int = Math.max(y, areaTop)
-            var bot: Int = Math.min(yBot, areaBottom)
+            val top = max(y, areaTop)
+            val bot = min(yBot, areaBottom)
             out.add(intArrayOf(x, top, TEX_BTN_W, bot - top))
-            i++
         }
     }
-    open fun renderWidget(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        var c: Int = cols()
-        var slotW: Int = TEX_BTN_W + TEX_GAP
-        var slotH: Int = TEX_BTN_H + TEX_GAP
-        var i = 0
-        while (i < textureNames.size()) {
-            var col: Int = i % c
-            var row: Int = i / c
-            var x: Int = getX() + col * slotW
-            var y: Int = getY() + row * slotH
+
+    override fun renderWidget(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+        val c = cols()
+        val slotW = TEX_BTN_W + TEX_GAP
+        val slotH = TEX_BTN_H + TEX_GAP
+        for (i in textureNames.indices) {
+            val col = i % c
+            val row = i / c
+            val x = x + col * slotW
+            val y = y + row * slotH
             renderSlot(g, x, y, i, mouseX, mouseY, partialTick)
-            i++
         }
     }
-    open fun renderSlot(g: GuiGraphics, x: Int, y: Int, idx: Int, mx: Int, my: Int, pt: Float) {
-        var name: String = textureNames.get(idx)
-        var holder: PlayerPreviewEntity = holders[idx]
-        var currentTex: String = currentTextureName()
-        var selected: Boolean = name.equals(currentTex)
-        var hover: Boolean = mx >= x && mx < x + TEX_BTN_W && my >= y && my < y + TEX_BTN_H
-        var bg: Int = if (selected) (0x90333333).toInt() else if (hover) (0x90171717).toInt() else (0x90000000).toInt()
+
+    private fun renderSlot(g: GuiGraphics, x: Int, y: Int, idx: Int, mx: Int, my: Int, pt: Float) {
+        val name = textureNames[idx]
+        val holder = holders[idx]
+        val currentTex = currentTextureName()
+        val selected = name == currentTex
+        val hover = mx >= x && mx < x + TEX_BTN_W && my >= y && my < y + TEX_BTN_H
+        val bg = if (selected) 0x90333333.toInt() else if (hover) 0x90171717.toInt() else 0x90000000.toInt()
         g.fill(x, y, x + TEX_BTN_W, y + TEX_BTN_H, bg)
         renderHolderPreview(g, x, y, holder, pt)
-        var label: Component = Component.literal(ModelMetadataPresenter.getLocalizedModelString(owner.renderContext, "files.player.texture.%s".formatted(name), name))
-        var textY: Int = y + TEX_BTN_H - 12
-        var tw: Int = Minecraft.getInstance().font.width(label)
-        g.drawString(Minecraft.getInstance().font, label, x + TEX_BTN_W - tw / 2, textY, (0xFFFFFFFF).toInt(), true)
+        val label = Component.literal(
+            ModelMetadataPresenter.getLocalizedModelString(
+                owner.renderContext,
+                "files.player.texture.%s".format(name),
+                name
+            )
+        )
+        val textY = y + TEX_BTN_H - 12
+        val tw = Minecraft.getInstance().font.width(label)
+        g.drawString(Minecraft.getInstance().font, label, x + (TEX_BTN_W - tw) / 2, textY, -1, true)
         if (selected || hover) {
-            var border: Int = if (selected) (0xFFFFFFFF).toInt() else (0xFFAAAAAA).toInt()
+            val border = if (selected) -1 else 0xFFAAAAAA.toInt()
             g.fill(x, y, x + TEX_BTN_W, y + 1, border)
             g.fill(x, y + TEX_BTN_H - 1, x + TEX_BTN_W, y + TEX_BTN_H, border)
             g.fill(x, y, x + 1, y + TEX_BTN_H, border)
             g.fill(x + TEX_BTN_W - 1, y, x + TEX_BTN_W, y + TEX_BTN_H, border)
         }
     }
-    open fun currentTextureName(): String {
-        var mc: Minecraft = Minecraft.getInstance()
-        if (mc.player == null) {
-            return StringPool.EMPTY
-        }
-        return PlayerCapability.get(mc.player).map(PlayerCapability::getCurrentTextureName).orElse(StringPool.EMPTY)
+
+    private fun currentTextureName(): String {
+        val mc = Minecraft.getInstance()
+        val player = mc.player ?: return StringPool.EMPTY
+        return PlayerCapability[player]?.getCurrentTextureName() ?: StringPool.EMPTY
     }
-    open fun renderHolderPreview(g: GuiGraphics, x: Int, y: Int, holder: PlayerPreviewEntity, pt: Float) {
-        var previewH: Int = TEX_BTN_H - 20
+
+    private fun renderHolderPreview(g: GuiGraphics, x: Int, y: Int, holder: PlayerPreviewEntity, pt: Float) {
+        val previewH = TEX_BTN_H - 20
         ModelPreviewRenderer.submitLivingEntityPreview(g, x, y, x + TEX_BTN_W, y + previewH, 35, pt, holder, false, true)
     }
-    open fun renderControl(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float)
-    open fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
-        var mouseX: Double = event.x()
-        var mouseY: Double = event.y()
-        var c: Int = cols()
-        var slotW: Int = TEX_BTN_W + TEX_GAP
-        var slotH: Int = TEX_BTN_H + TEX_GAP
-        var col: Int = (mouseX - getX() / slotW as Int)
-        var row: Int = (mouseY - getY() / slotH as Int)
+
+    override fun renderControl(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    }
+
+    override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
+        val mouseX = event.x()
+        val mouseY = event.y()
+        val c = cols()
+        val slotW = TEX_BTN_W + TEX_GAP
+        val slotH = TEX_BTN_H + TEX_GAP
+        val col = ((mouseX - x) / slotW).toInt()
+        val row = ((mouseY - y) / slotH).toInt()
         if (col < 0 || col >= c) {
             return
         }
-        var idx: Int = row * c + col
-        if (idx < 0 || idx >= textureNames.size()) {
+        val idx = row * c + col
+        if (idx !in textureNames.indices) {
             return
         }
-        var localX: Double = mouseX - getX() - col * slotW
-        var localY: Double = mouseY - getY() - row * slotH
+        val localX = mouseX - x - col * slotW
+        val localY = mouseY - y - row * slotH
         if (localX >= TEX_BTN_W || localY >= TEX_BTN_H) {
             return
         }
-        var name: String = textureNames.get(idx)
-        var mc: Minecraft = Minecraft.getInstance()
-        if (mc.player == null) {
-            return
+        val name = textureNames[idx]
+        val mc = Minecraft.getInstance()
+        val player = mc.player ?: return
+        PlayerCapability[player]?.let { cap ->
+            cap.setCurrentTexture(name)
+            NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(owner.modelId, name))
         }
-        PlayerCapability.get(mc.player).ifPresent({ cap -> cap.setCurrentTexture(name)
-NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(owner.modelId, name)) })
     }
+
     companion object {
-        @JvmField var TEX_BTN_W: Int = 54
-        @JvmField var TEX_BTN_H: Int = 102
-        @JvmField var TEX_GAP: Int = 4
+        const val TEX_BTN_W: Int = 54
+        const val TEX_BTN_H: Int = 102
+        const val TEX_GAP: Int = 4
     }
 }

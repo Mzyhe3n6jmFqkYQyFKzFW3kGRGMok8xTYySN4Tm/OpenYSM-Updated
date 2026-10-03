@@ -6,40 +6,43 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.chat.Component
 import net.minecraft.util.FormattedCharSequence
 import rip.ysm.gui.OptionRow
-import java.util.List
+import kotlin.math.max
 
-class TipsRow : OptionRow<Any>() {
-    var text: String = null
-    var cachedLines: MutableList<FormattedCharSequence> = null
-    var cachedWidth: Int = -1
-    constructor(text: String) {
-        super(0, 0, 0, 0, null)
-        this.text = text
-    }
-    open fun recomputeLines() {
+class TipsRow(val text: String) : OptionRow<Any?>(0, 0, 0, 0, null) {
+
+    private var cachedLines: List<FormattedCharSequence>? = null
+    private var cachedWidth: Int = -1
+
+    private fun recomputeLines() {
         if (cachedWidth == width && cachedLines != null) {
             return
         }
-        var font: Font = Minecraft.getInstance().font
-        cachedLines = font.split(Component.literal(text), Math.max(20, width - 16))
+        val font: Font = Minecraft.getInstance().font
+        val lines = font.split(Component.literal(text), max(20, width - 16))
+        cachedLines = lines
         cachedWidth = width
-        this.height = Math.max(18, cachedLines.size() * 10 + 8)
+        this.height = max(18, lines.size * 10 + 8)
     }
-    open fun setWidth(w: Int) {
+
+    override fun setWidth(w: Int) {
         super.setWidth(w)
         cachedLines = null
         cachedWidth = -1
         recomputeLines()
     }
-    open fun renderWidget(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+
+    override fun renderWidget(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         recomputeLines()
-        g.fill(getX(), getY(), getX() + width, getY() + height, (0x90000000).toInt())
-        var font: Font = Minecraft.getInstance().font
-        var y: Int = getY() + 4
-        for (line in cachedLines) {
-            g.drawString(font, line, getX() + 8, y, (0xFFEEEEEE).toInt(), false)
-            y += 10
+        g.fill(x, y, x + width, y + height, 0x90000000.toInt())
+        val lines = cachedLines ?: return
+        val font: Font = Minecraft.getInstance().font
+        var curY: Int = y + 4
+        for (line in lines) {
+            g.drawString(font, line, x + 8, curY, 0xFFEEEEEE.toInt(), false)
+            curY += 10
         }
     }
-    open fun renderControl(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float)
+
+    override fun renderControl(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    }
 }
