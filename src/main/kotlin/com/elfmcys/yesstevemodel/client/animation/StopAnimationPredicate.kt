@@ -7,9 +7,11 @@ import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import net.minecraft.world.entity.LivingEntity
 
 class StopAnimationPredicate : IAnimationPredicate<AnimatableEntity<LivingEntity>> {
-    override fun predicate(event: AnimationEvent<AnimatableEntity<LivingEntity>>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        return PlayState.STOP
-    }
+    override fun predicate(
+        event: AnimationEvent<AnimatableEntity<LivingEntity>>,
+        evaluator: ExpressionEvaluator<*>?
+    ): PlayState =
+        PlayState.STOP
 
     companion object {
         @JvmField

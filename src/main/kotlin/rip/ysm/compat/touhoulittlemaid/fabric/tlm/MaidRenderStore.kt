@@ -4,28 +4,27 @@ import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.world.entity.Entity
-import java.util.Map
-import java.util.Optional
-import java.util.WeakHashMap
+import java.util.*
 
-class MaidRenderStore {
-    constructor() {
+@Environment(EnvType.CLIENT)
+object MaidRenderStore {
+    private val CACHE: MutableMap<EntityMaid, MaidAnimatable> = WeakHashMap()
+
+    @JvmStatic
+    fun getOrCreate(maid: EntityMaid): MaidAnimatable {
+        return CACHE.computeIfAbsent(maid) { m -> MaidAnimatable(m, true) }
     }
-    companion object {
-        @JvmField var CACHE: MutableMap<EntityMaid, MaidAnimatable> = WeakHashMap()
-        @JvmStatic fun getOrCreate(maid: EntityMaid): MaidAnimatable {
-            CACHE.computeIfAbsent(maid, { m -> 
-MaidAnimatable(m, true)
- })
+
+    @JvmStatic
+    fun get(entity: Entity): MaidAnimatable? {
+        if (entity is EntityMaid) {
+            return CACHE[entity]
         }
-        @JvmStatic fun get(entity: Entity): Optional<MaidAnimatable> {
-            if (entity is EntityMaid) {
-                Optional.ofNullable(CACHE.get(maid))
-            }
-            return Optional.empty()
-        }
-        @JvmStatic fun clear() {
-            CACHE.clear()
-        }
+        return null
+    }
+
+    @JvmStatic
+    fun clear() {
+        CACHE.clear()
     }
 }

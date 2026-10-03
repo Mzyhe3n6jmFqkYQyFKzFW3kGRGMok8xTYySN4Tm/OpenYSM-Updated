@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.client.model
 
 import com.elfmcys.yesstevemodel.client.animation.condition.ArmorConditions
@@ -28,7 +30,9 @@ open class PlayerModelBundle(
     val defaultTexture: AbstractTexture?,
     modelResourceBundle: ModelResourceBundle
 ) {
-    val playerControllerInstaller: Consumer<CustomPlayerEntity>? = PlayerAnimationController.buildControllers(this, modelResourceBundle)
-    val armControllerInstaller: Consumer<PlayerGeoEntity>? = FirstPersonArmAnimationController.buildControllers(this, modelResourceBundle)
-    val maidControllerInstaller: Any? = TouhouLittleMaidCompat.buildControllers(this, modelResourceBundle)
+    val playerControllerInstaller: Consumer<CustomPlayerEntity> =
+        PlayerAnimationController.buildControllers(this, modelResourceBundle)
+    val armControllerInstaller: Consumer<PlayerGeoEntity> =
+        FirstPersonArmAnimationController.buildControllers(this, modelResourceBundle)
+    val maidControllerInstaller: Any = TouhouLittleMaidCompat.buildControllers(this, modelResourceBundle)
 }

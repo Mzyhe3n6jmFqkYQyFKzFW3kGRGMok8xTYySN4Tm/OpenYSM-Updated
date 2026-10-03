@@ -16,59 +16,63 @@ import org.apache.commons.lang3.StringUtils
 import rip.ysm.compat.swem.SWEMCompat
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 
-class MaidPoseOffset {
-    constructor() {
-    }
-    companion object {
-        @JvmField var POSE_RIDE: Float = 0.90f
-        @JvmField var POSE_RIDE_PIG: Float = 0.3625f
-        @JvmField var POSE_BOAT: Float = -0.45f
-        @JvmField var POSE_SIT: Float = -0.5f
-        @JvmField var SEAT_UNMEASURED: Float = 0.0f
-        @JvmStatic fun resolve(maid: EntityMaid, animatable: MaidAnimatable): Float {
-            var vehicle: Entity = vanilla(maid).getVehicle()
-            if (vehicle == null || !vehicle.isAlive()) {
-                if (isStandbySitPlaying(maid)) POSE_SIT else 0.0f
-            }
-            return resolveSeated(maid, animatable, vehicle)
+@Environment(EnvType.CLIENT)
+object MaidPoseOffset {
+    private const val POSE_RIDE: Float = 0.90f
+    private const val POSE_RIDE_PIG: Float = 0.3625f
+    private const val POSE_BOAT: Float = -0.45f
+    private const val POSE_SIT: Float = -0.5f
+    private const val SEAT_UNMEASURED: Float = 0.0f
+
+    @JvmStatic
+    fun resolve(maid: EntityMaid, animatable: MaidAnimatable): Float {
+        val vehicle = vanilla(maid).vehicle
+        if (vehicle == null || !vehicle.isAlive) {
+            return if (isStandbySitPlaying(maid)) POSE_SIT else 0.0f
         }
-        @JvmStatic fun resolveSeated(maid: EntityMaid, animatable: MaidAnimatable, vehicle: Entity): Float {
-            var living: LivingEntity = vanilla(maid)
-            if (StringUtils.isNoneBlank(SWEMCompat.getHorseGaitName(living))) {
-                SEAT_UNMEASURED
-            }
-            var conditionManager: ConditionManager = animatable.getModelConfig()
-            var conditionChair: ConditionChair = conditionManager.getChair()
-            if (conditionChair != null && StringUtils.isNoneBlank(conditionChair.doTest(living))) {
-                SEAT_UNMEASURED
-            }
-            var conditionVehicle: ConditionVehicle = conditionManager.getVehicle()
-            if (conditionVehicle != null && StringUtils.isNoneBlank(conditionVehicle.doTest(living))) {
-                SEAT_UNMEASURED
-            }
-            if (vehicle is Pig) {
-                POSE_RIDE_PIG - attachmentHeight(vehicle, living)
-            }
-            if (vehicle is Mob && mob.isSaddled()) {
-                POSE_RIDE - attachmentHeight(vehicle, living)
-            }
-            if (vehicle is Boat) {
-                POSE_BOAT - attachmentHeight(vehicle, living)
-            }
+        return resolveSeated(maid, animatable, vehicle)
+    }
+
+    private fun resolveSeated(maid: EntityMaid, animatable: MaidAnimatable, vehicle: Entity): Float {
+        val living: LivingEntity = vanilla(maid)
+        if (StringUtils.isNoneBlank(SWEMCompat.getHorseGaitName(living))) {
             return SEAT_UNMEASURED
         }
-        @JvmStatic fun attachmentHeight(vehicle: Entity, passenger: LivingEntity): Float {
-            (vehicle.getPassengerRidingPosition(passenger).y - vehicle.getY() as Float)
+        val conditionManager: ConditionManager? = animatable.getModelConfig()
+        val conditionChair: ConditionChair? = conditionManager?.chair
+        if (conditionChair != null && StringUtils.isNoneBlank(conditionChair.doTest(living))) {
+            return SEAT_UNMEASURED
         }
-        @JvmStatic fun isStandbySitPlaying(maid: EntityMaid): Boolean {
-            if (!maid.isMaidInSittingPose()) {
-                false
-            }
-            var living: LivingEntity = vanilla(maid)
-            return !living.isDeadOrDying() && living.getPose() != Pose.SLEEPING && !living.isSwimming() && !living.onClimbable()
+        val conditionVehicle: ConditionVehicle? = conditionManager?.vehicle
+        if (conditionVehicle != null && StringUtils.isNoneBlank(conditionVehicle.doTest(living))) {
+            return SEAT_UNMEASURED
         }
-        @JvmStatic fun vanilla(maid: EntityMaid): LivingEntity {
-            maid
+        if (vehicle is Pig) {
+            return POSE_RIDE_PIG - attachmentHeight(vehicle, living)
         }
+        if (vehicle is Mob && vehicle.isSaddled) {
+            return POSE_RIDE - attachmentHeight(vehicle, living)
+        }
+        if (vehicle is Boat) {
+            return POSE_BOAT - attachmentHeight(vehicle, living)
+        }
+        return SEAT_UNMEASURED
     }
+
+    private fun attachmentHeight(vehicle: Entity, passenger: LivingEntity): Float {
+        return (vehicle.getPassengerRidingPosition(passenger).y - vehicle.y).toFloat()
+    }
+
+    private fun isStandbySitPlaying(maid: EntityMaid): Boolean {
+        if (!maid.isMaidInSittingPose) {
+            return false
+        }
+        val living: LivingEntity = vanilla(maid)
+        return !living.isDeadOrDying
+                && living.pose != Pose.SLEEPING
+                && !living.isInWater
+                && !living.onClimbable()
+    }
+
+    private fun vanilla(maid: EntityMaid): LivingEntity = maid
 }

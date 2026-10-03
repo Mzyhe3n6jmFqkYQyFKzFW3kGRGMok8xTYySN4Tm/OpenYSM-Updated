@@ -11,21 +11,25 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 
+@Environment(EnvType.CLIENT)
 open class MaidStatusAnimationPredicate : IAnimationPredicate<MaidAnimatable> {
-    open fun predicate(event: AnimationEvent<MaidAnimatable>, evaluator: ExpressionEvaluator<*>): PlayState {
-        var entityMaid: EntityMaid = event.getAnimatable().getEntity()
+
+    override fun predicate(event: AnimationEvent<MaidAnimatable>, evaluator: ExpressionEvaluator<*>?): PlayState {
+        val entityMaid: EntityMaid = event.getAnimatable().entity
         if (entityMaid == null || event.getAnimatable() is IPreviewAnimatable) {
-            PlayState.STOP
+            return PlayState.STOP
         }
         if (entityMaid.renderState == MaidRenderState.STATUE) {
-            IAnimationPredicate.playLoopAnimation(event, "statue")
+            return IAnimationPredicate.playLoopAnimation(event, "statue")
         }
         if (entityMaid.renderState == MaidRenderState.GARAGE_KIT) {
-            IAnimationPredicate.playLoopAnimation(event, "garage_kit")
+            return IAnimationPredicate.playLoopAnimation(event, "garage_kit")
         }
         return PlayState.STOP
     }
+
     companion object {
-        @JvmField var RENDER_STATES: Array<String> = arrayOf("statue", "garage_kit")
+        @JvmField
+        val RENDER_STATES: Array<String> = arrayOf("statue", "garage_kit")
     }
 }

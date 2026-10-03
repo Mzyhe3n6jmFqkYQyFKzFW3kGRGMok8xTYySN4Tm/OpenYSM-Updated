@@ -4,8 +4,6 @@ import com.elfmcys.yesstevemodel.client.ClientModelManager
 import com.elfmcys.yesstevemodel.client.animation.condition.ConditionManager
 import com.elfmcys.yesstevemodel.client.animation.molang.MolangEventDispatcher
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
-import com.elfmcys.yesstevemodel.client.model.ProjectileModelBundle
-import com.elfmcys.yesstevemodel.client.model.VehicleModelBundle
 import com.elfmcys.yesstevemodel.client.upload.IResourceLocatable
 import com.elfmcys.yesstevemodel.client.upload.UploadManager
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
@@ -29,7 +27,8 @@ abstract class LivingAnimatable<T : LivingEntity>(
     t: T,
     isActive: Boolean
 ) : GeoEntity<T>(t, isActive) {
-    @JvmField var currentTextureName: String? = null
+    @JvmField
+    var currentTextureName: String? = null
     private var textureIndex: Int = 0
     private val armorBoneOffset: Vector2f = Vector2f()
     private var needsInit: Boolean = false
@@ -83,7 +82,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     }
 
     open fun setForceDisabled(forceDisabled: Boolean) {
-        this.forceDisabled = forceDisabled
+        forceDisabled = forceDisabled
     }
 
     open fun isForceDisabled(): Boolean {
@@ -97,12 +96,9 @@ abstract class LivingAnimatable<T : LivingEntity>(
     override fun onModelLoaded(context: ModelAssembly) {
         super.onModelLoaded(context)
         updateCurrentTexture()
-        val values: List<IValue>? = context.getExpressionCache().getEvents()[MolangEventDispatcher.PLAYER_UPDATE]
-        if (values != null) {
-            playerUpdateIValue = MolangEventDispatcher.createUpdateExpression(values, updateExpressionArgs)
-        } else {
-            playerUpdateIValue = null
-        }
+        val values: List<IValue>? = context.expressionCache.events[MolangEventDispatcher.PLAYER_UPDATE]
+        playerUpdateIValue =
+            if (values != null) MolangEventDispatcher.createUpdateExpression(values, updateExpressionArgs) else null
     }
 
     override fun setCurrentModel(model: AnimatedGeoModel?) {
@@ -144,12 +140,13 @@ abstract class LivingAnimatable<T : LivingEntity>(
     }
 
     open fun getModelConfig(): ConditionManager? {
-        return getModelAssembly()?.getAnimationBundle()?.getConditionManager()
+        return getModelAssembly()?.animationBundle?.getConditionManager()
     }
 
     private fun updateCurrentTexture() {
         if (isModelReady()) {
-            val map: OrderedStringMap<String, out AbstractTexture>? = getModelAssembly()?.getAnimationBundle()?.getTextures()
+            val map: OrderedStringMap<String, out AbstractTexture>? =
+                getModelAssembly()?.animationBundle?.textures
             if (map != null) {
                 val abstractTexture: AbstractTexture? = map[currentTextureName]
                 if (abstractTexture != null) {
@@ -157,7 +154,8 @@ abstract class LivingAnimatable<T : LivingEntity>(
                     textureIndex = map.getValuesList().indexOf(abstractTexture)
                 } else if (!map.isEmpty()) {
                     currentTextureName = map.getKeyAt(0)
-                    map.getValueAt(0)?.let { (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(it) }
+                    map.getValueAt(0)
+                        .let { (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(it) }
                     textureIndex = 0
                 }
             }
@@ -165,26 +163,28 @@ abstract class LivingAnimatable<T : LivingEntity>(
     }
 
     override fun getAnimationProcessor(): GeoModel {
-        return getModelAssembly()!!.getAnimationBundle().getMainModel()
+        return getModelAssembly()!!.animationBundle.getMainModel()
     }
 
     override fun getAnimation(str: String): Animation? {
-        return getModelAssembly()?.getAnimationBundle()?.getMainAnimations()?.get(str)
+        return getModelAssembly()?.animationBundle?.getMainAnimations()?.get(str)
     }
 
     override fun getAnimationEntries(str: String): AnimationController? {
-        return getModelAssembly()?.getAnimationBundle()?.getAnimationEntries()?.get(str)
+        return getModelAssembly()?.animationBundle?.getAnimationEntries()?.get(str)
     }
 
     open fun getCurrentTextureName(): String? {
-        return if (isModelReady()) currentTextureName else getModelAssembly()?.getAnimationBundle()?.getTextures()?.getKeyAt(0)
+        return if (isModelReady()) currentTextureName else getModelAssembly()?.animationBundle?.textures
+            ?.getKeyAt(0)
     }
 
     override fun getTextureLocation(): Identifier {
         return if (isModelReady()) {
-            ((getRenderShape() as LivingAnimatable<*>.TexturedModelWrapper).currentTexture.getResourceLocation().get() as Identifier)
+            ((getRenderShape() as LivingAnimatable<*>.TexturedModelWrapper).currentTexture.getResourceLocation()
+                .get() as Identifier)
         } else {
-            ClientModelManager.getDefaultTexture()
+            ClientModelManager.defaultTexture
         }
     }
 
@@ -212,7 +212,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     }
 
     open fun setExtraRenderFlag(extraRenderFlag: Boolean) {
-        this.extraRenderFlag = extraRenderFlag
+        extraRenderFlag = extraRenderFlag
     }
 
     open inner class TexturedModelWrapper(
@@ -222,36 +222,39 @@ abstract class LivingAnimatable<T : LivingEntity>(
         registerImmediately: Boolean,
         private val textureResolution: Int
     ) : ModelWrapper(modelAssembly, isActive) {
-        @JvmField var currentTexture: IResourceLocatable
+        @JvmField
+        var currentTexture: IResourceLocatable
         val allTextures: MutableList<IResourceLocatable>?
 
         init {
-            val abstractTexture: AbstractTexture = modelAssembly.getAnimationBundle().getTextures()[this@LivingAnimatable.currentTextureName]
-                ?: modelAssembly.getAnimationBundle().getDefaultTexture()
-            this.currentTexture = UploadManager.getOrCreateLocatableWithSize(abstractTexture, registerImmediately, textureResolution)
+            val abstractTexture =
+                modelAssembly.animationBundle.textures[this@LivingAnimatable.currentTextureName]
+                    ?: modelAssembly.animationBundle.defaultTexture
+            currentTexture =
+                UploadManager.getOrCreateLocatableWithSize(abstractTexture, registerImmediately, textureResolution)
             if (collectAllTextures) {
                 val list = ArrayList<IResourceLocatable>()
-                for (texture in modelAssembly.getAnimationBundle().getTextures().values) {
+                for (texture in modelAssembly.animationBundle.textures.values) {
                     list.add(UploadManager.getOrCreateLocatable(texture, false))
                 }
-                for (projectileModelBundle in modelAssembly.getProjectileModels().values) {
-                    list.add(UploadManager.getOrCreateLocatable(projectileModelBundle.getTexture(), false))
+                for (projectileModelBundle in modelAssembly.projectileModels.values) {
+                    list.add(UploadManager.getOrCreateLocatable(projectileModelBundle.texture, false))
                 }
-                for (vehicleModelBundle in modelAssembly.getVehicleModels().values) {
-                    list.add(UploadManager.getOrCreateLocatable(vehicleModelBundle.getTexture(), false))
+                for (vehicleModelBundle in modelAssembly.vehicleModels.values) {
+                    list.add(UploadManager.getOrCreateLocatable(vehicleModelBundle.texture, false))
                 }
-                this.allTextures = list
+                allTextures = list
             } else {
-                this.allTextures = null
+                allTextures = null
             }
         }
 
         fun setTexture(abstractTexture: AbstractTexture) {
-            this.currentTexture = UploadManager.getOrCreateLocatableWithSize(abstractTexture, true, textureResolution)
+            currentTexture = UploadManager.getOrCreateLocatableWithSize(abstractTexture, true, textureResolution)
         }
 
         override fun isValid(): Boolean {
-            return currentTexture.getResourceLocation().isPresent
+            return currentTexture.getResourceLocation().isPresent()
         }
     }
 }

@@ -30,22 +30,20 @@ object PlayerAnimationController {
             modelBundle: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
         ): Object2ReferenceMap<String, AnimationController> {
-            return modelBundle.getAnimationEntries()
+            return modelBundle.animationEntries
         }
 
         override fun getAnimations(
             modelBundle: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
         ): Object2ReferenceMap<String, Animation> {
-            return modelBundle.getMainAnimations()
+            return modelBundle.mainAnimations
         }
 
         override fun getConditionArmor(
             modelBundle: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
-        ): ConditionArmor {
-            return modelBundle.getConditionManager().getArmor()
-        }
+        ): ConditionArmor = modelBundle.conditionManager.armor
 
         companion object {
             @JvmField
@@ -56,6 +54,7 @@ object PlayerAnimationController {
     @JvmField
     val REGISTRY: ProcessorPipeline<CustomPlayerEntity, PlayerModelBundle> = ProcessorPipeline()
     const val PLAYER_PREFIX: String = "player"
+
     @JvmField
     val CAP_CONTROLLER_KEY: String = "$PLAYER_PREFIX.cap"
 

@@ -12,62 +12,76 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.ILocation
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import org.jetbrains.annotations.NotNull
 import java.util.function.Consumer
 
-open class MaidAnimatable : LivingAnimatable<EntityMaid>, IGeoEntity {
-    var maidModelInfo: MaidModelInfo = null
-    constructor(entityMaid: EntityMaid, isActive: Boolean) {
-        this.maidModelInfo = MaidModelInfo()
+@Environment(EnvType.CLIENT)
+open class MaidAnimatable(entityMaid: EntityMaid, isActive: Boolean) :
+    LivingAnimatable<EntityMaid>(entityMaid, isActive), IGeoEntity {
+
+    private var maidModelInfo: MaidModelInfo = MaidModelInfo()
+
+    @Suppress("UNCHECKED_CAST")
+    override fun registerAnimationControllers() {
+        when (val installer = getModelAssembly()?.animationBundle?.maidControllerInstaller) {
+            is Consumer<*> -> (installer as Consumer<MaidAnimatable>).accept(this)
+            is Function1<*, *> -> (installer as (MaidAnimatable) -> Unit).invoke(this)
+        }
     }
-    open fun registerAnimationControllers() {
-        (getModelAssembly().getAnimationBundle().getMaidControllerInstaller() as Consumer).accept(this)
+
+    override fun buildRenderShape(modelAssembly: ModelAssembly, isActive: Boolean): ModelWrapper {
+        return TexturedModelWrapper(
+            modelAssembly,
+            isActive,
+            collectAllTextures = true,
+            registerImmediately = true,
+            textureResolution = 600
+        )
     }
-    open fun buildRenderShape(modelAssembly: ModelAssembly, isActive: Boolean): GeoEntity {
-        TexturedModelWrapper(modelAssembly, isActive, true, true, 600)
+
+    override fun createPositionTracker(entityMaid: EntityMaid): MaidFrameState {
+        return MaidFrameState(entityMaid)
     }
-    open fun createPositionTracker(entityMaid: EntityMaid): MaidFrameState {
-        MaidFrameState(entityMaid)
+
+    override fun getPositionTracker(): MaidFrameState {
+        return super.getPositionTracker() as MaidFrameState
     }
-    open fun getPositionTracker(): MaidFrameState {
-        (super.getPositionTracker() as MaidFrameState)
+
+    fun hasModel(): Boolean = entity.rouletteAnimDirty
+
+    fun refreshModel() {
+        entity.rouletteAnimDirty = false
     }
-    open fun hasModel(): Boolean {
-        this.entity.rouletteAnimDirty
+
+    fun isModelAvailable(): Boolean = entity.rouletteAnimPlaying
+
+    fun getModelTextureId(): String = entity.rouletteAnim
+
+    fun setMolangVars(molangVars: Object2FloatOpenHashMap<String>) {
     }
-    open fun refreshModel() {
-        this.entity.rouletteAnimDirty = false
+
+    override fun updateRoamingVars(roamingVars: Object2FloatOpenHashMap<String>) {
     }
-    open fun isModelAvailable(): Boolean {
-        this.entity.rouletteAnimPlaying
-    }
-    open fun getModelTextureId(): String {
-        this.entity.rouletteAnim
-    }
-    open fun setMolangVars(molangVars: Object2FloatOpenHashMap<String>)
-    open fun updateRoamingVars(roamingVars: Object2FloatOpenHashMap<String>)
-    open fun getPropertyContainer(): Struct {
-        null
-    }
-    open fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
+
+    fun getPropertyContainer(): Struct? = null
+
+    override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
         super.setupAnim(seekTime, isFirstPerson)
         getEvaluationContext().setRoamingProperties(getPropertyContainer())
     }
-    open fun getMaid(): IMaid {
-        this.entity
-    }
-    open fun getMaidInfo(): MaidModelInfo {
-        this.maidModelInfo
-    }
-    open fun setMaidInfo(maidModelInfo: MaidModelInfo) {
+
+    override fun getMaid(): IMaid = entity
+
+    override fun getMaidInfo(): MaidModelInfo = maidModelInfo
+
+    override fun setMaidInfo(maidModelInfo: MaidModelInfo) {
         if (this.maidModelInfo != maidModelInfo) {
             this.maidModelInfo = maidModelInfo
         }
     }
-    open fun getGeoModel(): ILocationModel {
-        getCurrentModel().getTouhouMaidData()
-    }
-    open fun setYsmModel(modelId: String, texture: String) {
+
+    override fun getGeoModel(): ILocationModel? = currentModel?.getTouhouMaidData<ILocationModel>()
+
+    override fun setYsmModel(modelId: String, texture: String) {
         initModelWithTexture(modelId, texture)
     }
 }

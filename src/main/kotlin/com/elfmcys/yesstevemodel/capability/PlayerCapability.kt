@@ -18,7 +18,10 @@ import com.elfmcys.yesstevemodel.molang.runtime.Struct
 import com.elfmcys.yesstevemodel.network.NetworkHandler
 import com.elfmcys.yesstevemodel.network.message.C2SCompleteFeedbackPacket
 import com.elfmcys.yesstevemodel.network.message.FeedbackData
-import it.unimi.dsi.fastutil.ints.*
+import it.unimi.dsi.fastutil.ints.Int2FloatMap
+import it.unimi.dsi.fastutil.ints.Int2FloatMaps
+import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap
+import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2FloatArrayMap
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue
 import net.fabricmc.api.EnvType
@@ -51,7 +54,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         super.clearModel()
     }
 
-    override fun setCurrentModel(model: AnimatedGeoModel) {
+    override fun setCurrentModel(model: AnimatedGeoModel?) {
         super.setCurrentModel(model)
         val varHolder = molangVarsMap.get(currentModelHashId)
         varHolder?.currentVars?.let {
@@ -76,13 +79,13 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         val model2 = getCurrentModel()
         if (model2 != null && isLocalPlayerModel() && !event.isFirstPerson() && FirstPersonCompat.isModLoaded) {
             if (model2.allHeadBone() != null) {
-                model2.allHeadBone().setHidden(FirstPersonCompat.shouldHideHead())
+                model2.allHeadBone()?.setHidden(FirstPersonCompat.shouldHideHead())
             }
             if (model2.viewLocatorBone() != null) {
-                FirstPersonCompat.setCameraDistance(model2.viewLocatorBone().getPivotY() * getWidthScale())
-            } else if (wasAnimEvaluated && !model2.headBones().isEmpty()) {
+                FirstPersonCompat.setCameraDistance((model2.viewLocatorBone() ?: return).getPivotY() * getWidthScale())
+            } else if (wasAnimEvaluated && model2.headBones().isNotEmpty()) {
                 val bone = model2.headBones()[model2.headBones().size - 1]
-                FirstPersonCompat.setCameraDistance(if (bone == null) 24.0f else bone.getPivotY() * getWidthScale())
+                FirstPersonCompat.setCameraDistance(bone.getPivotY() * getWidthScale())
             }
         }
     }

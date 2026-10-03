@@ -18,7 +18,6 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.IGeoEntityRenderer
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.math.Axis
-import net.minecraft.world.entity.LivingEntity
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.Minecraft
@@ -30,33 +29,48 @@ import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.Direction
 import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
+import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.Pose
-import org.jetbrains.annotations.Nullable
 import org.joml.Matrix4f
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidRenderStore
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.anim.MaidPoseOffset
-import java.util.List
 
+@Environment(EnvType.CLIENT)
 open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<EntityMaidRenderState> {
-    val tlmLayerRenderers: MutableList<GeoLayerRenderer<*, *>> = java()
-    var dispatchedMat: Matrix4f = Matrix4f()
-    var renderEarlyMat: Matrix4f = Matrix4f()
-    var rtb: MultiBufferSource = null
-    var currentModelRenderCycle: IRenderCycle = EModelRenderCycle.INITIAL
-    open fun getGeoEntity(state: EntityMaidRenderState): IGeoEntity {
-        var maid: EntityMaid = state.maid
+    private val tlmLayerRenderers: MutableList<GeoLayerRenderer<*, *>> = ArrayList()
+    private val dispatchedMat: Matrix4f = Matrix4f()
+    private val renderEarlyMat: Matrix4f = Matrix4f()
+    private var rtb: MultiBufferSource? = null
+    private var currentModelRenderCycle: IRenderCycle = EModelRenderCycle.INITIAL
+
+    override fun getGeoEntity(state: EntityMaidRenderState): IGeoEntity? {
+        val maid: EntityMaid? = state.maid
+        if (maid == null) {
+            return null
+        }
         return MaidRenderStore.getOrCreate(maid)
     }
-    open fun addGeoLayerRenderer(layerRenderer: GeoLayerRenderer<*, *>) {
-        this.tlmLayerRenderers.add(layerRenderer)
+
+    override fun addGeoLayerRenderer(layerRenderer: GeoLayerRenderer<*, *>) {
+        tlmLayerRenderers.add(layerRenderer)
     }
-    open fun geoRender(state: EntityMaidRenderState, entityYaw: Float, partialTick: Float, poseStack: PoseStack, collector: SubmitNodeCollector, packedLight: Int) {
-        var maid: EntityMaid = state.maid
+
+    override fun geoRender(
+        state: EntityMaidRenderState,
+        entityYaw: Float,
+        partialTick: Float,
+        poseStack: PoseStack,
+        collector: SubmitNodeCollector,
+        packedLight: Int
+    ) {
+        val maid: EntityMaid? = state.maid
         if (maid == null) {
-             }
-        var animatable: MaidAnimatable = MaidRenderStore.getOrCreate(maid)
-        var bufferSource: MultiBufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
+            return
+        }
+        val animatable: MaidAnimatable = MaidRenderStore.getOrCreate(maid)
+
+        val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
         RenderContext.enter(collector, state.camera)
         try {
             setCurrentRTB(bufferSource)
@@ -66,42 +80,56 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
             RenderContext.exit()
         }
     }
-    open fun renderMaid(animatable: MaidAnimatable, state: EntityMaidRenderState, entityYaw: Float, partialTick: Float, poseStack: PoseStack, bufferSource: MultiBufferSource, collector: SubmitNodeCollector, packedLight: Int) {
-        var maid: EntityMaid = animatable.getEntity()
+
+    private fun renderMaid(
+        animatable: MaidAnimatable,
+        state: EntityMaidRenderState,
+        entityYaw: Float,
+        partialTick: Float,
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
+        collector: SubmitNodeCollector,
+        packedLight: Int
+    ) {
+        val maid: EntityMaid = animatable.entity
         if (maid == null) {
-             }
-        var vanillaMaid: LivingEntity = maid
-        var vanillaState: LivingEntityRenderState = state
-        var syncRotationsForPreview: Boolean = ModelPreviewRenderer.isPreview()
-        var savedYBodyRot: Float = 0.0f
-        var savedYBodyRotO: Float = 0.0f
-        var savedYHeadRot: Float = 0.0f
-        var savedYHeadRotO: Float = 0.0f
-        var savedYRot: Float = 0.0f
-        var savedYRotO: Float = 0.0f
-        var savedXRot: Float = 0.0f
-        var savedXRotO: Float = 0.0f
+            return
+        }
+
+        val vanillaMaid: LivingEntity = maid
+        val vanillaState: LivingEntityRenderState = state
+        val syncRotationsForPreview = ModelPreviewRenderer.isPreview()
+        var savedYBodyRot = 0.0f
+        var savedYBodyRotO = 0.0f
+        var savedYHeadRot = 0.0f
+        var savedYHeadRotO = 0.0f
+        var savedYRot = 0.0f
+        var savedYRotO = 0.0f
+        var savedXRot = 0.0f
+        var savedXRotO = 0.0f
         if (syncRotationsForPreview) {
             savedYBodyRot = vanillaMaid.yBodyRot
             savedYBodyRotO = vanillaMaid.yBodyRotO
             savedYHeadRot = vanillaMaid.yHeadRot
             savedYHeadRotO = vanillaMaid.yHeadRotO
-            savedYRot = vanillaMaid.getYRot()
+            savedYRot = vanillaMaid.yRot
             savedYRotO = vanillaMaid.yRotO
-            savedXRot = vanillaMaid.getXRot()
+            savedXRot = vanillaMaid.xRot
             savedXRotO = vanillaMaid.xRotO
-            var bodyRot: Float = vanillaState.bodyRot
-            var headYaw: Float = vanillaState.bodyRot + vanillaState.yRot
+
+            val bodyRot = vanillaState.bodyRot
+            val headYaw = vanillaState.bodyRot + vanillaState.yRot
             vanillaMaid.yBodyRot = bodyRot
             vanillaMaid.yBodyRotO = bodyRot
             vanillaMaid.yHeadRot = headYaw
             vanillaMaid.yHeadRotO = headYaw
-            vanillaMaid.setYRot(headYaw)
+            vanillaMaid.yRot = headYaw
             vanillaMaid.yRotO = headYaw
-            vanillaMaid.setXRot(vanillaState.xRot)
+            vanillaMaid.xRot = vanillaState.xRot
             vanillaMaid.xRotO = vanillaState.xRot
         }
-        var event: AnimationEvent<*>
+
+        val event: AnimationEvent<*>?
         try {
             event = animatable.processAnimation(partialTick)
         } finally {
@@ -110,103 +138,200 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
                 vanillaMaid.yBodyRotO = savedYBodyRotO
                 vanillaMaid.yHeadRot = savedYHeadRot
                 vanillaMaid.yHeadRotO = savedYHeadRotO
-                vanillaMaid.setYRot(savedYRot)
+                vanillaMaid.yRot = savedYRot
                 vanillaMaid.yRotO = savedYRotO
-                vanillaMaid.setXRot(savedXRot)
+                vanillaMaid.xRot = savedXRot
                 vanillaMaid.xRotO = savedXRotO
             }
         }
-        var minecraft: Minecraft = Minecraft.getInstance()
+
+        val minecraft = Minecraft.getInstance()
         if (event == null || minecraft.player == null) {
-             }
-        var modelData: EntityModelData = event.getModelData()
-        this.dispatchedMat.set(poseStack.last().pose())
+            return
+        }
+
+        val modelData: EntityModelData = event.getModelData()
+        dispatchedMat.set(poseStack.last().pose())
         setCurrentModelRenderCycle(EModelRenderCycle.INITIAL)
+
         poseStack.pushPose()
         if (vanillaState.hasPose(Pose.SLEEPING)) {
-            var bedOrientation: Direction = vanillaState.bedOrientation
+            val bedOrientation: Direction? = vanillaState.bedOrientation
             if (bedOrientation != null) {
-                var eyeHeight: Float = vanillaMaid.getEyeHeight(Pose.STANDING) - 0.1f
-                poseStack.translate(-bedOrientation.getStepX() * eyeHeight, 0.0f, -bedOrientation.getStepZ() * eyeHeight)
+                val eyeHeight: Float = vanillaMaid.getEyeHeight(Pose.STANDING) - 0.1f
+                poseStack.translate(
+                    (-bedOrientation.stepX).toFloat() * eyeHeight,
+                    0.0f,
+                    (-bedOrientation.stepZ).toFloat() * eyeHeight
+                )
             }
         }
+
         if (!syncRotationsForPreview) {
-            var poseYOffset: Float = MaidPoseOffset.resolve(maid, animatable)
+            val poseYOffset = MaidPoseOffset.resolve(maid, animatable)
             if (poseYOffset != 0.0f) {
                 poseStack.translate(0.0f, poseYOffset, 0.0f)
             }
         }
+
         setupRotations(state, poseStack, modelData.lerpBodyRot, 1.0f)
         preRenderCallback(poseStack)
         poseStack.translate(0.0f, 0.01f, 0.0f)
-        var geoModel: AnimatedGeoModel = animatable.getCurrentModel()
-        var textureIndex: Int = animatable.getTextureIndex()
-        var texture: Identifier = animatable.getTextureLocation()
-        var bodyVisible: Boolean = !vanillaState.isInvisible
-        var renderType: RenderType = getRenderType(texture, bodyVisible, minecraft.shouldEntityAppearGlowing(vanillaMaid), geoModel.getGeoModel().isTranslucentTexture(textureIndex))
-        var layersFirst: Boolean = animatable.isRenderLayersFirst()
-        var color: Color = getRenderColor(animatable, partialTick, poseStack, bufferSource, null, packedLight)
-        var overlay: Int = packOverlayCoords(state)
-        renderWithBone(geoModel, animatable, partialTick, poseStack, bufferSource, null, packedLight, overlay, color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, color.getAlpha() / 255.0f)
+
+        val geoModel: AnimatedGeoModel = animatable.getCurrentModel() ?: run {
+            poseStack.popPose()
+            return
+        }
+        val textureIndex = animatable.getTextureIndex()
+        val texture: Identifier = animatable.getTextureLocation()
+        val bodyVisible = !vanillaState.isInvisible
+        val renderType: RenderType? = getRenderType(
+            texture,
+            bodyVisible,
+            minecraft.shouldEntityAppearGlowing(vanillaMaid),
+            geoModel.getGeoModel().isTranslucentTexture(textureIndex)
+        )
+
+        val layersFirst = animatable.isRenderLayersFirst()
+        val color: Color = getRenderColor(animatable, partialTick, poseStack, bufferSource, null, packedLight)
+        val overlay = packOverlayCoords(state)
+
+        renderWithBone(
+            geoModel,
+            animatable,
+            partialTick,
+            poseStack,
+            bufferSource,
+            null,
+            packedLight,
+            overlay,
+            color.getRed() / 255.0f,
+            color.getGreen() / 255.0f,
+            color.getBlue() / 255.0f,
+            color.getAlpha() / 255.0f
+        )
         if (layersFirst) {
             renderTlmLayers(animatable, state, poseStack, collector)
         }
         if (renderType != null) {
-            renderWithBoneAndRenderType(geoModel, animatable, partialTick, renderType, poseStack, bufferSource, textureIndex, null, packedLight, overlay, color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, color.getAlpha() / 255.0f)
+            renderWithBoneAndRenderType(
+                geoModel,
+                animatable,
+                partialTick,
+                renderType,
+                poseStack,
+                bufferSource,
+                textureIndex,
+                null,
+                packedLight,
+                overlay,
+                color.getRed() / 255.0f,
+                color.getGreen() / 255.0f,
+                color.getBlue() / 255.0f,
+                color.getAlpha() / 255.0f
+            )
         }
         if (!layersFirst) {
             renderTlmLayers(animatable, state, poseStack, collector)
         }
         poseStack.popPose()
     }
-    open fun renderTlmLayers(animatable: MaidAnimatable, state: EntityMaidRenderState, poseStack: PoseStack, collector: SubmitNodeCollector) {
-        YsmMaidLayerBridge.submitMaidLayers(this.tlmLayerRenderers, collector, poseStack, state, animatable.getGeoModel())
+
+    private fun renderTlmLayers(
+        animatable: MaidAnimatable,
+        state: EntityMaidRenderState,
+        poseStack: PoseStack,
+        collector: SubmitNodeCollector
+    ) {
+        YsmMaidLayerBridge.submitMaidLayers(
+            tlmLayerRenderers,
+            collector,
+            poseStack,
+            state,
+            animatable.getGeoModel()
+        )
     }
-    open fun setupRotations(state: LivingEntityRenderState, poseStack: PoseStack, bodyRot: Float, scale: Float) {
-        var rot: Float = bodyRot
+
+    private fun setupRotations(state: LivingEntityRenderState, poseStack: PoseStack, bodyRot: Float, scale: Float) {
+        var rot = bodyRot
         if (state.isFullyFrozen) {
-            rot += (Math.cos(Mth.floor(state.ageInTicks) * 3.25f) * Math.PI * 0.4f as Float)
+            rot += (Math.cos((Mth.floor(state.ageInTicks) * 3.25f).toDouble()) * Math.PI * 0.4f).toFloat()
         }
-        var sleeping: Boolean = state.hasPose(Pose.SLEEPING)
+        val sleeping = state.hasPose(Pose.SLEEPING)
         if (!sleeping) {
             poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - rot))
         }
         if (sleeping) {
-            var bedOrientation: Direction = state.bedOrientation
-            var sleepRot: Float = if (bedOrientation != null) sleepDirectionToRotation(bedOrientation) else rot
+            val bedOrientation: Direction? = state.bedOrientation
+            val sleepRot = if (bedOrientation != null) sleepDirectionToRotation(bedOrientation) else rot
             poseStack.mulPose(Axis.YP.rotationDegrees(sleepRot))
             poseStack.mulPose(Axis.ZP.rotationDegrees(FLIP_DEGREES))
             poseStack.mulPose(Axis.YP.rotationDegrees(270.0f))
-        } else {
-            if (state.isUpsideDown) {
-                poseStack.translate(0.0f, state.boundingBoxHeight + 0.1f / scale, 0.0f)
-                poseStack.mulPose(Axis.ZP.rotationDegrees(180.0f))
-            }
+        } else if (state.isUpsideDown) {
+            poseStack.translate(0.0f, (state.boundingBoxHeight + 0.1f) / scale, 0.0f)
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0f))
         }
     }
-    open fun preRenderCallback(poseStack: PoseStack)
-    open fun renderEarly(animatable: MaidAnimatable, poseStack: PoseStack, partialTick: Float, bufferSource: MultiBufferSource, buffer: VertexConsumer, packedLight: Int, packedOverlay: Int, red: Float, green: Float, blue: Float, alpha: Float) {
-        this.renderEarlyMat.set(poseStack.last().pose())
-        IGeoRenderer
+
+    private fun sleepDirectionToRotation(direction: Direction): Float {
+        return when (direction) {
+            Direction.SOUTH -> 90.0f
+            Direction.WEST -> 0.0f
+            Direction.NORTH -> 270.0f
+            Direction.EAST -> 180.0f
+            else -> 0.0f
+        }
     }
-    open fun getCurrentRTB(): MultiBufferSource {
-        this.rtb
+
+    private fun packOverlayCoords(state: LivingEntityRenderState): Int {
+        return OverlayTexture.pack(OverlayTexture.u(0.0f), OverlayTexture.v(state.hasRedOverlay))
     }
-    open fun setCurrentRTB(bufferSource: MultiBufferSource) {
-        this.rtb = bufferSource
+
+    private fun preRenderCallback(poseStack: PoseStack) {
     }
-    open fun getCurrentModelRenderCycle(): IRenderCycle {
-        this.currentModelRenderCycle
+
+    override fun renderEarly(
+        animatable: MaidAnimatable,
+        poseStack: PoseStack,
+        partialTick: Float,
+        bufferSource: MultiBufferSource?,
+        buffer: VertexConsumer?,
+        packedLight: Int,
+        packedOverlayIn: Int,
+        red: Float,
+        green: Float,
+        blue: Float,
+        alpha: Float
+    ) {
+        renderEarlyMat.set(poseStack.last().pose())
+        super.renderEarly(
+            animatable,
+            poseStack,
+            partialTick,
+            bufferSource,
+            buffer,
+            packedLight,
+            packedOverlayIn,
+            red,
+            green,
+            blue,
+            alpha
+        )
     }
-    open fun setCurrentModelRenderCycle(cycle: IRenderCycle) {
-        this.currentModelRenderCycle = cycle
+
+    override fun getCurrentRTB(): MultiBufferSource? = rtb
+
+    override fun setCurrentRTB(bufferSource: MultiBufferSource?) {
+        rtb = bufferSource
     }
+
+    override fun getCurrentModelRenderCycle(): IRenderCycle = currentModelRenderCycle
+
+    override fun setCurrentModelRenderCycle(cycle: IRenderCycle) {
+        currentModelRenderCycle = cycle
+    }
+
     companion object {
-        @JvmField var FLIP_DEGREES: Float = 90.0f
-        @JvmStatic fun sleepDirectionToRotation(direction: Direction): Float {
-        }
-        @JvmStatic fun packOverlayCoords(state: LivingEntityRenderState): Int {
-            OverlayTexture.pack(OverlayTexture.u(0.0f), OverlayTexture.v(state.hasRedOverlay))
-        }
+        private const val FLIP_DEGREES: Float = 90.0f
     }
 }

@@ -13,23 +13,42 @@ import net.minecraft.client.gui.GuiGraphics
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidRenderStore
 
-open class MaidTextureScreen : PlayerTextureScreen {
-    var maid: EntityMaid = null
-    constructor(modelScreen: PlayerModelScreen, modelId: String, modelAssembly: ModelAssembly, maid: EntityMaid) {
-        this.maid = maid
+@Environment(EnvType.CLIENT)
+open class MaidTextureScreen(
+    parentScreen: PlayerModelScreen,
+    modelId: String,
+    renderContext: ModelAssembly,
+    private val maid: EntityMaid
+) : PlayerTextureScreen(parentScreen, modelId, renderContext) {
+
+    override fun createTextureButton(
+        x: Int,
+        y: Int,
+        previewEntity: PlayerPreviewEntity,
+        textureIndex: Int
+    ): TextureButton {
+        return MaidTextureButton(x, y, previewEntity, maid, textureIndex, renderContext)
     }
-    open fun createTextureButton(x: Int, y: Int, previewEntity: PlayerPreviewEntity, textureIndex: Int): TextureButton {
-        MaidTextureButton(x, y, previewEntity, this.maid, textureIndex, this.renderContext)
-    }
-    open fun renderTexturePreview(guiGraphics: GuiGraphics, partialTick: Float) {
-        var animatable: MaidAnimatable = MaidRenderStore.getOrCreate(this.maid)
-        this.modelHolder.initModelWithTexture(animatable.getModelId(), animatable.getCurrentTextureName())
-        var x0: Int = this.guiLeft + 93
-        var y0: Int = this.guiTop
-        var x1: Int = this.guiLeft + 299
-        var y1: Int = this.guiTop + 235
-        var anchorX: Float = this.guiLeft + 149.5f + 40.0f + this.offsetX
-        var anchorY: Float = this.guiTop + 117.5f + 80.0f + this.offsetY
-        ModelPreviewRenderer.submitTexturePreview(guiGraphics, x0, y0, x1, y1, anchorX, anchorY, this.zoom, this.pitch, this.yaw, this.modelHolder, this.showGround, partialTick)
+
+    override fun renderTexturePreview(guiGraphics: GuiGraphics, partialTick: Float) {
+        val animatable: MaidAnimatable = MaidRenderStore.getOrCreate(maid)
+        modelHolder.initModelWithTexture(animatable.getModelId(), animatable.getModelTextureId())
+        val x0 = guiLeft + 93
+        val y0 = guiTop
+        val x1 = guiLeft + 299
+        val y1 = guiTop + 235
+        val anchorX = guiLeft + 149.5f + 40.0f + offsetX
+        val anchorY = guiTop + 117.5f + 80.0f + offsetY
+        ModelPreviewRenderer.submitTexturePreview(
+            guiGraphics,
+            x0, y0, x1, y1,
+            anchorX, anchorY,
+            zoom,
+            pitch,
+            yaw,
+            modelHolder,
+            showGround,
+            partialTick
+        )
     }
 }

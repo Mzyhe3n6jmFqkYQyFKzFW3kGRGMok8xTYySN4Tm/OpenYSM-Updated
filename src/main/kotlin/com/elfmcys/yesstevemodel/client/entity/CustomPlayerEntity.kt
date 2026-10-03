@@ -19,9 +19,14 @@ abstract class CustomPlayerEntity(
     @JvmField val isLocalPlayer: Boolean,
     isActive: Boolean
 ) : LivingAnimatable<Player>(player, isActive), RoamingPropertyHolder {
-    @JvmField var isModelSwitching: Boolean = false
-    @JvmField var selectedModelId: String = "idle"
-    @JvmField var isDisabled: Boolean = false
+    @JvmField
+    var isModelSwitching: Boolean = false
+
+    @JvmField
+    var selectedModelId: String = "idle"
+
+    @JvmField
+    var isDisabled: Boolean = false
     private var syncIValues: List<IValue>? = null
 
     init {
@@ -31,7 +36,7 @@ abstract class CustomPlayerEntity(
     }
 
     override fun registerAnimationControllers() {
-        getModelAssembly()?.getAnimationBundle()?.getPlayerControllerInstaller()?.accept(this)
+        getModelAssembly()?.animationBundle?.playerControllerInstaller?.accept(this)
     }
 
     override fun resetModel() {
@@ -60,7 +65,7 @@ abstract class CustomPlayerEntity(
 
     override fun onModelLoaded(context: ModelAssembly) {
         super.onModelLoaded(context)
-        syncIValues = context.getExpressionCache().getEvents()[MolangEventDispatcher.SYNC]
+        syncIValues = context.expressionCache.events[MolangEventDispatcher.SYNC]
     }
 
     open fun requestModelSwitch(str: String) {

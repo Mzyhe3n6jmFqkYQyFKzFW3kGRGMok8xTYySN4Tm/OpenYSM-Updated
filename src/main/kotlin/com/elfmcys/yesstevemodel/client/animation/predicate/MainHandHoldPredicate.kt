@@ -22,7 +22,7 @@ import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat
 class MainHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
     override fun predicate(event: AnimationEvent<LivingAnimatable<*>>, evaluator: ExpressionEvaluator<*>?): PlayState {
         val animatable = event.getAnimatable()
-        val entity: LivingEntity = animatable.entity as? LivingEntity ?: return PlayState.STOP
+        val entity: LivingEntity = animatable.entity
         if (animatable is IPreviewAnimatable) {
             return PlayState.STOP
         }
@@ -40,12 +40,22 @@ class MainHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
             return gunPlayState
         }
         if (mainHandItem.`is`(Items.CROSSBOW) && CrossbowItem.isCharged(mainHandItem)) {
-            return IAnimationPredicate.playAnimationWithValid(event, "hold_mainhand:charged_crossbow", ILoopType.EDefaultLoopTypes.LOOP, i)
+            return IAnimationPredicate.playAnimationWithValid(
+                event,
+                "hold_mainhand:charged_crossbow",
+                ILoopType.EDefaultLoopTypes.LOOP,
+                i
+            )
         }
         val isFishing: Boolean = entity is Player && entity.fishing != null
         val flag: Boolean = TouhouLittleMaidCompat.isMaidSitting(entity)
         if (isFishing || flag) {
-            return IAnimationPredicate.playAnimationWithValid(event, "hold_mainhand:fishing", ILoopType.EDefaultLoopTypes.LOOP, i)
+            return IAnimationPredicate.playAnimationWithValid(
+                event,
+                "hold_mainhand:fishing",
+                ILoopType.EDefaultLoopTypes.LOOP,
+                i
+            )
         }
         val frameState: LivingEntityFrameState<*> = animatable.getPositionTracker()
         if (!isSameItem(mainHandItem, frameState, InteractionHand.MAIN_HAND)) {
@@ -60,7 +70,11 @@ class MainHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
         return PlayState.STOP
     }
 
-    private fun isSameItem(itemStack: ItemStack, frameState: LivingEntityFrameState<*>, hand: InteractionHand): Boolean {
+    private fun isSameItem(
+        itemStack: ItemStack,
+        frameState: LivingEntityFrameState<*>,
+        hand: InteractionHand
+    ): Boolean {
         val preItem: ItemStack = frameState.getHandItemsForAnimation(hand)
         if (preItem.isDamaged) {
             return ItemStack.isSameItem(itemStack, preItem)
@@ -68,10 +82,6 @@ class MainHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
         return ItemStack.matches(itemStack, preItem)
     }
 
-    private fun checkSwingAndUse(entity: LivingEntity, hand: InteractionHand): Boolean {
-        if (entity.swinging && entity.swingingArm == hand) {
-            return false
-        }
-        return !entity.isUsingItem || entity.usedItemHand != hand
-    }
+    private fun checkSwingAndUse(entity: LivingEntity, hand: InteractionHand): Boolean =
+        !(entity.swinging && entity.swingingArm == hand) && (!entity.isUsingItem || entity.usedItemHand != hand)
 }

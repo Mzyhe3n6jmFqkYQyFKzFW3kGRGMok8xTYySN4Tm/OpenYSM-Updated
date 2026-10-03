@@ -2,6 +2,8 @@ package rip.ysm.compat.touhoulittlemaid
 
 import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.network.message.FeedbackData
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.projectile.Projectile
 import rip.ysm.compat.ModCompat
@@ -33,6 +35,7 @@ object TouhouMaidCompat : ModCompat("touhou_little_maid") {
         TouhouMaidCompatImpl.applyFeedback(entity, message)
     }
 
+    @Environment(EnvType.CLIENT)
     @JvmStatic
     fun playMaidAnimation(entity: Entity, expression: String) {
         if (!isModLoaded) return

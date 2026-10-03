@@ -30,15 +30,6 @@ class ConditionManager {
         chair.addTest(name)
     }
 
-    fun getSwingMainhand(): ConditionSwing = swingMainhand
-    fun getSwingOffhand(): ConditionSwing = swingOffhand
-    fun getUseMainhand(): ConditionUse = useMainhand
-    fun getUseOffhand(): ConditionUse = useOffhand
-    fun getHoldMainhand(): ConditionHold = holdMainhand
-    fun getHoldOffhand(): ConditionHold = holdOffhand
-    fun getArmor(): ConditionArmor = armor
-    fun getTAC(): ConditionTAC = tac
     fun getVehicle(): ConditionVehicle = vehicle
-    fun getPassenger(): ConditionPassenger = passenger
     fun getChair(): ConditionChair = chair
 }
