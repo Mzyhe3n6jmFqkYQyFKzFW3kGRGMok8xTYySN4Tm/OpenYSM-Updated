@@ -34,7 +34,11 @@ open class AnimationControllerContext : IControllerVariableStorage {
         return propertyMap?.get(address)
     }
 
-    override fun setControllerVariable(address: Int, value: Any) {
+    override fun setControllerVariable(address: Int, value: Any?) {
+        if (value == null) {
+            propertyMap?.remove(address)
+            return
+        }
         val map = propertyMap ?: Int2ObjectOpenHashMap<Any>().also { propertyMap = it }
         map.put(address, value)
     }

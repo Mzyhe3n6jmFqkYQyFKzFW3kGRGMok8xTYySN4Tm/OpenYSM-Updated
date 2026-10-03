@@ -15,7 +15,7 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
     private val animatable: T,
     private val name: String,
     transitionLengthTicks: Float,
-    predicate: IAnimationPredicate<T>,
+    predicate: IAnimationPredicate<*>,
     deprecatedMode: Boolean = false
 ) : IAnimationController<T> {
     private val controller: PredicateBasedController<T> = PredicateBasedController(animatable, name, transitionLengthTicks, predicate, deprecatedMode)
@@ -23,7 +23,7 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
     private var initialized: Boolean = false
     private var activeController: IAnimationController<T> = controller
 
-    constructor(animatable: T, name: String, transitionLengthTicks: Float, predicate: IAnimationPredicate<T>) : this(
+    constructor(animatable: T, name: String, transitionLengthTicks: Float, predicate: IAnimationPredicate<*>) : this(
         animatable,
         name,
         transitionLengthTicks,

@@ -25,20 +25,22 @@ import org.joml.Vector3f
 import java.util.*
 import java.util.function.Consumer
 
+@Suppress("UNCHECKED_CAST")
 open class PredicateBasedController<T : AnimatableEntity<*>>(
     private val animatable: T,
     private val name: String,
     private val transitionLengthTicks: Float,
-    private val predicate: IAnimationPredicate<T>,
+    predicate: IAnimationPredicate<*>,
     private val deprecatedMode: Boolean = false
 ) : IAnimationController<T> {
+    private val predicate: IAnimationPredicate<T> = predicate as IAnimationPredicate<T>
     private val transitionInterpolator: AnimationControllerInstance =
         AnimationControllerInstance(animatable, transitionLengthTicks, true)
     private val playbackFlags: PlaybackFlags = PlaybackFlags(false)
     private var soundIValue: IValue? = null
     private var needsReset: Boolean = false
 
-    constructor(animatable: T, name: String, transitionLengthTicks: Float, predicate: IAnimationPredicate<T>) : this(
+    constructor(animatable: T, name: String, transitionLengthTicks: Float, predicate: IAnimationPredicate<*>) : this(
         animatable,
         name,
         transitionLengthTicks,

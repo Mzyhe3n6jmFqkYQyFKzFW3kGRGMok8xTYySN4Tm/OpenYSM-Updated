@@ -25,12 +25,12 @@ class AudioPlayerManager {
             if (resourceLocationTryParse != null) YSMTickableSoundInstance(
                 SoundEvent.createVariableRangeEvent(
                     resourceLocationTryParse
-                ), entity.getEntity()
+                ), entity.entity
             ) else null
         } else {
             entity.getAudioStreamFactory(soundName)
                 .map { audioStreamFactory ->
-                    YSMSoundInstance(ModSoundEvents.CUSTOM_SOUND.get(), audioStreamFactory, entity.getEntity())
+                    YSMSoundInstance(ModSoundEvents.CUSTOM_SOUND.get(), audioStreamFactory, entity.entity)
                 }
                 .orElse(null)
         }

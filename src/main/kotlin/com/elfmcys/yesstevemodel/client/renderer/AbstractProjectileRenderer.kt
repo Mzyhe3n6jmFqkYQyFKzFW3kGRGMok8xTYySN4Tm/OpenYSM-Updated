@@ -43,7 +43,7 @@ abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEn
         val player = minecraft.player
         val model: AnimatedGeoModel? = animatable.getCurrentModel()
         if (event != null && player != null && model != null) {
-            val projectile = animatable.getEntity()
+            val projectile = animatable.entity
             val isVisible = !projectile.isInvisibleTo(player)
             val zShouldEntityAppearGlowing = minecraft.shouldEntityAppearGlowing(projectile)
             val renderType: RenderType? = getRenderType(

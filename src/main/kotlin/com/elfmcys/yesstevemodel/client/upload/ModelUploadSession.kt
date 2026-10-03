@@ -100,22 +100,19 @@ class ModelUploadSession(
         private val listeners = CopyOnWriteArrayList<Listener>()
 
         @Volatile
-        @JvmStatic
+        @JvmField
         var instance: ModelUploadSession? = null
-            private set
 
         @Volatile
         private var serverLimitsKnown: Boolean = false
 
         @Volatile
-        @JvmStatic
+        @JvmField
         var lastMaxTotalBytes: Int = 16777216
-            private set
 
         @Volatile
-        @JvmStatic
+        @JvmField
         var lastChunksPerTick: Int = 4
-            private set
 
         @JvmStatic
         fun getInstance(): ModelUploadSession? {

@@ -11,7 +11,7 @@ import net.minecraft.client.gui.screens.Screen
 object ModScreenEvent {
     const val IMC_METHOD: String = "DownloadScreen"
 
-    @JvmStatic
+    @JvmField
     var receivedScreen: Screen? = null
 
     @JvmStatic

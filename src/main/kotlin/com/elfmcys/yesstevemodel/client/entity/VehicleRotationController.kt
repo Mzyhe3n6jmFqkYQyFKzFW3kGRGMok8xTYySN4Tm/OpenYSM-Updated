@@ -46,10 +46,10 @@ open class VehicleRotationController(
         evaluator: ExpressionEvaluator<AnimationContext<*>>,
         isFirstPerson: Boolean
     ) {
-        ImmersiveAirCraftCompat.getAircraftRotation(event).or {
-            SimplePlanesCompat.getSimplePlanesRotation(event)
-        }.ifPresent { vector3f ->
-            vehicleRotation = TransitionVector3f(vector3f).apply {
+        val rot = ImmersiveAirCraftCompat.getAircraftRotation(event)
+            ?: SimplePlanesCompat.getSimplePlanesRotation(event).orElse(null)
+        if (rot != null) {
+            vehicleRotation = TransitionVector3f(rot).apply {
                 setPercentCompleted(0.0f)
             }
         }

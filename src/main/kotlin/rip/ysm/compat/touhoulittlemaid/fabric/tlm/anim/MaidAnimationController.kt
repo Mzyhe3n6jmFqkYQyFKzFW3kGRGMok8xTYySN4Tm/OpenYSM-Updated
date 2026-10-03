@@ -43,21 +43,21 @@ object MaidAnimationController {
         registerParallelController("pre_parallel") { key, animatable, linkedName ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                (if (linkedName != null) NamedAnimationPredicate(linkedName) else StopAnimationPredicate.INSTANCE) as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                if (linkedName != null) NamedAnimationPredicate(linkedName) else StopAnimationPredicate.getInstance()
             )
         }
 
         registerController("vehicle") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.1f,
-                LivingMovementAnimationPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                LivingMovementAnimationPredicate()
             )
         }
 
         registerSlotController("pre_main") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                StopAnimationPredicate()
             )
         }
 
@@ -68,77 +68,77 @@ object MaidAnimationController {
         registerSlotController("post_main") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                StopAnimationPredicate()
             )
         }
 
         registerSlotController("pre_hold") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                StopAnimationPredicate()
             )
         }
 
         registerController("hold_offhand") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.1f,
-                OffHandHoldPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                OffHandHoldPredicate()
             )
         }
 
         registerController("hold_mainhand") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.1f,
-                MainHandHoldPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                MainHandHoldPredicate()
             )
         }
 
         registerSlotController("post_hold") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                StopAnimationPredicate()
             )
         }
 
         registerSlotController("pre_swing") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                StopAnimationPredicate()
             )
         }
 
         registerController("swing") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                ItemHoldAnimationPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                ItemHoldAnimationPredicate()
             )
         }
 
         registerSlotController("post_swing") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                StopAnimationPredicate()
             )
         }
 
         registerSlotController("pre_use") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                StopAnimationPredicate()
             )
         }
 
         registerController("use") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.1f,
-                InteractionHandAnimationPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                InteractionHandAnimationPredicate()
             )
         }
 
         registerSlotController("post_use") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                StopAnimationPredicate()
             )
         }
 
@@ -153,7 +153,7 @@ object MaidAnimationController {
         registerController("passenger") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.1f,
-                OffhandAttackAnimationPredicate() as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                OffhandAttackAnimationPredicate()
             )
         }
 
@@ -164,7 +164,7 @@ object MaidAnimationController {
         registerParallelController("parallel") { key, animatable, linkedName ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                (if (linkedName != null) NamedAnimationPredicate(linkedName) else StopAnimationPredicate.INSTANCE) as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>,
+                if (linkedName != null) NamedAnimationPredicate(linkedName) else StopAnimationPredicate.getInstance(),
                 true
             )
         }
@@ -172,7 +172,7 @@ object MaidAnimationController {
         registerArmorController("armor") { key, animatable, equipmentSlot ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                ArmorPredicate(equipmentSlot) as Any as com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate<MaidAnimatable>
+                ArmorPredicate(equipmentSlot)
             )
         }
 

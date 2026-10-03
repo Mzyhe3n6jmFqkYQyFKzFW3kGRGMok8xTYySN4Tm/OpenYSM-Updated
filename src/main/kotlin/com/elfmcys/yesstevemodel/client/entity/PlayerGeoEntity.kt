@@ -20,7 +20,7 @@ open class PlayerGeoEntity(
     }
 
     override fun registerAnimationControllers() {
-        getModelAssembly()?.getAnimationBundle()?.getArmControllerInstaller()?.accept(this)
+        getModelAssembly()?.animationBundle?.armControllerInstaller?.accept(this)
     }
 
     override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean {
@@ -38,7 +38,7 @@ open class PlayerGeoEntity(
     }
 
     override fun getAnimationEntries(str: String): AnimationController? {
-        return getModelAssembly()?.getAnimationBundle()?.getAnimationEntries()?.get(str)
+        return getModelAssembly()?.animationBundle?.animationEntries?.get(str)
     }
 
     override fun getTextureLocation(): Identifier {
@@ -46,23 +46,23 @@ open class PlayerGeoEntity(
     }
 
     override fun getHeightScale(): Float {
-        return getModelAssembly()?.getModelData()?.modelProperties?.heightScale ?: 1.0f
+        return getModelAssembly()?.modelData?.modelProperties?.heightScale ?: 1.0f
     }
 
     override fun getWidthScale(): Float {
-        return getModelAssembly()?.getModelData()?.modelProperties?.widthScale ?: 1.0f
+        return getModelAssembly()?.modelData?.modelProperties?.widthScale ?: 1.0f
     }
 
     override fun getAnimation(str: String): Animation? {
-        return getModelAssembly()?.getAnimationBundle()?.getArmAnimations()?.get(str)
+        return getModelAssembly()?.animationBundle?.armAnimations?.get(str)
     }
 
     open fun getArmModelProcessor(): ArmorConditions? {
-        return getModelAssembly()?.getAnimationBundle()?.getModelProcessor()
+        return getModelAssembly()?.animationBundle?.modelProcessor
     }
 
     override fun getAnimationProcessor(): GeoModel {
-        return getModelAssembly()!!.getAnimationBundle().getArmModel()
+        return getModelAssembly()!!.animationBundle.armModel
     }
 
     override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {

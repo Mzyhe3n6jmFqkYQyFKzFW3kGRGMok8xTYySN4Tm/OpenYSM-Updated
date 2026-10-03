@@ -7,18 +7,18 @@ import com.elfmcys.yesstevemodel.geckolib3.core.controller.PredicateBasedControl
 import com.elfmcys.yesstevemodel.geckolib3.model.provider.data.EntityModelData
 
 open class AnimationEvent<T : AnimatableEntity<*>>(
-    val animatable: T,
-    val limbSwing: Float,
-    val limbSwingAmount: Float,
-    val tickCount: Int,
-    val partialTick: Float,
-    val frameTime: Float,
-    val isMoving: Boolean,
-    val isFirstPerson: Boolean,
-    val modelData: EntityModelData
+    @JvmField val animatable: T,
+    @JvmField val limbSwing: Float,
+    @JvmField val limbSwingAmount: Float,
+    @JvmField val tickCount: Int,
+    @JvmField val partialTick: Float,
+    @JvmField val frameTime: Float,
+    @JvmField val isMoving: Boolean,
+    @JvmField val isFirstPerson: Boolean,
+    @JvmField val modelData: EntityModelData
 ) {
     @JvmField
-    val currentTick: Float = tickCount + frameTime
+    var currentTick: Float = tickCount + frameTime
 
     @JvmField
     var controller: PredicateBasedController<T>? = null

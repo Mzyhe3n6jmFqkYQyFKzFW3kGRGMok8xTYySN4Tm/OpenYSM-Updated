@@ -6,6 +6,4 @@ class ArmorConditions {
     fun addCondition(str: String) {
         conditionArmor.addTest(str)
     }
-
-    fun getConditionArmor(): ConditionArmor = conditionArmor
 }

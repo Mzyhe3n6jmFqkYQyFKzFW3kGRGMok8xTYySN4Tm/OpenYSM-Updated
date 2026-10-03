@@ -119,7 +119,7 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
         multiBufferSource: MultiBufferSource,
         packedLight: Int
     ) {
-        val entity: TEntity = t.getEntity()
+        val entity: TEntity = t.entity
         if (RenderLivingBridge.firePre(entity, this, partialTick, poseStack, multiBufferSource, packedLight)) {
             return
         }

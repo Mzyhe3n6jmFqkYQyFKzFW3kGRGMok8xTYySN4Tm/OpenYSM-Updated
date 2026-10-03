@@ -5,11 +5,11 @@ import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.EquipmentSlot
 
 class StringExpression(name: String) : Expression {
-    val name: String = name
-    val path: Int = StringPool.computeIfAbsent(name)
-    var cachedLocation: Identifier? = null
-    var cachedSlot: EquipmentSlot? = null
-    var slotResolved: Boolean = false
+    @JvmField val name: String = name
+    @JvmField val path: Int = StringPool.computeIfAbsent(name)
+    @JvmField var cachedLocation: Identifier? = null
+    @JvmField var cachedSlot: EquipmentSlot? = null
+    @JvmField var slotResolved: Boolean = false
 
     fun getName(): String = name
     fun getPath(): Int = path

@@ -62,6 +62,7 @@ import kotlin.math.min
 object YSMClientMapper {
 
     class TranslucencyScanner(val images: Array<BufferedImage?>, expectedCount: Int) {
+        @JvmField
         val results: BooleanArray = BooleanArray(max(expectedCount, images.size))
 
         companion object {

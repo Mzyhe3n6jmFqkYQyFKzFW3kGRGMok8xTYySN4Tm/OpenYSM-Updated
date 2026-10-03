@@ -29,7 +29,7 @@ open class CustomPlayerCarryOnLayer : GeoLayerRenderer<CustomPlayerEntity>() {
         if (!CarryOnCompat.isLoaded()) {
             return
         }
-        val entity: LivingEntity = entityLivingBaseIn.getEntity()
+        val entity: LivingEntity = entityLivingBaseIn.entity
         if (entity !is Player) {
             return
         }

@@ -61,7 +61,7 @@ object VehicleAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate
+                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.getInstance()
             )
         }
         registerNamedController("pre_main", null, true) { animationEntryKey, entity ->
@@ -84,14 +84,14 @@ object VehicleAnimationController {
             CompositeAnimationController(entity, animationEntryKey, 0.1f, RideStateAnimationPredicate())
         }
         registerNamedController("post_main", null, true) { animationEntryKey, entity ->
-            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate)
+            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate())
         }
         registerParallelController("parallel") { animationEntryKey, entity, linkedAnimationName ->
             CompositeAnimationController(
                 entity,
                 animationEntryKey,
                 0.0f,
-                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate,
+                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.getInstance(),
                 true
             )
         }
@@ -132,7 +132,7 @@ object VehicleAnimationController {
                 slotName,
                 requiredAnimations,
                 checkAnimationEntries,
-                VehicleAnimationDataProvider.INSTANCE,
+                VehicleAnimationDataProvider,
                 controllerFactory
             )
         )
@@ -148,7 +148,7 @@ object VehicleAnimationController {
                 VEHICLE_PREFIX,
                 slotName,
                 false,
-                VehicleAnimationDataProvider.INSTANCE,
+                VehicleAnimationDataProvider,
                 controllerFactory
             )
         )

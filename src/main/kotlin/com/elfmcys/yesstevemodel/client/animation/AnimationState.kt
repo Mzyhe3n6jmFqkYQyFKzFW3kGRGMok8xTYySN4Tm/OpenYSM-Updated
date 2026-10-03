@@ -13,9 +13,4 @@ class AnimationState<TE, AE : AnimatableEntity<*>>(
     val predicate: BiPredicate<TE, AnimationEvent<AE>>
 ) {
     val priority: Int = Mth.clamp(priority, Priority.HIGHEST, Priority.LOWEST)
-
-    fun getPredicate(): BiPredicate<TE, AnimationEvent<AE>> = predicate
-    fun getAnimationName(): String = animationName
-    fun getLoopType(): ILoopType = loopType
-    fun getPriority(): Int = priority
 }

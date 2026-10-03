@@ -53,7 +53,7 @@ object FirstPersonArmAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.INSTANCE,
+                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.getInstance(),
                 true
             )
         }
@@ -111,7 +111,7 @@ object FirstPersonArmAnimationController {
             ControllerSlotBinder(
                 FP_ARM_PREFIX,
                 slotName,
-                DefaultBoneExpressionProvider.INSTANCE,
+                DefaultBoneExpressionProvider,
                 controllerFactory
             )
         )
@@ -130,7 +130,7 @@ object FirstPersonArmAnimationController {
                 slotName,
                 requiredAnimations,
                 checkAnimationEntries,
-                DefaultBoneExpressionProvider.INSTANCE,
+                DefaultBoneExpressionProvider,
                 controllerFactory
             )
         )
@@ -146,7 +146,7 @@ object FirstPersonArmAnimationController {
                 FP_ARM_PREFIX,
                 slotName,
                 true,
-                DefaultBoneExpressionProvider.INSTANCE,
+                DefaultBoneExpressionProvider,
                 controllerFactory
             )
         )
@@ -161,7 +161,7 @@ object FirstPersonArmAnimationController {
             ArmorSlotProcessor(
                 FP_ARM_PREFIX,
                 category,
-                DefaultBoneExpressionProvider.INSTANCE,
+                DefaultBoneExpressionProvider,
                 controllerFactory
             )
         )

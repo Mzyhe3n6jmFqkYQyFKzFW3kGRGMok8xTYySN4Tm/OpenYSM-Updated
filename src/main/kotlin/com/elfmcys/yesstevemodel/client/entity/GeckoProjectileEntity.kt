@@ -35,7 +35,7 @@ open class GeckoProjectileEntity(
     override fun onModelLoaded(modelAssembly: ModelAssembly) {
         super.onModelLoaded(modelAssembly)
         val key = entity.type.builtInRegistryHolder().key().identifier()
-        projectileModelContext = modelAssembly.getProjectileModels()[key]
+        projectileModelContext = modelAssembly.projectileModels[key]
     }
 
     override fun clearModel() {
@@ -44,20 +44,20 @@ open class GeckoProjectileEntity(
     }
 
     override fun getAnimationProcessor(): GeoModel {
-        return projectileModelContext!!.getModel()
+        return projectileModelContext!!.model
     }
 
     override fun getTextureLocation(): Identifier {
         return (getRenderShape() as ProjectileModelWrapper).textureLocatable.getResourceLocation()
-            .orElseGet(MissingTextureAtlasSprite::getLocation)
+            ?: MissingTextureAtlasSprite.getLocation()
     }
 
     override fun getAnimation(str: String): Animation? {
-        return projectileModelContext?.getAnimations()?.get(str)
+        return projectileModelContext?.animations?.get(str)
     }
 
     override fun getAnimationEntries(str: String): AnimationController? {
-        return projectileModelContext?.getAnimationControllers()?.get(str)
+        return projectileModelContext?.animationControllers?.get(str)
     }
 
     override fun isModelReady(): Boolean {
@@ -77,7 +77,7 @@ open class GeckoProjectileEntity(
         isDefault: Boolean,
         modelBundle: ProjectileModelBundle
     ) : ModelWrapper(modelAssembly, isDefault) {
-        val textureLocatable: IResourceLocatable = UploadManager.getOrCreateLocatable(modelBundle.getTexture(), true)
+        val textureLocatable: IResourceLocatable = UploadManager.getOrCreateLocatable(modelBundle.texture, true)
 
         override fun isValid(): Boolean = textureLocatable.getResourceLocation() != null
     }

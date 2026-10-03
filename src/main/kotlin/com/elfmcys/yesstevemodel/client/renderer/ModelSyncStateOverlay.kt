@@ -72,7 +72,7 @@ class ModelSyncStateOverlay : HudOverlay {
 
         val syncStatus = ClientModelManager.getSyncStatus()
 
-        if (syncStatus.getCurrentState() == ClientModelManager.SyncState.IDLE) {
+        if (syncStatus.currentState == ClientModelManager.SyncState.IDLE) {
             val pendingModelCount = ClientModelManager.getPendingModelCount()
             if (pendingModelCount > 0) {
                 val loadedModelCount = ClientModelManager.getModelAssemblyMap().size
@@ -95,7 +95,7 @@ class ModelSyncStateOverlay : HudOverlay {
 
         val prefixText: MutableComponent = Component.translatable("gui.yes_steve_model.sync_hint.title")
 
-        when (syncStatus.getCurrentState()) {
+        when (syncStatus.currentState) {
             ClientModelManager.SyncState.WAITING -> {
                 prefixText.append(Component.translatable("gui.yes_steve_model.sync_hint.waiting").withStyle(ChatFormatting.AQUA))
                 resetAnimation()
@@ -109,19 +109,19 @@ class ModelSyncStateOverlay : HudOverlay {
                 resetAnimation()
             }
             ClientModelManager.SyncState.SYNCING -> {
-                if (syncStatus.getSyncedModels() == 0) {
+                if (syncStatus.syncedModels == 0) {
                     prefixText.append(Component.translatable("gui.yes_steve_model.sync_hint.syncing").withStyle(ChatFormatting.RED))
                     resetAnimation()
                 } else {
                     prefixText.append(
-                        Component.literal("${syncStatus.getSyncedModels()}/${syncStatus.getTotalModels()}")
+                        Component.literal("${syncStatus.syncedModels}/${syncStatus.totalModels}")
                             .withStyle(ChatFormatting.GREEN)
                     )
                     drawAnimatedBar(
                         guiGraphics,
                         barX,
                         barY,
-                        syncStatus.getSyncedModels().toFloat() / syncStatus.getTotalModels(),
+                        syncStatus.syncedModels.toFloat() / syncStatus.totalModels,
                         0xFF55FF55.toInt(),
                         true
                     )

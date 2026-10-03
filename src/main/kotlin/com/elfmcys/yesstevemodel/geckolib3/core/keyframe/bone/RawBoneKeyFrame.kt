@@ -58,6 +58,6 @@ open class RawBoneKeyFrame {
 
     open fun startTick(): Float = startTick.toFloat()
     open fun easingType(): EasingType = easingType
-    open fun preValue(): Vector3v? = preValue
-    open fun postValue(): Vector3v? = postValue
+    open fun preValue(): Vector3v = preValue!!
+    open fun postValue(): Vector3v = postValue!!
 }

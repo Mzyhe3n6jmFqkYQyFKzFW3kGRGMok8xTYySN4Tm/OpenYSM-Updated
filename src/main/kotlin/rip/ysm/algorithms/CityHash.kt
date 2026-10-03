@@ -526,16 +526,7 @@ open class CityHash {
         }
     }
 
-    data class Number128(var lowValue: Long = 0L, var hiValue: Long = 0L) {
-        fun getLowValue(): Long = lowValue
-        fun getHiValue(): Long = hiValue
-        fun setLowValue(lowValue: Long) {
-            this.lowValue = lowValue
-        }
-        fun setHiValue(hiValue: Long) {
-            this.hiValue = hiValue
-        }
-    }
+    data class Number128(var lowValue: Long = 0L, var hiValue: Long = 0L)
 
     companion object {
         @JvmField

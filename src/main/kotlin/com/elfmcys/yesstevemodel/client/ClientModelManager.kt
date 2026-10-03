@@ -131,12 +131,6 @@ object ClientModelManager {
             private set
         var syncedModels: Int = -1
 
-        fun getCurrentState(): SyncState = currentState
-
-        fun getSyncedModels(): Int = syncedModels
-
-        fun getTotalModels(): Int = totalModels
-
         fun setState(syncState: SyncState) {
             println("Sync state: $syncState")
             this.currentState = syncState

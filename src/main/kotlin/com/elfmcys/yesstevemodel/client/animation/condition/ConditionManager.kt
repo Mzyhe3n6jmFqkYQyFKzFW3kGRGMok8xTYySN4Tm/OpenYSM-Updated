@@ -29,7 +29,4 @@ class ConditionManager {
         passenger.doTest(name)
         chair.addTest(name)
     }
-
-    fun getVehicle(): ConditionVehicle = vehicle
-    fun getChair(): ConditionChair = chair
 }

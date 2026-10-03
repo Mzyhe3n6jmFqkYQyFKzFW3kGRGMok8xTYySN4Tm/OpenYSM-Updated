@@ -34,5 +34,6 @@ open class PlayerModelBundle(
         PlayerAnimationController.buildControllers(this, modelResourceBundle)
     val armControllerInstaller: Consumer<PlayerGeoEntity> =
         FirstPersonArmAnimationController.buildControllers(this, modelResourceBundle)
-    val maidControllerInstaller: Any = TouhouLittleMaidCompat.buildControllers(this, modelResourceBundle)
+    val maidControllerInstaller: Consumer<rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable>? =
+        TouhouLittleMaidCompat.buildControllers(this, modelResourceBundle)
 }
