@@ -11,12 +11,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import rip.ysm.api.client.event.ClientRawInputEvent;
-import rip.ysm.api.event.EventResult;
 
 @Mixin(MouseHandler.class)
 public class MouseHandlerMixin {
-    @Shadow @Final private Minecraft minecraft;
-    @Unique private boolean ysm$hadScreen;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
+    @Unique
+    private boolean ysm$hadScreen;
 
     @Inject(method = "onButton", at = @At("HEAD"))
     private void ysm$onButtonHead(long window, MouseButtonInfo buttonInfo, int action, CallbackInfo ci) {
@@ -26,10 +28,8 @@ public class MouseHandlerMixin {
     @Inject(method = "onButton", at = @At("RETURN"), cancellable = true)
     private void ysm$onMouseButton(long window, MouseButtonInfo buttonInfo, int action, CallbackInfo ci) {
         if (window == this.minecraft.getWindow().handle() && !this.ysm$hadScreen) {
-            EventResult result = ClientRawInputEvent.MOUSE_CLICKED_PRE.invoker().onMouseClick(this.minecraft, buttonInfo, action);
-            if (result != null && result.isFalse()) {
-                ci.cancel();
-            }
+            var result = ClientRawInputEvent.MOUSE_CLICKED_PRE.invoker().onMouseClick(this.minecraft, buttonInfo, action);
+            if (result.isFalse()) ci.cancel();
         }
     }
 }

@@ -4,7 +4,6 @@ import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool;
 import com.elfmcys.yesstevemodel.util.accessors.ProjectileStateAccessor;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
@@ -15,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin({AbstractArrow.class})
+@Mixin(AbstractArrow.class)
 public abstract class AbstractArrowEntityMixin implements ProjectileStateAccessor {
     @Unique
     private String ownerMainHandItem = StringPool.EMPTY;
@@ -44,10 +43,10 @@ public abstract class AbstractArrowEntityMixin implements ProjectileStateAccesso
         return this.ownerMainHandItem;
     }
 
-    @Inject(at = {@At("RETURN")}, method = {"setOwner(Lnet/minecraft/world/entity/Entity;)V"})
+    @Inject(at = @At("RETURN"), method = "setOwner(Lnet/minecraft/world/entity/Entity;)V")
     private void onSetOwner(Entity entity, CallbackInfo callbackInfo) {
         var key = BuiltInRegistries.ITEM.getKey(((LivingEntity) entity).getMainHandItem().getItem());
-        if (YesSteveModel.isAvailable() && (entity instanceof LivingEntity) && key != null)
+        if (YesSteveModel.isAvailable() && entity instanceof LivingEntity)
             this.ownerMainHandItem = key.toString();
     }
 }
