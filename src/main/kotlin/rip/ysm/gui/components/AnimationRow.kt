@@ -13,7 +13,7 @@ class AnimationRow(
     y: Int,
     width: Int,
     height: Int,
-    @JvmField val animKey: String,
+    val animKey: String,
     private val owner: ModernPlayerTextureScreen
 ) : OptionRow<Any?>(x, y, width, height, null) {
 
@@ -23,12 +23,11 @@ class AnimationRow(
         message = label
     }
 
-    fun matches(lowerSearch: String): Boolean {
-        return animKey.lowercase().contains(lowerSearch) || message.string.lowercase().contains(lowerSearch)
-    }
+    fun matches(lowerSearch: String): Boolean =
+        animKey.lowercase().contains(lowerSearch) || message.string.lowercase().contains(lowerSearch)
 
     override fun renderWidget(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        val selected = animKey == owner.currentAnimation()
+        val selected = animKey == owner.currentAnimation
         val bg = if (selected) 0x90333333.toInt() else if (isHovered) 0x90171717.toInt() else 0x90000000.toInt()
         g.fill(x, y, x + width, y + height, bg)
         if (selected) {

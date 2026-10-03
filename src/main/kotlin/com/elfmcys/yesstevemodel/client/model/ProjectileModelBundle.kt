@@ -16,5 +16,7 @@ open class ProjectileModelBundle(
     val texture: AbstractTexture,
     resourceBundle: ModelResourceBundle
 ) {
-    val controllerInitializer: Consumer<GeckoProjectileEntity>? = ProjectileAnimationController.buildControllers(this, resourceBundle)
+    // TODO: Replace Consumer
+    val controllerInitializer: Consumer<GeckoProjectileEntity> =
+        ProjectileAnimationController.buildControllers(this, resourceBundle)
 }

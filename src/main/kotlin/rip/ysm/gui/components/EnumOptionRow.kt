@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import rip.ysm.gui.Option
 import rip.ysm.gui.OptionRow
-import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 
@@ -23,9 +22,7 @@ open class EnumOptionRow<E : Enum<E>>(
     private var open: Boolean = false
     private var listScroll: Float = 0.0f
 
-    override fun controlWidth(): Int {
-        return Mth.clamp(width / 2, 100, 220)
-    }
+    override fun controlWidth(): Int = Mth.clamp(width / 2, 100, 220)
 
     override fun renderControl(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         val cx = controlX()
@@ -38,7 +35,7 @@ open class EnumOptionRow<E : Enum<E>>(
         g.renderOutline(cx, cy, cw, ch, 0x60FFFFFF)
 
         val text = Component.literal(prettify(option?.get()?.name ?: ""))
-        g.drawString(Minecraft.getInstance().font, text, cx + 6, cy + (ch - 8) / 2, -1, false)
+        g.drawString(Minecraft.getInstance().font, text, cx + 6, cy + (ch - 8) / 2, 0xFFFFFFFF.toInt(), false)
 
         val arrowX = cx + cw - 10
         val arrowY = cy + ch / 2 - 1
@@ -48,9 +45,7 @@ open class EnumOptionRow<E : Enum<E>>(
     }
 
     override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
-        if (!isMouseOverControl(event.x(), event.y())) {
-            return
-        }
+        if (!isMouseOverControl(event.x(), event.y())) return
         open = !open
         if (open) {
             val cur = currentIndex()
@@ -61,18 +56,14 @@ open class EnumOptionRow<E : Enum<E>>(
         }
     }
 
-    override fun isOverlayOpen(): Boolean {
-        return open
-    }
+    override fun isOverlayOpen(): Boolean = open
 
     override fun closeOverlay() {
         open = false
     }
 
     override fun renderOverlay(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float, scrollDisplay: Float) {
-        if (!open) {
-            return
-        }
+        if (!open) return
         val cx = controlX()
         val cw = controlWidth()
         val cy = controlY() - scrollDisplay.toInt()
@@ -86,18 +77,15 @@ open class EnumOptionRow<E : Enum<E>>(
         g.pose().pushMatrix()
         g.fill(listX, listY, listX + cw, listY + listH, 0xFF111111.toInt())
 
-        var first = (listScroll / 14).toInt()
-        first = max(0, min(first, max(0, values.size - visible)))
+        val first = max(0, min((listScroll / 14).toInt(), max(0, values.size - visible)))
 
         for (i in 0 until visible) {
             val idx = first + i
-            if (idx >= values.size) {
-                break
-            }
+            if (idx >= values.size) break
             val itemY = listY + 1 + i * 14
             val hover = mouseX >= listX && mouseX < listX + cw && mouseY >= itemY && mouseY < itemY + 14
             val selected = idx == currentIndex()
-            val bg = if (selected) Color(255, 255, 255, 60).rgb else if (hover) 0xFF333333.toInt() else 0
+            val bg = if (selected) 0x3CFFFFFF else if (hover) 0xFF333333.toInt() else 0
             if (bg != 0) {
                 g.fill(listX + 1, itemY, listX + cw - 1, itemY + 14, bg)
             }
@@ -125,9 +113,7 @@ open class EnumOptionRow<E : Enum<E>>(
     }
 
     override fun overlayMouseClicked(mouseX: Double, mouseY: Double, button: Int, scrollDisplay: Float): Boolean {
-        if (!open) {
-            return false
-        }
+        if (!open) return false
         val cx = controlX()
         val cw = controlWidth()
         val cy = controlY() - scrollDisplay.toInt()
@@ -139,8 +125,7 @@ open class EnumOptionRow<E : Enum<E>>(
         if (mouseX < listX || mouseX >= listX + cw || mouseY < listY || mouseY >= listY + listH) {
             return false
         }
-        var first = (listScroll / 14).toInt()
-        first = max(0, min(first, max(0, values.size - visible)))
+        val first = max(0, min((listScroll / 14).toInt(), max(0, values.size - visible)))
         val slot = ((mouseY - listY - 1) / 14).toInt()
         val idx = first + slot
         if (idx in values.indices) {
@@ -151,9 +136,7 @@ open class EnumOptionRow<E : Enum<E>>(
     }
 
     override fun overlayMouseScrolled(mouseX: Double, mouseY: Double, delta: Double, scrollDisplay: Float): Boolean {
-        if (!open) {
-            return false
-        }
+        if (!open) return false
         val cx = controlX()
         val cw = controlWidth()
         val cy = controlY() - scrollDisplay.toInt()
@@ -187,12 +170,8 @@ open class EnumOptionRow<E : Enum<E>>(
             val sb = StringBuilder(name.length)
             for (i in parts.indices) {
                 val p = parts[i]
-                if (p.isEmpty()) {
-                    continue
-                }
-                if (i > 0) {
-                    sb.append(' ')
-                }
+                if (p.isEmpty()) continue
+                if (i > 0) sb.append(' ')
                 sb.append(p[0].uppercaseChar())
                 if (p.length > 1) {
                     sb.append(p.substring(1).lowercase())

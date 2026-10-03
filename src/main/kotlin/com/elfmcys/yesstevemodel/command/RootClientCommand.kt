@@ -9,9 +9,7 @@ import com.elfmcys.yesstevemodel.client.renderer.AnimationDebugOverlay
 import com.elfmcys.yesstevemodel.command.subcommands.client.DebugCommand
 import com.elfmcys.yesstevemodel.command.subcommands.client.MoLangCommand
 import com.elfmcys.yesstevemodel.command.subcommands.client.WatchCommand
-import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.binding.ContextBinding
-import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import com.elfmcys.yesstevemodel.geckolib3.resource.GeckoLibCache
 import com.elfmcys.yesstevemodel.molang.runtime.Struct
 import com.elfmcys.yesstevemodel.util.YSMMessageFormatter
@@ -36,28 +34,28 @@ object RootClientCommand {
         if (context.source is SharedSuggestionProvider && !PlatformAPI.isServer()) {
             val geo = getActiveGeoModel() ?: return@register Suggestions.empty()
             val set = HashSet<String>()
-            geo.getEvaluationContext().forEachPropertyName { str: String ->
+            geo.getEvaluationContext().forEachPropertyName { str ->
                 set.add("v.$str")
             }
             if (geo is RoamingPropertyHolder) {
                 val struct: Struct? = (geo as RoamingPropertyHolder).getServerVarContainer()
                 if (struct is RoamingStruct) {
-                    struct.forEachVar { str2: String ->
-                        if (struct.getProperty(StringPool.getName(str2)) != null) {
-                            set.add("v.roaming.$str2")
-                        }
+                    struct.forEachVar { str2 ->
+                        set.add("v.roaming.$str2")
                     }
                 }
             }
             GeckoLibCache.getGlobalBindings().forEach { (namespace, obj) ->
                 if (obj is ContextBinding) {
-                    obj.getKeys().forEach { key: String ->
+                    obj.getKeys().forEach { key ->
                         set.add("$namespace.$key")
                     }
                 }
             }
-            for (s in geo.getModelAssembly().expressionCache.functions.keys) {
-                set.add("fn.$s")
+            geo.getModelAssembly()?.expressionCache?.functions?.let {
+                for (s in it.keys) {
+                    set.add("fn.$s")
+                }
             }
             return@register SharedSuggestionProvider.suggest(set, builder)
         }
@@ -72,7 +70,7 @@ object RootClientCommand {
             val geo = getActiveGeoModel() ?: return@register Suggestions.empty()
             val controllers = HashSet<String>()
             for (controller in geo.getAnimationData().getAnimationControllers()) {
-                controllers.add((controller as IAnimationController<*>).getName())
+                controllers.add(controller.getName())
             }
             return@register SharedSuggestionProvider.suggest(controllers, suggestionsBuilder)
         }

@@ -26,7 +26,7 @@ object PieShader {
         if (program != 0) return true
         if (failed) return false
         RenderSystem.assertOnRenderThread()
-        return try {
+        return runCatching {
             val vs = ShaderUtil.compileShaderFromResource(GL20.GL_VERTEX_SHADER, "/pie.vsh")
             val fs = ShaderUtil.compileShaderFromResource(GL20.GL_FRAGMENT_SHADER, "/pie.fsh")
             val prog = ShaderUtil.linkProgram(vs, fs)
@@ -44,9 +44,9 @@ object PieShader {
             dummyVao = GL30.glGenVertexArrays()
             program = prog
             true
-        } catch (t: Throwable) {
-            ChatLogger.INSTANCE.logFormatted("Failed to compile shader program, please check the log")
-            Constants.LOGGER.error("Failed to compile shader program.", t)
+        }.getOrElse {
+            ChatLogger.logFormatted("Failed to compile shader program, please check the log")
+            Constants.LOGGER.error("Failed to compile shader program.", it)
             failed = true
             false
         }

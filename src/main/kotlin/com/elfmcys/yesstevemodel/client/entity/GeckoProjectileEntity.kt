@@ -17,13 +17,14 @@ open class GeckoProjectileEntity(
     private var projectileModelContext: ProjectileModelBundle? = null
 
     override fun registerAnimationControllers() {
-        projectileModelContext?.getControllerInitializer()?.accept(this)
+        projectileModelContext?.controllerInitializer?.accept(this)
     }
 
+    // TODO: fun builtInRegistryHolder(): Holder.Reference<EntityType<*>>' is deprecated. Deprecated in Java.
     override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper? {
         if (!isDefault) {
             val key = entity.type.builtInRegistryHolder().key().identifier()
-            val modelBundle = modelAssembly.getProjectileModels()[key]
+            val modelBundle = modelAssembly.projectileModels[key]
             if (modelBundle != null) {
                 return ProjectileModelWrapper(modelAssembly, false, modelBundle)
             }
@@ -47,7 +48,8 @@ open class GeckoProjectileEntity(
     }
 
     override fun getTextureLocation(): Identifier {
-        return (getRenderShape() as ProjectileModelWrapper).textureLocatable.getResourceLocation().orElseGet(MissingTextureAtlasSprite::getLocation)
+        return (getRenderShape() as ProjectileModelWrapper).textureLocatable.getResourceLocation()
+            .orElseGet(MissingTextureAtlasSprite::getLocation)
     }
 
     override fun getAnimation(str: String): Animation? {
@@ -77,8 +79,6 @@ open class GeckoProjectileEntity(
     ) : ModelWrapper(modelAssembly, isDefault) {
         val textureLocatable: IResourceLocatable = UploadManager.getOrCreateLocatable(modelBundle.getTexture(), true)
 
-        override fun isValid(): Boolean {
-            return textureLocatable.getResourceLocation().isPresent
-        }
+        override fun isValid(): Boolean = textureLocatable.getResourceLocation() != null
     }
 }

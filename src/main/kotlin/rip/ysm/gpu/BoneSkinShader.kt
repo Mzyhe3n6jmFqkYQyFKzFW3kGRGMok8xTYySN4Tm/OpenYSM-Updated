@@ -82,7 +82,7 @@ object BoneSkinShader {
             program = prog
             true
         }.getOrElse {
-            ChatLogger.INSTANCE.logFormatted("Failed to compile shader program, please check the log")
+            ChatLogger.logFormatted("Failed to compile shader program, please check the log")
             Constants.LOGGER.error("Failed to compile shader program.", it)
             failed = true
             false

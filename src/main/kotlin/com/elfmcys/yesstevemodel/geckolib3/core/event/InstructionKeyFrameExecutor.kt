@@ -17,11 +17,11 @@ open class InstructionKeyFrameExecutor(private val list: MutableList<EventKeyFra
     open fun executeTo(evaluator: ExpressionEvaluator<AnimationContext<*>>, currentTick: Float, isClientSide: Boolean) {
         evaluator.entity().setIsClientSide(isClientSide)
         while (!reachEnd()) {
-            val keyFrame: EventKeyFrame<Array<IValue>> = list.get(nextIndex)
-            if (keyFrame.getStartTick() > currentTick) {
+            val keyFrame = list[nextIndex]
+            if (keyFrame.startTick > currentTick) {
                 break
             }
-            evalValues(evaluator, keyFrame.getEventData())
+            evalValues(evaluator, keyFrame.eventData)
             nextIndex++
         }
         evaluator.entity().setIsClientSide(false)
@@ -30,7 +30,7 @@ open class InstructionKeyFrameExecutor(private val list: MutableList<EventKeyFra
     open fun executeRemaining(evaluator: ExpressionEvaluator<AnimationContext<*>>, isClientSide: Boolean) {
         evaluator.entity().setIsClientSide(isClientSide)
         for (i in nextIndex until list.size) {
-            evalValues(evaluator, list.get(i).getEventData())
+            evalValues(evaluator, list[i].getEventData())
         }
         evaluator.entity().setIsClientSide(false)
         nextIndex = list.size

@@ -3,21 +3,25 @@ package com.elfmcys.yesstevemodel.geckolib3.core.molang.builtin.math
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.context.IContext
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.funciton.ContextFunction
 import com.elfmcys.yesstevemodel.molang.runtime.ExecutionContext
+import com.elfmcys.yesstevemodel.molang.runtime.Function
+import net.minecraft.util.RandomSource
 
-open class RandomInteger : ContextFunction<Any>() {
-    open fun validateArgumentSize(size: Int): Boolean {
+class RandomInteger : ContextFunction<Any>() {
+    override fun validateArgumentSize(size: Int): Boolean {
         return size == 2
     }
-    open fun eval(context: ExecutionContext<IContext<Any>>, arguments: ArgumentCollection): Any {
+
+    override fun eval(context: ExecutionContext<IContext<Any>>, arguments: Function.ArgumentCollection): Any {
         var min: Int = arguments.getAsInt(context, 0)
         var range: Int = arguments.getAsInt(context, 1)
         if (min > range) {
-            var temp: Int = min
+            val temp: Int = min
             min = range
             range = temp - range
         } else {
             range -= min
         }
-        return min + context.entity().random().nextInt(range)
+        val rnd: RandomSource = context.entity().random() ?: RandomSource.create()
+        return min + rnd.nextInt(range)
     }
 }

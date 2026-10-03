@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.elfmcys.yesstevemodel.geckolib3.core.molang.context
 
 import com.elfmcys.yesstevemodel.audio.AudioPlayerManager
@@ -48,12 +50,11 @@ open class AnimationContext<TEntity>(
         random = context.random
         storage = context.storage
         audioPlayerManager = context.audioPlayerManager
-        if (entity is Player) {
-            PlayerCapability[entity]?.let { cap -> foreignStorage = cap.getPropertyGetter() }
-        } else if (entity is Projectile) {
-            ProjectileCapability[entity]?.let { cap -> foreignStorage = cap.getPropertyGetter() }
-        } else if (entity is Entity) {
-            VehicleCapability[entity]?.let { cap -> foreignStorage = cap.getPropertyGetter() }
+        when (entity) {
+            is Player -> PlayerCapability[entity]?.let { cap -> foreignStorage = cap.getPropertyGetter() }
+            is Projectile -> ProjectileCapability[entity]?.let { cap -> foreignStorage = cap.getPropertyGetter() }
+            is Entity ->
+                VehicleCapability[entity]?.let { cap -> foreignStorage = cap.getPropertyGetter() }
         }
     }
 
@@ -90,7 +91,11 @@ open class AnimationContext<TEntity>(
         return null
     }
 
-    override fun callFunctionWithArgs(context: ExecutionContext<*>, value: IValue, arguments: Function.ArgumentCollection): Any? {
+    override fun callFunctionWithArgs(
+        context: ExecutionContext<*>,
+        value: IValue,
+        arguments: Function.ArgumentCollection
+    ): Any? {
         val localStorage = storage?.localVariables ?: return null
         if (localStorage.pushScopeWithArgs(context, arguments)) {
             try {

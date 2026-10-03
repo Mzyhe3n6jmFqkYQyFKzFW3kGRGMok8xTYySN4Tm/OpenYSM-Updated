@@ -5,7 +5,7 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.funciton.ContextFunction
 import net.minecraft.world.level.block.state.BlockBehaviour
 
 abstract class AbstractBlockFunction : ContextFunction<BlockBehaviour>() {
-    open fun validateContext(context: IContext<*>): Boolean {
+    override fun validateContext(context: IContext<*>): Boolean {
         return context.entity() is BlockBehaviour
     }
 }

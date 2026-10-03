@@ -19,7 +19,6 @@ import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import it.unimi.dsi.fastutil.Pair
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
-import it.unimi.dsi.fastutil.ints.IntReferenceImmutablePair
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import it.unimi.dsi.fastutil.objects.ReferenceLists
@@ -47,7 +46,11 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     private var depth: Int = 1
     private val playbackFlags: PlaybackFlags = PlaybackFlags(true)
 
-    override fun process(event: AnimationEvent<T>, evaluator: ExpressionEvaluator<AnimationContext<*>>, isMoving: Boolean) {
+    override fun process(
+        event: AnimationEvent<T>,
+        evaluator: ExpressionEvaluator<AnimationContext<*>>,
+        isMoving: Boolean
+    ) {
         if (animationEntries == null) {
             return
         }
@@ -65,7 +68,8 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         val currEntry = currentEntry
         if (currEntry != null && currEntry.subName != null && depth != MAX_DEPTH) {
             if (transitioned) {
-                val subControllerName: String = if (depth > 1) "${parentName}.${currEntry.subName}" else currEntry.subName!!
+                val subControllerName: String =
+                    if (depth > 1) "${parentName}.${currEntry.subName}" else currEntry.subName
                 val childCtrl: AnimationController? = animatable.getAnimationEntries("${name}.${subControllerName}")
                 if (childCtrl != null) {
                     val existingChild = childController
@@ -124,7 +128,10 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
 
     open fun isBuiltinAnimation(): Boolean = currentEntry?.isBuiltinEntry == true
 
-    override fun init(list: MutableList<BoneTopLevelSnapshot>, object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>) {
+    override fun init(
+        list: MutableList<BoneTopLevelSnapshot>,
+        object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>
+    ) {
         val childCtrl: AnimationController? = animatable.getAnimationEntries(name)
         if (childCtrl != null) {
             initWithBones(list, childCtrl)
@@ -155,10 +162,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         val entries = animationEntries ?: return false
         val currEntry = currentEntry
         if (currEntry == null) {
-            val nextState: AnimationState? = entries.states.get(entries.stateId)
-            if (nextState == null) {
-                return false
-            }
+            val nextState = entries.states.get(entries.stateId) ?: return false
             visitedEntries.add(nextState.hashId)
             updateDisplayName(nextState.name)
             transitionToEntry(nextState, evaluator)
@@ -216,7 +220,8 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             }
             for (str in nextState.soundEffects) {
                 if (StringUtils.isNotBlank(str)) {
-                    playbackFlags.getAudioPlayerManager()?.playSound(evaluator.entity().geoInstance(), 0, str, false, null)
+                    playbackFlags.getAudioPlayerManager()
+                        ?.playSound(evaluator.entity().geoInstance(), 0, str, false, null)
                 }
             }
         }
@@ -227,7 +232,8 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         }
         activeBoneTransforms.clear()
         needsRebuild = true
-        val size: Int = if (nextState == null || nextState.isBuiltinEntry || nextState.subName != null) 0 else nextState.animations.size
+        val size: Int =
+            if (nextState == null || nextState.isBuiltinEntry || nextState.subName != null) 0 else nextState.animations.size
         for (size2 in animationSlots.size until size) {
             animationSlots.add(AnimationSlot(animatable, transitionLengthTicks))
         }
@@ -328,7 +334,8 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     }
 
     private class BoneBlendState(val boneTarget: BoneTopLevelSnapshot) : BoneTransformProvider {
-        private val blendSources: ReferenceArrayList<Pair<ConditionalEvaluator, BoneAnimationQueue>> = ReferenceArrayList(4)
+        private val blendSources: ReferenceArrayList<Pair<ConditionalEvaluator, BoneAnimationQueue>> =
+            ReferenceArrayList(4)
         private var isMarked: Boolean = false
         private val rotationOut: TransitionVector3f = TransitionVector3f(0f, 0f, 0f)
         private val positionOut: TransitionVector3f = TransitionVector3f(0f, 0f, 0f)
@@ -410,7 +417,10 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                             transitionVector3f.fma(blendWeight, lerpPoint)
                         } else {
                             if (lerpFactor <= -1.0E-5f || lerpFactor >= 1.0E-5f) {
-                                transitionVector3f.fma(boneQueue.getBlendWeight(), (animationPoint as TransitionPoint).evaluateRaw(evaluator))
+                                transitionVector3f.fma(
+                                    boneQueue.getBlendWeight(),
+                                    (animationPoint as TransitionPoint).evaluateRaw(evaluator)
+                                )
                             } else {
                                 offsetPoint?.let { transitionVector3f.set(it) }
                                 return transitionVector3f
@@ -421,7 +431,14 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             }
             if (hasData) {
                 if (isTransition && offsetPoint != null) {
-                    MathUtil.nlerpEulerAngles(lerpFactor, offsetPoint, transitionVector3f, initialRotation ?: Vector3f(), transitionVector3f, rotScratch)
+                    MathUtil.nlerpEulerAngles(
+                        lerpFactor,
+                        offsetPoint,
+                        transitionVector3f,
+                        initialRotation ?: Vector3f(),
+                        transitionVector3f,
+                        rotScratch
+                    )
                 }
                 return transitionVector3f
             }
@@ -471,7 +488,10 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                             result.fma(blendWeight, lerpPoint)
                         } else {
                             if (lerpFactor <= -1.0E-5f || lerpFactor >= 1.0E-5f) {
-                                result.fma(boneQueue.getBlendWeight(), (point as TransitionPoint).evaluateRaw(evaluator))
+                                result.fma(
+                                    boneQueue.getBlendWeight(),
+                                    (point as TransitionPoint).evaluateRaw(evaluator)
+                                )
                             } else {
                                 offsetPoint?.let { result.set(it) }
                                 return result
@@ -538,7 +558,11 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                             }
                         } else {
                             if (lerpFactor <= -1.0E-5f || lerpFactor >= 1.0E-5f) {
-                                MathUtil.lerpAnglesInPlace((point as TransitionPoint).evaluateRaw(evaluator), boneQueue.getBlendWeight(), tmp)
+                                MathUtil.lerpAnglesInPlace(
+                                    (point as TransitionPoint).evaluateRaw(evaluator),
+                                    boneQueue.getBlendWeight(),
+                                    tmp
+                                )
                                 result.mul(tmp)
                             } else {
                                 offsetPoint?.let { result.set(it) }

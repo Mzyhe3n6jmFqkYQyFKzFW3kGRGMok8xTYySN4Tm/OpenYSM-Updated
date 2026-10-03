@@ -25,27 +25,34 @@ import java.util.function.BiFunction
 import java.util.function.Consumer
 
 object VehicleAnimationController {
-    open class VehicleAnimationDataProvider : AnimationDataProvider<VehicleModelBundle> {
-        override fun getAnimationEntries(modelBundle: VehicleModelBundle, resourceBundle: ModelResourceBundle): Object2ReferenceMap<String, AnimationController> {
-            return modelBundle.getAnimationControllers()
+    object VehicleAnimationDataProvider : AnimationDataProvider<VehicleModelBundle> {
+        override fun getAnimationEntries(
+            modelBundle: VehicleModelBundle,
+            resourceBundle: ModelResourceBundle
+        ): Object2ReferenceMap<String, AnimationController> {
+            return modelBundle.animationControllers
         }
 
-        override fun getAnimations(modelBundle: VehicleModelBundle, resourceBundle: ModelResourceBundle): Object2ReferenceMap<String, Animation> {
-            return modelBundle.getAnimations()
+        override fun getAnimations(
+            modelBundle: VehicleModelBundle,
+            resourceBundle: ModelResourceBundle
+        ): Object2ReferenceMap<String, Animation> {
+            return modelBundle.animations
         }
 
-        override fun getConditionArmor(modelBundle: VehicleModelBundle, resourceBundle: ModelResourceBundle): ConditionArmor? {
+        override fun getConditionArmor(
+            modelBundle: VehicleModelBundle,
+            resourceBundle: ModelResourceBundle
+        ): ConditionArmor? {
             return null
-        }
-
-        companion object {
-            @JvmField val INSTANCE: VehicleAnimationDataProvider = VehicleAnimationDataProvider()
         }
     }
 
-    const val VEHICLE_PREFIX: String = "vehicle"
+    private const val VEHICLE_PREFIX: String = "vehicle"
     const val ORIGIN_CONTROLLER_KEY: String = "vehicle.origin"
-    @JvmField val REGISTRY: ProcessorPipeline<GeckoVehicleEntity, VehicleModelBundle> = ProcessorPipeline()
+
+    @JvmField
+    val REGISTRY: ProcessorPipeline<GeckoVehicleEntity, VehicleModelBundle> = ProcessorPipeline()
 
     @JvmStatic
     fun registerControllers() {
@@ -54,7 +61,7 @@ object VehicleAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.INSTANCE
+                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate
             )
         }
         registerNamedController("pre_main", null, true) { animationEntryKey, entity ->
@@ -69,25 +76,32 @@ object VehicleAnimationController {
         registerOriginController("origin") { animationEntryKey, entity ->
             VehicleRotationController(entity, animationEntryKey)
         }
-        registerNamedController("ride", RideStateAnimationPredicate.ANIMATION_NAMES, true) { animationEntryKey, entity ->
+        registerNamedController(
+            "ride",
+            RideStateAnimationPredicate.ANIMATION_NAMES,
+            true
+        ) { animationEntryKey, entity ->
             CompositeAnimationController(entity, animationEntryKey, 0.1f, RideStateAnimationPredicate())
         }
         registerNamedController("post_main", null, true) { animationEntryKey, entity ->
-            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate())
+            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate)
         }
         registerParallelController("parallel") { animationEntryKey, entity, linkedAnimationName ->
             CompositeAnimationController(
                 entity,
                 animationEntryKey,
                 0.0f,
-                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.INSTANCE,
+                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate,
                 true
             )
         }
     }
 
     @JvmStatic
-    fun buildControllers(modelBundle: VehicleModelBundle, resourceBundle: ModelResourceBundle): Consumer<GeckoVehicleEntity> {
+    fun buildControllers(
+        modelBundle: VehicleModelBundle,
+        resourceBundle: ModelResourceBundle
+    ): Consumer<GeckoVehicleEntity> {
         if (REGISTRY.isEmpty()) {
             registerControllers()
         }

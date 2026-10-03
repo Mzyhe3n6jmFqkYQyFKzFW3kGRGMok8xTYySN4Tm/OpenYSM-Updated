@@ -40,10 +40,10 @@ object GeckoLibCache {
     fun createMolangParser(): MolangParser {
         if (EXTRA_BINDING.isEmpty()) {
             runCatching {
-                EXTRA_BINDING["ysm"] = YSMBinding.INSTANCE.get()
-                EXTRA_BINDING["ctrl"] = CtrlBinding.INSTANCE.get()
-                EXTRA_BINDING["tlm"] = TLMBinding.INSTANCE.get()
-                EXTRA_BINDING["args"] = ArgsVariable.INSTANCE
+                EXTRA_BINDING["ysm"] = YSMBinding
+                EXTRA_BINDING["ctrl"] = CtrlBinding
+                EXTRA_BINDING["tlm"] = TLMBinding
+                EXTRA_BINDING["args"] = ArgsVariable
             }.onFailure { e ->
                 throw RuntimeException(e)
             }
@@ -57,8 +57,8 @@ object GeckoLibCache {
     fun getGlobalBindings(): MutableMap<String, Any> {
         if (bindings.isEmpty()) {
             bindings.putAll(EXTRA_BINDING)
-            bindings["math"] = MathBinding.INSTANCE
-            bindings["q"] = QueryBinding.INSTANCE
+            bindings["math"] = MathBinding
+            bindings["q"] = QueryBinding
         }
         return bindings
     }

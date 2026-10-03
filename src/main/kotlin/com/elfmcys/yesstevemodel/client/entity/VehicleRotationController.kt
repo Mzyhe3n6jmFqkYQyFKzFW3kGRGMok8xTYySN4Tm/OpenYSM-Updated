@@ -34,11 +34,18 @@ open class VehicleRotationController(
         return vehicleRotation
     }
 
-    override fun init(list: MutableList<BoneTopLevelSnapshot>, object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>) {
+    override fun init(
+        list: MutableList<BoneTopLevelSnapshot>,
+        object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>
+    ) {
         boneTarget = if (list.isEmpty()) null else list[0]
     }
 
-    override fun process(event: AnimationEvent<GeckoVehicleEntity>, evaluator: ExpressionEvaluator<AnimationContext<*>>, isFirstPerson: Boolean) {
+    override fun process(
+        event: AnimationEvent<GeckoVehicleEntity>,
+        evaluator: ExpressionEvaluator<AnimationContext<*>>,
+        isFirstPerson: Boolean
+    ) {
         ImmersiveAirCraftCompat.getAircraftRotation(event).or {
             SimplePlanesCompat.getSimplePlanesRotation(event)
         }.ifPresent { vector3f ->

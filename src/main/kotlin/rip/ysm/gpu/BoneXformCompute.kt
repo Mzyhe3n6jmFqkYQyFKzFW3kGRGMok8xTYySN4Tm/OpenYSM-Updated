@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package rip.ysm.gpu
 
 import com.elfmcys.yesstevemodel.Constants
@@ -19,7 +21,7 @@ object BoneXformCompute {
         if (program != 0) return true
         if (failed) return false
         RenderSystem.assertOnRenderThread()
-        return try {
+        return runCatching {
             val cs = ShaderUtil.compileShaderFromResource(GL43.GL_COMPUTE_SHADER, "/bone_xform.csh")
             val prog = ShaderUtil.linkProgram(cs)
             locColor = GL20.glGetUniformLocation(prog, "u_color")
@@ -27,9 +29,9 @@ object BoneXformCompute {
             locModelView = GL20.glGetUniformLocation(prog, "u_modelView")
             program = prog
             true
-        } catch (t: Throwable) {
-            ChatLogger.INSTANCE.logFormatted("Failed to compile shader program, please check the log")
-            Constants.LOGGER.error("Failed to compile shader program.", t)
+        }.getOrElse {
+            ChatLogger.logFormatted("Failed to compile shader program, please check the log")
+            Constants.LOGGER.error("Failed to compile shader program.", it)
             failed = true
             false
         }

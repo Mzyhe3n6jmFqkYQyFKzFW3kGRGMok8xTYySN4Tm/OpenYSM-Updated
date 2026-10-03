@@ -22,33 +22,38 @@ import java.util.function.BiFunction
 import java.util.function.Consumer
 
 object ProjectileAnimationController {
-    open class ProjectileAnimationDataProvider : AnimationDataProvider<ProjectileModelBundle> {
-        override fun getAnimationEntries(modelBundle: ProjectileModelBundle, resourceBundle: ModelResourceBundle): Object2ReferenceMap<String, AnimationController> {
-            return modelBundle.getAnimationControllers()
-        }
+    object ProjectileAnimationDataProvider : AnimationDataProvider<ProjectileModelBundle> {
+        override fun getAnimationEntries(
+            modelBundle: ProjectileModelBundle,
+            resourceBundle: ModelResourceBundle
+        ): Object2ReferenceMap<String, AnimationController> = modelBundle.animationControllers
 
-        override fun getAnimations(modelBundle: ProjectileModelBundle, resourceBundle: ModelResourceBundle): Object2ReferenceMap<String, Animation> {
-            return modelBundle.getAnimations()
-        }
+        override fun getAnimations(
+            modelBundle: ProjectileModelBundle,
+            resourceBundle: ModelResourceBundle
+        ): Object2ReferenceMap<String, Animation> = modelBundle.animations
 
-        override fun getConditionArmor(modelBundle: ProjectileModelBundle, resourceBundle: ModelResourceBundle): ConditionArmor? {
-            return null
-        }
-
-        companion object {
-            @JvmField val INSTANCE: ProjectileAnimationDataProvider = ProjectileAnimationDataProvider()
-        }
+        override fun getConditionArmor(
+            modelBundle: ProjectileModelBundle,
+            resourceBundle: ModelResourceBundle
+        ): ConditionArmor? = null
     }
 
-    const val PROJECTILE_PREFIX: String = "projectile"
-    @JvmField val REGISTRY: ProcessorPipeline<GeckoProjectileEntity, ProjectileModelBundle> = ProcessorPipeline()
+    private const val PROJECTILE_PREFIX: String = "projectile"
+
+    @JvmField
+    val REGISTRY: ProcessorPipeline<GeckoProjectileEntity, ProjectileModelBundle> = ProcessorPipeline()
 
     @JvmStatic
     fun registerControllers() {
         registerNamedController("pre_main", null, true) { animationEntryKey, entity ->
             CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate())
         }
-        registerNamedController("main", ProjectileAnimationPredicate.ENVIRONMENT_STATES, true) { animationEntryKey, entity ->
+        registerNamedController(
+            "main",
+            ProjectileAnimationPredicate.ENVIRONMENT_STATES,
+            true
+        ) { animationEntryKey, entity ->
             CompositeAnimationController(entity, animationEntryKey, 0.1f, ProjectileAnimationPredicate())
         }
         registerNamedController("post_main", null, true) { animationEntryKey, entity ->
@@ -66,7 +71,10 @@ object ProjectileAnimationController {
     }
 
     @JvmStatic
-    fun buildControllers(modelBundle: ProjectileModelBundle, resourceBundle: ModelResourceBundle): Consumer<GeckoProjectileEntity> {
+    fun buildControllers(
+        modelBundle: ProjectileModelBundle,
+        resourceBundle: ModelResourceBundle
+    ): Consumer<GeckoProjectileEntity> {
         if (REGISTRY.isEmpty()) {
             registerControllers()
         }
@@ -97,7 +105,7 @@ object ProjectileAnimationController {
                 slotName,
                 requiredAnimations,
                 checkAnimationEntries,
-                ProjectileAnimationDataProvider.INSTANCE,
+                ProjectileAnimationDataProvider,
                 controllerFactory
             )
         )
@@ -113,7 +121,7 @@ object ProjectileAnimationController {
                 PROJECTILE_PREFIX,
                 slotName,
                 false,
-                ProjectileAnimationDataProvider.INSTANCE,
+                ProjectileAnimationDataProvider,
                 controllerFactory
             )
         )

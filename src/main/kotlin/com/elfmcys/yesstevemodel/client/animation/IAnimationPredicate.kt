@@ -16,7 +16,7 @@ fun interface IAnimationPredicate<T : AnimatableEntity<*>> {
             animationName: String,
             loopType: ILoopType
         ): PlayState {
-            event.controller.setAnimation(animationName, loopType)
+            event.controller?.setAnimation(animationName, loopType)
             return PlayState.CONTINUE
         }
 
@@ -25,7 +25,7 @@ fun interface IAnimationPredicate<T : AnimatableEntity<*>> {
             event: AnimationEvent<P>,
             animationName: String
         ): PlayState {
-            event.controller.setAnimation(animationName)
+            event.controller?.setAnimation(animationName)
             return PlayState.CONTINUE
         }
 
@@ -36,11 +36,11 @@ fun interface IAnimationPredicate<T : AnimatableEntity<*>> {
             loopType: ILoopType,
             version: Int
         ): PlayState {
-            if (AnimationFormatValidator.validate(event, animationName, version)) {
-                event.controller.setAnimation(animationName)
-            } else {
-                event.controller.setAnimation(animationName, loopType)
-            }
+            if (AnimationFormatValidator.validate(event, animationName, version))
+                event.controller?.setAnimation(animationName) else event.controller?.setAnimation(
+                animationName,
+                loopType
+            )
             return PlayState.CONTINUE
         }
 
@@ -48,8 +48,6 @@ fun interface IAnimationPredicate<T : AnimatableEntity<*>> {
         fun <T : AnimatableEntity<*>> playLoopAnimation(
             event: AnimationEvent<T>,
             str: String
-        ): PlayState {
-            return playAnimationWithLoop(event, str, ILoopType.EDefaultLoopTypes.LOOP)
-        }
+        ): PlayState = playAnimationWithLoop(event, str, ILoopType.EDefaultLoopTypes.LOOP)
     }
 }

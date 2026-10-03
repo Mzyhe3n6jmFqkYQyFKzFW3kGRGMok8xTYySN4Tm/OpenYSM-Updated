@@ -50,22 +50,51 @@ object NativeModelRenderer {
         OculusCompat.updatePBRState()
         val isCompatMode = OptiFineDetector.isOptifinePresent() || GeneralConfig.USE_COMPATIBILITY_RENDERER.get()
         projectionModelViewMatrix.set(
-            Minecraft.getInstance().gameRenderer.getProjectionMatrix(Minecraft.getInstance().options.fov().get().toFloat())
+            Minecraft.getInstance().gameRenderer.getProjectionMatrix(
+                Minecraft.getInstance().options.fov().get().toFloat()
+            )
         ).mul(RenderSystem.getModelViewMatrix())
         val isPreview = ModelPreviewRenderer.isPreview() || ModelPreviewRenderer.isExtraPlayer()
 
         if (textureLocation != null && NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && GeneralConfig.USE_GPU_RENDERER.get()) {
             if (!GpuCapability.isAvailable()) {
-                ChatLogger.INSTANCE.logFormatted("Disabled GPU renderer for: " + GpuCapability.getReason())
+                ChatLogger.logFormatted("Disabled GPU renderer for: " + GpuCapability.getReason())
                 GeneralConfig.USE_GPU_RENDERER.set(false)
                 return
             }
             if (OculusCompat.isShaderPackInUse() && !isPreview) {
-                if (IrisRenderPath.tryRender(model, pose, boneParams, renderPartMask, packedLight, packedOverlay, red, green, blue, alpha, textureLocation)) {
+                if (IrisRenderPath.tryRender(
+                        model,
+                        pose,
+                        boneParams,
+                        renderPartMask,
+                        packedLight,
+                        packedOverlay,
+                        red,
+                        green,
+                        blue,
+                        alpha,
+                        textureLocation
+                    )
+                ) {
                     return
                 }
             } else {
-                if (GpuRenderPath.tryRender(model, pose, boneParams, stateBuffer, renderPartMask, packedLight, packedOverlay, red, green, blue, alpha, textureLocation)) {
+                if (GpuRenderPath.tryRender(
+                        model,
+                        pose,
+                        boneParams,
+                        stateBuffer,
+                        renderPartMask,
+                        packedLight,
+                        packedOverlay,
+                        red,
+                        green,
+                        blue,
+                        alpha,
+                        textureLocation
+                    )
+                ) {
                     return
                 }
             }
@@ -138,7 +167,9 @@ object NativeModelRenderer {
 
         val rootPoseMat = pose.pose()
         val rootNormalMC = pose.normal()
-        val projMat = Minecraft.getInstance().gameRenderer.getProjectionMatrix(Minecraft.getInstance().options.fov().get().toFloat())
+        val projMat = Minecraft.getInstance().gameRenderer.getProjectionMatrix(
+            Minecraft.getInstance().options.fov().get().toFloat()
+        )
 
         val identityMat = Matrix4f()
         val globalBoneMat = Matrix4f()
@@ -174,7 +205,8 @@ object NativeModelRenderer {
                 for (quad in cube.quads) {
                     tempNorm.set(quad.normal).mul(globalNormalMat).normalize()
                     for (v in 0 until 4) {
-                        tempPos.set(quad.positions[v].x(), quad.positions[v].y(), quad.positions[v].z(), 1.0f).mul(globalBoneMat)
+                        tempPos.set(quad.positions[v].x(), quad.positions[v].y(), quad.positions[v].z(), 1.0f)
+                            .mul(globalBoneMat)
                         vertexConsumer.addVertex(tempPos.x(), tempPos.y(), tempPos.z())
                             .setColor(r, g, b, a)
                             .setUv(quad.uvs[v].x(), quad.uvs[v].y())
@@ -204,7 +236,8 @@ object NativeModelRenderer {
         var parentMatrix = rootPose
         var isVisible = true
         if (bone.parentIdx != -1) {
-            parentMatrix = calculateBoneMatrix(bone.parentIdx, bones, boneParams, cache, visibleCache, rootPose, stateBuffer)
+            parentMatrix =
+                calculateBoneMatrix(bone.parentIdx, bones, boneParams, cache, visibleCache, rootPose, stateBuffer)
             if (!visibleCache[bone.parentIdx]) {
                 isVisible = false
             }
@@ -229,7 +262,11 @@ object NativeModelRenderer {
         if (animSx == 0.0f && animSy == 0.0f && animSz == 0.0f) {
             isVisible = false
         }
-        localMat.translate((bone.pivotX - animTx) * 0.0625f, (bone.pivotY + animTy) * 0.0625f, (bone.pivotZ + animTz) * 0.0625f)
+        localMat.translate(
+            (bone.pivotX - animTx) * 0.0625f,
+            (bone.pivotY + animTy) * 0.0625f,
+            (bone.pivotZ + animTz) * 0.0625f
+        )
         localMat.rotateZ(animRz)
         localMat.rotateY(animRy)
         localMat.rotateX(animRx)

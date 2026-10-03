@@ -18,18 +18,18 @@ import net.minecraft.world.item.Items
 class OffHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
     override fun predicate(event: AnimationEvent<LivingAnimatable<*>>, evaluator: ExpressionEvaluator<*>?): PlayState {
         val animatable = event.getAnimatable()
-        val entity: LivingEntity = animatable.entity as? LivingEntity ?: return PlayState.STOP
-        if (animatable is IPreviewAnimatable) {
-            return PlayState.STOP
-        }
-        if (!checkSwingAndUse(entity, InteractionHand.OFF_HAND)) {
-            return PlayState.PAUSE
-        }
+        val entity: LivingEntity = animatable.entity
+        if (animatable is IPreviewAnimatable) return PlayState.STOP
+        if (!checkSwingAndUse(entity, InteractionHand.OFF_HAND)) return PlayState.PAUSE
         val i: Int = animatable.getModelAssembly()?.modelData?.formatVersion ?: 0
         val itemInHand: ItemStack = entity.getItemInHand(InteractionHand.OFF_HAND)
-        if (itemInHand.`is`(Items.CROSSBOW) && CrossbowItem.isCharged(itemInHand)) {
-            return IAnimationPredicate.playAnimationWithValid(event, "hold_offhand:charged_crossbow", ILoopType.EDefaultLoopTypes.LOOP, i)
-        }
+        if (itemInHand.`is`(Items.CROSSBOW) && CrossbowItem.isCharged(itemInHand))
+            return IAnimationPredicate.playAnimationWithValid(
+                event,
+                "hold_offhand:charged_crossbow",
+                ILoopType.EDefaultLoopTypes.LOOP,
+                i
+            )
         val frameState: LivingEntityFrameState<*> = animatable.getPositionTracker()
         if (!isSameItem(itemInHand, frameState, InteractionHand.OFF_HAND)) {
             frameState.setHandItemsForAnimation(itemInHand, InteractionHand.OFF_HAND)
@@ -45,16 +45,10 @@ class OffHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
 
     private fun isSameItem(stack: ItemStack, frameState: LivingEntityFrameState<*>, hand: InteractionHand): Boolean {
         val preItem: ItemStack = frameState.getHandItemsForAnimation(hand)
-        if (preItem.isDamaged) {
-            return ItemStack.isSameItem(stack, preItem)
-        }
+        if (preItem.isDamaged) return ItemStack.isSameItem(stack, preItem)
         return ItemStack.matches(stack, preItem)
     }
 
-    private fun checkSwingAndUse(entity: LivingEntity, hand: InteractionHand): Boolean {
-        if (entity.swinging && entity.swingingArm == hand) {
-            return false
-        }
-        return !entity.isUsingItem || entity.usedItemHand != hand
-    }
+    private fun checkSwingAndUse(entity: LivingEntity, hand: InteractionHand): Boolean =
+        !(entity.swinging && entity.swingingArm == hand) && (!entity.isUsingItem || entity.usedItemHand != hand)
 }

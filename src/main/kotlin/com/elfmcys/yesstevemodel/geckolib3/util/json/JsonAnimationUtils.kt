@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.util.json
 
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.Animation
@@ -18,15 +20,13 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import net.minecraft.server.ChainedJsonException
-import java.util.AbstractMap
+import java.util.*
 import kotlin.math.max
 
 object JsonAnimationUtils {
     @JvmStatic
     fun getAnimations(json: JsonObject): Set<Map.Entry<String, JsonElement>> {
-        if (json.has("animations")) {
-            return json.getAsJsonObject("animations").entrySet()
-        }
+        if (json.has("animations")) return json.getAsJsonObject("animations").entrySet()
         return ImmutableSet.of()
     }
 
@@ -75,7 +75,8 @@ object JsonAnimationUtils {
         val animationJsonObject = element.value.asJsonObject
         val animationName = element.key
         val animationLength = animationJsonObject.get("animation_length")
-        var animationLengthTicks = if (animationLength == null) -1.0f else AnimationUtils.convertSecondsToTicks(animationLength.asFloat)
+        var animationLengthTicks =
+            if (animationLength == null) -1.0f else AnimationUtils.convertSecondsToTicks(animationLength.asFloat)
 
         val loop = ILoopType.fromJson(animationJsonObject.get("loop"))
 
@@ -146,19 +147,16 @@ object JsonAnimationUtils {
             animationLengthTicks = calculateLength(boneAnimations)
         }
 
-        @Suppress("UNCHECKED_CAST")
         return Animation(
             animationName,
             animationLengthTicks.toDouble(),
             loop,
-            null,
-            null,
-            blendWeight,
-            overridePrevAnim,
-            boneAnimations.toTypedArray(),
-            soundKeyFrames.toTypedArray(),
-            emptyArray<ParticleEventKeyFrame>(),
-            customInstructionKeyframes.toTypedArray()
+            blendWeight = blendWeight,
+            override = overridePrevAnim,
+            boneAnimations = boneAnimations.toTypedArray(),
+            soundKeyFrames = soundKeyFrames.toTypedArray(),
+            particleKeyFrames = emptyArray<ParticleEventKeyFrame>(),
+            customInstructionKeyframes = customInstructionKeyframes.toTypedArray()
         )
     }
 
@@ -183,9 +181,7 @@ object JsonAnimationUtils {
     @JvmStatic
     fun maxAll(vararg values: Float): Float {
         var max = 0.0f
-        for (value in values) {
-            max = max(value, max)
-        }
+        for (value in values) max = max(value, max)
         return max
     }
 }
