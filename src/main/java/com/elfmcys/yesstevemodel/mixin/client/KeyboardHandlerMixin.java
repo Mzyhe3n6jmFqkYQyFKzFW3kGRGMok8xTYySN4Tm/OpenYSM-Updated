@@ -11,12 +11,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import rip.ysm.api.client.event.ClientRawInputEvent;
-import rip.ysm.api.event.EventResult;
 
 @Mixin(KeyboardHandler.class)
 public class KeyboardHandlerMixin {
-    @Shadow @Final private Minecraft minecraft;
-    @Unique private boolean ysm$hadScreen;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
+    @Unique
+    private boolean ysm$hadScreen;
 
     @Inject(method = "keyPress", at = @At("HEAD"))
     private void ysm$onKeyPressHead(long window, int action, KeyEvent event, CallbackInfo ci) {
@@ -26,8 +28,8 @@ public class KeyboardHandlerMixin {
     @Inject(method = "keyPress", at = @At("RETURN"), cancellable = true)
     private void ysm$onKeyPress(long window, int action, KeyEvent event, CallbackInfo ci) {
         if (window == this.minecraft.getWindow().handle() && !this.ysm$hadScreen) {
-            EventResult result = ClientRawInputEvent.KEY_PRESSED.invoker().onKey(this.minecraft, action, event);
-            if (result != null && result.isFalse()) {
+            var result = ClientRawInputEvent.KEY_PRESSED.invoker().onKey(this.minecraft, action, event);
+            if (result.isFalse()) {
                 ci.cancel();
             }
         }

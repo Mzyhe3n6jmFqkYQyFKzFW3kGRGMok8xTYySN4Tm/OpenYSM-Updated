@@ -13,7 +13,7 @@ import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin({LivingEntityRenderer.class})
+@Mixin(LivingEntityRenderer.class)
 public abstract class LivingRendererMixin extends EntityRenderer<LivingEntity, LivingEntityRenderState> implements LivingEntityRendererAccessor {
     public LivingRendererMixin(EntityRendererProvider.Context pContext) {
         super(pContext);

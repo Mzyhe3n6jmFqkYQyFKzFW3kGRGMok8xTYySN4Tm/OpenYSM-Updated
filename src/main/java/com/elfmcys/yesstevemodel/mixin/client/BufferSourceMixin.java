@@ -9,12 +9,10 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-import java.util.Iterator;
 import java.util.SequencedMap;
 
 @Mixin(MultiBufferSource.BufferSource.class)
 public class BufferSourceMixin implements BufferSourceAccessor {
-
     @Shadow
     @Final
     protected SequencedMap<RenderType, BufferBuilder> fixedBuffers;

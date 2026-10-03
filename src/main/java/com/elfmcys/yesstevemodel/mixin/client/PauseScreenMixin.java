@@ -10,18 +10,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Iterator;
-import java.util.List;
-
-@Mixin({PauseScreen.class})
+@Mixin(PauseScreen.class)
 public abstract class PauseScreenMixin extends Screen {
     public PauseScreenMixin(Component component) {
         super(component);
     }
 
-    @Inject(method = {"init()V"}, at = {@At("TAIL")})
+    @Inject(method = "init()V", at = @At("TAIL"))
     private void init(CallbackInfo callbackInfo) {
-        List<Button> buttons = PauseScreenButtonBuilder.createButtons((PauseScreen) (Object) this);
+        var buttons = PauseScreenButtonBuilder.createButtons((PauseScreen) (Object) this);
         if (buttons != null && !buttons.isEmpty()) {
             for (Button button : buttons) {
                 addRenderableWidget(button);
