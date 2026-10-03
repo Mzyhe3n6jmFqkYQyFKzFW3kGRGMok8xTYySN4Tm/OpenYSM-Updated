@@ -30,9 +30,9 @@ open class PlayerModelBundle(
     val defaultTexture: AbstractTexture?,
     modelResourceBundle: ModelResourceBundle
 ) {
-    val playerControllerInstaller: Consumer<CustomPlayerEntity> =
+    val playerControllerInstaller: (CustomPlayerEntity) -> Unit =
         PlayerAnimationController.buildControllers(this, modelResourceBundle)
-    val armControllerInstaller: Consumer<PlayerGeoEntity> =
+    val armControllerInstaller: (PlayerGeoEntity) -> Unit =
         FirstPersonArmAnimationController.buildControllers(this, modelResourceBundle)
     val maidControllerInstaller: Consumer<rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable>? =
         TouhouLittleMaidCompat.buildControllers(this, modelResourceBundle)
