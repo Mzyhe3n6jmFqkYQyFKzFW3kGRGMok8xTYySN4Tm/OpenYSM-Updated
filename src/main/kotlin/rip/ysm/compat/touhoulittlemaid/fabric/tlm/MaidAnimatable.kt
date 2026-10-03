@@ -54,7 +54,7 @@ open class MaidAnimatable(entityMaid: EntityMaid, isActive: Boolean) :
     override fun updateRoamingVars(roamingVars: Object2FloatOpenHashMap<String>) {
     }
 
-    fun getPropertyContainer(): Struct? = null
+    private fun getPropertyContainer(): Struct? = null
 
     override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
         super.setupAnim(seekTime, isFirstPerson)

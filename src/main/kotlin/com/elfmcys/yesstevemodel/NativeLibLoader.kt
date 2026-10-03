@@ -11,7 +11,6 @@ import org.apache.commons.lang3.SystemUtils
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
-import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -171,7 +170,7 @@ object NativeLibLoader {
 
     @Throws(IOException::class)
     private fun readResource(path: String): ByteArray? {
-        val url: URL? = NativeLibLoader::class.java.getResource(path) ?: YesSteveModel::class.java.getResource(path)
+        val url = NativeLibLoader::class.java.getResource(path) ?: YesSteveModel::class.java.getResource(path)
         if (url == null) return null
         return runCatching {
             url.openStream().use { `is`: InputStream ->

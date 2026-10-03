@@ -26,23 +26,23 @@ import java.util.function.BiFunction
 object PlayerAnimationController {
     object PlayerAnimationDataProvider : AnimationDataProvider<PlayerModelBundle> {
         override fun getAnimationEntries(
-            modelBundle: PlayerModelBundle,
+            t: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
         ): Object2ReferenceMap<String, AnimationController> {
-            return modelBundle.animationEntries
+            return t.animationEntries
         }
 
         override fun getAnimations(
-            modelBundle: PlayerModelBundle,
+            t: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
         ): Object2ReferenceMap<String, Animation> {
-            return modelBundle.mainAnimations
+            return t.mainAnimations
         }
 
         override fun getConditionArmor(
-            modelBundle: PlayerModelBundle,
+            t: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
-        ): ConditionArmor = modelBundle.conditionManager.armor
+        ): ConditionArmor = t.conditionManager.armor
     }
 
     @JvmField

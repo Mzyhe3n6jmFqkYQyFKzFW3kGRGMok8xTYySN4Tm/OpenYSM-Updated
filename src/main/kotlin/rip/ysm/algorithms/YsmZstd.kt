@@ -5,7 +5,6 @@ import io.airlift.compress.zstd.ZstdDecompressor
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.util.*
 
 object YsmZstd {
     @JvmStatic
@@ -35,7 +34,7 @@ object YsmZstd {
         val compressor = ZstdCompressor()
         val buffer = ByteArray(compressor.maxCompressedLength(length))
         val compressedLength = compressor.compress(rawData, offset, length, buffer, 0, buffer.size)
-        val zstdData = Arrays.copyOf(buffer, compressedLength)
+        val zstdData = buffer.copyOf(compressedLength)
         return obfuscate(zstdData)
     }
 
@@ -103,7 +102,7 @@ object YsmZstd {
 
         val buffer = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN)
         val magic = buffer.getInt(0)
-        if (magic != (0xFD2FB528).toInt().toInt()) {
+        if (magic != (0xFD2FB528).toInt()) {
             throw IllegalArgumentException("Not a standard ZSTD frame.")
         }
 
@@ -158,16 +157,20 @@ object YsmZstd {
 
         var dictIdSize = 0
         val dictIdBits = fhd.toInt() and 3
-        if (dictIdBits == 1) dictIdSize = 1
-        else if (dictIdBits == 2) dictIdSize = 2
-        else if (dictIdBits == 3) dictIdSize = 4
+        when (dictIdBits) {
+            1 -> dictIdSize = 1
+            2 -> dictIdSize = 2
+            3 -> dictIdSize = 4
+        }
 
         var fcsSize = 0
         val fcsBits = (fhd.toInt() shr 6) and 3
-        if (fcsBits == 0) fcsSize = if (singleSegment) 1 else 0
-        else if (fcsBits == 1) fcsSize = 2
-        else if (fcsBits == 2) fcsSize = 4
-        else if (fcsBits == 3) fcsSize = 8
+        when (fcsBits) {
+            0 -> fcsSize = if (singleSegment) 1 else 0
+            1 -> fcsSize = 2
+            2 -> fcsSize = 4
+            3 -> fcsSize = 8
+        }
 
         val windowDescSize = if (singleSegment) 0 else 1
 

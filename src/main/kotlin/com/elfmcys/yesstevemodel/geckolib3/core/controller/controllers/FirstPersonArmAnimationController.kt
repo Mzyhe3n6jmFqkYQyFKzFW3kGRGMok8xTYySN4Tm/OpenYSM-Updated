@@ -23,19 +23,19 @@ import java.util.function.BiFunction
 object FirstPersonArmAnimationController {
     object DefaultBoneExpressionProvider : AnimationDataProvider<PlayerModelBundle> {
         override fun getAnimationEntries(
-            modelBundle: PlayerModelBundle,
+            t: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
-        ): Object2ReferenceMap<String, AnimationController> = modelBundle.animationEntries
+        ): Object2ReferenceMap<String, AnimationController> = t.animationEntries
 
         override fun getAnimations(
-            modelBundle: PlayerModelBundle,
+            t: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
-        ): Object2ReferenceMap<String, Animation> = modelBundle.armAnimations
+        ): Object2ReferenceMap<String, Animation> = t.armAnimations
 
         override fun getConditionArmor(
-            modelBundle: PlayerModelBundle,
+            t: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
-        ): ConditionArmor = modelBundle.modelProcessor.conditionArmor
+        ): ConditionArmor = t.modelProcessor.conditionArmor
     }
 
     private const val FP_ARM_PREFIX: String = "fp.arm"

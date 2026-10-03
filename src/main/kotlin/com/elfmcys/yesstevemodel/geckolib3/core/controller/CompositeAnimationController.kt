@@ -23,13 +23,6 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
     private var initialized: Boolean = false
     private var activeController: IAnimationController<T> = controller
 
-    constructor(animatable: T, name: String, transitionLengthTicks: Float, predicate: IAnimationPredicate<*>) : this(
-        animatable,
-        name,
-        transitionLengthTicks,
-        predicate
-    )
-
     override fun getName(): String = name
 
     override fun getCurrentAnimation(): String {

@@ -105,7 +105,7 @@ open class ModernModelInfoScreen(
             out.add(intArrayOf(row.x, top, row.width, bot - top))
         }
         val btn = saveBtn
-        if (btn != null && btn.visible) {
+        if (btn.visible) {
             out.add(intArrayOf(btn.x, btn.y, btn.width, btn.height))
         }
     }
