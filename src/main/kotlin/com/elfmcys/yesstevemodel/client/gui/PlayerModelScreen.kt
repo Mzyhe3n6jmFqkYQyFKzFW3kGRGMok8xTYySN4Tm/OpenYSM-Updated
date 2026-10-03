@@ -7,17 +7,12 @@ import com.elfmcys.yesstevemodel.capability.PlayerCapability
 import com.elfmcys.yesstevemodel.capability.StarModelsCapability
 import com.elfmcys.yesstevemodel.client.ClientModelManager
 import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity
-import com.elfmcys.yesstevemodel.client.gui.button.FlatColorButton
-import com.elfmcys.yesstevemodel.client.gui.button.IconButton
-import com.elfmcys.yesstevemodel.client.gui.button.ModIconButton
-import com.elfmcys.yesstevemodel.client.gui.button.ModelButton
-import com.elfmcys.yesstevemodel.client.gui.button.PackIconButton
+import com.elfmcys.yesstevemodel.client.gui.button.*
 import com.elfmcys.yesstevemodel.client.input.PlayerModelToggleKey
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
 import com.elfmcys.yesstevemodel.config.GeneralConfig
 import com.elfmcys.yesstevemodel.config.ServerConfig
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
-import com.elfmcys.yesstevemodel.mixin.client.ScreenAccessor
 import com.elfmcys.yesstevemodel.network.NetworkHandler
 import com.elfmcys.yesstevemodel.resource.models.Metadata
 import com.elfmcys.yesstevemodel.resource.models.ModelPackData
@@ -28,7 +23,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Checkbox
 import net.minecraft.client.gui.components.EditBox
@@ -37,20 +31,17 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
-import net.minecraft.client.player.LocalPlayer
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.FormattedText
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.sounds.SoundEvents
-import net.minecraft.util.FormattedCharSequence
 import org.apache.commons.lang3.StringUtils
 import rip.ysm.api.PlatformAPI
 import rip.ysm.gpu.GpuCapability
 import rip.ysm.gui.ModernModelInfoScreen
 import rip.ysm.gui.ModernPlayerTextureScreen
-import java.util.Locale
-import java.util.Objects
+import java.util.*
 import kotlin.math.roundToInt
 
 open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI")), IGuiWidget {
@@ -75,7 +66,13 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         modelPackMap = Object2ReferenceOpenHashMap(ClientModelManager.getModelPackMap())
     }
 
-    open fun createModelButton(x: Int, y: Int, isAuthLocked: Boolean, previewEntity: PlayerPreviewEntity, modelAssembly: ModelAssembly): ModelButton {
+    open fun createModelButton(
+        x: Int,
+        y: Int,
+        isAuthLocked: Boolean,
+        previewEntity: PlayerPreviewEntity,
+        modelAssembly: ModelAssembly
+    ): ModelButton {
         return ModelButton(x, y, isAuthLocked, previewEntity, modelAssembly)
     }
 
@@ -126,13 +123,14 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
     private fun refreshModelList() {
         filteredModels = HashMap()
         filteredPacks = HashMap()
-        val localPlayer = minecraft?.player ?: return
+        val localPlayer = minecraft.player ?: return
 
         when (category) {
             Category.ALL -> {
                 filteredModels = buildFilteredModelMap()
                 filteredPacks = buildFilteredPackMap()
             }
+
             Category.AUTH -> {
                 val authCap = AuthModelsCapability[localPlayer]
                 if (authCap != null) {
@@ -143,6 +141,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                     }
                 }
             }
+
             Category.STAR -> {
                 val starCap = StarModelsCapability[localPlayer]
                 if (starCap != null) {
@@ -200,11 +199,14 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             return false
         }
         if (packData.translations != null) {
-            if (ModelMetadataPresenter.getLocalizedString(packData, "name", packData.name).lowercase(Locale.ENGLISH).contains(query)) {
+            if (ModelMetadataPresenter.getLocalizedString(packData, "name", packData.name).lowercase(Locale.ENGLISH)
+                    .contains(query)
+            ) {
                 return false
             }
             val desc = packData.description
-            return desc == null || !ModelMetadataPresenter.getLocalizedString(packData, "description", desc).lowercase(Locale.ENGLISH).contains(query)
+            return desc == null || !ModelMetadataPresenter.getLocalizedString(packData, "description", desc)
+                .lowercase(Locale.ENGLISH).contains(query)
         }
         return true
     }
@@ -222,11 +224,10 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             return false
         }
         val metadata = modelAssembly.modelData.metadata ?: return true
-        if (ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "metadata.name", metadata.name).lowercase(Locale.ENGLISH).contains(search) ||
-            ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "metadata.tips", metadata.tips).lowercase(Locale.ENGLISH).contains(search)) {
-            return false
-        }
-        return matchesAuthorSearch(modelAssembly, search, metadata)
+        return !(ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "metadata.name", metadata.name)
+            .lowercase(Locale.ENGLISH).contains(search) ||
+                ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "metadata.tips", metadata.tips)
+                    .lowercase(Locale.ENGLISH).contains(search)) && matchesAuthorSearch(modelAssembly, search, metadata)
     }
 
     fun getParentPath(str: String?): String {
@@ -239,7 +240,12 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
 
     private fun matchesAuthorSearch(modelAssembly: ModelAssembly, query: String, metadata: Metadata): Boolean {
         for ((index, author) in metadata.authors.withIndex()) {
-            if (ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "metadata.authors.$index.name", author.name).lowercase(Locale.ENGLISH).contains(query)) {
+            if (ModelMetadataPresenter.getLocalizedModelString(
+                    modelAssembly,
+                    "metadata.authors.$index.name",
+                    author.name
+                ).lowercase(Locale.ENGLISH).contains(query)
+            ) {
                 return false
             }
         }
@@ -267,21 +273,21 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
 
         addRenderableWidget(
             IconButton(guiLeft + 5, guiTop + 5, 20, 20, 80, 16) {
-                val player = minecraft?.player ?: return@IconButton
+                val player = minecraft.player ?: return@IconButton
                 val cap = PlayerCapability[player] ?: return@IconButton
                 val modelAssembly = cap.getModelAssembly() ?: return@IconButton
                 if (modelAssembly.modelData.metadata != null) {
-                    minecraft?.setScreen(createModelInfoScreen(this, modelAssembly))
+                    minecraft.setScreen(createModelInfoScreen(this, modelAssembly))
                 }
             }.apply { setTooltipText("gui.yes_steve_model.model.info") }
         )
 
         addRenderableWidget(
             IconButton(guiLeft + 28, guiTop + 5, 79, 20, 32, 16) {
-                val player = minecraft?.player ?: return@IconButton
+                val player = minecraft.player ?: return@IconButton
                 val cap = PlayerCapability[player] ?: return@IconButton
                 val modelAssembly = cap.getModelAssembly() ?: return@IconButton
-                minecraft?.setScreen(createTextureScreen(this, cap.getModelId(), modelAssembly))
+                minecraft.setScreen(createTextureScreen(this, cap.getModelId(), modelAssembly))
             }.apply { setTooltipText("gui.yes_steve_model.model.texture") }
         )
 
@@ -338,13 +344,13 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
 
         addRenderableWidget(
             IconButton(guiLeft + 397, guiTop + 5, 18, 18, 16, 16) {
-                minecraft?.setScreen(ExtraPlayerConfigScreen(this))
+                minecraft.setScreen(ExtraPlayerConfigScreen(this))
             }.apply { setTooltipText("gui.yes_steve_model.config") }
         )
 
         val canUpload = ClientModelManager.isAllowUpload() && ClientModelManager.isOysmServer()
         val uploadButton = IconButton(guiLeft + 377, guiTop + 5, 18, 18, 0, 16) {
-            minecraft?.setScreen(ModelUploadScreen(this))
+            minecraft.setScreen(ModelUploadScreen(this))
         }
         uploadButton.active = canUpload
         uploadButton.setTooltipLines(mutableListOf(Component.literal(if (canUpload) "Upload model to server" else "Server has uploads disabled, or this is not an OpenYSM server")))
@@ -352,12 +358,18 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
 
         addRenderableWidget(
             IconButton(guiLeft + 357, guiTop + 5, 18, 18, 80, 0) {
-                minecraft?.setScreen(OpenModelFolderScreen(this))
+                minecraft.setScreen(OpenModelFolderScreen(this))
             }.apply { setTooltipText("gui.yes_steve_model.open_model_folder.open") }
         )
 
         addRenderableWidget(
-            FlatColorButton(guiLeft + 198, guiTop + 215, 52, 14, Component.translatable("gui.yes_steve_model.pre_page")) {
+            FlatColorButton(
+                guiLeft + 198,
+                guiTop + 215,
+                52,
+                14,
+                Component.translatable("gui.yes_steve_model.pre_page")
+            ) {
                 val currentPage = getCurrentPage()
                 if (currentPage > 0) {
                     setCurrentPage(currentPage - 1)
@@ -367,7 +379,13 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         )
 
         addRenderableWidget(
-            FlatColorButton(guiLeft + 308, guiTop + 215, 52, 14, Component.translatable("gui.yes_steve_model.next_page")) {
+            FlatColorButton(
+                guiLeft + 308,
+                guiTop + 215,
+                52,
+                14,
+                Component.translatable("gui.yes_steve_model.next_page")
+            ) {
                 val currentPage = getCurrentPage()
                 if (currentPage < maxPage) {
                     setCurrentPage(currentPage + 1)
@@ -376,7 +394,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             }
         )
 
-        val player = minecraft?.player ?: return
+        val player = minecraft.player ?: return
         val capability = AuthModelsCapability[player]
         for (i in 0 until 10) {
             val slotIndex = i + (getCurrentPage() * 10)
@@ -404,9 +422,13 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                 previewEntity.resetModel()
                 val modelAssembly = filteredModels[modelId]
                 if (modelAssembly != null) {
-                    val isAuthLocked = modelAssembly.textureRegistry.isAuthModel && (capability == null || !capability.containsModel(modelId))
+                    val isAuthLocked =
+                        modelAssembly.textureRegistry.isAuthModel && (capability == null || !capability.containsModel(
+                            modelId
+                        ))
                     previewEntity.initModelWithTexture(modelId, modelAssembly.animationBundle.defaultTextureName)
-                    previewEntity.getAnimationStateMachine().setCurrentAnimation(modelAssembly.modelData.modelProperties.previewAnimation)
+                    previewEntity.getAnimationStateMachine()
+                        .setCurrentAnimation(modelAssembly.modelData.modelProperties.previewAnimation)
                     addRenderableWidget(createModelButton(slotX, slotY, isAuthLocked, previewEntity, modelAssembly))
                 }
             }
@@ -419,11 +441,22 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         guiGraphics.fillGradient(guiLeft + 138, guiTop, guiLeft + 420, guiTop + 235, -14540254, -14540254)
         guiGraphics.fillGradient(guiLeft + 351, guiTop + 7, guiLeft + 352, guiTop + 21, -790560, -790560)
         searchBox?.render(guiGraphics, mouseX, mouseY, partialTick)
-        renderModelPreview(guiGraphics, mouseX, mouseY, minecraft?.deltaTracker?.getGameTimeDeltaPartialTick(false) ?: partialTick)
+        renderModelPreview(
+            guiGraphics,
+            mouseX,
+            mouseY,
+            minecraft.deltaTracker?.getGameTimeDeltaPartialTick(false) ?: partialTick
+        )
 
         val box = searchBox
         if (box != null && box.value.isEmpty() && !box.isFocused) {
-            guiGraphics.drawString(font, Component.translatable("gui.yes_steve_model.search").withStyle(ChatFormatting.ITALIC), guiLeft + 148, guiTop + 10, 0xFF777777.toInt())
+            guiGraphics.drawString(
+                font,
+                Component.translatable("gui.yes_steve_model.search").withStyle(ChatFormatting.ITALIC),
+                guiLeft + 148,
+                guiTop + 10,
+                0xFF777777.toInt()
+            )
         }
 
         val pageStr = "${getCurrentPage() + 1}/${maxPage + 1}"
@@ -431,7 +464,8 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         val pageY = guiTop + 223
         guiGraphics.drawString(font, pageStr, pageX, pageY - (9 / 2), 0xFFF3F0E0.toInt())
 
-        var renderer = if (NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get()) "SIMD" else "Fallback"
+        var renderer =
+            if (NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get()) "SIMD" else "Fallback"
         if (renderer == "SIMD" && GpuCapability.isAvailable() && GeneralConfig.USE_GPU_RENDERER.get()) {
             renderer = "GPU"
         }
@@ -439,14 +473,26 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         guiGraphics.pose().pushMatrix()
         guiGraphics.pose().translate(0.0f, 0.0f)
         val darkGrayColor = ChatFormatting.DARK_GRAY.color ?: 0x555555
-        guiGraphics.drawString(font, "$versionStr ($renderer)", guiLeft + 2, guiTop + 226, darkGrayColor or 0xFF000000.toInt())
+        guiGraphics.drawString(
+            font,
+            "$versionStr ($renderer)",
+            guiLeft + 2,
+            guiTop + 226,
+            darkGrayColor or 0xFF000000.toInt()
+        )
         guiGraphics.pose().popMatrix()
 
         if (currentPath.isNotBlank()) {
             var lineIndex = 0
             val listSplit = font.split(Component.literal("📂 $currentPath").withStyle(ChatFormatting.GRAY), 270)
             for (line in listSplit) {
-                guiGraphics.drawString(font, line, guiLeft + 142, guiTop + ((- (listSplit.size - lineIndex) * 10) - 2), 0xFFF3F0E0.toInt())
+                guiGraphics.drawString(
+                    font,
+                    line,
+                    guiLeft + 142,
+                    guiTop + ((-(listSplit.size - lineIndex) * 10) - 2),
+                    0xFFF3F0E0.toInt()
+                )
                 lineIndex++
             }
         }
@@ -454,7 +500,6 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         renderSyncStatus(guiGraphics)
         super.render(guiGraphics, mouseX, mouseY, partialTick)
 
-        val renderables = (this as ScreenAccessor).`ysm$getRenderables`()
         renderables.forEach { renderable ->
             when (renderable) {
                 is IconButton -> renderable.renderTooltip(guiGraphics, this, mouseX, mouseY)
@@ -485,26 +530,51 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                     Component.literal("${currentState.syncedModels}/${currentState.totalModels}")
                 }
             }
+
             else -> return
         }
         val textX = (guiLeft + 414) - font.width(text)
         val textY = guiTop + 215
         val darkGrayColor = ChatFormatting.DARK_GRAY.color ?: 0x555555
-        guiGraphics.drawString(font, text, textX, textY + ((14 - 9) / 2.0f).roundToInt(), darkGrayColor or 0xFF000000.toInt())
+        guiGraphics.drawString(
+            font,
+            text,
+            textX,
+            textY + ((14 - 9) / 2.0f).roundToInt(),
+            darkGrayColor or 0xFF000000.toInt()
+        )
     }
 
     open fun renderModelPreview(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        val localPlayer = minecraft?.player ?: return
-        InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, guiLeft + 5, guiTop + 29, guiLeft + 130, guiTop + 200, 70, 0.0625F, mouseX.toFloat(), mouseY.toFloat(), localPlayer)
+        val localPlayer = minecraft.player ?: return
+        InventoryScreen.renderEntityInInventoryFollowsMouse(
+            guiGraphics,
+            guiLeft + 5,
+            guiTop + 29,
+            guiLeft + 130,
+            guiTop + 200,
+            70,
+            0.0625F,
+            mouseX.toFloat(),
+            mouseY.toFloat(),
+            localPlayer
+        )
         val cap = PlayerCapability[localPlayer] ?: return
         val modelAssemblyOpt = ClientModelManager.getModelContext(cap.getModelId())
         val modelAssembly = if (modelAssemblyOpt.isPresent) modelAssemblyOpt.get() else null
         val displayName = if (modelAssembly != null && modelAssembly.modelData.metadata != null) {
-            ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "metadata.name", modelAssembly.modelData.metadata.name)
+            ModelMetadataPresenter.getLocalizedModelString(
+                modelAssembly,
+                "metadata.name",
+                modelAssembly.modelData.metadata.name
+            )
         } else {
             FileTypeUtil.getNameWithoutArchiveExtension(cap.getModelId())
         }
-        val lines = font.split(FormattedText.of(displayName.ifBlank { FileTypeUtil.getNameWithoutArchiveExtension(cap.getModelId()) }), 125)
+        val lines = font.split(
+            FormattedText.of(displayName.ifBlank { FileTypeUtil.getNameWithoutArchiveExtension(cap.getModelId()) }),
+            125
+        )
         var lineY = guiTop + 205
         for (line in lines) {
             guiGraphics.drawString(font, line, guiLeft + ((135 - font.width(line)) / 2), lineY, 0xFFF3F0E0.toInt())
@@ -663,7 +733,10 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                 if (segment.isNotEmpty()) {
                     sb.append(segment).append("/")
                     val path = sb.toString()
-                    map.putIfAbsent(path, ModelPackData(path, FileTypeUtil.getFinalPathSegment(path), StringPool.EMPTY, null, null))
+                    map.putIfAbsent(
+                        path,
+                        ModelPackData(path, FileTypeUtil.getFinalPathSegment(path), StringPool.EMPTY, null, null)
+                    )
                 }
             }
         }

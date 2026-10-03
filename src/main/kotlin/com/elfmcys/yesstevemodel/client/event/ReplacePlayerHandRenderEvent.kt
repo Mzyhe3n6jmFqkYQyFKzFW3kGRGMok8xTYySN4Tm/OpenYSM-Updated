@@ -22,12 +22,9 @@ object ReplacePlayerHandRenderEvent {
         bufferSource: MultiBufferSource,
         packedLight: Int
     ): Boolean {
-        if (!YesSteveModel.isAvailable() || GeneralConfig.DISABLE_SELF_MODEL.get() || GeneralConfig.DISABLE_SELF_HANDS.get()) {
+        if (!YesSteveModel.isAvailable() || GeneralConfig.DISABLE_SELF_MODEL.get() || GeneralConfig.DISABLE_SELF_HANDS.get())
             return false
-        }
-        if (player !is LocalPlayer) {
-            return false
-        }
+        if (player !is LocalPlayer) return false
         var cancelled = false
         PlayerCapability[player]?.let { cap ->
             if (!cap.isModelActive()) {

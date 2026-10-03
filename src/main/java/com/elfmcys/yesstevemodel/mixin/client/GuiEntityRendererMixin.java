@@ -1,10 +1,6 @@
 package com.elfmcys.yesstevemodel.mixin.client;
 
-import com.elfmcys.yesstevemodel.client.renderer.CustomPlayerRenderer;
-import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer;
-import com.elfmcys.yesstevemodel.client.renderer.PreviewEntityRegistry;
-import com.elfmcys.yesstevemodel.client.renderer.RenderContext;
-import com.elfmcys.yesstevemodel.client.renderer.RendererManager;
+import com.elfmcys.yesstevemodel.client.renderer.*;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.pip.GuiEntityRenderer;
@@ -23,13 +19,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiEntityRenderer.class)
 public class GuiEntityRendererMixin {
-
-    @Inject(method = "renderToTexture", at = @At("HEAD"))
+    @Inject(method = "renderToTexture*", at = @At("HEAD"))
     private void ysm$enterPreviewMode(GuiEntityRenderState state, PoseStack poseStack, CallbackInfo ci) {
         ModelPreviewRenderer.setPreviewMode(true);
     }
 
-    @Inject(method = "renderToTexture", at = @At("RETURN"))
+    @Inject(method = "renderToTexture*", at = @At("RETURN"))
     private void ysm$exitPreviewMode(GuiEntityRenderState state, PoseStack poseStack, CallbackInfo ci) {
         ModelPreviewRenderer.setPreviewMode(false);
     }
@@ -50,7 +45,7 @@ public class GuiEntityRendererMixin {
             SubmitNodeCollector collector
     ) {
         PreviewEntityRegistry.Entry entry = PreviewEntityRegistry.getEntry(state);
-        if (entry != null && entry.animatable() != null && state instanceof AvatarRenderState playerState) {
+        if (entry != null && state instanceof AvatarRenderState playerState) {
             try {
                 MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
                 RenderContext.enter(collector, cameraState);

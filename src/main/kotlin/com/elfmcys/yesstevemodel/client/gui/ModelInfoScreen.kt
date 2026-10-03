@@ -7,7 +7,6 @@ import com.elfmcys.yesstevemodel.client.model.ModelAssembly
 import com.elfmcys.yesstevemodel.client.texture.OuterFileTexture
 import com.elfmcys.yesstevemodel.client.upload.IResourceLocatable
 import com.elfmcys.yesstevemodel.client.upload.UploadManager
-import com.elfmcys.yesstevemodel.mixin.client.ScreenAccessor
 import com.elfmcys.yesstevemodel.model.format.ServerModelInfo
 import com.elfmcys.yesstevemodel.resource.models.AuthorInfo
 import com.elfmcys.yesstevemodel.resource.models.Metadata
@@ -19,7 +18,6 @@ import net.minecraft.client.renderer.texture.TextureManager
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
 import net.minecraft.util.Util
-import org.apache.commons.lang3.StringUtils
 import kotlin.math.max
 import kotlin.math.min
 
@@ -120,19 +118,19 @@ class ModelInfoScreen(
 
         addRenderableWidget(
             FlatColorButton(guiLeft + 310, linkY, 85, 20, Component.translatable("gui.yes_steve_model.model.return")) {
-                minecraft?.setScreen(parentScreen)
+                minecraft.setScreen(parentScreen)
             }
         )
     }
 
     private fun openUrl(str: String?) {
         if (!str.isNullOrBlank()) {
-            minecraft?.setScreen(
+            minecraft.setScreen(
                 ConfirmLinkScreen({ confirmed ->
                     if (confirmed) {
                         Util.getPlatform().openUri(str)
                     }
-                    minecraft?.setScreen(this)
+                    minecraft.setScreen(this)
                 }, str, true)
             )
         }
@@ -155,7 +153,6 @@ class ModelInfoScreen(
             }
         }
         super.render(guiGraphics, mouseX, mouseY, partialTick)
-        val renderables = (this as ScreenAccessor).`ysm$getRenderables`()
         renderables.forEach { renderable ->
             if (renderable is AuthorButton) {
                 renderable.refreshContactComponents(guiGraphics, this, mouseX, mouseY)

@@ -20,7 +20,6 @@ import com.elfmcys.yesstevemodel.config.ServerConfig
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import com.elfmcys.yesstevemodel.geckolib3.resource.GeckoLibCache
-import com.elfmcys.yesstevemodel.mixin.client.ScreenAccessor
 import com.elfmcys.yesstevemodel.network.NetworkHandler
 import com.elfmcys.yesstevemodel.network.message.C2SPlayAnimationPacket
 import com.elfmcys.yesstevemodel.network.message.C2SRequestExecuteMolangPacket
@@ -34,12 +33,10 @@ import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
-import net.minecraft.client.player.LocalPlayer
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.sounds.SoundEvents
-import net.minecraft.util.FormattedCharSequence
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.player.Player
 import org.apache.commons.lang3.BooleanUtils
@@ -49,7 +46,7 @@ import org.apache.commons.lang3.tuple.MutablePair
 import org.apache.commons.lang3.tuple.Pair
 import rip.ysm.api.client.KeyMappingFactory
 import rip.ysm.gui.ModelSettingsScreen
-import java.util.LinkedList
+import java.util.*
 import java.util.function.Consumer
 import kotlin.math.max
 import kotlin.math.min
@@ -155,13 +152,20 @@ class AnimationRouletteScreen : Screen {
                 }
             })
         } else {
-            addRenderableWidget(FlatColorButton(centerX - 20, centerY - 10, 40, 20, Component.translatable("gui.yes_steve_model.roulette.stop")) {
-                val entity = animatableModel.entity
-                if (entity != null) {
-                    NetworkHandler.sendToServer(C2SPlayAnimationPacket.createWithIndex(entity.id))
-                }
-                onClose()
-            })
+            addRenderableWidget(
+                FlatColorButton(
+                    centerX - 20,
+                    centerY - 10,
+                    40,
+                    20,
+                    Component.translatable("gui.yes_steve_model.roulette.stop")
+                ) {
+                    val entity = animatableModel.entity
+                    if (entity != null) {
+                        NetworkHandler.sendToServer(C2SPlayAnimationPacket.createWithIndex(entity.id))
+                    }
+                    onClose()
+                })
         }
 
         addRenderableWidget(FlatColorButton(centerX + 125, centerY - 102, 30, 30, Component.literal("<")) {
@@ -170,9 +174,16 @@ class AnimationRouletteScreen : Screen {
         addRenderableWidget(FlatColorButton(centerX + 240, centerY - 102, 30, 30, Component.literal(">")) {
             nextPage()
         })
-        addRenderableWidget(FlatColorButton(centerX + 125, centerY - 70, 145, 22, Component.translatable("gui.yes_steve_model.model.return")) {
-            navigateBack()
-        })
+        addRenderableWidget(
+            FlatColorButton(
+                centerX + 125,
+                centerY - 70,
+                145,
+                22,
+                Component.translatable("gui.yes_steve_model.model.return")
+            ) {
+                navigateBack()
+            })
 
         val configGroup = currentConfigGroup
         if (configGroup != null) {
@@ -207,7 +218,7 @@ class AnimationRouletteScreen : Screen {
         when (abstractConfig) {
             is CheckboxConfig -> {
                 executeExpression(abstractConfig.value) { str ->
-                    minecraft?.execute {
+                    minecraft.execute {
                         addRenderableWidget(createCheckbox(abstractConfig, str, yOffset, formIndex))
                         yOffset[0] += 14
                         formIndex[0] += 1
@@ -215,9 +226,10 @@ class AnimationRouletteScreen : Screen {
                     }
                 }
             }
+
             is RangeConfig -> {
                 executeExpression(abstractConfig.value) { str2 ->
-                    minecraft?.execute {
+                    minecraft.execute {
                         addRenderableWidget(createSlider(abstractConfig, str2, yOffset, formIndex))
                         yOffset[0] += 17
                         formIndex[0] += 1
@@ -225,9 +237,10 @@ class AnimationRouletteScreen : Screen {
                     }
                 }
             }
+
             is RadioConfig -> {
                 executeExpression(abstractConfig.value) { str3 ->
-                    minecraft?.execute {
+                    minecraft.execute {
                         renderRadioGroup(abstractConfig, str3, yOffset, formIndex)
                     }
                 }
@@ -311,7 +324,12 @@ class AnimationRouletteScreen : Screen {
         maxConfigScroll = max(0, yOffset[0] - 110)
     }
 
-    private fun createSlider(rangeConfig: RangeConfig, valueStr: String, yOffset: IntArray, formIndex: IntArray): AnimationSlider {
+    private fun createSlider(
+        rangeConfig: RangeConfig,
+        valueStr: String,
+        yOffset: IntArray,
+        formIndex: IntArray
+    ): AnimationSlider {
         val group = currentConfigGroup!!
         val title = ModelMetadataPresenter.getLocalizedModelString(
             renderContext,
@@ -340,7 +358,12 @@ class AnimationRouletteScreen : Screen {
         return animationSlider
     }
 
-    private fun createCheckbox(checkboxConfig: CheckboxConfig, valueStr: String, yOffset: IntArray, formIndex: IntArray): ConfigCheckBox {
+    private fun createCheckbox(
+        checkboxConfig: CheckboxConfig,
+        valueStr: String,
+        yOffset: IntArray,
+        formIndex: IntArray
+    ): ConfigCheckBox {
         val group = currentConfigGroup!!
         val title = ModelMetadataPresenter.getLocalizedModelString(
             renderContext,
@@ -390,12 +413,17 @@ class AnimationRouletteScreen : Screen {
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         val pathNames = navigationStack.map { it.left }
         val pathStr = StringUtils.joinWith(" > ", *pathNames.toTypedArray())
-        guiGraphics.drawCenteredString(font, Component.translatable("gui.yes_steve_model.roulette.path", pathStr), centerX + 195, centerY - 100, -1)
+        guiGraphics.drawCenteredString(
+            font,
+            Component.translatable("gui.yes_steve_model.roulette.path", pathStr),
+            centerX + 195,
+            centerY - 100,
+            -1
+        )
         renderRadialBackground(guiGraphics, mouseX, mouseY)
         renderRadialButtons(guiGraphics)
         renderPageInfo(guiGraphics)
 
-        val renderables = (this as ScreenAccessor).`ysm$getRenderables`()
         for (renderable in renderables) {
             if (renderable !is ISpecialWidget) {
                 renderable.render(guiGraphics, mouseX, mouseY, partialTick)
@@ -507,7 +535,8 @@ class AnimationRouletteScreen : Screen {
                     if (GeneralConfig.ROULETTE_SETTINGS_MODE.get() == GeneralConfig.RouletteSettingsMode.CLASSIC) {
                         showConfigGroup(groupKey)
                     } else {
-                        Minecraft.getInstance().setScreen(ModelSettingsScreen(renderContext, animatableModel, this, groupKey))
+                        Minecraft.getInstance()
+                            .setScreen(ModelSettingsScreen(renderContext, animatableModel, this, groupKey))
                     }
                 }
             }
@@ -559,7 +588,12 @@ class AnimationRouletteScreen : Screen {
             PlayerCapability[localPlayer]?.requestModelSwitch(animKey)
         }
         if (localPlayer != null && GeneralConfig.PRINT_ANIMATION_ROULETTE_MSG.get()) {
-            localPlayer.displayClientMessage(Component.translatable("message.yes_steve_model.model.animation_roulette.play", animKey), false)
+            localPlayer.displayClientMessage(
+                Component.translatable(
+                    "message.yes_steve_model.model.animation_roulette.play",
+                    animKey
+                ), false
+            )
         }
         Minecraft.getInstance().setScreen(null)
     }
@@ -573,14 +607,16 @@ class AnimationRouletteScreen : Screen {
         val sub = key.substring(SUBMENU_PREFIX.length)
         if (textProperties[sub] != null) {
             navigationStack.addLast(MutablePair.of(sub, 0))
-            Minecraft.getInstance().setScreen(AnimationRouletteScreen(renderGroups, textProperties, renderContext, animatableModel))
+            Minecraft.getInstance()
+                .setScreen(AnimationRouletteScreen(renderGroups, textProperties, renderContext, animatableModel))
         }
     }
 
     private fun navigateBack() {
         if (navigationStack.size > 1) {
             navigationStack.removeLast()
-            Minecraft.getInstance().setScreen(AnimationRouletteScreen(renderGroups, textProperties, renderContext, animatableModel))
+            Minecraft.getInstance()
+                .setScreen(AnimationRouletteScreen(renderGroups, textProperties, renderContext, animatableModel))
             return
         }
         Minecraft.getInstance().setScreen(null)
@@ -606,14 +642,28 @@ class AnimationRouletteScreen : Screen {
                     value = group.name
                     val gearX = (centerX + (35 * Mth.cos(angle.toDouble()))).toInt()
                     val gearY = centerY + (35 * Mth.sin(angle.toDouble()))
-                    guiGraphics.drawCenteredString(font, Component.literal("⚙").withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD), gearX, (gearY - (9.0 / 2.0)).toInt(), -1)
+                    guiGraphics.drawCenteredString(
+                        font,
+                        Component.literal("⚙").withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD),
+                        gearX,
+                        (gearY - (9.0 / 2.0)).toInt(),
+                        -1
+                    )
                 }
             }
             if (value.isNotBlank()) {
-                val label = ModelMetadataPresenter.getLocalizedModelString(renderContext, "properties.extra_animation.%s".format(currentProperties.getKeyAt(propIndex)), value)
+                val label = ModelMetadataPresenter.getLocalizedModelString(
+                    renderContext,
+                    "properties.extra_animation.%s".format(currentProperties.getKeyAt(propIndex)),
+                    value
+                )
                 renderWrappedLabel(guiGraphics, Component.literal(label), posX, labelY, isSubmenu)
             } else {
-                val fallback = ModelMetadataPresenter.getLocalizedModelString(renderContext, "properties.extra_animation.%s".format(currentProperties.getKeyAt(propIndex)), propIndex.toString())
+                val fallback = ModelMetadataPresenter.getLocalizedModelString(
+                    renderContext,
+                    "properties.extra_animation.%s".format(currentProperties.getKeyAt(propIndex)),
+                    propIndex.toString()
+                )
                 guiGraphics.drawCenteredString(font, Component.literal(fallback), posX, labelY - 8, 0xFFF3F0E0.toInt())
             }
             if (currentNavEntry.right == 0 && navigationStack.size == 1) {
@@ -635,7 +685,13 @@ class AnimationRouletteScreen : Screen {
         guiGraphics.drawCenteredString(font, label, x, y + 4, 0xFFF3F0E0.toInt())
     }
 
-    private fun renderWrappedLabel(guiGraphics: GuiGraphics, component: MutableComponent, x: Int, y: Int, isSubmenu: Boolean) {
+    private fun renderWrappedLabel(
+        guiGraphics: GuiGraphics,
+        component: MutableComponent,
+        x: Int,
+        y: Int,
+        isSubmenu: Boolean
+    ) {
         var styledComp = component
         if (isSubmenu) {
             styledComp = styledComp.withStyle(ChatFormatting.RED)
@@ -658,7 +714,8 @@ class AnimationRouletteScreen : Screen {
         if (pointerAngle < 0.0f) {
             pointerAngle += 6.2831855f
         }
-        val pointerRadius = Mth.sqrt(Mth.square((mouseY - centerY).toFloat()) + Mth.square((mouseX - centerX).toFloat()))
+        val pointerRadius =
+            Mth.sqrt(Mth.square((mouseY - centerY).toFloat()) + Mth.square((mouseX - centerX).toFloat()))
         var hoveredAny = false
         var hoveredConfig = false
         val sliceCount = min(8, currentProperties.size - (currentNavEntry.right * 8))
@@ -667,8 +724,18 @@ class AnimationRouletteScreen : Screen {
             val endAngle = ((6.2831855f / 8) * (i + 1)) - 0.034906585f
             val propIndex = i + (currentNavEntry.right * 8)
             val isSubmenu = currentProperties.getValueAt(propIndex).startsWith(SUBMENU_PREFIX)
-            hoveredAny = checkRadialHover(guiGraphics, startAngle, pointerAngle, endAngle, pointerRadius, hoveredAny, isSubmenu, i)
-            val isConfigSliceHovered = startAngle < pointerAngle && pointerAngle < endAngle && pointerRadius in 20.0f..50.0f
+            hoveredAny = checkRadialHover(
+                guiGraphics,
+                startAngle,
+                pointerAngle,
+                endAngle,
+                pointerRadius,
+                hoveredAny,
+                isSubmenu,
+                i
+            )
+            val isConfigSliceHovered =
+                startAngle < pointerAngle && pointerAngle < endAngle && pointerRadius in 20.0f..50.0f
             if (isSubmenu) {
                 if (isConfigSliceHovered) {
                     drawRadialSegment(guiGraphics, 15.0f, 50.0f, startAngle, endAngle, -268382465)
@@ -716,7 +783,14 @@ class AnimationRouletteScreen : Screen {
         return hovered
     }
 
-    private fun drawRadialSegment(guiGraphics: GuiGraphics, innerRadius: Float, outerRadius: Float, startAngle: Float, endAngle: Float, color: Int) {
+    private fun drawRadialSegment(
+        guiGraphics: GuiGraphics,
+        innerRadius: Float,
+        outerRadius: Float,
+        startAngle: Float,
+        endAngle: Float,
+        color: Int
+    ) {
         val startCos = Mth.cos(startAngle.toDouble()).toFloat()
         val startSin = Mth.sin(startAngle.toDouble()).toFloat()
         val endCos = Mth.cos(endAngle.toDouble()).toFloat()
