@@ -22,7 +22,7 @@ open class YSMTickableSoundInstance(
     }
 
     override fun tick() {
-        val soundVolume = GeneralConfig.SOUND_VOLUME?.get()?.toFloat() ?: 100.0f
+        val soundVolume = GeneralConfig.SOUND_VOLUME.get()?.toFloat() ?: 100.0f
         volume = (targetVolume * soundVolume) / 100.0f
         if (entity.isRemoved) {
             stop()

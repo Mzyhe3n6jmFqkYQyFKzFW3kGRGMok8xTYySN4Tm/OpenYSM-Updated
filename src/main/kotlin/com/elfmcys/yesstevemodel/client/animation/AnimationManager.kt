@@ -2,12 +2,10 @@ package com.elfmcys.yesstevemodel.client.animation
 
 import com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity
 import com.elfmcys.yesstevemodel.client.entity.IPreviewAnimatable
-import com.elfmcys.yesstevemodel.geckolib3.core.builder.ILoopType
 import com.elfmcys.yesstevemodel.geckolib3.core.enums.PlayState
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
-import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import rip.ysm.compat.create.CreateCompat
 import rip.ysm.compat.gun.swarfare.SWarfareCompat
@@ -29,34 +27,23 @@ class AnimationManager : IAnimationPredicate<CustomPlayerEntity> {
 
     override fun predicate(event: AnimationEvent<CustomPlayerEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
         val animatable = event.getAnimatable()
-        val player: Player = animatable.entity ?: return PlayState.STOP
-        if (animatable is IPreviewAnimatable) {
-            return PlayState.STOP
-        }
-        if (ParcoolCompat.isPlayerParcooling(player)) {
-            return PlayState.STOP
-        }
-        val vehicle: Entity? = player.vehicle
-        if (vehicle != null && vehicle.isAlive) {
-            return PlayState.STOP
-        }
-        if (CreateCompat.isPlayerOnCreateContraption(player)) {
+        val player = animatable.entity
+        if (animatable is IPreviewAnimatable) return PlayState.STOP
+        if (ParcoolCompat.isPlayerParcooling(player)) return PlayState.STOP
+        val vehicle = player.vehicle
+        if (vehicle != null && vehicle.isAlive) return PlayState.STOP
+        if (CreateCompat.isPlayerOnCreateContraption(player))
             return IAnimationPredicate.predicate(event, "parcool:ride_zipline")
-        }
         for (i in Priority.HIGHEST..Priority.LOWEST) {
             for (animationState in data[i]) {
                 if (animationState.predicate.test(player, event)) {
-                    val name: String = animationState.animationName
-                    val loopType: ILoopType = animationState.loopType
-                    val slashBladePlayState: PlayState? =
-                        SlashBladeCompat.handleSlashBladeAnim(player, event, name, loopType)
-                    if (slashBladePlayState != null) {
-                        return slashBladePlayState
-                    }
-                    var taczPlayState: PlayState? = TacCompat.handleTaczAnimState(player, event, name, loopType)
-                    if (taczPlayState == null) {
+                    val name = animationState.animationName
+                    val loopType = animationState.loopType
+                    val slashBladePlayState = SlashBladeCompat.handleSlashBladeAnim(player, event, name, loopType)
+                    if (slashBladePlayState != null) return slashBladePlayState
+                    var taczPlayState = TacCompat.handleTaczAnimState(player, event, name, loopType)
+                    if (taczPlayState == null)
                         taczPlayState = SWarfareCompat.handleTaczAnim(player, event, name, loopType)
-                    }
                     return taczPlayState ?: IAnimationPredicate.playAnimationWithLoop(event, name, loopType)
                 }
             }

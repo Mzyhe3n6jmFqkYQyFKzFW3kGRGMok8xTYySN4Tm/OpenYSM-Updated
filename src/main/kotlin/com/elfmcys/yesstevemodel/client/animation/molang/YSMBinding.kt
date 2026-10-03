@@ -3,8 +3,6 @@ package com.elfmcys.yesstevemodel.client.animation.molang
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
 import com.elfmcys.yesstevemodel.client.animation.molang.functions.ysm.*
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
-import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
-import com.elfmcys.yesstevemodel.geckolib3.core.EntityFrameStateTracker
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.binding.ContextBinding
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.context.IContext
@@ -18,39 +16,30 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.player.AbstractClientPlayer
 import net.minecraft.client.player.LocalPlayer
-import net.minecraft.core.BlockPos
-import net.minecraft.core.Holder
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.ComponentUtils
-import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import net.minecraft.world.InteractionHand
-import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.Pose
 import net.minecraft.world.entity.ai.attributes.Attributes
-import net.minecraft.world.entity.animal.parrot.Parrot
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.FishingHook
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow
 import net.minecraft.world.entity.projectile.arrow.Arrow
 import net.minecraft.world.entity.projectile.arrow.SpectralArrow
 import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrowableItemProjectile
 import net.minecraft.world.item.CrossbowItem
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.alchemy.PotionContents
 import net.minecraft.world.level.LightLayer
-import net.minecraft.world.level.biome.Biome
 import net.minecraft.world.level.levelgen.Heightmap
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
-import net.minecraft.world.phys.Vec3
 import rip.ysm.api.attribute.ForgeAttributes
 import rip.ysm.compat.cosmeticarmorreworked.CosmeticArmorHelper
 import rip.ysm.compat.curios.CuriosCompat
@@ -62,9 +51,9 @@ object YSMBinding : ContextBinding() {
     init {
         function("dump_equipped_item", DumpEquippedItem())
         function("dump_relative_block", DumpRelativeBlock())
-        `var`("dump_mods", IValueEvaluator { ctx -> dumpMods(ctx) })
-        entityVar("dump_effects", IValueEvaluator { ctx -> dumpEffects(ctx) })
-        entityVar("dump_biome", IValueEvaluator { ctx -> dumpBiome(ctx) })
+        `var`("dump_mods", IValueEvaluator { dumpMods(it) })
+        entityVar("dump_effects", IValueEvaluator { dumpEffects(it) })
+        entityVar("dump_biome", IValueEvaluator { dumpBiome(it) })
         function("mod_version", ModVersion())
         function("equipped_enchantment_level", EquippedEnchantmentLevel())
         function("effect_level", EffectLevel())
@@ -74,222 +63,198 @@ object YSMBinding : ContextBinding() {
         function("bone_pos", BonePosition())
         function("bone_scale", BoneScale())
         function("bone_pivot_abs", BonePivotAbs())
-        `var`("head_yaw", IValueEvaluator { ctx: IContext<Any> -> ctx.data().netHeadYaw })
-        `var`("head_pitch", IValueEvaluator { ctx: IContext<Any> -> ctx.data().headPitch })
-        `var`("weather", IValueEvaluator { ctx: IContext<Any> -> getWeather(ctx.level()) })
+        `var`("head_yaw", IValueEvaluator { it.data().netHeadYaw })
+        `var`("head_pitch", IValueEvaluator { it.data().headPitch })
+        `var`("weather", IValueEvaluator { getWeather(it.level()) })
         `var`(
             "dimension_name",
-            IValueEvaluator { ctx: IContext<Any> ->
-                ctx.level()?.dimension()?.identifier()?.toString() ?: StringPool.EMPTY
+            IValueEvaluator {
+                it.level()?.dimension()?.identifier()?.toString() ?: StringPool.EMPTY
             })
-        `var`("fps", IValueEvaluator { _ -> Minecraft.getInstance().fps.toFloat() })
+        `var`("fps", IValueEvaluator { Minecraft.getInstance().fps.toFloat() })
         `var`(
             "time_delta",
-            IValueEvaluator { ctx: IContext<Any> -> ctx.geoInstance().positionTracker.timeDelta / 20.0f })
-        entityVar("ground_speed2", IValueEvaluator { ctx: IContext<Entity> -> getGroundSpeed2(ctx) })
+            IValueEvaluator { it.geoInstance().positionTracker.timeDelta / 20.0f })
+        entityVar("ground_speed2", IValueEvaluator { getGroundSpeed2(it) })
         entityVar(
             "input_vertical",
-            IValueEvaluator { ctx: IContext<Entity> -> MathInterpolation.getYawInterpolation(ctx) })
+            IValueEvaluator { MathInterpolation.getYawInterpolation(it) })
         entityVar(
             "input_horizontal",
-            IValueEvaluator { ctx: IContext<Entity> -> MathInterpolation.getPitchInterpolation(ctx) })
-        entityVar("person_view", IValueEvaluator { ctx: IContext<Entity> -> CameraUtil.getCameraType(ctx) })
-        entityVar("rendering_in_paperdoll", IValueEvaluator { _ -> ModelPreviewRenderer.isExtraPlayer() })
-        entityVar("rendering_in_inventory", IValueEvaluator { ctx: IContext<Entity> -> CameraUtil.isThirdPerson(ctx) })
+            IValueEvaluator { MathInterpolation.getPitchInterpolation(it) })
+        entityVar("person_view", IValueEvaluator { CameraUtil.getCameraType(it) })
+        entityVar("rendering_in_paperdoll", IValueEvaluator { ModelPreviewRenderer.isExtraPlayer() })
+        entityVar("rendering_in_inventory", IValueEvaluator { CameraUtil.isThirdPerson(it) })
         entityVar(
             "block_light",
-            IValueEvaluator { ctx: IContext<Entity> ->
-                ctx.level()?.getBrightness(LightLayer.BLOCK, ctx.entity().blockPosition()) ?: 0
+            IValueEvaluator {
+                it.level()?.getBrightness(LightLayer.BLOCK, it.entity().blockPosition()) ?: 0
             })
         entityVar(
             "sky_light",
-            IValueEvaluator { ctx: IContext<Entity> ->
-                ctx.level()?.getBrightness(LightLayer.SKY, ctx.entity().blockPosition()) ?: 0
-            })
-        entityVar("is_passenger", IValueEvaluator { ctx: IContext<Entity> -> ctx.entity().isPassenger })
-        entityVar("is_sleep", IValueEvaluator { ctx: IContext<Entity> -> ctx.entity().pose == Pose.SLEEPING })
-        entityVar(
-            "is_sneak",
-            IValueEvaluator { ctx: IContext<Entity> -> ctx.entity().onGround() && ctx.entity().pose == Pose.CROUCHING })
-        entityVar("biome_category", IValueEvaluator { ctx: IContext<Entity> -> getBiomeCategory(ctx.entity()) })
-        entityVar("is_open_air", IValueEvaluator { ctx: IContext<Entity> -> isOpenAir(ctx.entity()) })
-        entityVar("eye_in_water", IValueEvaluator { ctx: IContext<Entity> -> ctx.entity().isUnderWater })
-        entityVar("frozen_ticks", IValueEvaluator { ctx: IContext<Entity> -> ctx.entity().ticksFrozen })
-        entityVar("air_supply", IValueEvaluator { ctx: IContext<Entity> -> ctx.entity().airSupply })
-        entityVar(
-            "delta_movement_length",
-            IValueEvaluator { ctx: IContext<Entity> -> ctx.entity().deltaMovement.length().toFloat() })
-        livingEntityVar(
-            "has_helmet",
-            IValueEvaluator { ctx: IContext<LivingEntity> -> hasEquipment(ctx.entity(), EquipmentSlot.HEAD) })
-        livingEntityVar(
-            "has_chest_plate",
-            IValueEvaluator { ctx: IContext<LivingEntity> -> hasEquipment(ctx.entity(), EquipmentSlot.CHEST) })
-        livingEntityVar(
-            "has_leggings",
-            IValueEvaluator { ctx: IContext<LivingEntity> -> hasEquipment(ctx.entity(), EquipmentSlot.LEGS) })
-        livingEntityVar(
-            "has_boots",
-            IValueEvaluator { ctx: IContext<LivingEntity> -> hasEquipment(ctx.entity(), EquipmentSlot.FEET) })
-        livingEntityVar(
-            "has_mainhand",
-            IValueEvaluator { ctx: IContext<LivingEntity> -> hasEquipment(ctx.entity(), EquipmentSlot.MAINHAND) })
-        livingEntityVar(
-            "has_offhand",
-            IValueEvaluator { ctx: IContext<LivingEntity> -> hasEquipment(ctx.entity(), EquipmentSlot.OFFHAND) })
-        livingEntityVar(
-            "has_elytra",
-            IValueEvaluator { ctx: IContext<LivingEntity> -> !CosmeticArmorHelper.getElytraItem(ctx.entity()).isEmpty })
-        livingEntityVar("is_riptide", IValueEvaluator { ctx: IContext<LivingEntity> -> ctx.entity().isAutoSpinAttack })
-        livingEntityVar("armor_value", IValueEvaluator { ctx: IContext<LivingEntity> -> ctx.entity().armorValue })
-        livingEntityVar("hurt_time", IValueEvaluator { ctx: IContext<LivingEntity> -> ctx.entity().hurtTime })
-        livingEntityVar(
-            "is_close_eyes",
-            IValueEvaluator { ctx: IContext<LivingEntity> -> isCloseEyes(ctx.animationEvent(), ctx.entity()) })
-        livingEntityVar("on_ladder", IValueEvaluator { ctx: IContext<LivingEntity> -> ctx.entity().onClimbable() })
+            IValueEvaluator { it.level()?.getBrightness(LightLayer.SKY, it.entity().blockPosition()) ?: 0 })
+        entityVar("is_passenger", IValueEvaluator { it.entity().isPassenger })
+        entityVar("is_sleep", IValueEvaluator { it.entity().pose == Pose.SLEEPING })
+        entityVar("is_sneak", IValueEvaluator { it.entity().onGround() && it.entity().pose == Pose.CROUCHING })
+        entityVar("biome_category", IValueEvaluator { getBiomeCategory(it.entity()) })
+        entityVar("is_open_air", IValueEvaluator { isOpenAir(it.entity()) })
+        entityVar("eye_in_water", IValueEvaluator { it.entity().isUnderWater })
+        entityVar("frozen_ticks", IValueEvaluator { it.entity().ticksFrozen })
+        entityVar("air_supply", IValueEvaluator { it.entity().airSupply })
+        entityVar("delta_movement_length", IValueEvaluator { it.entity().deltaMovement.length().toFloat() })
+        livingEntityVar("has_helmet", IValueEvaluator { hasEquipment(it.entity(), EquipmentSlot.HEAD) })
+        livingEntityVar("has_chest_plate", IValueEvaluator { hasEquipment(it.entity(), EquipmentSlot.CHEST) })
+        livingEntityVar("has_leggings", IValueEvaluator { hasEquipment(it.entity(), EquipmentSlot.LEGS) })
+        livingEntityVar("has_boots", IValueEvaluator { hasEquipment(it.entity(), EquipmentSlot.FEET) })
+        livingEntityVar("has_mainhand", IValueEvaluator { hasEquipment(it.entity(), EquipmentSlot.MAINHAND) })
+        livingEntityVar("has_offhand", IValueEvaluator { hasEquipment(it.entity(), EquipmentSlot.OFFHAND) })
+        livingEntityVar("has_elytra", IValueEvaluator { !CosmeticArmorHelper.getElytraItem(it.entity()).isEmpty })
+        livingEntityVar("is_riptide", IValueEvaluator { it.entity().isAutoSpinAttack })
+        livingEntityVar("armor_value", IValueEvaluator { it.entity().armorValue })
+        livingEntityVar("hurt_time", IValueEvaluator { it.entity().hurtTime })
+        livingEntityVar("is_close_eyes", IValueEvaluator { isCloseEyes(it.animationEvent(), it.entity()) })
+        livingEntityVar("on_ladder", IValueEvaluator { it.entity().onClimbable() })
         livingEntityVar("ladder_facing", LadderFacing())
-        livingEntityVar("arrow_count", IValueEvaluator { ctx: IContext<LivingEntity> -> ctx.entity().arrowCount })
-        livingEntityVar("stinger_count", IValueEvaluator { ctx: IContext<LivingEntity> -> ctx.entity().stingerCount })
-        livingEntityVar("entity_type", IValueEvaluator { ctx: IContext<LivingEntity> -> getEntityTypeName(ctx) })
-        livingEntityVar(
-            "is_player",
-            IValueEvaluator { ctx: IContext<LivingEntity> -> "player" == getEntityTypeName(ctx) })
-        livingEntityVar("is_maid", IValueEvaluator { ctx: IContext<LivingEntity> -> "maid" == getEntityTypeName(ctx) })
-        livingEntityVar("food_level", IValueEvaluator { ctx: IContext<LivingEntity> -> getFoodLevel(ctx) })
-        livingEntityVar("xxa", IValueEvaluator { ctx: IContext<LivingEntity> -> getXxa(ctx) })
-        livingEntityVar("yya", IValueEvaluator { ctx: IContext<LivingEntity> -> getYya(ctx) })
-        livingEntityVar("zza", IValueEvaluator { ctx: IContext<LivingEntity> -> getZza(ctx) })
+        livingEntityVar("arrow_count", IValueEvaluator { it.entity().arrowCount })
+        livingEntityVar("stinger_count", IValueEvaluator { it.entity().stingerCount })
+        livingEntityVar("entity_type", IValueEvaluator { getEntityTypeName(it) })
+        livingEntityVar("is_player", IValueEvaluator { "player" == getEntityTypeName(it) })
+        livingEntityVar("is_maid", IValueEvaluator { "maid" == getEntityTypeName(it) })
+        livingEntityVar("food_level", IValueEvaluator { getFoodLevel(it) })
+        livingEntityVar("xxa", IValueEvaluator { getXxa(it) })
+        livingEntityVar("yya", IValueEvaluator { getYya(it) })
+        livingEntityVar("zza", IValueEvaluator { getZza(it) })
         livingEntityVar(
             "mainhand_charged_crossbow",
-            IValueEvaluator { ctx: IContext<LivingEntity> -> isChargedCrossbow(ctx, InteractionHand.MAIN_HAND) })
+            IValueEvaluator { isChargedCrossbow(it, InteractionHand.MAIN_HAND) })
         livingEntityVar(
             "offhand_charged_crossbow",
-            IValueEvaluator { ctx: IContext<LivingEntity> -> isChargedCrossbow(ctx, InteractionHand.OFF_HAND) })
-        livingEntityVar("is_fishing", IValueEvaluator { ctx: IContext<LivingEntity> -> isFishing(ctx) })
-        livingEntityVar("swinging", IValueEvaluator { ctx: IContext<LivingEntity> -> ctx.entity().swinging })
-        livingEntityVar("swing_time", IValueEvaluator { ctx: IContext<LivingEntity> -> ctx.entity().swingTime })
+            IValueEvaluator { isChargedCrossbow(it, InteractionHand.OFF_HAND) })
+        livingEntityVar("is_fishing", IValueEvaluator { isFishing(it) })
+        livingEntityVar("swinging", IValueEvaluator { it.entity().swinging })
+        livingEntityVar("swing_time", IValueEvaluator { it.entity().swingTime })
         livingEntityVar(
             "swinging_arm",
-            IValueEvaluator { ctx: IContext<LivingEntity> -> if (ctx.entity().swingingArm == InteractionHand.MAIN_HAND) 0 else 1 })
+            IValueEvaluator { if (it.entity().swingingArm == InteractionHand.MAIN_HAND) 0 else 1 })
         livingEntityVar(
             "attack_time",
-            IValueEvaluator { ctx: IContext<LivingEntity> ->
-                ctx.entity().getAttackAnim(ctx.animationEvent().frameTime)
+            IValueEvaluator {
+                it.entity().getAttackAnim(it.animationEvent().frameTime)
             })
         playerEntityVar("texture_name", TextureName())
         playerEntityVar("first_person_mod_hide", FirstPersonModHide())
         playerEntityVar(
             "has_left_shoulder_parrot",
-            IValueEvaluator { ctx: IContext<Player> -> hasShoulderParrot(ctx.entity(), true) })
+            IValueEvaluator { hasShoulderParrot(it.entity(), true) })
         playerEntityVar(
             "has_right_shoulder_parrot",
-            IValueEvaluator { ctx: IContext<Player> -> hasShoulderParrot(ctx.entity(), false) })
+            IValueEvaluator { hasShoulderParrot(it.entity(), false) })
         playerEntityVar(
             "left_shoulder_parrot_variant",
-            IValueEvaluator { ctx: IContext<Player> -> getShoulderParrotVariant(ctx.entity(), true) })
+            IValueEvaluator { getShoulderParrotVariant(it.entity(), true) })
         playerEntityVar(
             "right_shoulder_parrot_variant",
-            IValueEvaluator { ctx: IContext<Player> -> getShoulderParrotVariant(ctx.entity(), false) })
+            IValueEvaluator { getShoulderParrotVariant(it.entity(), false) })
         playerEntityVar(
             "attack_damage",
-            IValueEvaluator { ctx: IContext<Player> -> ctx.entity().getAttributeValue(Attributes.ATTACK_DAMAGE) })
+            IValueEvaluator { it.entity().getAttributeValue(Attributes.ATTACK_DAMAGE) })
         playerEntityVar(
             "attack_speed",
-            IValueEvaluator { ctx: IContext<Player> -> ctx.entity().getAttributeValue(Attributes.ATTACK_SPEED) })
+            IValueEvaluator { it.entity().getAttributeValue(Attributes.ATTACK_SPEED) })
         playerEntityVar(
             "attack_knockback",
-            IValueEvaluator { ctx: IContext<Player> -> ctx.entity().getAttributeValue(Attributes.ATTACK_KNOCKBACK) })
+            IValueEvaluator { it.entity().getAttributeValue(Attributes.ATTACK_KNOCKBACK) })
         playerEntityVar(
             "movement_speed",
-            IValueEvaluator { ctx: IContext<Player> -> ctx.entity().getAttributeValue(Attributes.MOVEMENT_SPEED) })
+            IValueEvaluator { it.entity().getAttributeValue(Attributes.MOVEMENT_SPEED) })
         playerEntityVar(
             "knockback_resistance",
-            IValueEvaluator { ctx: IContext<Player> ->
-                ctx.entity().getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)
+            IValueEvaluator {
+                it.entity().getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)
             })
         playerEntityVar(
             "luck",
-            IValueEvaluator { ctx: IContext<Player> -> ctx.entity().getAttributeValue(Attributes.LUCK) })
+            IValueEvaluator { it.entity().getAttributeValue(Attributes.LUCK) })
         playerEntityVar(
             "block_reach",
-            IValueEvaluator { ctx: IContext<Player> ->
+            IValueEvaluator {
                 ForgeAttributes.getValue(
-                    ctx.entity(),
+                    it.entity(),
                     ForgeAttributes.blockReach(),
                     4.5
                 )
             })
         playerEntityVar(
             "entity_reach",
-            IValueEvaluator { ctx: IContext<Player> ->
+            IValueEvaluator {
                 ForgeAttributes.getValue(
-                    ctx.entity(),
+                    it.entity(),
                     ForgeAttributes.entityReach(),
                     3.0
                 )
             })
         playerEntityVar(
             "swim_speed",
-            IValueEvaluator { ctx: IContext<Player> ->
+            IValueEvaluator {
                 ForgeAttributes.getValue(
-                    ctx.entity(),
+                    it.entity(),
                     ForgeAttributes.swimSpeed(),
                     1.0
                 )
             })
         playerEntityVar(
             "entity_gravity",
-            IValueEvaluator { ctx: IContext<Player> ->
+            IValueEvaluator {
                 ForgeAttributes.getValue(
-                    ctx.entity(),
+                    it.entity(),
                     ForgeAttributes.entityGravity(),
                     0.08
                 )
             })
         playerEntityVar(
             "step_height_addition",
-            IValueEvaluator { ctx: IContext<Player> ->
+            IValueEvaluator {
                 ForgeAttributes.getValue(
-                    ctx.entity(),
+                    it.entity(),
                     ForgeAttributes.stepHeightAddition(),
                     0.0
                 )
             })
         playerEntityVar(
             "nametag_distance",
-            IValueEvaluator { ctx: IContext<Player> ->
+            IValueEvaluator {
                 ForgeAttributes.getValue(
-                    ctx.entity(),
+                    it.entity(),
                     ForgeAttributes.nametagDistance(),
                     64.0
                 )
             })
         playerEntityVar(
             "in_shield_block_cooldown",
-            IValueEvaluator { ctx: IContext<Player> -> isInShieldBlockCooldown(ctx) })
+            IValueEvaluator { isInShieldBlockCooldown(it) })
         clientPlayerEntityVar(
             "elytra_rot_x",
-            IValueEvaluator { ctx: IContext<AbstractClientPlayer> ->
+            IValueEvaluator {
                 Math.toDegrees(
-                    ctx.entity().elytraAnimationState.getRotX(ctx.animationEvent().frameTime).toDouble()
+                    it.entity().elytraAnimationState.getRotX(it.animationEvent().frameTime).toDouble()
                 )
             })
         clientPlayerEntityVar(
             "elytra_rot_y",
-            IValueEvaluator { ctx: IContext<AbstractClientPlayer> ->
+            IValueEvaluator {
                 Math.toDegrees(
-                    ctx.entity().elytraAnimationState.getRotY(ctx.animationEvent().frameTime).toDouble()
+                    it.entity().elytraAnimationState.getRotY(it.animationEvent().frameTime).toDouble()
                 )
             })
         clientPlayerEntityVar(
             "elytra_rot_z",
-            IValueEvaluator { ctx: IContext<AbstractClientPlayer> ->
+            IValueEvaluator {
                 Math.toDegrees(
-                    ctx.entity().elytraAnimationState.getRotZ(ctx.animationEvent().frameTime).toDouble()
+                    it.entity().elytraAnimationState.getRotZ(it.animationEvent().frameTime).toDouble()
                 )
             })
-        localPlayerEntityVar("hit_target_id", IValueEvaluator { ctx: IContext<LocalPlayer> -> getHitTargetId(ctx) })
-        localPlayerEntityVar("hit_target_type", IValueEvaluator { ctx: IContext<LocalPlayer> -> getHitTargetType(ctx) })
+        localPlayerEntityVar("hit_target_id", IValueEvaluator { getHitTargetId(it) })
+        localPlayerEntityVar("hit_target_type", IValueEvaluator { getHitTargetType(it) })
         function("first_order", FirstOrderFunction())
         function("second_order", SecondOrderFunction())
         function("particle", Particle(false))
@@ -302,43 +267,42 @@ object YSMBinding : ContextBinding() {
         function("mouse", InputKeyDetectionFunction.Mouse())
         function(MolangEventDispatcher.SYNC, Sync())
         function(MolangEventDispatcher.DEFER, Defer())
-        projectileEntityVar("projectile_owner", IValueEvaluator { ctx -> ctx.createChild(ctx.entity().owner) })
+        projectileEntityVar("projectile_owner", IValueEvaluator { it.createChild(it.entity().owner) })
         throwableProjectileEntityVar(
             "throwable_item",
-            IValueEvaluator { ctx: IContext<ThrowableItemProjectile> -> getThrowableItemId(ctx) })
-        fishHookEntityVar("hooked_in", IValueEvaluator { ctx: IContext<FishingHook> -> getHookedEntityType(ctx) })
+            IValueEvaluator { getThrowableItemId(it) })
+        fishHookEntityVar("hooked_in", IValueEvaluator { getHookedEntityType(it) })
         fishHookEntityVar(
             "is_biting",
-            IValueEvaluator { ctx: IContext<FishingHook> -> ctx.entity().biting })
+            IValueEvaluator { it.entity().biting })
         abstractArrowEntityVar(
             "on_ground_time",
-            IValueEvaluator { ctx: IContext<AbstractArrow> -> (ctx.entity() as ProjectileStateAccessor).`ysm$getInGroundTime`() })
+            IValueEvaluator { (it.entity() as ProjectileStateAccessor).`ysm$getInGroundTime`() })
         abstractArrowEntityVar(
             "in_ground",
-            IValueEvaluator { ctx: IContext<AbstractArrow> -> (ctx.entity() as ProjectileStateAccessor).`ysm$isArrowInGround`() })
+            IValueEvaluator { (it.entity() as ProjectileStateAccessor).`ysm$isArrowInGround`() })
         abstractArrowEntityVar(
             "is_spectral_arrow",
-            IValueEvaluator { ctx: IContext<AbstractArrow> -> ctx.entity() is SpectralArrow })
+            IValueEvaluator { it.entity() is SpectralArrow })
         abstractArrowEntityVar(
             "shoot_item_id",
-            IValueEvaluator { ctx: IContext<AbstractArrow> -> (ctx.entity() as ProjectileStateAccessor).`ysm$getOwnerItemId`() })
+            IValueEvaluator { (it.entity() as ProjectileStateAccessor).`ysm$getOwnerItemId`() })
         CuriosCompat.registerCuriosItems(this)
     }
 
     @JvmStatic
     fun getHitTargetId(context: IContext<LocalPlayer>): String {
-        val hitResult: HitResult? = Minecraft.getInstance().hitResult
+        val hitResult = Minecraft.getInstance().hitResult
         if (hitResult is BlockHitResult) {
-            val clientLevel: ClientLevel = Minecraft.getInstance().level ?: return StringPool.EMPTY
+            val clientLevel = Minecraft.getInstance().level ?: return StringPool.EMPTY
             if (hitResult.type == HitResult.Type.MISS) {
                 return StringPool.EMPTY
             }
-            val key: Identifier =
-                BuiltInRegistries.BLOCK.getKey(clientLevel.getBlockState(hitResult.blockPos).block)
+            val key = BuiltInRegistries.BLOCK.getKey(clientLevel.getBlockState(hitResult.blockPos).block)
             return key.toString()
         }
         if (hitResult is EntityHitResult) {
-            val key2: Identifier = BuiltInRegistries.ENTITY_TYPE.getKey(hitResult.entity.type)
+            val key2 = BuiltInRegistries.ENTITY_TYPE.getKey(hitResult.entity.type)
             return key2.toString()
         }
         return StringPool.EMPTY
@@ -346,7 +310,7 @@ object YSMBinding : ContextBinding() {
 
     @JvmStatic
     fun getHitTargetType(context: IContext<LocalPlayer>): String {
-        val hitResult: HitResult = Minecraft.getInstance().hitResult ?: return StringPool.EMPTY
+        val hitResult = Minecraft.getInstance().hitResult ?: return StringPool.EMPTY
         return when (hitResult.type) {
             HitResult.Type.BLOCK -> "block"
             HitResult.Type.ENTITY -> "entity"
@@ -373,14 +337,14 @@ object YSMBinding : ContextBinding() {
 
     @JvmStatic
     fun getGroundSpeed2(context: IContext<Entity>): Float {
-        val tracker: EntityFrameStateTracker<*> = context.geoInstance().positionTracker
-        val delta: Vec3 = tracker.positionDelta
+        val tracker = context.geoInstance().positionTracker
+        val delta = tracker.positionDelta
         return (20.0f * Mth.sqrt((delta.x * delta.x + delta.z * delta.z).toFloat())) / tracker.timeDelta
     }
 
     @JvmStatic
     fun getXxa(context: IContext<LivingEntity>): Float {
-        val animatable: AnimatableEntity<*> = context.geoInstance()
+        val animatable = context.geoInstance()
         if (animatable is PlayerCapability) {
             if (!animatable.isLocalPlayerModel()) {
                 return animatable.getPositionTracker().strafeInput
@@ -391,7 +355,7 @@ object YSMBinding : ContextBinding() {
 
     @JvmStatic
     fun getYya(context: IContext<LivingEntity>): Float {
-        val animatable: AnimatableEntity<*> = context.geoInstance()
+        val animatable = context.geoInstance()
         if (animatable is PlayerCapability) {
             if (!animatable.isLocalPlayerModel()) {
                 return animatable.getPositionTracker().verticalInput
@@ -402,7 +366,7 @@ object YSMBinding : ContextBinding() {
 
     @JvmStatic
     fun getZza(context: IContext<LivingEntity>): Float {
-        val animatable: AnimatableEntity<*> = context.geoInstance()
+        val animatable = context.geoInstance()
         if (animatable is PlayerCapability) {
             if (!animatable.isLocalPlayerModel()) {
                 return animatable.getPositionTracker().forwardInput
@@ -413,7 +377,7 @@ object YSMBinding : ContextBinding() {
 
     @JvmStatic
     fun isInShieldBlockCooldown(context: IContext<Player>): Boolean {
-        val animatable: AnimatableEntity<*> = context.geoInstance()
+        val animatable = context.geoInstance()
         return animatable is PlayerCapability && animatable.getPositionTracker().isShieldBlocking
     }
 
@@ -428,29 +392,23 @@ object YSMBinding : ContextBinding() {
 
     @JvmStatic
     fun isChargedCrossbow(context: IContext<LivingEntity>, interactionHand: InteractionHand): Boolean {
-        val itemInHand: ItemStack = context.entity().getItemInHand(interactionHand)
+        val itemInHand = context.entity().getItemInHand(interactionHand)
         return itemInHand.`is`(Items.CROSSBOW) && CrossbowItem.isCharged(itemInHand)
     }
 
     @JvmStatic
     fun getEntityTypeName(context: IContext<LivingEntity>): String {
         val livingEntity = context.entity()
-        if (livingEntity is Player) {
-            return "player"
-        }
-        val key: Identifier = BuiltInRegistries.ENTITY_TYPE.getKey(livingEntity.type)
-        if ("touhou_little_maid" == key.namespace && "maid" == key.path) {
-            return "maid"
-        }
+        if (livingEntity is Player) return "player"
+        val key = BuiltInRegistries.ENTITY_TYPE.getKey(livingEntity.type)
+        if ("touhou_little_maid" == key.namespace && "maid" == key.path) return "maid"
         return key.toString()
     }
 
     @JvmStatic
     fun getFoodLevel(context: IContext<LivingEntity>): Any {
-        val animatable: AnimatableEntity<*> = context.geoInstance()
-        if (animatable is PlayerCapability) {
-            if (!animatable.isLocalPlayerModel()) return animatable.getPositionTracker().foodLevel
-        }
+        val animatable = context.geoInstance()
+        if (animatable is PlayerCapability && !animatable.isLocalPlayerModel()) return animatable.getPositionTracker().foodLevel
         val livingEntity = context.entity()
         if (livingEntity is Player) return livingEntity.foodData.foodLevel
         return 20
@@ -458,14 +416,13 @@ object YSMBinding : ContextBinding() {
 
     @JvmStatic
     fun isCloseEyes(event: AnimationEvent<*>, livingEntity: LivingEntity): Boolean {
-        val blinkPhase: Float = (event.currentTick + (abs(livingEntity.uuid.leastSignificantBits) % 10)) % 90.0f
+        val blinkPhase = (event.currentTick + (abs(livingEntity.uuid.leastSignificantBits) % 10)) % 90.0f
         return livingEntity.isSleeping || (blinkPhase in 85.0f..90.0f)
     }
 
     @JvmStatic
-    fun hasEquipment(livingEntity: LivingEntity, equipmentSlot: EquipmentSlot): Boolean {
-        return !CosmeticArmorHelper.getArmorItem(livingEntity, equipmentSlot).isEmpty
-    }
+    fun hasEquipment(livingEntity: LivingEntity, equipmentSlot: EquipmentSlot): Boolean =
+        !CosmeticArmorHelper.getArmorItem(livingEntity, equipmentSlot).isEmpty
 
     @JvmStatic
     fun getWeather(clientLevel: ClientLevel?): Int = when {
@@ -475,6 +432,7 @@ object YSMBinding : ContextBinding() {
         else -> 0
     }
 
+    // TODO: What
     @Deprecated("")
     @JvmStatic
     fun getBiomeCategory(entity: Entity): String? {
@@ -498,12 +456,10 @@ object YSMBinding : ContextBinding() {
 
     @JvmStatic
     fun dumpEffects(context: IContext<Entity>): Any? {
-        if (!context.isDebugMode()) {
-            return null
-        }
-        val activeEffects: Collection<MobEffectInstance> = when (val entity = context.entity()) {
+        if (!context.isDebugMode()) return null
+        val activeEffects = when (val entity = context.entity()) {
             is Arrow -> {
-                val potionContents: PotionContents =
+                val potionContents =
                     entity.pickupItemStackOrigin.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY)
                 potionContents.allEffects.toList()
             }
@@ -533,7 +489,7 @@ object YSMBinding : ContextBinding() {
         if (!context.isDebugMode()) {
             return null
         }
-        val biome: Holder<Biome> = context.entity().level().getBiome(context.entity().blockPosition())
+        val biome = context.entity().level().getBiome(context.entity().blockPosition())
         biome.unwrapKey().ifPresent { resourceKey ->
             context.logWarningComponent(
                 Component.literal("Name ")
@@ -550,22 +506,19 @@ object YSMBinding : ContextBinding() {
 
     @JvmStatic
     fun isOpenAir(entity: Entity): Boolean {
-        val blockPos: BlockPos = entity.blockPosition()
+        val blockPos = entity.blockPosition()
         return entity.level().canSeeSky(blockPos) && entity.level()
             .getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, blockPos).y <= blockPos.y
     }
 
     @JvmStatic
     fun getShoulderParrotVariant(player: Player, leftShoulder: Boolean): String {
-        if (player !is AbstractClientPlayer) {
-            return "empty"
-        }
-        val variant: Parrot.Variant? = player.getParrotVariantOnShoulder(leftShoulder)
+        if (player !is AbstractClientPlayer) return "empty"
+        val variant = player.getParrotVariantOnShoulder(leftShoulder)
         return variant?.name?.lowercase(Locale.ENGLISH) ?: "empty"
     }
 
     @JvmStatic
-    fun hasShoulderParrot(player: Player, leftShoulder: Boolean): Boolean {
-        return player is AbstractClientPlayer && player.getParrotVariantOnShoulder(leftShoulder) != null
-    }
+    fun hasShoulderParrot(player: Player, leftShoulder: Boolean): Boolean =
+        player is AbstractClientPlayer && player.getParrotVariantOnShoulder(leftShoulder) != null
 }
