@@ -21,8 +21,7 @@ object CommonEvent {
         nativeInit()
     }
 
-    @JvmStatic
-    fun nativeInit(): Any? {
+    private fun nativeInit(): Any? {
         runCatching {
             ServerModelManager.reloadPacks()
         }.onFailure {

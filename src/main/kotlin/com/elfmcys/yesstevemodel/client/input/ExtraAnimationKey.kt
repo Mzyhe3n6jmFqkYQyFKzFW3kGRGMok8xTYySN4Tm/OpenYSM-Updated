@@ -10,14 +10,16 @@ import com.elfmcys.yesstevemodel.network.message.C2SPlayAnimationPacket
 import com.elfmcys.yesstevemodel.util.InputUtil
 import com.google.common.collect.Lists
 import com.mojang.blaze3d.platform.InputConstants
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 import net.minecraft.client.KeyMapping
 import net.minecraft.client.Minecraft
 import net.minecraft.client.input.KeyEvent
-import rip.ysm.api.PlatformAPI
 import rip.ysm.api.client.KeyMappingFactory
 import rip.ysm.api.client.event.ClientRawInputEvent
 import rip.ysm.api.event.EventResult
 
+@Environment(EnvType.CLIENT)
 object ExtraAnimationKey {
     @JvmField
     val KEY_MAPPINGS: MutableList<KeyMapping> = Lists.newArrayList()
@@ -25,7 +27,6 @@ object ExtraAnimationKey {
     @Volatile
     private var initialized: Boolean = false
 
-    @JvmStatic
     fun getKeyMappings(): MutableList<KeyMapping> {
         if (!initialized) {
             initialized = true
@@ -44,22 +45,15 @@ object ExtraAnimationKey {
         return KEY_MAPPINGS
     }
 
-    @JvmStatic
-    fun register() {
-        if (PlatformAPI.isServer()) {
-            return
-        }
+    init {
         ClientRawInputEvent.KEY_PRESSED.register { _, action, event ->
             onKeyInput(action, event)
             EventResult.pass()
         }
     }
 
-    @JvmStatic
     private fun onKeyInput(action: Int, event: KeyEvent) {
-        if (!YesSteveModel.isAvailable() || !InputUtil.isPlayerReady()) {
-            return
-        }
+        if (!YesSteveModel.isAvailable() || !InputUtil.isPlayerReady()) return
         val localPlayer = Minecraft.getInstance().player ?: return
         for (eventMapping in KEY_MAPPINGS) {
             if (action == 1 && InputUtil.isKeyPressed(event, eventMapping) && !AnimationLockEvent.isPlayerMoving(

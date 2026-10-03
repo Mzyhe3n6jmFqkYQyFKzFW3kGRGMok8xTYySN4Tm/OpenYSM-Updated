@@ -36,7 +36,6 @@ object YesSteveModel {
         Constants.doNothing(YsmEventBootstrap)
     }
 
-    @Suppress("DEPRECATION")
     private fun initConfig() {
         val oldConfig: File = Constants.MainConfigDir.resolve("yes_steve_model-common.toml").toFile()
         if (oldConfig.isFile) {

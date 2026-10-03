@@ -27,9 +27,7 @@ object CapabilityEvent {
     }
 
     private fun onPlayerCloned(oldPlayer: ServerPlayer, newPlayer: ServerPlayer, wasDeath: Boolean) {
-        if (!YesSteveModel.isAvailable()) {
-            return
-        }
+        if (!YesSteveModel.isAvailable()) return
         CapabilityLifecycle.revive(oldPlayer)
         val oldModelInfoCap = getModelInfoCap(oldPlayer)
         val oldAuthModelsCap = getAuthModelsCap(oldPlayer)
@@ -50,40 +48,35 @@ object CapabilityEvent {
     }
 
     private fun onEntityAdd(entity: Entity, level: ServerLevel) {
-        if (!YesSteveModel.isAvailable()) {
-            return
-        }
+        if (!YesSteveModel.isAvailable()) return
         if (entity is ServerPlayer) {
-            val player = entity
-            getModelInfoCap(player)?.let { modelInfoCap ->
-                if (!NetworkHandler.isPlayerConnected(player) && !modelInfoCap.isMandatory()) {
+            getModelInfoCap(entity)?.let { modelInfoCap ->
+                if (!NetworkHandler.isPlayerConnected(entity) && !modelInfoCap.isMandatory()) {
                     modelInfoCap.markDirty()
                     return@let
                 }
-                modelInfoCap.stopAnimation(player)
-                val syncMessage = modelInfoCap.createSyncMessage(player, false)
+                modelInfoCap.stopAnimation(entity)
+                val syncMessage = modelInfoCap.createSyncMessage(entity, false)
                 if (syncMessage != null) {
-                    NetworkHandler.sendToClientPlayer(syncMessage, player)
+                    NetworkHandler.sendToClientPlayer(syncMessage, entity)
                 } else {
                     modelInfoCap.markDirty()
                 }
             }
-            getAuthModelsCap(player)?.let { authModelsCap ->
+            getAuthModelsCap(entity)?.let { authModelsCap ->
                 for (modelId in ServerModelManager.getAuthModels()) {
                     authModelsCap.addModel(modelId)
                 }
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.getAuthModels()), player)
+                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.getAuthModels()), entity)
             }
-            getStarModelsCap(player)?.let { starModelsCap ->
-                NetworkHandler.sendToClientPlayer(S2CSyncStarModelsPacket(starModelsCap.getStarModels()), player)
+            getStarModelsCap(entity)?.let { starModelsCap ->
+                NetworkHandler.sendToClientPlayer(S2CSyncStarModelsPacket(starModelsCap.getStarModels()), entity)
             }
         }
     }
 
     private fun onServerTick(server: MinecraftServer) {
-        if (!YesSteveModel.isAvailable()) {
-            return
-        }
+        if (!YesSteveModel.isAvailable()) return
         val players = server.playerList.players
         val lowBandwidth = ServerConfig.LOW_BANDWIDTH_USAGE.get()
         for (serverPlayer in players) {

@@ -1,13 +1,17 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.elfmcys.yesstevemodel.client.event
 
 import com.elfmcys.yesstevemodel.YesSteveModel
 import com.elfmcys.yesstevemodel.event.api.SpecialPlayerRenderEvent
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.AbstractClientPlayer
 import net.minecraft.resources.Identifier
-import rip.ysm.api.PlatformAPI
 import rip.ysm.api.event.EventResult
 
+@Environment(EnvType.CLIENT)
 object PlayerSkinTextureManager {
     @JvmField
     val STEVE_SKIN: Identifier = Identifier.parse("textures/entity/player/wide/steve.png")
@@ -15,17 +19,14 @@ object PlayerSkinTextureManager {
     @JvmField
     val ALEX_SKIN: Identifier = Identifier.parse("textures/entity/player/slim/alex.png")
 
-    const val STEVE_TEXTURE_ID: String = "misc/2_steve"
-    const val ALEX_TEXTURE_ID: String = "misc/1_alex"
+    private const val STEVE_TEXTURE_ID: String = "misc/2_steve"
+    private const val ALEX_TEXTURE_ID: String = "misc/1_alex"
 
-    @JvmStatic
-    fun register() {
-        if (PlatformAPI.isServer()) return
+    init {
         SpecialPlayerRenderEvent.EVENT.register(::onRenderTexture)
     }
 
-    @JvmStatic
-    fun onRenderTexture(event: SpecialPlayerRenderEvent): EventResult {
+    private fun onRenderTexture(event: SpecialPlayerRenderEvent): EventResult {
         if (!YesSteveModel.isAvailable()) {
             return EventResult.pass()
         }
@@ -41,12 +42,9 @@ object PlayerSkinTextureManager {
         return EventResult.pass()
     }
 
-    @JvmStatic
-    fun isDefaultSkin(str: String): Boolean {
-        return str == STEVE_TEXTURE_ID || str == ALEX_TEXTURE_ID
-    }
+    fun isDefaultSkin(str: String): Boolean = str == STEVE_TEXTURE_ID || str == ALEX_TEXTURE_ID
 
-    @JvmStatic
+    @Suppress("unused")
     fun getSkinTexture(str: String): Identifier {
         return if (str == STEVE_TEXTURE_ID) STEVE_SKIN else ALEX_SKIN
     }

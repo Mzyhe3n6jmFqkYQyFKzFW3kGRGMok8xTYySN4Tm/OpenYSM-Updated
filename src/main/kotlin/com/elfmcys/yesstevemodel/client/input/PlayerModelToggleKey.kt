@@ -9,14 +9,16 @@ import com.elfmcys.yesstevemodel.config.ServerConfig
 import com.elfmcys.yesstevemodel.network.NetworkHandler
 import com.elfmcys.yesstevemodel.util.InputUtil
 import com.mojang.blaze3d.platform.InputConstants
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 import net.minecraft.client.KeyMapping
 import net.minecraft.client.Minecraft
 import net.minecraft.client.input.KeyEvent
-import rip.ysm.api.PlatformAPI
 import rip.ysm.api.client.KeyMappingFactory
 import rip.ysm.api.client.event.ClientRawInputEvent
 import rip.ysm.api.event.EventResult
 
+@Environment(EnvType.CLIENT)
 object PlayerModelToggleKey {
     @JvmField
     val KEY_MAPPING: KeyMapping = KeyMappingFactory.createInGameAlt(
@@ -26,11 +28,7 @@ object PlayerModelToggleKey {
         KeyMappingFactory.YSM_CATEGORY
     )
 
-    @JvmStatic
-    fun register() {
-        if (PlatformAPI.isServer()) {
-            return
-        }
+    init {
         ClientRawInputEvent.KEY_PRESSED.register { _, action, event ->
             onKeyInput(action, event)
             EventResult.pass()
@@ -45,12 +43,13 @@ object PlayerModelToggleKey {
                 return
             }
             val mc = Minecraft.getInstance()
-            if (NetworkHandler.isClientConnected() && !ServerConfig.CAN_SWITCH_MODEL.get()) {
-                mc.setScreen(ExtraPlayerConfigScreen(null))
-            } else if (GeneralConfig.DISCLAIMER_SHOW.get()) {
-                mc.setScreen(DisclaimerScreen())
-            } else {
-                mc.setScreen(PlayerModelScreen())
+            when {
+                NetworkHandler.isClientConnected() && !ServerConfig.CAN_SWITCH_MODEL.get() -> mc.setScreen(
+                    ExtraPlayerConfigScreen()
+                )
+
+                GeneralConfig.DISCLAIMER_SHOW.get() -> mc.setScreen(DisclaimerScreen())
+                else -> mc.setScreen(PlayerModelScreen())
             }
         }
     }

@@ -8,10 +8,8 @@ import com.elfmcys.yesstevemodel.util.InputUtil
 
 object InputKeyDetectionFunction {
     class Keyboard : Function {
-        override fun evaluate(context: ExecutionContext<*>, arguments: ArgumentCollection): Any? {
-            if (!InputUtil.isPlayerReady()) {
-                return false
-            }
+        override fun evaluate(context: ExecutionContext<*>, arguments: ArgumentCollection): Any {
+            if (!InputUtil.isPlayerReady()) return false
             for (i in 0 until arguments.size()) {
                 val keycode: Int = arguments.getAsInt(context, i)
                 if (keycode in 32..348 && InputStateKey.keyStates[keycode]) {
@@ -21,25 +19,16 @@ object InputKeyDetectionFunction {
             return false
         }
 
-        override fun validateArgumentSize(size: Int): Boolean {
-            return size >= 1
-        }
+        override fun validateArgumentSize(size: Int): Boolean = size >= 1
     }
 
     class Mouse : Function {
-        override fun evaluate(context: ExecutionContext<*>, arguments: ArgumentCollection): Any? {
-            if (!InputUtil.isPlayerReady()) {
-                return false
-            }
+        override fun evaluate(context: ExecutionContext<*>, arguments: ArgumentCollection): Any {
+            if (!InputUtil.isPlayerReady()) return false
             val keycode: Int = arguments.getAsInt(context, 0)
-            if (keycode in 0..7) {
-                return InputStateKey.mouseStates[keycode]
-            }
-            return false
+            return keycode in 0..7 && InputStateKey.mouseStates[keycode]
         }
 
-        override fun validateArgumentSize(size: Int): Boolean {
-            return size == 1
-        }
+        override fun validateArgumentSize(size: Int): Boolean = size == 1
     }
 }

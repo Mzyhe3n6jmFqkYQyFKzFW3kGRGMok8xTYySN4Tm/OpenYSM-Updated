@@ -5,6 +5,8 @@ import com.elfmcys.yesstevemodel.capability.PlayerCapability
 import com.elfmcys.yesstevemodel.client.input.AnimationRouletteKey
 import com.elfmcys.yesstevemodel.network.NetworkHandler
 import com.elfmcys.yesstevemodel.network.message.C2SPlayAnimationPacket
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
@@ -12,12 +14,12 @@ import rip.ysm.api.client.event.ClientRawInputEvent
 import rip.ysm.api.event.EventResult
 import kotlin.math.abs
 
+@Environment(EnvType.CLIENT)
 object AnimationLockEvent {
     @JvmField
     var animationLocked: Boolean = false
 
-    @JvmStatic
-    fun register() {
+    init {
         ClientRawInputEvent.KEY_PRESSED.register { _, action, event ->
             if (YesSteveModel.isAvailable() && action == 1 && AnimationRouletteKey.KEY_LOCK.matches(event))
                 animationLocked = !animationLocked
@@ -26,8 +28,7 @@ object AnimationLockEvent {
         ClientTickEvents.END_CLIENT_TICK.register(::onClientTick)
     }
 
-    @JvmStatic
-    fun onClientTick(client: Minecraft) {
+    private fun onClientTick(client: Minecraft) {
         val localPlayer = client.player
         if (YesSteveModel.isAvailable() && !animationLocked && localPlayer != null && isPlayerMoving(localPlayer)) {
             PlayerCapability[localPlayer]?.let { cap ->
