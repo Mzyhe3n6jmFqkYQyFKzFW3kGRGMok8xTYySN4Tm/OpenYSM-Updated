@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.core.controller.controllers
 
 import com.elfmcys.yesstevemodel.client.animation.StopAnimationPredicate
@@ -19,7 +21,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import org.apache.commons.lang3.function.TriFunction
 import java.util.function.BiFunction
-import java.util.function.Consumer
 
 object ProjectileAnimationController {
     object ProjectileAnimationDataProvider : AnimationDataProvider<ProjectileModelBundle> {
@@ -74,10 +75,8 @@ object ProjectileAnimationController {
     fun buildControllers(
         modelBundle: ProjectileModelBundle,
         resourceBundle: ModelResourceBundle
-    ): Consumer<GeckoProjectileEntity> {
-        if (REGISTRY.isEmpty()) {
-            registerControllers()
-        }
+    ): (GeckoProjectileEntity) -> Unit {
+        if (REGISTRY.isEmpty()) registerControllers()
         return REGISTRY.buildAll(modelBundle, resourceBundle)
     }
 
@@ -88,7 +87,7 @@ object ProjectileAnimationController {
     ): ModelProcessor<GeckoProjectileEntity, ProjectileModelBundle> {
         val controllerKey = "$PROJECTILE_PREFIX.$controllerName"
         return REGISTRY.register { _, _ ->
-            { entity, consumer -> consumer.accept(controllerFactory.apply(controllerKey, entity)) }
+            { entity, consumer -> consumer(controllerFactory.apply(controllerKey, entity)) }
         }
     }
 

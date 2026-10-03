@@ -16,12 +16,11 @@ open class ControllerSlotBinder<T : GeoEntity<*>, TModel>(
     private val animationDataProvider: AnimationDataProvider<TModel>,
     private val controllerFactory: BiFunction<String, T, IAnimationController<T>>
 ) : ModelProcessor<T, TModel> {
-
     private val controllerNameMatcher: Predicate<String> =
-        Pattern.compile("^${Pattern.quote(prefix)}\\.${Pattern.quote(slotName)}(_.+){0,1}$").asMatchPredicate()
+        Pattern.compile("^${Pattern.quote(prefix)}\\.${Pattern.quote(slotName)}(_.+)?$").asMatchPredicate()
 
     private val molangEventMatcher: Predicate<String> =
-        Pattern.compile("^${Pattern.quote(prefix)}_ctrl_${Pattern.quote(slotName)}(_.+){0,1}$").asMatchPredicate()
+        Pattern.compile("^${Pattern.quote(prefix)}_ctrl_${Pattern.quote(slotName)}(_.+)?$").asMatchPredicate()
 
     override fun process(modelData: TModel, resourceBundle: ModelResourceBundle): ControllerFactory<T> {
         val controllerNames = ObjectRBTreeSet<String>()
@@ -41,9 +40,7 @@ open class ControllerSlotBinder<T : GeoEntity<*>, TModel>(
             }
         }
         return ControllerFactory { entity, consumer ->
-            for (controllerName in controllerNames) {
-                consumer.accept(controllerFactory.apply(controllerName, entity))
-            }
+            for (controllerName in controllerNames) consumer(controllerFactory.apply(controllerName, entity))
         }
     }
 }

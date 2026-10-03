@@ -19,9 +19,8 @@ import net.minecraft.world.entity.EquipmentSlot
 import org.apache.commons.lang3.function.TriFunction
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 import java.util.function.BiFunction
-import java.util.function.Consumer
 
-// TODO: Remove Suppress
+// TODO: Fix UNCHECKED_CAST
 @Suppress("UNCHECKED_CAST")
 @Environment(EnvType.CLIENT)
 object MaidAnimationController {
@@ -34,7 +33,7 @@ object MaidAnimationController {
     fun buildControllers(
         modelBundle: PlayerModelBundle,
         resourceBundle: ModelResourceBundle
-    ): Consumer<MaidAnimatable> {
+    ): (MaidAnimatable) -> Unit {
         if (REGISTRY.isEmpty()) registerControllers()
         return REGISTRY.buildAll(modelBundle, resourceBundle)
     }
@@ -193,7 +192,7 @@ object MaidAnimationController {
         val processor: ModelProcessor<MaidAnimatable, PlayerModelBundle> =
             ModelProcessor { _, _ ->
                 ControllerFactory { animatable, consumer ->
-                    consumer.accept(controllerFactory.apply(controllerKey, animatable))
+                    consumer(controllerFactory.apply(controllerKey, animatable))
                 }
             }
         REGISTRY.register(processor)
@@ -207,7 +206,7 @@ object MaidAnimationController {
             ControllerSlotBinder(
                 PLAYER_PREFIX,
                 slotName,
-                MaidAnimationDataProvider.INSTANCE,
+                MaidAnimationDataProvider,
                 controllerFactory
             )
         )
@@ -225,7 +224,7 @@ object MaidAnimationController {
                 slotName,
                 requiredAnimations,
                 checkAnimationEntries,
-                MaidAnimationDataProvider.INSTANCE,
+                MaidAnimationDataProvider,
                 controllerFactory
             )
         )
@@ -240,7 +239,7 @@ object MaidAnimationController {
                 PLAYER_PREFIX,
                 slotName,
                 true,
-                MaidAnimationDataProvider.INSTANCE,
+                MaidAnimationDataProvider,
                 controllerFactory
             )
         )
@@ -254,34 +253,26 @@ object MaidAnimationController {
             ArmorSlotProcessor(
                 PLAYER_PREFIX,
                 category,
-                MaidAnimationDataProvider.INSTANCE,
+                MaidAnimationDataProvider,
                 controllerFactory
             )
         )
     }
 
     private object MaidAnimationDataProvider : AnimationDataProvider<PlayerModelBundle> {
-        val INSTANCE = MaidAnimationDataProvider
-
         override fun getAnimationEntries(
             modelBundle: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
-        ): Object2ReferenceMap<String, AnimationController> {
-            return modelBundle.animationEntries
-        }
+        ): Object2ReferenceMap<String, AnimationController> = modelBundle.animationEntries
 
         override fun getAnimations(
             modelBundle: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
-        ): Object2ReferenceMap<String, Animation> {
-            return modelBundle.mainAnimations
-        }
+        ): Object2ReferenceMap<String, Animation> = modelBundle.mainAnimations
 
         override fun getConditionArmor(
             modelBundle: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
-        ): ConditionArmor {
-            return modelBundle.conditionManager.armor
-        }
+        ): ConditionArmor = modelBundle.conditionManager.armor
     }
 }

@@ -7,7 +7,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.controller.controllers.Projectil
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import net.minecraft.client.renderer.texture.AbstractTexture
-import java.util.function.Consumer
 
 open class ProjectileModelBundle(
     val model: GeoModel,
@@ -16,7 +15,6 @@ open class ProjectileModelBundle(
     val texture: AbstractTexture,
     resourceBundle: ModelResourceBundle
 ) {
-    // TODO: Replace Consumer
-    val controllerInitializer: Consumer<GeckoProjectileEntity> =
+    val controllerInitializer: (GeckoProjectileEntity) -> Unit =
         ProjectileAnimationController.buildControllers(this, resourceBundle)
 }

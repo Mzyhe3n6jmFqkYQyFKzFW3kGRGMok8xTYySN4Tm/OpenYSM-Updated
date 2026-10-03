@@ -22,24 +22,23 @@ open class ArmorSlotProcessor<T : GeoEntity<*>>(
         val armorCondition = animationDataProvider.getConditionArmor(modelData, resourceBundle)
         val animationEntries = animationDataProvider.getAnimationEntries(modelData, resourceBundle)
         val animations = animationDataProvider.getAnimations(modelData, resourceBundle)
-        for (slot in EquipmentSlot.values()) {
+        for (slot in EquipmentSlot.entries) {
             val slotKey = "$prefix.${category}_${slot.getName()}"
-            if (animationEntries.containsKey(slotKey)) {
-                matchingSlots.add(Pair.of(slotKey, slot))
-            } else if (resourceBundle.events.containsKey("${prefix}_ctrl_${category}_${slot.getName()}")) {
-                matchingSlots.add(Pair.of(slotKey, slot))
-            } else if (slot.type == EquipmentSlot.Type.HUMANOID_ARMOR && (armorCondition?.hasFilter(slot) == true || animations.containsKey(
+            when {
+                animationEntries.containsKey(slotKey) -> matchingSlots.add(Pair.of(slotKey, slot))
+                resourceBundle.events.containsKey("${prefix}_ctrl_${category}_${slot.getName()}") -> matchingSlots.add(
+                    Pair.of(slotKey, slot)
+                )
+
+                slot.type == EquipmentSlot.Type.HUMANOID_ARMOR && (armorCondition?.hasFilter(slot) == true || animations.containsKey(
                     "${slot.getName()}:default"
                 ))
-            ) {
-                matchingSlots.add(Pair.of(slotKey, slot))
+                    -> matchingSlots.add(Pair.of(slotKey, slot))
             }
         }
         return ControllerFactory { entity, consumer ->
             if (entity !is IPreviewAnimatable) {
-                for (pair in matchingSlots) {
-                    consumer.accept(controllerFactory.apply(pair.left, entity, pair.right))
-                }
+                for (pair in matchingSlots) consumer(controllerFactory.apply(pair.left, entity, pair.right))
             }
         }
     }

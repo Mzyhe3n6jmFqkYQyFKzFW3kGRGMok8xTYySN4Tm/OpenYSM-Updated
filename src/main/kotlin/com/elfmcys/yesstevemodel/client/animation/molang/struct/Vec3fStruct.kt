@@ -4,17 +4,13 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import com.elfmcys.yesstevemodel.molang.runtime.Struct
 
 abstract class Vec3fStruct : Struct {
-    override fun getProperty(i: Int): Any? {
-        if (i == NAME_X) {
-            return getX()
+    override fun getProperty(name: Int): Any? {
+        return when (name) {
+            NAME_X -> getX()
+            NAME_Y -> getY()
+            NAME_Z -> getZ()
+            else -> null
         }
-        if (i == NAME_Y) {
-            return getY()
-        }
-        if (i == NAME_Z) {
-            return getZ()
-        }
-        return null
     }
 
     abstract fun getX(): Float
