@@ -37,7 +37,7 @@ object SWarfareCompat : ModCompat("superbwarfare") {
         SWarfareCompatImpl.applyGunTransform(stack, model, entity, poseStack, packedLightIn, partialTicks)
     }
 
-    // TODO: Fix Unchecked cast
+    // TODO: Fix Unchecked cast UNCHECKED_CAST
     @JvmStatic
     fun handleTaczAnim(
         entity: LivingEntity,
