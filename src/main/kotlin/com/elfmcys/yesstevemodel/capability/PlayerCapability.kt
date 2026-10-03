@@ -42,7 +42,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
 
     override fun getPositionTracker(): PlayerEntityFrameState = super.getPositionTracker() as PlayerEntityFrameState
 
-    override fun getServerVarContainer(): Struct = (serverVarContainer as Any?) as Struct
+    override fun getServerVarContainer(): Struct? = serverVarContainer
 
     override fun onModelLoaded(context: ModelAssembly) {
         super.onModelLoaded(context)
