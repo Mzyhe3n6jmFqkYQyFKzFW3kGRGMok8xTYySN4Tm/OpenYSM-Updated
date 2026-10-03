@@ -2,19 +2,11 @@ package com.elfmcys.yesstevemodel.mixin.client;
 
 import com.elfmcys.yesstevemodel.YesSteveModel;
 import com.elfmcys.yesstevemodel.access.IEntityRenderDispatcher;
-import com.elfmcys.yesstevemodel.client.renderer.CustomFishingHookRenderer;
-import com.elfmcys.yesstevemodel.client.renderer.CustomProjectileRenderer;
-import com.elfmcys.yesstevemodel.client.renderer.CustomVehicleRenderer;
-import com.elfmcys.yesstevemodel.client.renderer.EntityRenderStateBindings;
-import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer;
-import com.elfmcys.yesstevemodel.client.renderer.RenderContext;
-import com.elfmcys.yesstevemodel.client.renderer.RendererManager;
-import com.elfmcys.yesstevemodel.client.renderer.VehicleRenderer;
+import com.elfmcys.yesstevemodel.client.renderer.*;
 import com.elfmcys.yesstevemodel.config.GeneralConfig;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -56,9 +48,9 @@ public abstract class EntityRenderDispatcherMixin implements IEntityRenderDispat
         var entity = EntityRenderStateBindings.get(state);
         if (entity == null) return true;
 
-        float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
-        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-        int packedLight = state.lightCoords;
+        var partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true);
+        var bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
+        var packedLight = state.lightCoords;
 
         RenderContext.enter(collector, cameraState);
         try {
