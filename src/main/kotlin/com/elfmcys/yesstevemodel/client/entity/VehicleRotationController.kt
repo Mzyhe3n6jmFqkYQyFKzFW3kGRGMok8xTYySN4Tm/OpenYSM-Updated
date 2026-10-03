@@ -12,7 +12,6 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import org.joml.Vector3f
 import rip.ysm.compat.immersiveaircraft.ImmersiveAirCraftCompat
 import rip.ysm.compat.simpleplanes.SimplePlanesCompat
-import java.util.function.Consumer
 
 open class VehicleRotationController(
     val entity: GeckoVehicleEntity,
@@ -55,10 +54,8 @@ open class VehicleRotationController(
         }
     }
 
-    override fun forEachTransform(consumer: Consumer<BoneTransformProvider>) {
-        if (boneTarget != null && vehicleRotation != null) {
-            consumer.accept(transformProvider)
-        }
+    override fun forEachTransform(consumer: (BoneTransformProvider) -> Unit) {
+        if (boneTarget != null && vehicleRotation != null) consumer(transformProvider)
     }
 
     override fun reset() {

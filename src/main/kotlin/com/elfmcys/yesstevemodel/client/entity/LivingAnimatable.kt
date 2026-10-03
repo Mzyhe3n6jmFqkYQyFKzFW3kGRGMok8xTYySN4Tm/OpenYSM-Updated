@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.client.entity
 
 import com.elfmcys.yesstevemodel.client.ClientModelManager
@@ -11,11 +13,8 @@ import com.elfmcys.yesstevemodel.geckolib3.core.builder.Animation
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue
-import com.elfmcys.yesstevemodel.geckolib3.core.processor.IBone
 import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
-import com.elfmcys.yesstevemodel.geckolib3.model.provider.data.EntityModelData
-import com.elfmcys.yesstevemodel.util.data.OrderedStringMap
 import it.unimi.dsi.fastutil.booleans.BooleanArrayList
 import it.unimi.dsi.fastutil.booleans.BooleanList
 import net.minecraft.client.renderer.texture.AbstractTexture
@@ -38,36 +37,31 @@ abstract class LivingAnimatable<T : LivingEntity>(
     private var extraRenderFlag: Boolean = false
 
     override fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<T>>, wasAnimEvaluated: Boolean) {
-        val model: AnimatedGeoModel? = currentModel
+        val model = currentModel
         if (model != null && model.headBones().isNotEmpty()) {
-            val bone: IBone = model.headBones()[model.headBones().size - 1]
+            val bone = model.headBones()[model.headBones().size - 1]
             if (wasAnimEvaluated) {
                 armorBoneOffset.set(bone.getRotationX(), bone.getRotationY())
             }
-            val data: EntityModelData = event.modelData
+            val data = event.modelData
             bone.setRotationX(armorBoneOffset.x + Math.toRadians(data.headPitch.toDouble()).toFloat())
             bone.setRotationY(armorBoneOffset.y + Math.toRadians(data.netHeadYaw.toDouble()).toFloat())
         }
     }
 
     override fun resetHeadTracking(wasAnimEvaluated: Boolean) {
-        val model: AnimatedGeoModel? = currentModel
+        val model = currentModel
         if (model != null && model.headBones().isNotEmpty()) {
-            val bone: IBone = model.headBones()[model.headBones().size - 1]
+            val bone = model.headBones()[model.headBones().size - 1]
             bone.setRotationX(armorBoneOffset.x)
             bone.setRotationY(armorBoneOffset.y)
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun createPositionTracker(t: T): LivingEntityFrameState<T> {
-        return LivingEntityFrameState(t)
-    }
+    override fun createPositionTracker(entity: T): LivingEntityFrameState<T> = LivingEntityFrameState(entity)
 
-    @Suppress("UNCHECKED_CAST")
-    override fun getPositionTracker(): LivingEntityFrameState<T> {
-        return super.getPositionTracker() as LivingEntityFrameState<T>
-    }
+    override fun getPositionTracker(): LivingEntityFrameState<T> =
+        super.getPositionTracker() as LivingEntityFrameState<T>
 
     open fun setCurrentTexture(str: String?) {
         currentTextureName = str
@@ -85,18 +79,14 @@ abstract class LivingAnimatable<T : LivingEntity>(
         this.forceDisabled = forceDisabled
     }
 
-    open fun isForceDisabled(): Boolean {
-        return forceDisabled
-    }
+    open fun isForceDisabled(): Boolean = forceDisabled
 
-    open fun isModelActive(): Boolean {
-        return isModelInitialized() && !forceDisabled
-    }
+    open fun isModelActive(): Boolean = isModelInitialized() && !forceDisabled
 
     override fun onModelLoaded(context: ModelAssembly) {
         super.onModelLoaded(context)
         updateCurrentTexture()
-        val values: List<IValue>? = context.expressionCache.events[MolangEventDispatcher.PLAYER_UPDATE]
+        val values = context.expressionCache.events[MolangEventDispatcher.PLAYER_UPDATE]
         playerUpdateIValue =
             if (values != null) MolangEventDispatcher.createUpdateExpression(values, updateExpressionArgs) else null
     }
@@ -104,7 +94,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     override fun setCurrentModel(model: AnimatedGeoModel?) {
         super.setCurrentModel(model)
         if (model != null && model.headBones().isNotEmpty()) {
-            val bone: IBone = model.headBones()[model.headBones().size - 1]
+            val bone = model.headBones()[model.headBones().size - 1]
             armorBoneOffset.set(bone.getRotationX(), bone.getRotationY())
         }
     }
@@ -127,7 +117,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
         super.setupAnim(seekTime, isFirstPerson)
         if (needsInit) {
             needsInit = false
-            val values: List<IValue>? = getAnimationExpressions(MolangEventDispatcher.PLAYER_INIT)
+            val values = getAnimationExpressions(MolangEventDispatcher.PLAYER_INIT)
             if (values != null) {
                 executeExpression(MolangEventDispatcher.createInitExpression(values), true, true, null)
             }
@@ -145,10 +135,10 @@ abstract class LivingAnimatable<T : LivingEntity>(
 
     private fun updateCurrentTexture() {
         if (isModelReady()) {
-            val map: OrderedStringMap<String, out AbstractTexture>? =
+            val map =
                 getModelAssembly()?.animationBundle?.textures
             if (map != null) {
-                val abstractTexture: AbstractTexture? = map[currentTextureName]
+                val abstractTexture = map[currentTextureName]
                 if (abstractTexture != null) {
                     (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(abstractTexture)
                     textureIndex = map.getValuesList().indexOf(abstractTexture)
@@ -202,9 +192,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
         return getModelAssembly()?.modelData?.modelProperties?.renderLayersFirst ?: false
     }
 
-    open fun isExtraRenderFlag(): Boolean {
-        return extraRenderFlag
-    }
+    open fun isExtraRenderFlag(): Boolean = extraRenderFlag
 
     open fun setExtraRenderFlag(extraRenderFlag: Boolean) {
         this.extraRenderFlag = extraRenderFlag
@@ -225,22 +213,20 @@ abstract class LivingAnimatable<T : LivingEntity>(
             val abstractTexture =
                 modelAssembly.animationBundle.textures[this@LivingAnimatable.currentTextureName]
                     ?: modelAssembly.animationBundle.defaultTexture
-            currentTexture = if (abstractTexture != null) {
-                UploadManager.getOrCreateLocatableWithSize(abstractTexture, registerImmediately, textureResolution)
-            } else {
-                null
-            }
+            currentTexture = (if (abstractTexture != null)
+                UploadManager.getOrCreateLocatableWithSize(
+                    abstractTexture,
+                    registerImmediately,
+                    textureResolution
+                ) else null)
             if (collectAllTextures) {
                 val list = ArrayList<IResourceLocatable>()
-                for (texture in modelAssembly.animationBundle.textures.values) {
+                for (texture in modelAssembly.animationBundle.textures.values)
                     list.add(UploadManager.getOrCreateLocatable(texture, false))
-                }
-                for (projectileModelBundle in modelAssembly.projectileModels.values) {
+                for (projectileModelBundle in modelAssembly.projectileModels.values)
                     list.add(UploadManager.getOrCreateLocatable(projectileModelBundle.texture, false))
-                }
-                for (vehicleModelBundle in modelAssembly.vehicleModels.values) {
+                for (vehicleModelBundle in modelAssembly.vehicleModels.values)
                     list.add(UploadManager.getOrCreateLocatable(vehicleModelBundle.texture, false))
-                }
                 allTextures = list
             } else {
                 allTextures = null
