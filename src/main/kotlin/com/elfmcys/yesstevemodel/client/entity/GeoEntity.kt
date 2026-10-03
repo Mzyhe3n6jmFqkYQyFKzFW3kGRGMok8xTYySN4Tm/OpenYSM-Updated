@@ -1,5 +1,6 @@
 package com.elfmcys.yesstevemodel.client.entity
 
+import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.audio.AudioCodec
 import com.elfmcys.yesstevemodel.audio.AudioStreamCache
 import com.elfmcys.yesstevemodel.audio.IAudioStreamFactory
@@ -14,7 +15,6 @@ import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue
-import com.elfmcys.yesstevemodel.geckolib3.core.processor.AnimationProcessor
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
 import com.elfmcys.yesstevemodel.util.UnsafeUtil
 import com.elfmcys.yesstevemodel.util.YSMThreadPool
@@ -26,10 +26,7 @@ import rip.ysm.compat.oculus.OculusCompat
 import java.util.*
 import java.util.concurrent.Future
 
-abstract class GeoEntity<T : Entity>(
-    t: T,
-    registerWithCache: Boolean
-) : AnimatableEntity<T>(t) {
+abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : AnimatableEntity<T>(t) {
     private var modelId: String = "default"
     private var modelAssembly: ModelAssembly? = null
     private var renderShape: ModelWrapper? = null
@@ -38,6 +35,8 @@ abstract class GeoEntity<T : Entity>(
     private var bones: PhysicsManager? = null
     private var boneLookup: MolangWatchRegistry? = null
     private var renderLayers: List<IValue>? = null
+
+    // TODO: Maybe replace future to kotlin version
     private var modelFuture: Future<AnimationEvent<*>?>? = null
 
     init {
@@ -74,7 +73,7 @@ abstract class GeoEntity<T : Entity>(
         super.setupAnim(seekTime, isFirstPerson)
         val lookup = boneLookup
         if (lookup != null) {
-            val processor: AnimationProcessor<T> = getEvaluationContext()
+            val processor = getEvaluationContext()
             processor.execute({ evaluator ->
                 lookup.evaluatePreAnimation(evaluator)
                 null
@@ -196,22 +195,19 @@ abstract class GeoEntity<T : Entity>(
     open fun submitAsyncUpdate(partialTick: Float) {
         UnsafeUtil.getUnsafe().storeFence()
         modelFuture = YSMThreadPool.submitCallable {
-            try {
-                val event: AnimationEvent<*>? = super.processAnimationImpl(partialTick, true)
+            runCatching {
+                val event = super.processAnimationImpl(partialTick, true)
                 UnsafeUtil.getUnsafe().storeFence()
                 event
-            } catch (th: Throwable) {
+            }.onFailure {
                 UnsafeUtil.getUnsafe().storeFence()
-                throw th
-            }
+            }.getOrThrow()
         }
     }
 
     override fun processAnimationImpl(partialTick: Float, isFirstPerson: Boolean): AnimationEvent<*>? {
         RenderSystem.assertOnRenderThread()
-        if (isFirstPerson && modelFuture != null) {
-            return awaitAsyncResult()
-        }
+        if (isFirstPerson && modelFuture != null) return awaitAsyncResult()
         awaitAsyncResult()
         return super.processAnimationImpl(partialTick, isFirstPerson)
     }
@@ -220,12 +216,12 @@ abstract class GeoEntity<T : Entity>(
         val future = modelFuture
         if (future != null) {
             var event: AnimationEvent<*>? = null
-            try {
+            runCatching {
                 event = future.get()
                 UnsafeUtil.getUnsafe().loadFence()
-            } catch (e: InterruptedException) {
-            } catch (th: Throwable) {
-                th.printStackTrace()
+            }.onFailure {
+                if (it is InterruptedException) return@onFailure
+                Constants.LOGGER.error("Failed to get model future", it)
             }
             modelFuture = null
             return event
@@ -233,9 +229,7 @@ abstract class GeoEntity<T : Entity>(
         return null
     }
 
-    open fun supportsAsync(): Boolean {
-        return true
-    }
+    open fun supportsAsync(): Boolean = true
 
     open class ModelWrapper(
         @JvmField val context: ModelAssembly,
@@ -244,8 +238,6 @@ abstract class GeoEntity<T : Entity>(
         @JvmField
         var audioProvider: IAudioStreamProvider? = null
 
-        open fun isValid(): Boolean {
-            return true
-        }
+        open fun isValid(): Boolean = true
     }
 }
