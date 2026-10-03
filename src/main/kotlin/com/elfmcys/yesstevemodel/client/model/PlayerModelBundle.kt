@@ -15,7 +15,7 @@ import com.elfmcys.yesstevemodel.util.data.OrderedStringMap
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import net.minecraft.client.renderer.texture.AbstractTexture
 import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat
-import java.util.function.Consumer
+import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 
 open class PlayerModelBundle(
     val mainModel: GeoModel,
@@ -34,6 +34,6 @@ open class PlayerModelBundle(
         PlayerAnimationController.buildControllers(this, modelResourceBundle)
     val armControllerInstaller: (PlayerGeoEntity) -> Unit =
         FirstPersonArmAnimationController.buildControllers(this, modelResourceBundle)
-    val maidControllerInstaller: Consumer<rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable>? =
+    val maidControllerInstaller: ((MaidAnimatable) -> Unit)? =
         TouhouLittleMaidCompat.buildControllers(this, modelResourceBundle)
 }
