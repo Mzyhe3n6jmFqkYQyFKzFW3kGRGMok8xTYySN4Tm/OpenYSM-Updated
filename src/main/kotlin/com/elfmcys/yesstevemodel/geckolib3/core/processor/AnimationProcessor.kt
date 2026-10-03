@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.core.processor
 
 import com.elfmcys.yesstevemodel.audio.AudioPlayerManager
@@ -5,7 +7,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.BoneTransformProvider
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
-import com.elfmcys.yesstevemodel.geckolib3.core.manager.AnimationData
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.context.AnimationContext
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.storage.IForeignVariableStorage
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.storage.VariableStorage
@@ -14,7 +15,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue
 import com.elfmcys.yesstevemodel.geckolib3.core.snapshot.BoneTopLevelSnapshot
 import com.elfmcys.yesstevemodel.geckolib3.core.util.EulerNlerpScratch
 import com.elfmcys.yesstevemodel.geckolib3.core.util.MathUtil
-import com.elfmcys.yesstevemodel.geckolib3.core.util.TransitionVector3f
 import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import com.elfmcys.yesstevemodel.molang.runtime.Struct
@@ -43,7 +43,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
     private val pendingExpressions: ConcurrentLinkedQueue<PendingExpression> = ConcurrentLinkedQueue()
     private var lastAudioTickTime: Float = 0.0f
     private var needsInit: Boolean = false
-    private val transformConsumer: Consumer<BoneTransformProvider> = Consumer(::applyTransform)
+    private val transformConsumer: (BoneTransformProvider) -> Unit = ::applyTransform
     private var currentEvaluator: ExpressionEvaluator<AnimationContext<*>>? = null
     private var currentSeekTime: Float = 0.0f
     private var currentDeprecatedMode: Boolean = false
@@ -58,8 +58,8 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
         context.setStorage(animationStorage)
         context.setRandom(random)
         context.setAudioPlayerManager(audioPlayerManager)
-        val evaluator: ExpressionEvaluator<AnimationContext<*>> = ExpressionEvaluator.evaluator(context)
-        val seekTime: Float = event.currentTick
+        val evaluator = ExpressionEvaluator.evaluator(context)
+        val seekTime = event.currentTick
         if (seekTime - lastAudioTickTime >= 1200.0f) {
             audioPlayerManager.tick()
             lastAudioTickTime = seekTime
@@ -67,7 +67,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
             lastAudioTickTime = seekTime
         }
         preProcess(evaluator)
-        val manager: AnimationData = animatable.getAnimationData()
+        val manager = animatable.getAnimationData()
         currentEvaluator = evaluator
         currentSeekTime = seekTime
         for (controller in manager.getAnimationControllers()) {
@@ -86,7 +86,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
         needsInit = false
         val iterator = modelRendererList.iterator()
         while (iterator.hasNext()) {
-            val topLevelSnapshot: BoneTopLevelSnapshot = iterator.next()
+            val topLevelSnapshot = iterator.next()
             var runningAnimation = false
             if (topLevelSnapshot.isCurrentlyRunningRotationAnimation) {
                 runningAnimation = true
@@ -95,7 +95,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
             } else {
                 val prevRot = topLevelSnapshot.prevRotation
                     ?: Vector3f(topLevelSnapshot.rotation).also { topLevelSnapshot.prevRotation = it }
-                val percentageReset: Float =
+                val percentageReset =
                     (seekTime - topLevelSnapshot.mostRecentResetRotationTick) / manager.getResetSpeed()
                 if (percentageReset < 1.0f) {
                     runningAnimation = true
@@ -118,7 +118,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
             } else {
                 val prevPos = topLevelSnapshot.prevPosition
                     ?: Vector3f(topLevelSnapshot.position).also { topLevelSnapshot.prevPosition = it }
-                val percentageReset: Float =
+                val percentageReset =
                     (seekTime - topLevelSnapshot.mostRecentResetPositionTick) / manager.getResetSpeed()
                 if (percentageReset < 1.0f) {
                     runningAnimation = true
@@ -135,7 +135,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
                 val prevScl = topLevelSnapshot.prevScale ?: Vector3f(topLevelSnapshot.scale).also {
                     topLevelSnapshot.prevScale = it
                 }
-                val percentageReset: Float =
+                val percentageReset =
                     (seekTime - topLevelSnapshot.mostRecentResetScaleTick) / manager.getResetSpeed()
                 if (percentageReset < 1.0f) {
                     runningAnimation = true
@@ -156,17 +156,17 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
     }
 
     private fun applyTransform(provider: BoneTransformProvider) {
-        val snapshot: BoneTopLevelSnapshot = provider.getBoneTarget()
+        val snapshot = provider.getBoneTarget()
         if (!snapshot.isCurrentlyRunningAnimation) {
             snapshot.isCurrentlyRunningAnimation = true
             modelRendererList.add(snapshot)
         }
-        val evaluator: ExpressionEvaluator<AnimationContext<*>> = currentEvaluator ?: return
-        val seekTime: Float = currentSeekTime
+        val evaluator = currentEvaluator ?: return
+        val seekTime = currentSeekTime
 
-        val rot: TransitionVector3f? = provider.getRotation(evaluator)
+        val rot = provider.getRotation(evaluator)
         if (rot != null) {
-            val vector3f: Vector3f = snapshot.currentValue
+            val vector3f = snapshot.currentValue
             if (!snapshot.isCurrentlyRunningRotationAnimation) {
                 snapshot.isCurrentlyRunningRotationAnimation = true
                 snapshot.rotation.set(0.0f, 0.0f, 0.0f)
@@ -180,7 +180,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
                 vector3f.set(snapshot.rotation)
             }
         }
-        val pos: TransitionVector3f? = provider.getPosition(evaluator)
+        val pos = provider.getPosition(evaluator)
         if (pos != null) {
             if (!snapshot.isCurrentlyRunningPositionAnimation) {
                 snapshot.isCurrentlyRunningPositionAnimation = true
@@ -189,7 +189,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
             snapshot.mostRecentResetPositionTick = seekTime
             pos.applyLinearBlendTo(snapshot.position)
         }
-        val scale: TransitionVector3f? = provider.getScale(evaluator)
+        val scale = provider.getScale(evaluator)
         if (scale != null) {
             if (!snapshot.isCurrentlyRunningScaleAnimation) {
                 snapshot.isCurrentlyRunningScaleAnimation = true
@@ -201,7 +201,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
     }
 
     fun getBone(i: Int): IBone? {
-        val renderer: BoneTopLevelSnapshot? = boneById.get(i)
+        val renderer = boneById.get(i)
         return renderer?.bone
     }
 
@@ -246,7 +246,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
     private fun preProcess(evaluator: ExpressionEvaluator<AnimationContext<*>>) {
         val it = pendingExpressions.iterator()
         while (it.hasNext()) {
-            val next: PendingExpression = it.next()
+            val next = it.next()
             if (next.executeBeforeAnimation) {
                 postProcess(next, evaluator)
                 it.remove()
@@ -257,7 +257,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
     private fun postProcess(evaluator: ExpressionEvaluator<AnimationContext<*>>) {
         val it = pendingExpressions.iterator()
         while (it.hasNext()) {
-            val next: PendingExpression = it.next()
+            val next = it.next()
             if (!next.executeBeforeAnimation) {
                 postProcess(next, evaluator)
                 it.remove()
@@ -326,6 +326,6 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
     )
 
     companion object {
-        val ROAMING_STRUCT_NAME: Int = StringPool.computeIfAbsent("roaming")
+        val ROAMING_STRUCT_NAME = StringPool.computeIfAbsent("roaming")
     }
 }

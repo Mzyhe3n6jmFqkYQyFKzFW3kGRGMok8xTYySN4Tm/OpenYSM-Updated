@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.client.entity
 
 import com.elfmcys.yesstevemodel.geckolib3.core.EntityFrameStateTracker
@@ -7,9 +9,9 @@ import net.minecraft.world.item.ItemStack
 import rip.ysm.compat.immersivemelodies.ImmersiveMelodiesCompat
 
 open class LivingEntityFrameState<T : LivingEntity>(entity: T) : EntityFrameStateTracker<T>(entity) {
-    val imData: ImmersiveMelodiesCompat.ImmersiveMelodiesData = ImmersiveMelodiesCompat.ImmersiveMelodiesData()
-    var mainHandItem: ItemStack = ItemStack.EMPTY
-    var offHandItem: ItemStack = ItemStack.EMPTY
+    private val imData: ImmersiveMelodiesCompat.ImmersiveMelodiesData = ImmersiveMelodiesCompat.ImmersiveMelodiesData()
+    private var mainHandItem: ItemStack = ItemStack.EMPTY
+    private var offHandItem: ItemStack = ItemStack.EMPTY
 
     override fun reset() {
         mainHandItem = ItemStack.EMPTY
@@ -23,21 +25,12 @@ open class LivingEntityFrameState<T : LivingEntity>(entity: T) : EntityFrameStat
     }
 
     open fun getHandItemsForAnimation(interactionHand: InteractionHand): ItemStack {
-        if (interactionHand == InteractionHand.MAIN_HAND) {
-            return mainHandItem
-        }
+        if (interactionHand == InteractionHand.MAIN_HAND) return mainHandItem
         return offHandItem
     }
 
-    open fun setHandItemsForAnimation(itemStack: ItemStack, interactionHand: InteractionHand) {
-        if (interactionHand == InteractionHand.MAIN_HAND) {
-            mainHandItem = itemStack
-        } else {
-            offHandItem = itemStack
-        }
-    }
+    open fun setHandItemsForAnimation(itemStack: ItemStack, interactionHand: InteractionHand) =
+        if (interactionHand == InteractionHand.MAIN_HAND) mainHandItem = itemStack else offHandItem = itemStack
 
-    open fun getImmersiveMelodiesData(): ImmersiveMelodiesCompat.ImmersiveMelodiesData {
-        return imData
-    }
+    open fun getImmersiveMelodiesData(): ImmersiveMelodiesCompat.ImmersiveMelodiesData = imData
 }

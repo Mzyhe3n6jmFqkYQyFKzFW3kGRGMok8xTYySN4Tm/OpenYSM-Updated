@@ -26,7 +26,6 @@ import com.elfmcys.yesstevemodel.network.message.C2SRequestExecuteMolangPacket
 import com.elfmcys.yesstevemodel.resource.models.ModelProperties
 import com.elfmcys.yesstevemodel.util.data.OrderedStringMap
 import net.minecraft.ChatFormatting
-import net.minecraft.client.KeyMapping
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Tooltip
@@ -161,9 +160,7 @@ class AnimationRouletteScreen : Screen {
                     Component.translatable("gui.yes_steve_model.roulette.stop")
                 ) {
                     val entity = animatableModel.entity
-                    if (entity != null) {
-                        NetworkHandler.sendToServer(C2SPlayAnimationPacket.createWithIndex(entity.id))
-                    }
+                    NetworkHandler.sendToServer(C2SPlayAnimationPacket.createWithIndex(entity.id))
                     onClose()
                 })
         }
@@ -307,9 +304,8 @@ class AnimationRouletteScreen : Screen {
             ) {
                 executeExpression(expr, null)
                 val entity = animatableModel.entity
-                if (!GeckoLibCache.isRoamingVariableAssignment(expr) && NetworkHandler.isClientConnected() && !ServerConfig.LOW_BANDWIDTH_USAGE.get() && entity != null) {
+                if (!GeckoLibCache.isRoamingVariableAssignment(expr) && NetworkHandler.isClientConnected() && !ServerConfig.LOW_BANDWIDTH_USAGE.get())
                     NetworkHandler.sendToServer(C2SRequestExecuteMolangPacket(expr, entity.id))
-                }
                 init()
             }
             checkbox.isStateTriggered = isSelected
@@ -386,7 +382,7 @@ class AnimationRouletteScreen : Screen {
                 val expr = "${checkboxConfig.value}=${if (isChecked) "1" else "0"}"
                 executeExpression(expr, null)
                 val entity = animatableModel.entity
-                if (!GeckoLibCache.isRoamingVariableAssignment(expr) && NetworkHandler.isClientConnected() && !ServerConfig.LOW_BANDWIDTH_USAGE.get() && entity != null) {
+                if (!GeckoLibCache.isRoamingVariableAssignment(expr) && NetworkHandler.isClientConnected() && !ServerConfig.LOW_BANDWIDTH_USAGE.get()) {
                     NetworkHandler.sendToServer(C2SRequestExecuteMolangPacket(expr, entity.id))
                 }
             }
@@ -578,11 +574,9 @@ class AnimationRouletteScreen : Screen {
         if (NetworkHandler.isClientConnected()) {
             val lastNav = navigationStack.peekLast()
             val category = if (lastNav != null && lastNav.left.isNotBlank()) lastNav.left else StringPool.EMPTY
-            val entity = animatableModel.entity
-            if (entity is Player) {
-                NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, category))
-            } else if (entity != null) {
-                NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, category, entity.id))
+            when (val entity = animatableModel.entity) {
+                is Player -> NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, category))
+                else -> NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, category, entity.id))
             }
         } else if (localPlayer != null) {
             PlayerCapability[localPlayer]?.requestModelSwitch(animKey)
@@ -675,7 +669,7 @@ class AnimationRouletteScreen : Screen {
 
     private fun renderKeyBindings(guiGraphics: GuiGraphics, slotIndex: Int, x: Int, y: Int) {
         val label = Component.literal("[ ").withStyle(ChatFormatting.YELLOW)
-        val keyMapping: KeyMapping? = ExtraAnimationKey.KEY_MAPPINGS.getOrNull(slotIndex)
+        val keyMapping = ExtraAnimationKey.KEY_MAPPINGS.getOrNull(slotIndex)
         if (keyMapping == null || keyMapping.isUnbound) {
             label.append(Component.translatable("key.yes_steve_model.extra_animation.none"))
         } else {
@@ -791,10 +785,10 @@ class AnimationRouletteScreen : Screen {
         endAngle: Float,
         color: Int
     ) {
-        val startCos = Mth.cos(startAngle.toDouble()).toFloat()
-        val startSin = Mth.sin(startAngle.toDouble()).toFloat()
-        val endCos = Mth.cos(endAngle.toDouble()).toFloat()
-        val endSin = Mth.sin(endAngle.toDouble()).toFloat()
+        val startCos = Mth.cos(startAngle.toDouble())
+        val startSin = Mth.sin(startAngle.toDouble())
+        val endCos = Mth.cos(endAngle.toDouble())
+        val endSin = Mth.sin(endAngle.toDouble())
         val outerStartX = centerX + (outerRadius * startCos)
         val outerStartY = centerY + (outerRadius * startSin)
         val innerStartX = centerX + (innerRadius * startCos)

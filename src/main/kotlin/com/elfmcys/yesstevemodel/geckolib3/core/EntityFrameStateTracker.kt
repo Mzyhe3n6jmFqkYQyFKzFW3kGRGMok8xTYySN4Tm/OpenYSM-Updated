@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.core
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
@@ -8,10 +10,18 @@ import net.minecraft.world.phys.Vec3
 open class EntityFrameStateTracker<T : Entity>(@JvmField var entity: T) {
     private var currentTick: Int = 0
     private var lastPosition: Vec3? = null
-    @JvmField var cachedModelId: String? = null
-    @JvmField var currentTime: Float = 0.0f
-    @JvmField var timeDelta: Float = 0.0f
-    @JvmField var positionDelta: Vec3 = Vec3.ZERO
+
+    @JvmField
+    var cachedModelId: String? = null
+
+    @JvmField
+    var currentTime: Float = 0.0f
+
+    @JvmField
+    var timeDelta: Float = 0.0f
+
+    @JvmField
+    var positionDelta: Vec3 = Vec3.ZERO
     private val animatedEntities: IntOpenHashSet = IntOpenHashSet()
 
     open fun reset() {
@@ -39,13 +49,13 @@ open class EntityFrameStateTracker<T : Entity>(@JvmField var entity: T) {
         entity = t
     }
 
-    open fun onTimeUpdate(f: Float, f2: Float, f3: Float) {
-        timeDelta = f - f2
-        updatePosition(f3)
+    open fun onTimeUpdate(currentTick: Float, deltaTick: Float, partialTick: Float) {
+        timeDelta = currentTick - deltaTick
+        updatePosition(partialTick)
         cachedModelId = null
     }
 
-    open fun onTickUpdate(i: Int, i2: Int) {
+    open fun onTickUpdate(currentTick: Int, previousTick: Int) {
         animatedEntities.clear()
     }
 
@@ -62,13 +72,9 @@ open class EntityFrameStateTracker<T : Entity>(@JvmField var entity: T) {
         lastPosition = vec3
     }
 
-    open fun markProcessed(i: Int): Boolean {
-        return animatedEntities.add(i)
-    }
+    open fun markProcessed(i: Int): Boolean = animatedEntities.add(i)
 
-    open fun isProcessed(i: Int): Boolean {
-        return animatedEntities.contains(i)
-    }
+    open fun isProcessed(i: Int): Boolean = animatedEntities.contains(i)
 
     open fun getPositionDelta(): Vec3 = positionDelta
 

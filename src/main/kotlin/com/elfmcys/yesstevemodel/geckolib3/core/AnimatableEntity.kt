@@ -37,38 +37,55 @@ import java.util.function.Consumer
 abstract class AnimatableEntity<TEntity : Entity>(entity: TEntity) {
     @JvmField
     val entity: TEntity = entity
+
     @JvmField
     var positionTracker: EntityFrameStateTracker<TEntity> = createPositionTracker(entity)
+
     @JvmField
     var currentModel: AnimatedGeoModel? = null
+
     @JvmField
     var animationMap: Object2ReferenceMap<String, MutableList<IValue>>? = null
+
     @JvmField
     var wasAnimationActiveLastTick: Boolean = false
+
     @JvmField
     var hasUpdatedThisTick: Boolean = false
+
     @JvmField
     var isTickTriggered: Boolean = false
+
     @JvmField
     var wasEvaluatedLastFrame: Boolean = false
+
     @JvmField
     var seekTime: Float = 0.0f
+
     @JvmField
     val manager: AnimationData = AnimationData()
+
     @JvmField
     var lastTick: Float = -1.0f
+
     @JvmField
     var isFirstFrameAfterReset: Boolean = true
+
     @JvmField
     var needsReset: Boolean = false
+
     @JvmField
     var modelInitialized: Boolean = false
+
     @JvmField
     var animationStates: MutableMap<String, AnimationState> = Maps.newHashMap()
+
     @JvmField
     val animationProcessor: AnimationProcessor<TEntity> = AnimationProcessor(this)
+
     @JvmField
     val rateLimiter: RateLimiter = RateLimiter().apply { setRefreshRate(getRefreshRate()) }
+
     @JvmField
     protected val defaultPhysicsManager: PhysicsManager = PhysicsManager()
 
@@ -261,7 +278,7 @@ abstract class AnimatableEntity<TEntity : Entity>(entity: TEntity) {
     }
 
     open fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<TEntity>>, z: Boolean) {}
-    open fun resetHeadTracking(z: Boolean) {}
+    open fun resetHeadTracking(wasAnimEvaluated: Boolean) {}
 
     open fun getEvaluationContext(): AnimationProcessor<TEntity> = animationProcessor
 

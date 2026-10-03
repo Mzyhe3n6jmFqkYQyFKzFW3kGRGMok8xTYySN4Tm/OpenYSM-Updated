@@ -2,14 +2,12 @@ package com.elfmcys.yesstevemodel.geckolib3.core.controller
 
 import com.elfmcys.yesstevemodel.client.animation.IAnimationPredicate
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
-import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.context.AnimationContext
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue
 import com.elfmcys.yesstevemodel.geckolib3.core.snapshot.BoneTopLevelSnapshot
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
-import java.util.function.Consumer
 
 open class CompositeAnimationController<T : AnimatableEntity<*>>(
     private val animatable: T,
@@ -18,8 +16,10 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
     predicate: IAnimationPredicate<*>,
     deprecatedMode: Boolean = false
 ) : IAnimationController<T> {
-    private val controller: PredicateBasedController<T> = PredicateBasedController(animatable, name, transitionLengthTicks, predicate, deprecatedMode)
-    private val animationRuntime: AnimationControllerRuntime<T> = AnimationControllerRuntime(animatable, name, transitionLengthTicks)
+    private val controller: PredicateBasedController<T> =
+        PredicateBasedController(animatable, name, transitionLengthTicks, predicate, deprecatedMode)
+    private val animationRuntime: AnimationControllerRuntime<T> =
+        AnimationControllerRuntime(animatable, name, transitionLengthTicks)
     private var initialized: Boolean = false
     private var activeController: IAnimationController<T> = controller
 
@@ -27,8 +27,7 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
         animatable,
         name,
         transitionLengthTicks,
-        predicate,
-        false
+        predicate
     )
 
     override fun getName(): String = name
@@ -40,8 +39,11 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
         return controller.getCurrentAnimation()
     }
 
-    override fun init(list: MutableList<BoneTopLevelSnapshot>, object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>) {
-        val ctrl: AnimationController? = animatable.getAnimationEntries(name)
+    override fun init(
+        list: MutableList<BoneTopLevelSnapshot>,
+        object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>
+    ) {
+        val ctrl = animatable.getAnimationEntries(name)
         if (ctrl != null) {
             initialized = true
             animationRuntime.initWithBones(list, ctrl)
@@ -55,9 +57,13 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
         activeController = controller
     }
 
-    override fun process(event: AnimationEvent<T>, evaluator: ExpressionEvaluator<AnimationContext<*>>, z: Boolean) {
+    override fun process(
+        event: AnimationEvent<T>,
+        evaluator: ExpressionEvaluator<AnimationContext<*>>,
+        isFirstPerson: Boolean
+    ) {
         if (initialized) {
-            animationRuntime.process(event, evaluator, z)
+            animationRuntime.process(event, evaluator, isFirstPerson)
             if (animationRuntime.isBuiltinAnimation()) {
                 if (activeController != controller) {
                     animationRuntime.getCurrentEntry()?.blendTransition?.asInterpolator()?.let {
@@ -65,7 +71,7 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
                     }
                     activeController = controller
                 }
-                controller.process(event, evaluator, z)
+                controller.process(event, evaluator, isFirstPerson)
                 return
             }
             if (activeController != animationRuntime) {
@@ -76,16 +82,14 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
             }
             return
         }
-        controller.process(event, evaluator, z)
+        controller.process(event, evaluator, isFirstPerson)
     }
 
-    override fun forEachTransform(consumer: Consumer<BoneTransformProvider>) {
+    override fun forEachTransform(consumer: (BoneTransformProvider) -> Unit) {
         activeController.forEachTransform(consumer)
     }
 
-    override fun isDeprecatedMode(): Boolean {
-        return activeController.isDeprecatedMode()
-    }
+    override fun isDeprecatedMode(): Boolean = activeController.isDeprecatedMode()
 
     override fun reset() {
         if (initialized) {

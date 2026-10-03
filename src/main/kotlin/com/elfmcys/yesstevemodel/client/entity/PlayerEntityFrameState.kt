@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.elfmcys.yesstevemodel.client.entity
 
 import com.elfmcys.yesstevemodel.network.message.S2CSyncPlayerStatePacket
@@ -35,41 +37,21 @@ open class PlayerEntityFrameState(player: Player, val isLocalPlayer: Boolean) : 
 
     open fun applySyncMessage(message: S2CSyncPlayerStatePacket) {
         val flags = message.flags.toInt()
-        if ((flags and 2) != 0) {
-            flying = message.isFlying
-        }
-        if ((flags and 4) != 0) {
-            if (message.isFullSync()) {
-                effectAmplifiers.clear()
-            }
+        if (flags and 2 != 0) flying = message.isFlying
+        if (flags and 4 != 0) {
+            if (message.isFullSync()) effectAmplifiers.clear()
             message.effectAmplifiers?.let {
                 effectAmplifiers.putAll(it)
             }
         }
-        if ((flags and 8) != 0) {
-            experienceLevel = message.experienceLevel
-        }
-        if ((flags and 16) != 0) {
-            foodLevel = message.foodLevel
-        }
-        if ((flags and 32) != 0) {
-            health = message.health
-        }
-        if ((flags and 64) != 0) {
-            maxHealth = message.maxHealth
-        }
-        if ((flags and 128) != 0) {
-            strafeInput = message.strafeInput / 127.0f
-        }
-        if ((flags and 256) != 0) {
-            verticalInput = message.verticalInput / 127.0f
-        }
-        if ((flags and 512) != 0) {
-            forwardInput = message.forwardInput / 127.0f
-        }
-        if ((flags and 1024) != 0) {
-            isShieldBlocking = message.shieldBlockCooldown
-        }
+        if (flags and 8 != 0) experienceLevel = message.experienceLevel
+        if (flags and 16 != 0) foodLevel = message.foodLevel
+        if (flags and 32 != 0) health = message.health
+        if (flags and 64 != 0) maxHealth = message.maxHealth
+        if (flags and 128 != 0) strafeInput = message.strafeInput / 127.0f
+        if (flags and 256 != 0) verticalInput = message.verticalInput / 127.0f
+        if (flags and 512 != 0) forwardInput = message.forwardInput / 127.0f
+        if (flags and 1024 != 0) isShieldBlocking = message.shieldBlockCooldown
     }
 
     open fun isFlying(): Boolean {
@@ -91,9 +73,7 @@ open class PlayerEntityFrameState(player: Player, val isLocalPlayer: Boolean) : 
     }
 
     override fun onTickUpdate(currentTick: Int, previousTick: Int) {
-        if (isLocalPlayer) {
-            updateHeadYaw(entity, currentTick, previousTick)
-        }
+        if (isLocalPlayer) updateHeadYaw(entity, currentTick, previousTick)
         super.onTickUpdate(currentTick, previousTick)
     }
 
@@ -114,8 +94,6 @@ open class PlayerEntityFrameState(player: Player, val isLocalPlayer: Boolean) : 
         }
 
         @JvmStatic
-        fun getHeadYawDelta(): Float {
-            return headYawDelta
-        }
+        fun getHeadYawDelta(): Float = headYawDelta
     }
 }
