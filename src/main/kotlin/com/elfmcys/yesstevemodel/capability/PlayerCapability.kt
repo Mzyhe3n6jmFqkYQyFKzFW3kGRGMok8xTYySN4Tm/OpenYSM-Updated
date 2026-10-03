@@ -95,7 +95,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         val model2 = getCurrentModel()
         if (model2 != null && isLocalPlayerModel()) {
             if ((FirstPersonCompat.isModLoaded || BetterCombatCompat.isModLoaded) && model2.allHeadBone() != null) {
-                model2.allHeadBone().setHidden(false)
+                model2.allHeadBone()?.setHidden(false)
             }
         }
     }

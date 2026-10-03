@@ -22,7 +22,13 @@ fun interface EasingType {
             }
             val begin = keyFrames[index - 1]
             val end = keyFrames[index]
-            return LinearKeyFrame(begin.startTick(), end.startTick() - begin.startTick(), begin.postValue(), end.preValue(), end.postValue())
+            return LinearKeyFrame(
+                begin.startTick(),
+                end.startTick() - begin.startTick(),
+                begin.postValue(),
+                end.preValue(),
+                end.postValue()
+            )
         }
 
         @JvmStatic
@@ -34,7 +40,15 @@ fun interface EasingType {
             val begin = keyFrames[index - 1]
             val end = keyFrames[index]
             val right = keyFrames[min(keyFrames.size - 1, index + 1)]
-            return CatmullRomKeyFrame(begin.startTick(), end.startTick() - begin.startTick(), left.postValue(), begin.postValue(), end.preValue(), right.preValue(), end.postValue())
+            return CatmullRomKeyFrame(
+                begin.startTick(),
+                end.startTick() - begin.startTick(),
+                left.postValue(),
+                begin.postValue(),
+                end.preValue(),
+                right.preValue(),
+                end.postValue()
+            )
         }
 
         @JvmField
