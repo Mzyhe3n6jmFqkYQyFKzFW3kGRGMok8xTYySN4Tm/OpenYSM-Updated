@@ -36,7 +36,7 @@ abstract class CustomPlayerEntity(
     }
 
     override fun registerAnimationControllers() {
-        getModelAssembly()?.animationBundle?.playerControllerInstaller?.accept(this)
+        getModelAssembly()?.animationBundle?.playerControllerInstaller?.invoke(this)
     }
 
     override fun resetModel() {
