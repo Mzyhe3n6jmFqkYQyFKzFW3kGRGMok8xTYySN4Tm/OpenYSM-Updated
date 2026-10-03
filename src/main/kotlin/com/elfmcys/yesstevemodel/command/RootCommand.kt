@@ -14,7 +14,7 @@ object RootCommand {
 
     @JvmStatic
     fun registerCommands(dispatcher: CommandDispatcher<CommandSourceStack>) {
-        val root: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(ROOT_NAME)
+        val root = Commands.literal(ROOT_NAME)
         root.then(ModelCommand.register())
         root.then(AuthCommand.register())
         root.then(ExportCommand.register())

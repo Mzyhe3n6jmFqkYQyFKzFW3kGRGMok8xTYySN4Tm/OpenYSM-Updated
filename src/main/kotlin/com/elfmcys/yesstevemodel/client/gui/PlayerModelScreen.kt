@@ -648,7 +648,10 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
-        if (scrollY != 0.0 && isInModelArea(mouseX, mouseY)) return handleScrollPage(scrollY)
+        if (scrollY != 0.0 && isInModelArea(mouseX, mouseY)) {
+            handleScrollPage(scrollY)
+            return true
+        }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
     }
 
@@ -666,22 +669,20 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         }
     }
 
-    // TODO: Always true
-    private fun handleScrollPage(delta: Double): Boolean {
+    private fun handleScrollPage(delta: Double) {
         val currentPage = getCurrentPage()
         if (delta > 0.0 && currentPage > 0) {
             setCurrentPage(currentPage - 1)
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
             init()
-            return true
+            return
         }
         if (delta < 0.0 && currentPage < maxPage) {
             setCurrentPage(currentPage + 1)
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
             init()
-            return true
+            return
         }
-        return true
     }
 
     private fun getCurrentPage(): Int = pageIndexMap.getOrDefault(currentPath, 0)
