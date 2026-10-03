@@ -10,10 +10,6 @@ import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidModelHandler
 
 object TouhouMaidCompatImpl {
     @JvmStatic
-    fun init() {
-    }
-
-    @JvmStatic
     fun isMaidEntity(entity: Entity): Boolean = MaidEventHandler.isMaid(entity)
 
     @JvmStatic

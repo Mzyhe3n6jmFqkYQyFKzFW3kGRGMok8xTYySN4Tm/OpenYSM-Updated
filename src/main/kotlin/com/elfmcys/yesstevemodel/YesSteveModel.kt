@@ -10,7 +10,6 @@ import com.google.gson.GsonBuilder
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.Minecraft
-import net.minecraft.client.player.LocalPlayer
 import net.minecraft.network.chat.Component
 import net.neoforged.fml.config.ModConfig
 import rip.ysm.api.PlatformAPI
@@ -21,8 +20,7 @@ object YesSteveModel {
     @JvmField
     val GSON: Gson = GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create()
 
-    @JvmStatic
-    fun init() {
+    init {
         Constants.LOGGER.info("Initializing YesSteveModel, platform: {}", PlatformAPI.getPlatformName())
         runCatching { NativeLibLoader.init() }.onFailure {
             Constants.LOGGER.error(
@@ -35,7 +33,7 @@ object YesSteveModel {
         } else {
             initConfig()
         }
-        YsmEventBootstrap.register()
+        Constants.doNothing(YsmEventBootstrap)
     }
 
     @Suppress("DEPRECATION")
@@ -51,36 +49,26 @@ object YesSteveModel {
         }
         ConfigRegistration.register(NameSpaces.MOD(), ModConfig.Type.CLIENT, GeneralConfig.buildSpec())
         ConfigRegistration.register(NameSpaces.MOD(), ModConfig.Type.SERVER, ServerConfig.buildSpec())
-        if (!PlatformAPI.isServer()) {
-            ModSoundEvents.register()
-        }
+        if (!PlatformAPI.isServer()) ModSoundEvents.register()
     }
 
     @Keep
     @JvmStatic
-    fun isAvailable(): Boolean {
-        return NativeLibLoader.isAvailable()
-    }
+    fun isAvailable(): Boolean = NativeLibLoader.isAvailable()
 
     @JvmStatic
-    fun isOnAndroid(): Boolean {
-        return NativeLibLoader.isOnAndroid()
-    }
+    fun isOnAndroid(): Boolean = NativeLibLoader.isOnAndroid()
 
     @Environment(EnvType.CLIENT)
     @JvmStatic
     fun sendUnavailableMessage() {
-        val localPlayer: LocalPlayer? = Minecraft.getInstance().player
+        val localPlayer = Minecraft.getInstance().player
         getUnavailableComponent()?.let { localPlayer?.displayClientMessage(it, false) }
     }
 
     @JvmStatic
-    fun getUnavailableComponent(): Component? {
-        return NativeLibLoader.getErrorComponent()
-    }
+    fun getUnavailableComponent(): Component? = NativeLibLoader.getErrorComponent()
 
     @JvmStatic
-    fun getErrorMessage(): String? {
-        return NativeLibLoader.getErrorMessage()
-    }
+    fun getErrorMessage(): String? = NativeLibLoader.getErrorMessage()
 }

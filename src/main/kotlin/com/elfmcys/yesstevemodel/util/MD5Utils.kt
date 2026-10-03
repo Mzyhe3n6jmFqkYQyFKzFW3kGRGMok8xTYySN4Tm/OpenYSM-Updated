@@ -3,17 +3,14 @@ package com.elfmcys.yesstevemodel.util
 import org.apache.commons.codec.digest.DigestUtils
 import java.io.File
 import java.io.FileInputStream
-import java.io.IOException
 import java.io.InputStream
 
 object MD5Utils {
     @JvmStatic
     fun getStreamMD5(inputStream: InputStream): String {
-        return try {
+        return runCatching {
             DigestUtils.md5Hex(inputStream)
-        } catch (e: IOException) {
-            ""
-        }
+        }.getOrDefault("")
     }
 
     @JvmStatic
@@ -21,11 +18,9 @@ object MD5Utils {
         if (!file.exists()) {
             return ""
         }
-        return try {
+        return runCatching {
             FileInputStream(file).use { getStreamMD5(it) }
-        } catch (e: IOException) {
-            ""
-        }
+        }.getOrDefault("")
     }
 
     @JvmStatic

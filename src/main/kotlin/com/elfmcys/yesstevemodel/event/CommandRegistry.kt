@@ -7,8 +7,6 @@ import com.elfmcys.yesstevemodel.command.OpenYSMClientCommand
 import com.elfmcys.yesstevemodel.command.RootClientCommand
 import com.elfmcys.yesstevemodel.command.RootCommand
 import com.elfmcys.yesstevemodel.model.ServerModelManager
-import com.google.common.collect.Lists
-import com.google.common.collect.Sets
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.suggestion.SuggestionProvider
 import com.mojang.brigadier.suggestion.Suggestions
@@ -18,7 +16,6 @@ import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.SharedSuggestionProvider
 import net.minecraft.commands.synchronization.SuggestionProviders
 import rip.ysm.api.PlatformAPI
-import java.util.stream.Collectors
 
 object CommandRegistry {
     @JvmField
@@ -27,12 +24,12 @@ object CommandRegistry {
             if (commandContext.source is SharedSuggestionProvider) {
                 if (PlatformAPI.isServer()) {
                     return@register SharedSuggestionProvider.suggest(
-                        ServerModelManager.getServerModelInfo().keys.stream().map { escapeIfRequired(it) }.toList(),
+                        ServerModelManager.getServerModelInfo().keys.map(::escapeIfRequired),
                         suggestionsBuilder
                     )
                 }
                 return@register SharedSuggestionProvider.suggest(
-                    ClientModelManager.getModelAssemblyMap().keys.stream().map { escapeIfRequired(it) }.toList(),
+                    ClientModelManager.getModelAssemblyMap().keys.map(::escapeIfRequired),
                     suggestionsBuilder
                 )
             }
@@ -47,9 +44,7 @@ object CommandRegistry {
                     return@register Suggestions.empty()
                 }
                 val map = ClientModelManager.getLocalModelContext().animationBundle.mainAnimations
-                val set = Sets.newHashSet<String>()
-                set.addAll(map.keys.stream().map { escapeIfRequired(it) }.toList())
-                set.add("stop")
+                val set = (map.keys.map(::escapeIfRequired) + "stop").toSet()
                 return@register SharedSuggestionProvider.suggest(set, suggestionsBuilder)
             }
             Suggestions.empty()
@@ -61,29 +56,31 @@ object CommandRegistry {
             if (commandContext.source is SharedSuggestionProvider) {
                 val str = commandContext.getArgument("model_id", String::class.java)
                 if (PlatformAPI.isServer()) {
-                    if (ServerModelManager.getServerModelInfo().containsKey(str)) {
-                        val list = ServerModelManager.getServerModelInfo()[str]?.modelInfo?.textures?.stream()
-                            ?.map { escapeIfRequired(it) }
-                            ?.collect(Collectors.toList()) ?: Lists.newArrayList()
-                        list.add(0, "-")
+                    ServerModelManager.getServerModelInfo()[str]?.let { serverModelInfo ->
+                        val list = mutableListOf("-").apply {
+                            addAll(serverModelInfo.modelInfo.textures.map(::escapeIfRequired))
+                        }
                         return@register SharedSuggestionProvider.suggest(list, suggestionsBuilder)
                     }
                 } else if (ClientModelManager.getModelAssemblyMap().containsKey(str)) {
-                    val list2 = ClientModelManager.getModelContext(str)
-                        .map { context ->
-                            context.animationBundle.textures.keys.stream()
-                                .map { escapeIfRequired(it) }
-                                .collect(Collectors.toList())
-                        }.orElseGet { Lists.newArrayList() }
-                    list2.add(0, "-")
-                    return@register SharedSuggestionProvider.suggest(list2, suggestionsBuilder)
+                    val list = mutableListOf("-")
+                    ClientModelManager.getModelContext(str).ifPresent { context ->
+                        list.addAll(context.animationBundle.textures.keys.map(::escapeIfRequired))
+                    }
+                    return@register SharedSuggestionProvider.suggest(list, suggestionsBuilder)
                 }
             }
             Suggestions.empty()
         }
 
-    @JvmStatic
-    fun register() {
+    private fun escapeIfRequired(str: String): String {
+        if (str.all { StringReader.isAllowedInUnquotedString(it) }) {
+            return str
+        }
+        return "\"${str.replace("\"", "\\\"").replace("'", "\\'")}\""
+    }
+
+    init {
         if (!PlatformAPI.isServer()) {
             ClientCommandRegistrationCallback.EVENT.register(ClientCommandRegistrationCallback { dispatcher, _ ->
                 if (!YesSteveModel.isAvailable()) {
@@ -102,12 +99,5 @@ object CommandRegistry {
                 RootClientCommand.registerClientCommands(dispatcher)
             }
         })
-    }
-
-    private fun escapeIfRequired(str: String): String {
-        if (str.chars().allMatch { i -> StringReader.isAllowedInUnquotedString(i.toChar()) }) {
-            return str
-        }
-        return "\"${str.replace("\"", "\\\"").replace("'", "\\'")}\""
     }
 }

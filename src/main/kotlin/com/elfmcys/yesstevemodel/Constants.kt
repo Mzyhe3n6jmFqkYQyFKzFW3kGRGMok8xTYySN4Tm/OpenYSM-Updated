@@ -53,5 +53,5 @@ object Constants {
             return getServer ?: error("Server is not initialized")
         }
 
-    private fun doNothing(vararg objects: Any) {}
+    fun doNothing(vararg objects: Any) {}
 }

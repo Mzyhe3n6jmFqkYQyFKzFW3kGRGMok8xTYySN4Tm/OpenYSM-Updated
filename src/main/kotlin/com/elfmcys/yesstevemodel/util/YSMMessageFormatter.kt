@@ -54,8 +54,8 @@ object YSMMessageFormatter {
 
     @JvmStatic
     fun sendServerMessage(commandSourceStack: CommandSourceStack?, component: Component, broadcastToOps: Boolean) {
-        val currentServer: MinecraftServer? = PlatformAPI.getServer() ?: return
-        currentServer?.execute {
+        val currentServer: MinecraftServer = PlatformAPI.getServer() ?: return
+        currentServer.execute {
             var sourceStack: CommandSourceStack? = null
             val entity = commandSourceStack?.entity
             if (entity is ServerPlayer) {

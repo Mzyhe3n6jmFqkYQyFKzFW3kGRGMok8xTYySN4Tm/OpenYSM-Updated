@@ -5,12 +5,11 @@ import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import org.joml.Vector3f
 import rip.ysm.compat.ModCompat
 import rip.ysm.compat.immersiveaircraft.fabric.ImmersiveAirCraftCompatImpl
-import java.util.*
 
 object ImmersiveAirCraftCompat : ModCompat("immersive_aircraft") {
     @JvmStatic
-    fun getAircraftRotation(event: AnimationEvent<GeckoVehicleEntity>): Optional<Vector3f> {
-        if (!isModLoaded) return Optional.empty()
+    fun getAircraftRotation(event: AnimationEvent<GeckoVehicleEntity>): Vector3f? {
+        if (!isModLoaded) return null
         return ImmersiveAirCraftCompatImpl.getAircraftRotation(event)
     }
 }

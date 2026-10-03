@@ -40,30 +40,30 @@ object SWarfareCompat : ModCompat("superbwarfare") {
     @JvmStatic
     fun handleTaczAnim(
         entity: LivingEntity,
-        event: AnimationEvent<out LivingAnimatable<out LivingEntity>>,
+        event: AnimationEvent<*>,
         str: String,
         loopType: ILoopType
     ): PlayState? {
         if (!isModLoaded) return null
-        return SWarfareCompatImpl.handleTaczAnim(entity, event, str, loopType)
+        return SWarfareCompatImpl.handleTaczAnim(entity, event as AnimationEvent<out LivingAnimatable<out LivingEntity>>, str, loopType)
     }
 
     @JvmStatic
     fun handleGunHoldAnim(
         stack: ItemStack,
-        event: AnimationEvent<out LivingAnimatable<out LivingEntity>>
+        event: AnimationEvent<*>
     ): PlayState? {
         if (!isModLoaded) return null
-        return SWarfareCompatImpl.handleGunHoldAnim(stack, event)
+        return SWarfareCompatImpl.handleGunHoldAnim(stack, event as AnimationEvent<out LivingAnimatable<out LivingEntity>>)
     }
 
     @JvmStatic
     fun handleGunActionAnim(
         stack: ItemStack,
-        event: AnimationEvent<out LivingAnimatable<out LivingEntity>>
+        event: AnimationEvent<*>
     ): PlayState? {
         if (!isModLoaded) return null
-        return SWarfareCompatImpl.handleGunActionAnim(stack, event)
+        return SWarfareCompatImpl.handleGunActionAnim(stack, event as AnimationEvent<out LivingAnimatable<out LivingEntity>>)
     }
 
     @JvmStatic

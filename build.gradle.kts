@@ -94,6 +94,9 @@ dependencies {
     implementation(libs.vorbis.java.core)
     include(libs.vorbis.java.core)
 
+    implementation(libs.aircompressor)
+    include(libs.aircompressor)
+
     modCompileOnly(libs.iris)
 
     modCompileOnly(libs.touhoulittlemaid.fabric)

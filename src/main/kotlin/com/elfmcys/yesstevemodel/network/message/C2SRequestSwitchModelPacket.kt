@@ -1,0 +1,59 @@
+package com.elfmcys.yesstevemodel.network.message
+
+import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
+import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
+import com.elfmcys.yesstevemodel.config.ServerConfig
+import com.elfmcys.yesstevemodel.model.ServerModelManager
+import net.minecraft.network.FriendlyByteBuf
+import net.minecraft.server.level.ServerPlayer
+import rip.ysm.api.network.PacketContext
+
+class C2SRequestSwitchModelPacket(
+    val modelId: String,
+    val textureId: String
+) {
+    companion object {
+        @JvmStatic
+        fun encode(message: C2SRequestSwitchModelPacket, buf: FriendlyByteBuf) {
+            buf.writeUtf(message.modelId)
+            buf.writeUtf(message.textureId)
+        }
+
+        @JvmStatic
+        fun decode(buf: FriendlyByteBuf): C2SRequestSwitchModelPacket {
+            return C2SRequestSwitchModelPacket(buf.readUtf(), buf.readUtf())
+        }
+
+        @JvmStatic
+        fun handle(message: C2SRequestSwitchModelPacket, ctx: PacketContext) {
+            if (ctx.isServerSide()) {
+                val sender = ctx.sender
+                ctx.enqueueWork {
+                    if (sender != null && ServerConfig.CAN_SWITCH_MODEL.get()) {
+                        handleCapability(message, sender)
+                    }
+                }
+            }
+        }
+
+        @JvmStatic
+        fun handleCapability(message: C2SRequestSwitchModelPacket, sender: ServerPlayer) {
+            ModelInfoCapability[sender]?.let { cap ->
+                AuthModelsCapability[sender]?.let { cap2 ->
+                    val str = message.modelId
+                    val serverModelInfo = ServerModelManager.getServerModelInfo()
+                    val serverModelData = serverModelInfo[str]
+                    if (serverModelData == null ||
+                        (ServerModelManager.getAuthModels().contains(str) && !cap2.containsModel(message.modelId)) ||
+                        !serverModelData.modelInfo.textures.contains(message.textureId)
+                    ) {
+                        cap.resetToDefault()
+                    } else {
+                        cap.setModelAndTexture(message.modelId, message.textureId)
+                    }
+                    cap.stopAnimation(sender)
+                }
+            }
+        }
+    }
+}

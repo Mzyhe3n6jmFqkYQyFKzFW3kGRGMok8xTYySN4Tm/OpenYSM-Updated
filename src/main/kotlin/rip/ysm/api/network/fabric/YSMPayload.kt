@@ -8,13 +8,9 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload
 import net.minecraft.resources.Identifier
 
 class YSMPayload(val data: ByteArray) : CustomPacketPayload {
-    fun toBuf(): FriendlyByteBuf {
-        return FriendlyByteBuf(Unpooled.wrappedBuffer(this.data))
-    }
+    fun toBuf(): FriendlyByteBuf = FriendlyByteBuf(Unpooled.wrappedBuffer(data))
 
-    override fun type(): CustomPacketPayload.Type<out CustomPacketPayload> {
-        return TYPE
-    }
+    override fun type(): CustomPacketPayload.Type<out CustomPacketPayload> = TYPE
 
     companion object {
         @JvmField

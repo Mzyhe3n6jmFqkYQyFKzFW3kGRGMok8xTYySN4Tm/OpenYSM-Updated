@@ -30,17 +30,14 @@ object PlatformAPIImpl {
     fun getConfigFolder(): Path = FabricLoader.getInstance().configDir
 
     @JvmStatic
-    fun getGameFolder(): Path {
-        return FabricLoader.getInstance().gameDir
-    }
+    fun getGameFolder(): Path = FabricLoader.getInstance().gameDir
 
     @JvmStatic
     fun isModLoaded(modId: String): Boolean = FabricLoader.getInstance().isModLoaded(modId)
 
     @JvmStatic
     fun getModVersion(modId: String): String = FabricLoader.getInstance().getModContainer(modId)
-        .map { it.metadata.version.friendlyString }
-        .orElse("unknown")!!
+        .orElse(null)?.metadata?.version?.friendlyString ?: "unknown"
 
     @JvmStatic
     fun isDevelopmentEnvironment(): Boolean = FabricLoader.getInstance().isDevelopmentEnvironment

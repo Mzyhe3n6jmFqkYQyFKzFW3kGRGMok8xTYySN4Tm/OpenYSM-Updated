@@ -1,0 +1,665 @@
+package com.elfmcys.yesstevemodel.client.renderer
+
+import com.elfmcys.yesstevemodel.capability.PlayerCapability
+import com.elfmcys.yesstevemodel.capability.VehicleCapability
+import com.elfmcys.yesstevemodel.client.animation.AnimationTracker
+import com.elfmcys.yesstevemodel.client.entity.IPreviewAnimatable
+import com.elfmcys.yesstevemodel.client.entity.LivingAnimatable
+import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity
+import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
+import com.elfmcys.yesstevemodel.geckolib3.core.processor.IBone
+import com.elfmcys.yesstevemodel.geckolib3.geo.GeoReplacedEntityRenderer
+import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel
+import com.elfmcys.yesstevemodel.geckolib3.util.RenderUtils
+import com.elfmcys.yesstevemodel.util.AnimatableCacheUtil
+import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.math.Axis
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.player.LocalPlayer
+import net.minecraft.client.renderer.LightTexture
+import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.SubmitNodeCollector
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher
+import net.minecraft.client.renderer.entity.state.AvatarRenderState
+import net.minecraft.client.renderer.entity.state.EntityRenderState
+import net.minecraft.client.renderer.state.CameraRenderState
+import net.minecraft.client.renderer.texture.OverlayTexture
+import net.minecraft.util.Mth
+import net.minecraft.world.entity.*
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemDisplayContext
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.block.Blocks
+import org.joml.Matrix4fStack
+import org.joml.Quaternionf
+import org.joml.Vector3f
+import rip.ysm.compat.firstperson.FirstPersonCompat
+import rip.ysm.compat.oculus.OculusCompat
+import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat
+
+object ModelPreviewRenderer {
+    @JvmField
+    var isPreviewMode: Boolean = false
+
+    @JvmField
+    var isExtraPlayerMode: Boolean = false
+
+    @JvmField
+    var isFirstPersonMode: Boolean = false
+
+    @JvmStatic
+    fun setPreviewMode(previewMode: Boolean) {
+        isPreviewMode = previewMode
+    }
+
+    @JvmStatic
+    fun isPreview(): Boolean {
+        return isPreviewMode
+    }
+
+    @JvmStatic
+    fun setExtraPlayerMode(extraPlayerMode: Boolean) {
+        isExtraPlayerMode = extraPlayerMode
+    }
+
+    @JvmStatic
+    fun isExtraPlayer(): Boolean {
+        return isExtraPlayerMode
+    }
+
+    @JvmStatic
+    fun setFirstPersonMode(firstPersonMode: Boolean) {
+        isFirstPersonMode = firstPersonMode
+    }
+
+    @JvmStatic
+    fun isFirstPerson(): Boolean {
+        return isFirstPersonMode || OculusCompat.isModLoaded || FirstPersonCompat.isFirstPersonActive()
+    }
+
+    @JvmStatic
+    fun isFirstPersonOnRenderThread(): Boolean {
+        RenderSystem.assertOnRenderThread()
+        return isFirstPersonMode && !FirstPersonCompat.isFirstPersonActive()
+    }
+
+    @JvmStatic
+    fun renderVehicleModel(entity: Entity, poseStack: PoseStack, partialTick: Float) {
+        val vehicle = entity.vehicle
+        if (vehicle != null) {
+            val cap = VehicleCapability[vehicle]
+            if (cap != null) {
+                if (!cap.isModelInitialized() || !cap.isModelReady()) {
+                    return
+                }
+                val index = vehicle.passengers.indexOf(entity)
+                val model: AnimatedGeoModel? = cap.getCurrentModel()
+                if (index < 0 || model == null || model.passengerGroupChains().isEmpty() || index >= model.passengerGroupChains().size) {
+                    return
+                }
+                val list: List<IBone>? = model.passengerGroupChains()[index]
+                if (list == null) {
+                    return
+                }
+                val bodyRotation = CustomVehicleRenderer.getBodyRotation(vehicle, Mth.lerp(partialTick, vehicle.yRotO, vehicle.yRot), partialTick)
+                poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - bodyRotation))
+                RenderUtils.prepMatrixForLocator(poseStack, list)
+                poseStack.mulPose(Axis.YN.rotationDegrees(180.0f - bodyRotation))
+                var myRidingOffset = -(vehicle.getPassengerRidingPosition(entity).y - vehicle.y)
+                if ((entity is Player && PlayerCapability[entity] != null) || TouhouLittleMaidCompat.isMaidRideable(entity)) {
+                    myRidingOffset -= 0.5
+                }
+                poseStack.translate(0.0, myRidingOffset, 0.0)
+            }
+        }
+    }
+
+    // 动画测试界面的模型
+    @JvmStatic
+    fun renderEntityPreview(
+        x: Float,
+        y: Float,
+        scale: Float,
+        pitch: Float,
+        yaw: Float,
+        partialTick: Float,
+        animatableEntity: AnimatableEntity<*>,
+        state: AvatarRenderState,
+        renderer: GeoReplacedEntityRenderer<*, *, *>,
+        renderGround: Boolean
+    ) {
+        setPreviewMode(true)
+        val livingEntity = animatableEntity.getEntity() as LivingEntity
+        val modelViewStack: Matrix4fStack = RenderSystem.getModelViewStack()
+        modelViewStack.pushMatrix()
+        modelViewStack.translate(x, y, 1250.0f)
+        modelViewStack.scale(1.0f, 1.0f, -1.0f)
+        val poseStack = PoseStack()
+        poseStack.translate(0.0, 0.0, 1000.0)
+        poseStack.scale(scale, scale, scale)
+        poseStack.translate(0.0, 0.8, 0.0)
+        val rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.0f)
+        val rotationX: Quaternionf = Axis.XP.rotationDegrees(10.0f + pitch)
+        rotationZ.mul(rotationX)
+        poseStack.mulPose(rotationZ)
+        val oldBodyRot: Float = livingEntity.yBodyRot
+        val oldBodyRotO: Float = livingEntity.yBodyRotO
+        val oldYRot: Float = livingEntity.yRot
+        val oldYRotO: Float = livingEntity.yRotO
+        val oldXRot: Float = livingEntity.xRot
+        val oldXRotO: Float = livingEntity.xRotO
+        val oldHeadRotO: Float = livingEntity.yHeadRotO
+        val oldHeadRot: Float = livingEntity.yHeadRot
+        val oldPose: Pose = livingEntity.pose
+        livingEntity.yBodyRot = -yaw
+        livingEntity.yBodyRotO = -yaw
+        livingEntity.yRot = 180.0f
+        livingEntity.yRotO = 180.0f
+        livingEntity.xRot = 0.0f
+        livingEntity.xRotO = 0.0f
+        livingEntity.yHeadRot = -yaw
+        livingEntity.yHeadRotO = -yaw
+        val entityRenderDispatcher: EntityRenderDispatcher = Minecraft.getInstance().entityRenderDispatcher
+        rotationX.conjugate()
+        poseStack.mulPose(rotationX)
+        val bufferSource: MultiBufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
+        val animationTracker: AnimationTracker = (animatableEntity as IPreviewAnimatable).getAnimationStateMachine()
+        if (animationTracker.isCurrentAnimation("sleep")) {
+            poseStack.mulPose(Axis.YP.rotationDegrees(yaw - 90.0f))
+            poseStack.translate(0.5, 0.5625, 0.0)
+            livingEntity.pose = Pose.SLEEPING
+        }
+        if (animationTracker.isCurrentAnimation("swim") || animationTracker.isCurrentAnimation("swim_stand")) {
+            livingEntity.pose = Pose.SWIMMING
+        }
+        if (animationTracker.isCurrentAnimation("sneak") || animationTracker.isCurrentAnimation("sneaking")) {
+            livingEntity.pose = Pose.CROUCHING
+        }
+        if (animationTracker.isCurrentAnimation("sit")) {
+            poseStack.translate(0.0, -0.5, 0.0)
+        }
+        if (animationTracker.isCurrentAnimation("ride")) {
+            poseStack.translate(0.0, 0.85, 0.0)
+        }
+        if (animationTracker.isCurrentAnimation("ride_pig")) {
+            poseStack.translate(0.0, 0.3125, 0.0)
+        }
+        if (animationTracker.isCurrentAnimation("boat")) {
+            poseStack.translate(0.0, -0.45, 0.0)
+        }
+        renderVehicleForAnimation(yaw, animatableEntity, partialTick, poseStack, entityRenderDispatcher, bufferSource)
+        if (animationTracker.isCurrentAnimation("sleep")) {
+            renderBedPreview(scale, pitch, yaw, bufferSource)
+        }
+        if (renderGround) {
+            renderGroundPreview(scale, pitch, yaw, bufferSource)
+        }
+        @Suppress("UNCHECKED_CAST")
+        (renderer as GeoReplacedEntityRenderer<LivingEntity, LivingAnimatable<LivingEntity>, AvatarRenderState>).renderEntity(
+            animatableEntity as LivingAnimatable<LivingEntity>,
+            state,
+            0.0f,
+            partialTick,
+            poseStack,
+            bufferSource,
+            15728880
+        )
+        livingEntity.yBodyRot = oldBodyRot
+        livingEntity.yBodyRotO = oldBodyRotO
+        livingEntity.yRot = oldYRot
+        livingEntity.yRotO = oldYRotO
+        livingEntity.xRot = oldXRot
+        livingEntity.xRotO = oldXRotO
+        livingEntity.yHeadRotO = oldHeadRotO
+        livingEntity.yHeadRot = oldHeadRot
+        livingEntity.pose = oldPose
+        modelViewStack.popMatrix()
+        setPreviewMode(false)
+    }
+
+    @JvmStatic
+    fun renderBedPreview(scale: Float, pitch: Float, yaw: Float, bufferSource: MultiBufferSource) {
+        val poseStack = PoseStack()
+        poseStack.translate(0.0, 0.0, 1000.0)
+        poseStack.scale(scale, scale, scale)
+        poseStack.translate(0.0, 0.8, 0.0)
+        val rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.0f)
+        rotationZ.mul(Axis.XP.rotationDegrees(10.0f + pitch))
+        poseStack.mulPose(rotationZ)
+        poseStack.mulPose(Axis.YP.rotationDegrees(yaw + 180.0f))
+        poseStack.translate(-0.5, 0.0, 0.5)
+        Minecraft.getInstance().blockRenderer.renderSingleBlock(Blocks.RED_BED.defaultBlockState(), poseStack, bufferSource, 15728880, OverlayTexture.NO_OVERLAY)
+    }
+
+    @JvmStatic
+    fun renderGroundPreview(scale: Float, pitch: Float, yaw: Float, bufferSource: MultiBufferSource) {
+        val poseStack = PoseStack()
+        poseStack.translate(0.0, 0.0, 1000.0)
+        poseStack.scale(scale, scale, scale)
+        poseStack.translate(0.0, 0.8, 0.0)
+        val rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.0f)
+        rotationZ.mul(Axis.XP.rotationDegrees(10.0f + pitch))
+        poseStack.mulPose(rotationZ)
+        poseStack.mulPose(Axis.YP.rotationDegrees(yaw))
+        poseStack.translate(-1.5, -1.0, -2.5)
+        for (i in 0 until 3) {
+            for (j in 0 until 3) {
+                poseStack.translate(0.0f, 0.0f, 1.0f)
+                Minecraft.getInstance().blockRenderer.renderSingleBlock(Blocks.GRASS_BLOCK.defaultBlockState(), poseStack, bufferSource, 15728880, OverlayTexture.NO_OVERLAY)
+            }
+            poseStack.translate(1.0f, 0.0f, -3.0f)
+        }
+        poseStack.translate(-1.0f, 1.0f, 1.0f)
+        Minecraft.getInstance().blockRenderer.renderSingleBlock(Blocks.SHORT_GRASS.defaultBlockState(), poseStack, bufferSource, 15728880, OverlayTexture.NO_OVERLAY)
+        poseStack.translate(0.0f, 0.0f, 1.0f)
+        Minecraft.getInstance().blockRenderer.renderSingleBlock(Blocks.RED_TULIP.defaultBlockState(), poseStack, bufferSource, 15728880, OverlayTexture.NO_OVERLAY)
+    }
+
+    @JvmStatic
+    fun renderVehicleForAnimation(
+        yaw: Float,
+        animatableEntity: AnimatableEntity<*>,
+        partialTick: Float,
+        poseStack: PoseStack,
+        entityRenderDispatcher: EntityRenderDispatcher,
+        bufferSource: MultiBufferSource
+    ) {
+        val entity: Entity = animatableEntity.getEntity()
+        val animationTracker: AnimationTracker = (animatableEntity as IPreviewAnimatable).getAnimationStateMachine()
+        if (animationTracker.isCurrentAnimation("ride")) {
+            AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.HORSE)) {
+                EntityType.HORSE.create(entity.level(), EntitySpawnReason.LOAD)
+            }?.let { renderVehicleEntity(yaw, entity, poseStack, entityRenderDispatcher, bufferSource, it, partialTick) }
+        } else if (animationTracker.isCurrentAnimation("ride_pig")) {
+            AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.PIG)) {
+                EntityType.PIG.create(entity.level(), EntitySpawnReason.LOAD)
+            }?.let { renderVehicleEntity(yaw, entity, poseStack, entityRenderDispatcher, bufferSource, it, partialTick) }
+        } else if (animationTracker.isCurrentAnimation("boat")) {
+            AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.OAK_BOAT)) {
+                EntityType.OAK_BOAT.create(entity.level(), EntitySpawnReason.LOAD)
+            }?.let { renderVehicleEntity(yaw, entity, poseStack, entityRenderDispatcher, bufferSource, it, partialTick) }
+        }
+    }
+
+    @JvmStatic
+    fun renderVehicleEntity(
+        yaw: Float,
+        riderEntity: Entity,
+        poseStack: PoseStack,
+        entityRenderDispatcher: EntityRenderDispatcher,
+        bufferSource: MultiBufferSource,
+        vehicleEntity: Entity,
+        partialTick: Float
+    ) {
+        poseStack.pushPose()
+        poseStack.mulPose(Axis.YP.rotationDegrees(yaw))
+        poseStack.popPose()
+    }
+
+    @JvmStatic
+    fun <T : Player, TAnimatable : LivingAnimatable<T>, S : AvatarRenderState> renderLivingEntityPreview(
+        x: Float,
+        y: Float,
+        scale: Float,
+        partialTick: Float,
+        animatable: TAnimatable,
+        state: S,
+        renderer: GeoReplacedEntityRenderer<T, TAnimatable, S>,
+        disablePreviewRotation: Boolean,
+        hideEquipment: Boolean
+    ) {
+        val savedEquipment: Array<ItemStack?>?
+        setPreviewMode(true)
+        val livingEntity: LivingEntity = animatable.getEntity()
+        val modelViewStack: Matrix4fStack = RenderSystem.getModelViewStack()
+        modelViewStack.pushMatrix()
+        modelViewStack.translate(x, y, 1050.0f)
+        modelViewStack.scale(1.0f, 1.0f, -1.0f)
+        val poseStack = PoseStack()
+        poseStack.translate(0.0, if (disablePreviewRotation) 5.5 else 0.0, 1000.0)
+        poseStack.scale(scale, scale, scale)
+        val rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.0f)
+        val rotationX: Quaternionf = Axis.XP.rotationDegrees(if (disablePreviewRotation) 0.0f else -10.0f)
+        rotationZ.mul(rotationX)
+        poseStack.mulPose(rotationZ)
+        val oldBodyRot: Float = livingEntity.yBodyRot
+        val oldBodyRotO: Float = livingEntity.yBodyRotO
+        val oldYRot: Float = livingEntity.yRot
+        val oldYRotO: Float = livingEntity.yRotO
+        val oldXRot: Float = livingEntity.xRot
+        val oldXRotO: Float = livingEntity.xRotO
+        val oldHeadRotO: Float = livingEntity.yHeadRotO
+        val oldHeadRot: Float = livingEntity.yHeadRot
+        if (hideEquipment && livingEntity is Player) {
+            val slots = EquipmentSlot.entries
+            savedEquipment = arrayOfNulls(slots.size)
+            for ((slotIndex, equipmentSlot) in slots.withIndex()) {
+                savedEquipment[slotIndex] = livingEntity.getItemBySlot(equipmentSlot).copy()
+                livingEntity.setItemSlot(equipmentSlot, ItemStack.EMPTY)
+            }
+        } else {
+            savedEquipment = null
+        }
+        val previewYaw: Float = if (disablePreviewRotation) 180.0f else 200.0f
+        livingEntity.yBodyRot = previewYaw
+        livingEntity.yBodyRotO = previewYaw
+        livingEntity.yRot = previewYaw
+        livingEntity.yRotO = previewYaw
+        livingEntity.xRot = 0.0f
+        livingEntity.xRotO = 0.0f
+        livingEntity.yHeadRot = livingEntity.yRot
+        livingEntity.yHeadRotO = livingEntity.yRot
+        val vehicle = livingEntity.vehicle
+        if (vehicle is LivingEntity) {
+            val vehicleYaw = vehicle.yRot
+            poseStack.mulPose(Axis.YP.rotationDegrees(vehicleYaw - previewYaw))
+            livingEntity.yHeadRot = vehicleYaw
+            livingEntity.yHeadRotO = vehicleYaw
+        }
+        rotationX.conjugate()
+        poseStack.mulPose(rotationX)
+        val bufferSource: MultiBufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
+        renderer.renderEntity(animatable, state, 0.0f, partialTick, poseStack, bufferSource, 15728880)
+        livingEntity.yBodyRot = oldBodyRot
+        livingEntity.yBodyRotO = oldBodyRotO
+        livingEntity.yRot = oldYRot
+        livingEntity.yRotO = oldYRotO
+        livingEntity.xRot = oldXRot
+        livingEntity.xRotO = oldXRotO
+        livingEntity.yHeadRotO = oldHeadRotO
+        livingEntity.yHeadRot = oldHeadRot
+        if (savedEquipment != null && livingEntity is Player) {
+            for ((slotIndex, equipmentSlot) in EquipmentSlot.entries.withIndex()) {
+                val itemStack: ItemStack? = savedEquipment[slotIndex]
+                if (itemStack != null) {
+                    livingEntity.setItemSlot(equipmentSlot, itemStack)
+                }
+            }
+        }
+        modelViewStack.popMatrix()
+        setPreviewMode(false)
+    }
+
+    @JvmStatic
+    fun renderPlayerOverlay(guiGraphics: GuiGraphics, localPlayer: LocalPlayer, x: Double, y: Double, scale: Float, yawOffset: Float, zDepth: Int, partialTick: Float) {
+        setExtraPlayerMode(true)
+        val modelViewStack: Matrix4fStack = RenderSystem.getModelViewStack()
+        modelViewStack.pushMatrix()
+        modelViewStack.translate((x + scale * 0.5f).toFloat(), (y + scale * 2.0f).toFloat(), 0.0f)
+        modelViewStack.scale(1.0f, 1.0f, -1.0f)
+        val poseStack = PoseStack()
+        poseStack.translate(0.0f, 0.0f, -zDepth.toFloat())
+        poseStack.scale(scale, scale, scale)
+        val rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.1f)
+        val rotationY: Quaternionf = Axis.YP.rotationDegrees(Mth.lerp(partialTick, localPlayer.yBodyRotO, localPlayer.yBodyRot) + yawOffset - 180.0f)
+        rotationZ.mul(rotationY)
+        poseStack.mulPose(rotationZ)
+        rotationY.conjugate()
+        poseStack.mulPose(rotationY)
+        modelViewStack.popMatrix()
+        setExtraPlayerMode(false)
+    }
+
+    @JvmStatic
+    fun submitLivingEntityPreview(
+        guiGraphics: GuiGraphics,
+        x0: Int,
+        y0: Int,
+        x1: Int,
+        y1: Int,
+        displaySize: Int,
+        partialTick: Float,
+        animatable: PlayerPreviewEntity,
+        disablePreviewRotation: Boolean,
+        hideEquipment: Boolean
+    ) {
+        val entity: LivingEntity = animatable.getEntity()
+        val savedEquipment: Array<ItemStack?>?
+        if (hideEquipment && entity is Player) {
+            val slots = EquipmentSlot.entries
+            savedEquipment = arrayOfNulls(slots.size)
+            for ((i, slot) in slots.withIndex()) {
+                savedEquipment[i] = entity.getItemBySlot(slot).copy()
+                entity.setItemSlot(slot, ItemStack.EMPTY)
+            }
+        } else {
+            savedEquipment = null
+        }
+        val renderer: CustomPlayerRenderer = RendererManager.getPlayerRenderer()
+        val state = AvatarRenderState()
+        renderer.extractRenderState(entity as Player, state, partialTick)
+        state.lightCoords = LightTexture.FULL_BRIGHT
+        val previewYaw: Float = if (disablePreviewRotation) 180.0f else 200.0f
+        state.bodyRot = previewYaw
+        state.yRot = 0.0f
+        state.xRot = 0.0f
+        PreviewEntityRegistry.register(state, animatable)
+        val rotation: Quaternionf = Quaternionf().rotateZ(Math.PI.toFloat())
+        var cameraTilt: Quaternionf? = null
+        if (!disablePreviewRotation) {
+            cameraTilt = Quaternionf().rotateX((-10.0 * Math.PI / 180.0).toFloat())
+            rotation.mul(cameraTilt)
+        }
+        val entityScale: Float = entity.scale
+        val yOffsetPx: Float = if (disablePreviewRotation) 5.5f else 0.0f
+        val yOffsetModel: Float = yOffsetPx * entityScale / displaySize.toFloat()
+        val translation = Vector3f(0.0f, entity.bbHeight / 2.0f + yOffsetModel, 0.0f)
+        val submitScale: Float = displaySize.toFloat() / entityScale
+        guiGraphics.enableScissor(x0, y0, x1, y1)
+        guiGraphics.submitEntityRenderState(state, submitScale, translation, rotation, cameraTilt, x0, y0, x1, y1)
+        guiGraphics.disableScissor()
+        if (savedEquipment != null && entity is Player) {
+            for ((i, slot) in EquipmentSlot.entries.withIndex()) {
+                val item = savedEquipment[i]
+                if (item != null) {
+                    entity.setItemSlot(slot, item)
+                }
+            }
+        }
+    }
+
+    @JvmStatic
+    fun submitPlayerOverlay(guiGraphics: GuiGraphics, localPlayer: LocalPlayer, x: Double, y: Double, scale: Float, yawOffset: Float, partialTick: Float) {
+        val cap: PlayerCapability = PlayerCapability[localPlayer] ?: return
+        cap.tickModel()
+        val cx: Float = (x + scale * 0.6f).toFloat()
+        val cy: Float = (y + scale * 1.0f).toFloat()
+        val halfW: Int = (scale * 2.0f).toInt()
+        val halfH: Int = (scale * 2.5f).toInt()
+        val x0: Int = cx.toInt() - halfW
+        val x1: Int = cx.toInt() + halfW
+        val y0: Int = cy.toInt() - halfH
+        val y1: Int = cy.toInt() + halfH
+        val renderer: CustomPlayerRenderer = RendererManager.getPlayerRenderer()
+        val state = AvatarRenderState()
+        renderer.extractRenderState(localPlayer, state, partialTick)
+        state.lightCoords = LightTexture.FULL_BRIGHT
+        PreviewEntityRegistry.register(state, cap)
+        state.bodyRot = 180.0f
+        val rotation: Quaternionf = Quaternionf().rotateZ(Math.PI.toFloat())
+        val entityScale: Float = localPlayer.scale
+        val translation = Vector3f(0.0f, localPlayer.bbHeight / 2.0f, 0.0f)
+        val submitScale: Float = scale / entityScale
+        guiGraphics.submitEntityRenderState(state, submitScale, translation, rotation, null, x0, y0, x1, y1)
+    }
+
+    @JvmStatic
+    fun submitTexturePreview(
+        guiGraphics: GuiGraphics,
+        x0: Int,
+        y0: Int,
+        x1: Int,
+        y1: Int,
+        anchorX: Float,
+        anchorY: Float,
+        zoom: Float,
+        pitch: Float,
+        yaw: Float,
+        animatable: PlayerPreviewEntity,
+        renderGround: Boolean,
+        partialTick: Float
+    ) {
+        val entity: LivingEntity = animatable.getEntity()
+        val tracker: AnimationTracker = animatable.getAnimationStateMachine()
+        val oldPose: Pose = entity.pose
+        var newPose: Pose = oldPose
+        var poseYOffset = 0.0f
+        if (tracker.isCurrentAnimation("sleep")) {
+            newPose = Pose.SLEEPING
+            poseYOffset = 0.5625f
+        } else if (tracker.isCurrentAnimation("swim") || tracker.isCurrentAnimation("swim_stand")) {
+            newPose = Pose.SWIMMING
+        } else if (tracker.isCurrentAnimation("sneak") || tracker.isCurrentAnimation("sneaking")) {
+            newPose = Pose.CROUCHING
+        } else if (tracker.isCurrentAnimation("sit")) {
+            poseYOffset = -0.5f
+        } else if (tracker.isCurrentAnimation("ride")) {
+            poseYOffset = 0.85f
+        } else if (tracker.isCurrentAnimation("ride_pig")) {
+            poseYOffset = 0.3125f
+        } else if (tracker.isCurrentAnimation("boat")) {
+            poseYOffset = -0.45f
+        }
+        val poseChanged: Boolean = newPose != oldPose
+        if (poseChanged) {
+            entity.pose = newPose
+        }
+        val renderer: CustomPlayerRenderer = RendererManager.getPlayerRenderer()
+        val state = AvatarRenderState()
+        renderer.extractRenderState(entity as Player, state, partialTick)
+        state.lightCoords = LightTexture.FULL_BRIGHT
+        state.bodyRot = -yaw
+        state.yRot = Mth.wrapDegrees(180.0f + yaw)
+        state.xRot = 0.0f
+        val capturedYaw: Float = yaw
+        val wantGround: Boolean = renderGround
+        val wantBed: Boolean = tracker.isCurrentAnimation("sleep")
+        val wantHorse: Boolean = tracker.isCurrentAnimation("ride")
+        val wantPig: Boolean = tracker.isCurrentAnimation("ride_pig")
+        val wantBoat: Boolean = tracker.isCurrentAnimation("boat")
+        var scenery: PreviewEntityRegistry.SceneryRenderer? = null
+        if (wantGround || wantBed || wantHorse || wantPig || wantBoat) {
+            scenery = PreviewEntityRegistry.SceneryRenderer { poseStack, bufferSource, packedLight ->
+                if (wantHorse) {
+                    renderVehicleScenery(poseStack, bufferSource, packedLight, capturedYaw, partialTick, entity, EntityType.HORSE)
+                } else if (wantPig) {
+                    renderVehicleScenery(poseStack, bufferSource, packedLight, capturedYaw, partialTick, entity, EntityType.PIG)
+                } else if (wantBoat) {
+                    renderVehicleScenery(poseStack, bufferSource, packedLight, capturedYaw, partialTick, entity, EntityType.OAK_BOAT)
+                }
+                if (wantBed) {
+                    renderBedScenery(poseStack, bufferSource, packedLight, capturedYaw)
+                }
+                if (wantGround) {
+                    renderGroundScenery(poseStack, bufferSource, packedLight, capturedYaw)
+                }
+            }
+        }
+        if (scenery != null || poseYOffset != 0.0f) {
+            PreviewEntityRegistry.register(state, animatable, scenery, null, poseYOffset)
+        } else {
+            PreviewEntityRegistry.register(state, animatable)
+        }
+        val cameraTilt: Quaternionf = Quaternionf().rotateX(Math.toRadians((-10.0 + pitch)).toFloat())
+        val rotation: Quaternionf = Quaternionf().rotateZ(Math.PI.toFloat()).mul(cameraTilt)
+        val entityScale: Float = entity.scale
+        val submitScale: Float = zoom / entityScale
+        val rectCenterX: Float = (x0 + x1) / 2.0f
+        val rectCenterY: Float = (y0 + y1) / 2.0f
+        val translationX: Float = (anchorX - rectCenterX) / submitScale
+        val translationY: Float = (anchorY - rectCenterY) / submitScale + 0.8f
+        if (wantBed) {
+            state.bodyRot = yaw - 90
+        }
+        val translation = Vector3f(translationX, translationY, 0.0f)
+        guiGraphics.enableScissor(x0, y0, x1, y1)
+        guiGraphics.submitEntityRenderState(state, submitScale, translation, rotation, cameraTilt, x0, y0, x1, y1)
+        guiGraphics.disableScissor()
+        if (poseChanged) {
+            entity.pose = oldPose
+        }
+    }
+
+    @JvmStatic
+    private fun renderGroundScenery(poseStack: PoseStack, bufferSource: MultiBufferSource, packedLight: Int, yaw: Float) {
+        val blockRenderer = Minecraft.getInstance().blockRenderer
+        poseStack.pushPose()
+        poseStack.mulPose(Axis.YP.rotationDegrees(yaw))
+        poseStack.translate(-1.5, -1.0, -2.5)
+        for (i in 0 until 3) {
+            for (j in 0 until 3) {
+                poseStack.translate(0.0f, 0.0f, 1.0f)
+                blockRenderer.renderSingleBlock(Blocks.GRASS_BLOCK.defaultBlockState(), poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY)
+            }
+            poseStack.translate(1.0f, 0.0f, -3.0f)
+        }
+        poseStack.translate(-1.0f, 1.0f, 1.0f)
+        blockRenderer.renderSingleBlock(Blocks.SHORT_GRASS.defaultBlockState(), poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY)
+        poseStack.translate(0.0f, 0.0f, 1.0f)
+        blockRenderer.renderSingleBlock(Blocks.RED_TULIP.defaultBlockState(), poseStack, bufferSource, packedLight, OverlayTexture.NO_OVERLAY)
+        poseStack.popPose()
+    }
+
+    @JvmStatic
+    private fun renderBedScenery(poseStack: PoseStack, bufferSource: MultiBufferSource, packedLight: Int, yaw: Float) {
+        val collector: SubmitNodeCollector? = RenderContext.collector()
+        if (collector == null) {
+            return
+        }
+        poseStack.pushPose()
+        poseStack.mulPose(Axis.YP.rotationDegrees(yaw + 180.0f))
+        poseStack.translate(-0.5, 0.0, 0.5)
+        Minecraft.getInstance().modelManager.specialBlockModelRenderer().renderByBlock(
+            Blocks.RED_BED,
+            ItemDisplayContext.NONE,
+            poseStack,
+            collector,
+            packedLight,
+            OverlayTexture.NO_OVERLAY,
+            -1
+        )
+        poseStack.popPose()
+    }
+
+    @JvmStatic
+    private fun cachedVehicle(rider: LivingEntity, vehicleType: EntityType<out Entity>): Entity? {
+        if (rider.level() == null) {
+            return null
+        }
+        return runCatching {
+            AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(vehicleType)) {
+                vehicleType.create(rider.level(), EntitySpawnReason.LOAD)
+            }
+        }.getOrNull()
+    }
+
+    @JvmStatic
+    private fun renderVehicleScenery(
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
+        packedLight: Int,
+        yaw: Float,
+        partialTick: Float,
+        rider: LivingEntity,
+        vehicleType: EntityType<out Entity>
+    ) {
+        val vehicle = cachedVehicle(rider, vehicleType) ?: return
+        val collector: SubmitNodeCollector? = RenderContext.collector()
+        val cameraState: CameraRenderState? = RenderContext.camera()
+        if (collector == null || cameraState == null) {
+            return
+        }
+        val dispatcher: EntityRenderDispatcher = Minecraft.getInstance().entityRenderDispatcher
+        poseStack.pushPose()
+        poseStack.mulPose(Axis.YP.rotationDegrees(yaw))
+        val yOffset = 0.0
+        val vehicleState: EntityRenderState = dispatcher.extractEntity(vehicle, partialTick)
+        vehicleState.lightCoords = packedLight
+        vehicleState.shadowRadius = 0.0f
+        vehicleState.shadowPieces.clear()
+        dispatcher.submit(vehicleState, cameraState, 0.0, yOffset, 0.0, poseStack, collector)
+        poseStack.popPose()
+    }
+}
