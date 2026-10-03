@@ -406,48 +406,51 @@ object ServerModelManager {
 
         val state = syncStates[uuid] ?: return
 
-        try {
+        runCatching {
             val packetBytes = ByteArray(data.remaining())
             data.get(packetBytes)
-            // System.out.println("Server Handle packet, step=" + state.step + ", length=" + packetBytes.length)
 
-            if (state.step == 1) {
-                // 等待Pong
-                val key1 = state.key1 ?: return
-                val decrypted = YsmCrypt.decrypt(packetBytes, key1)
-                if (decrypted.size < 56) return
+            when (state.step) {
+                1 -> {
+                    // 等待Pong
+                    val key1 = state.key1 ?: return
+                    val decrypted = YsmCrypt.decrypt(packetBytes, key1)
+                    if (decrypted.size < 56) return
 
-                // 客戶端生成的密鑰
-                state.clientNextKey = decrypted.copyOfRange(decrypted.size - 56, decrypted.size)
-                val payload = decrypted.copyOfRange(0, decrypted.size - 56)
+                    // 客戶端生成的密鑰
+                    state.clientNextKey = decrypted.copyOfRange(decrypted.size - 56, decrypted.size)
+                    val payload = decrypted.copyOfRange(0, decrypted.size - 56)
 
-                YSMByteBuf(Unpooled.wrappedBuffer(payload)).use { buf ->
-                    buf.skipGarbageHeader()
-                    if (buf.getRawBuf().readByte().toInt() != 0x02) return
+                    YSMByteBuf(Unpooled.wrappedBuffer(payload)).use { buf ->
+                        buf.skipGarbageHeader()
+                        if (buf.getRawBuf().readByte().toInt() != 0x02) return
+                    }
+
+                    // 發送可用模型
+                    state.step = 2
+                    sendPacket03(uuid, state)
                 }
 
-                // 發送可用模型
-                state.step = 2
-                sendPacket03(uuid, state)
-            } else if (state.step == 2) {
-                val key1 = state.key1 ?: return
-                val decrypted = YsmCrypt.decrypt(packetBytes, key1)
+                2 -> {
+                    val key1 = state.key1 ?: return
+                    val decrypted = YsmCrypt.decrypt(packetBytes, key1)
 
-                YSMByteBuf(Unpooled.wrappedBuffer(decrypted)).use { buf ->
-                    buf.skipGarbageHeader()
-                    if (buf.getRawBuf().readByte().toInt() != 0x04) return
+                    YSMByteBuf(Unpooled.wrappedBuffer(decrypted)).use { buf ->
+                        buf.skipGarbageHeader()
+                        if (buf.getRawBuf().readByte().toInt() != 0x04) return
 
-                    val numRequests = buf.readVarInt()
-                    val requestedHashes = ArrayList<LongArray>()
-                    for (i in 0 until numRequests) {
-                        requestedHashes.add(longArrayOf(buf.readVarLong(), buf.readVarLong()))
+                        val numRequests = buf.readVarInt()
+                        val requestedHashes = ArrayList<LongArray>()
+                        for (i in 0 until numRequests) {
+                            requestedHashes.add(longArrayOf(buf.readVarLong(), buf.readVarLong()))
+                        }
+                        state.step = 3
+                        sendPacket05(uuid, state, requestedHashes)
                     }
-                    state.step = 3
-                    sendPacket05(uuid, state, requestedHashes)
                 }
             }
-        } catch (e: Exception) {
-            Constants.LOGGER.error("Server sync error for $uuid", e)
+        }.onFailure {
+            Constants.LOGGER.error("Server sync error for $uuid", it)
         }
     }
 
@@ -680,7 +683,7 @@ object ServerModelManager {
                 }
             }
             if (needsUpdate) {
-                val encryptedCache: ByteArray = YSMBinarySerializer.serialize(model, 32, true).use { serialized ->
+                val encryptedCache = YSMBinarySerializer.serialize(model, 32, true).use { serialized ->
                     val raw = serialized.getRawBuf()
                     if (raw.hasArray()) {
                         val off = raw.arrayOffset() + raw.readerIndex()
@@ -1119,6 +1122,7 @@ object ServerModelManager {
             .toTypedArray()
     }
 
+    // TODO: Remove Suppress
     @Suppress("UNCHECKED_CAST")
     private fun onModelLoadComplete(modelLoadResult: ModelLoadResult, obj: Any?) {
         val consumer = if (obj is Consumer<*>) {
@@ -1161,9 +1165,8 @@ object ServerModelManager {
         val currentServer = PlatformAPIImpl.getServer() ?: return null
         val player = currentServer.playerList.getPlayer(uuid) ?: return null
         val serverGamePacketListenerImpl = player.connection
-        if (!serverGamePacketListenerImpl.isAcceptingMessages || serverGamePacketListenerImpl.javaClass != ServerGamePacketListenerImpl::class.java) {
+        if (!serverGamePacketListenerImpl.isAcceptingMessages || serverGamePacketListenerImpl.javaClass != ServerGamePacketListenerImpl::class.java)
             return null
-        }
         return (serverGamePacketListenerImpl as ServerCommonPacketListenerImplAccessor).`ysm$getConnection`()
     }
 
@@ -1224,9 +1227,7 @@ object ServerModelManager {
         if (defaultTexture.lowercase().endsWith(".png") && defaultTexture.length > 4) {
             defaultTexture = defaultTexture.substring(0, defaultTexture.length - 4)
         }
-        if (!initialized) {
-            return Pair.of(defaultModelId, defaultTexture)
-        }
+        if (!initialized) return Pair.of(defaultModelId, defaultTexture)
         val modelData = CACHE_NAME_INFO[defaultModelId] ?: return Pair.of("default", "default")
         if (!modelData.modelInfo.textures.contains(defaultTexture)) {
             defaultTexture = if (modelData.modelInfo.textures

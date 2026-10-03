@@ -14,7 +14,6 @@ open class NamedModelProcessor<T : GeoEntity<*>, TModel>(
     private val animationDataProvider: AnimationDataProvider<TModel>,
     private val controllerFactory: BiFunction<String, T, IAnimationController<T>>
 ) : ModelProcessor<T, TModel> {
-
     private val animationEntryKey: String = "$prefix.$slotName"
     private val controllerKey: String = "${prefix}_ctrl_$slotName"
 
@@ -23,12 +22,10 @@ open class NamedModelProcessor<T : GeoEntity<*>, TModel>(
         if ((checkAnimationEntries && animationDataProvider.getAnimationEntries(modelData, resourceBundle)
                 .containsKey(animationEntryKey)) ||
             resourceBundle.events.containsKey(controllerKey)
-        ) {
-            hasContent = true
-        } else if (requiredAnimations != null) {
+        ) hasContent = true else if (requiredAnimations != null) {
             val animations = animationDataProvider.getAnimations(modelData, resourceBundle)
             for (requiredAnimation in requiredAnimations) {
-                val animation = animations.get(requiredAnimation)
+                val animation = animations[requiredAnimation]
                 if (animation != null && !animation.isEmpty()) {
                     hasContent = true
                     break
@@ -36,11 +33,10 @@ open class NamedModelProcessor<T : GeoEntity<*>, TModel>(
             }
         }
 
-        if (hasContent) {
+        if (hasContent)
             return ControllerFactory { entity, consumer ->
-                consumer.accept(controllerFactory.apply(animationEntryKey, entity))
+                consumer(controllerFactory.apply(animationEntryKey, entity))
             }
-        }
         return ControllerFactory { _, _ -> }
     }
 }

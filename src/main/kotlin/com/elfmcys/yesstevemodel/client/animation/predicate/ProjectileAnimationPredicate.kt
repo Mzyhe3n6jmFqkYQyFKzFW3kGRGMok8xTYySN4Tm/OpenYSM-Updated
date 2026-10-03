@@ -6,21 +6,23 @@ import com.elfmcys.yesstevemodel.geckolib3.core.enums.PlayState
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import com.elfmcys.yesstevemodel.util.accessors.ProjectileStateAccessor
-import net.minecraft.world.entity.projectile.Projectile
 
 class ProjectileAnimationPredicate : IAnimationPredicate<GeckoProjectileEntity> {
-    override fun predicate(event: AnimationEvent<GeckoProjectileEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val projectile: Projectile = event.getAnimatable().entity ?: return PlayState.STOP
-        if (projectile.isInWater) {
-            return IAnimationPredicate.predicate(event, "water")
+    override fun predicate(
+        event: AnimationEvent<GeckoProjectileEntity>,
+        evaluator: ExpressionEvaluator<*>?
+    ): PlayState {
+        val projectile = event.getAnimatable().entity
+        return when {
+            projectile.isInWater -> IAnimationPredicate.predicate(event, "water")
+            projectile.isOnFire -> IAnimationPredicate.predicate(event, "fire")
+            projectile is ProjectileStateAccessor && projectile.`ysm$isArrowInGround`() -> IAnimationPredicate.predicate(
+                event,
+                "ground"
+            )
+
+            else -> IAnimationPredicate.predicate(event, "air")
         }
-        if (projectile.isOnFire) {
-            return IAnimationPredicate.predicate(event, "fire")
-        }
-        if (projectile is ProjectileStateAccessor && projectile.`ysm$isArrowInGround`()) {
-            return IAnimationPredicate.predicate(event, "ground")
-        }
-        return IAnimationPredicate.predicate(event, "air")
     }
 
     companion object {

@@ -2,7 +2,6 @@ package com.elfmcys.yesstevemodel.client.entity
 
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
 import com.elfmcys.yesstevemodel.client.model.ProjectileModelBundle
-import com.elfmcys.yesstevemodel.client.upload.IResourceLocatable
 import com.elfmcys.yesstevemodel.client.upload.UploadManager
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.Animation
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController
@@ -17,7 +16,7 @@ open class GeckoProjectileEntity(
     private var projectileModelContext: ProjectileModelBundle? = null
 
     override fun registerAnimationControllers() {
-        projectileModelContext?.controllerInitializer?.accept(this)
+        projectileModelContext?.controllerInitializer(this)
     }
 
     // TODO: fun builtInRegistryHolder(): Holder.Reference<EntityType<*>>' is deprecated. Deprecated in Java.
@@ -25,9 +24,7 @@ open class GeckoProjectileEntity(
         if (!isDefault) {
             val key = entity.type.builtInRegistryHolder().key().identifier()
             val modelBundle = modelAssembly.projectileModels[key]
-            if (modelBundle != null) {
-                return ProjectileModelWrapper(modelAssembly, false, modelBundle)
-            }
+            if (modelBundle != null) return ProjectileModelWrapper(modelAssembly, false, modelBundle)
         }
         return null
     }
@@ -77,7 +74,7 @@ open class GeckoProjectileEntity(
         isDefault: Boolean,
         modelBundle: ProjectileModelBundle
     ) : ModelWrapper(modelAssembly, isDefault) {
-        val textureLocatable: IResourceLocatable = UploadManager.getOrCreateLocatable(modelBundle.texture, true)
+        val textureLocatable = UploadManager.getOrCreateLocatable(modelBundle.texture, true)
 
         override fun isValid(): Boolean = textureLocatable.getResourceLocation() != null
     }

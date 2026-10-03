@@ -46,7 +46,7 @@ open class ParallelProcessor<T : GeoEntity<*>, TModel>(
             )
         ) { entry ->
             if (animationEntryMatcher.test(entry.key)) {
-                matchedSlots.put(entry.key, null)
+                matchedSlots[entry.key] = null
             }
         }
         val animations = animationDataProvider.getAnimations(modelData, resourceBundle)
@@ -64,20 +64,17 @@ open class ParallelProcessor<T : GeoEntity<*>, TModel>(
                         }
                     }
                 }
-                matchedSlots.put(controllerName, null)
+                matchedSlots[controllerName] = null
             }
         }
         Object2ReferenceMaps.fastForEach(animations) { animEntry ->
             if (!animEntry.value.isEmpty() && animationNameMatcher.test(animEntry.key)) {
-                matchedSlots.put(
-                    "${prefix}.${slotName}_${animEntry.key.substring(slotName.length)}",
-                    animEntry.key
-                )
+                matchedSlots["${prefix}.${slotName}_${animEntry.key.substring(slotName.length)}"] = animEntry.key
             }
         }
         return ControllerFactory { entity, consumer ->
             Object2ReferenceMaps.fastForEach(matchedSlots) { slot ->
-                consumer.accept(controllerFactory.apply(slot.key, entity, slot.value))
+                consumer(controllerFactory.apply(slot.key, entity, slot.value))
             }
         }
     }
