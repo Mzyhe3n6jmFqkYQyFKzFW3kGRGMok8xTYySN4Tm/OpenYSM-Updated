@@ -25,7 +25,6 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.LivingEntity
-import org.jetbrains.annotations.Nullable
 import org.joml.Matrix4fStack
 import org.joml.Quaternionf
 import rip.ysm.gui.components.BooleanOptionRow
@@ -33,8 +32,7 @@ import rip.ysm.gui.components.RadioOptionRow
 import rip.ysm.gui.components.SliderOptionRow
 import rip.ysm.gui.components.groups.IdentifiedGroup
 import rip.ysm.gui.molang.MolangOption
-import java.util.ArrayList
-import java.util.List
+import java.util.Comparator
 
 open class ModelSettingsScreen : OptionScreen() {
     var modelAssembly: ModelAssembly = null
@@ -51,24 +49,30 @@ open class ModelSettingsScreen : OptionScreen() {
     var offsetY: Float = 0.0f
     var draggingPreview: Boolean = false
     var draggingButton: Int = -1
+
     constructor(modelAssembly: ModelAssembly, animatable: AnimatableEntity<*>, parent: Screen, initialGroupId: String) {
         super(Component.translatable("gui.yes_steve_model.model_settings.title"), parent)
         this.modelAssembly = modelAssembly
         this.animatable = animatable
         this.initialGroupId = initialGroupId
     }
+
     open fun computePanelWidth(): Int {
         return Math.min(this.width - 40, 640)
     }
+
     open fun computePanelHeight(): Int {
         return Math.min(this.height - 40, 360)
     }
+
     open fun shouldUseCompactTabs(): Boolean {
         return this.width < 620
     }
+
     open fun computeRowAreaRight(): Int {
         return panelRight - previewWidth() - 4
     }
+
     open fun previewWidth(): Int {
         if (compactTabs) {
             var panelW: Int = panelRight - panelLeft
@@ -76,6 +80,7 @@ open class ModelSettingsScreen : OptionScreen() {
         }
         return 200
     }
+
     open fun init() {
         super.init()
         removeWidget(applyBtn)
@@ -101,18 +106,22 @@ open class ModelSettingsScreen : OptionScreen() {
             }
         }
     }
+
     open fun onClose() {
         if (this.minecraft != null) {
             this.minecraft.setScreen(parentScreen)
         }
     }
+
     open fun collectBlurRegions(out: MutableList<IntArray>) {
         super.collectBlurRegions(out)
         out.add(intArrayOf(previewLeft, previewTop, previewRight - previewLeft, previewBottom - previewTop))
     }
+
     open fun registerGroups() {
-        var ordered: MutableList<ExtraAnimationButtons> = ArrayList(modelAssembly.getModelData().getModelProperties().getExtraAnimationButtons().values())
-        ordered.sort({ a, b -> a.getId().compareTo(b.getId()) })
+        var ordered: MutableList<ExtraAnimationButtons> =
+            ArrayList(modelAssembly.getModelData().getModelProperties().getExtraAnimationButtons().values())
+        ordered.sortWith(Comparator({ a, b -> a.getId().compareTo(b.getId()) }))
         for (cfgGroup in ordered) {
             var g: IdentifiedGroup = IdentifiedGroup(cfgGroup.getId(), groupLabel(cfgGroup))
             var formIndex: Int = 0
@@ -126,18 +135,43 @@ open class ModelSettingsScreen : OptionScreen() {
             groups.add(g)
         }
     }
+
     open fun groupLabel(group: ExtraAnimationButtons): String {
-        var fallback: String = if (group.getName() == null || group.getName().isEmpty()) group.getId() else group.getName()
-        return ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "properties.extra_animation_buttons.%s.name".formatted(group.getId()), fallback)
+        var fallback: String =
+            if (group.getName() == null || group.getName().isEmpty()) group.getId() else group.getName()
+        return ModelMetadataPresenter.getLocalizedModelString(
+            modelAssembly,
+            "properties.extra_animation_buttons.%s.name".formatted(group.getId()),
+            fallback
+        )
     }
+
     open fun buildRow(groupId: String, formIndex: Int, form: AbstractConfig): OptionRow<*> {
-        var title: String = ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "properties.extra_animation_buttons.%s.config_forms.%d.title".formatted(groupId, formIndex), form.getTitle())
-        var desc: String = ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "properties.extra_animation_buttons.%s.config_forms.%d.description".formatted(groupId, formIndex), form.getDescription())
+        var title: String = ModelMetadataPresenter.getLocalizedModelString(
+            modelAssembly,
+            "properties.extra_animation_buttons.%s.config_forms.%d.title".formatted(groupId, formIndex),
+            form.getTitle()
+        )
+        var desc: String = ModelMetadataPresenter.getLocalizedModelString(
+            modelAssembly,
+            "properties.extra_animation_buttons.%s.config_forms.%d.description".formatted(groupId, formIndex),
+            form.getDescription()
+        )
         if (form is CheckboxConfig) {
             return BooleanOptionRow(0, 0, 0, 22, MolangOption.ofBoolean(title, desc, animatable, cfg.getValue()))
         }
         if (form is RangeConfig) {
-            return SliderOptionRow(0, 0, 0, 22, MolangOption.ofDouble(title, desc, animatable, cfg.getValue()), cfg.getMin(), cfg.getMax(), cfg.getStep(), "")
+            return SliderOptionRow(
+                0,
+                0,
+                0,
+                22,
+                MolangOption.ofDouble(title, desc, animatable, cfg.getValue()),
+                cfg.getMin(),
+                cfg.getMax(),
+                cfg.getStep(),
+                ""
+            )
         }
         if (form is RadioConfig) {
             var labels: OrderedStringMap<String, String> = cfg.getLabels()
@@ -145,18 +179,37 @@ open class ModelSettingsScreen : OptionScreen() {
             var writeExprs: Array<String> = arrayOfNulls<String>(labels.size())
             var i = 0
             while (i < labels.size()) {
-                texts.add(ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "properties.extra_animation_buttons.%s.config_forms.%d.labels.%d".formatted(groupId, formIndex, i), labels.getKeyAt(i)))
+                texts.add(
+                    ModelMetadataPresenter.getLocalizedModelString(
+                        modelAssembly,
+                        "properties.extra_animation_buttons.%s.config_forms.%d.labels.%d".formatted(
+                            groupId,
+                            formIndex,
+                            i
+                        ),
+                        labels.getKeyAt(i)
+                    )
+                )
                 writeExprs[i] = labels.getValueAt(i)
                 i++
             }
-            return RadioOptionRow(0, 0, 0, 22, MolangOption.ofIndex(title, desc, animatable, cfg.getValue(), writeExprs), texts)
+            return RadioOptionRow(
+                0,
+                0,
+                0,
+                22,
+                MolangOption.ofIndex(title, desc, animatable, cfg.getValue(), writeExprs),
+                texts
+            )
         }
         return null
     }
+
     open fun renderExtras(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         g.fill(previewLeft, previewTop, previewRight, previewBottom, 0x66000000)
         renderPreview(g, partialTick)
     }
+
     open fun renderPreview(g: GuiGraphics, partialTick: Float) {
         if (this.minecraft == null || this.minecraft.player == null) {
             return
@@ -164,9 +217,9 @@ open class ModelSettingsScreen : OptionScreen() {
         if (!animatable is LivingAnimatable<*>) {
             return
         }
-        var scale: Double = this.minecraft.getWindow().getGuiScale()
+        var scale: Double = this.minecraft.window.guiScale
         var sx: Int = (previewLeft * scale as Int)
-        var sy: Int = (this.minecraft.getWindow().getHeight() - previewBottom * scale as Int)
+        var sy: Int = (this.minecraft.window.height - previewBottom * scale as Int)
         var sw: Int = (previewRight - previewLeft * scale as Int)
         var sh: Int = (previewBottom - previewTop * scale as Int)
         RenderSystem.enableScissorForRenderTypeDraws(sx, sy, sw, sh)
@@ -175,6 +228,7 @@ open class ModelSettingsScreen : OptionScreen() {
         renderPlayerForSettings(cx, cy, zoom, pitch, yaw, partialTick, la, RendererManager.getPlayerRenderer())
         RenderSystem.disableScissorForRenderTypeDraws()
     }
+
     open fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
         if (isInPreview(event.x(), event.y())) {
             draggingPreview = true
@@ -183,6 +237,7 @@ open class ModelSettingsScreen : OptionScreen() {
         }
         return super.mouseClicked(event, doubleClick)
     }
+
     open fun mouseReleased(event: MouseButtonEvent): Boolean {
         if (draggingPreview && event.button() == draggingButton) {
             draggingPreview = false
@@ -191,6 +246,7 @@ open class ModelSettingsScreen : OptionScreen() {
         }
         return super.mouseReleased(event)
     }
+
     open fun mouseDragged(event: MouseButtonEvent, dragX: Double, dragY: Double): Boolean {
         var button: Int = event.button()
         if (draggingPreview && button == draggingButton) {
@@ -207,6 +263,7 @@ open class ModelSettingsScreen : OptionScreen() {
         }
         return super.mouseDragged(event, dragX, dragY)
     }
+
     open fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
         var delta: Double = scrollY
         if (isInPreview(mouseX, mouseY)) {
@@ -215,11 +272,23 @@ open class ModelSettingsScreen : OptionScreen() {
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
     }
+
     open fun isInPreview(mouseX: Double, mouseY: Double): Boolean {
         return mouseX >= previewLeft && mouseX < previewRight && mouseY >= previewTop && mouseY < previewBottom
     }
+
     companion object {
-        @JvmStatic fun renderPlayerForSettings(x: Float, y: Float, scale: Float, pitch: Float, yaw: Float, partialTick: Float, animatable: LivingAnimatable, renderer: GeoReplacedEntityRenderer) {
+        @JvmStatic
+        fun renderPlayerForSettings(
+            x: Float,
+            y: Float,
+            scale: Float,
+            pitch: Float,
+            yaw: Float,
+            partialTick: Float,
+            animatable: LivingAnimatable,
+            renderer: GeoReplacedEntityRenderer
+        ) {
             ModelPreviewRenderer.setPreviewMode(true)
             var livingEntity: LivingEntity = (animatable.getEntity() as LivingEntity)
             var modelViewStack: Matrix4fStack = RenderSystem.getModelViewStack()
@@ -236,17 +305,17 @@ open class ModelSettingsScreen : OptionScreen() {
             poseStack.mulPose(rotationZ)
             var oldBodyRot: Float = livingEntity.yBodyRot
             var oldBodyRotO: Float = livingEntity.yBodyRotO
-            var oldYRot: Float = livingEntity.getYRot()
+            var oldYRot: Float = livingEntity.yRot
             var oldYRotO: Float = livingEntity.yRotO
-            var oldXRot: Float = livingEntity.getXRot()
+            var oldXRot: Float = livingEntity.xRot
             var oldXRotO: Float = livingEntity.xRotO
             var oldHeadRot: Float = livingEntity.yHeadRot
             var oldHeadRotO: Float = livingEntity.yHeadRotO
             livingEntity.yBodyRot = -yaw
             livingEntity.yBodyRotO = -yaw
-            livingEntity.setYRot(180.0f)
+            livingEntity.yRot = 180.0f
             livingEntity.yRotO = 180.0f
-            livingEntity.setXRot(0.0f)
+            livingEntity.xRot = 0.0f
             livingEntity.xRotO = 0.0f
             livingEntity.yHeadRot = -yaw
             livingEntity.yHeadRotO = -yaw
@@ -260,9 +329,9 @@ open class ModelSettingsScreen : OptionScreen() {
             } finally {
                 livingEntity.yBodyRot = oldBodyRot
                 livingEntity.yBodyRotO = oldBodyRotO
-                livingEntity.setYRot(oldYRot)
+                livingEntity.yRot = oldYRot
                 livingEntity.yRotO = oldYRotO
-                livingEntity.setXRot(oldXRot)
+                livingEntity.xRot = oldXRot
                 livingEntity.xRotO = oldXRotO
                 livingEntity.yHeadRot = oldHeadRot
                 livingEntity.yHeadRotO = oldHeadRotO

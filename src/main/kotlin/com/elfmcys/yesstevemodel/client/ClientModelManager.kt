@@ -107,7 +107,8 @@ object ClientModelManager {
         SYNCING
     }
 
-    class ServerModelContext(
+    @Suppress("MemberVisibilityCanBePrivate")
+    data class ServerModelContext(
         val hash1: Long,
         val hash2: Long,
         val modelId: String,
@@ -162,7 +163,7 @@ object ClientModelManager {
                 }
 
             val uri: URI = resourceUrl.toURI()
-            var jarFs: FileSystem? = null
+            var jarFs: FileSystem?
             val defaultPath: Path = if ("jar" == uri.scheme) {
                 jarFs = runCatching {
                     FileSystems.getFileSystem(uri)
@@ -207,9 +208,7 @@ object ClientModelManager {
             when (syncStep) {
                 1 -> {
                     val decrypted = YsmCrypt.decrypt(packetBytes, YsmCrypt.publicKey)
-                    if (decrypted != null) {
-                        handlePacket01(decrypted)
-                    }
+                    handlePacket01(decrypted)
                 }
 
                 2 -> {
@@ -261,6 +260,7 @@ object ClientModelManager {
         }
     }
 
+    @Suppress("UnusedVariable")
     private fun handlePacket03(buf: YSMByteBuf) {
         buf.skipGarbageHeader()
         val type = buf.readVarInt()
@@ -421,9 +421,9 @@ object ClientModelManager {
                 outBuf.getRawBuf().writeByte(0x04)
 
                 outBuf.writeVarInt(modelsToRequest.size)
-                for (h in modelsToRequest) {
-                    outBuf.writeVarLong(h.hash1)
-                    outBuf.writeVarLong(h.hash2)
+                for ((hash1, hash2) in modelsToRequest) {
+                    outBuf.writeVarLong(hash1)
+                    outBuf.writeVarLong(hash2)
                 }
 
                 val result = YsmCrypt.encrypt(outBuf.toArray(), currentKey1, false)
@@ -484,18 +484,16 @@ object ClientModelManager {
                     )
 
                     val legitFileName = YSMClientCache.generateCacheFileName(hash1, hash2, currentClientKey)
-                    val outFile = File(cacheDir, legitFileName)
+                    @Suppress("ReplaceNotNullAssertionWithElvisReturn") val outFile = File(cacheDir, legitFileName!!)
 
-                    FileOutputStream(outFile).use { fos ->
-                        fos.write(cachedFileData)
-                    }
+                    FileOutputStream(outFile).use { it.write(cachedFileData) }
 
                     Constants.LOGGER.info("Downloaded & Cached: {}", outFile.absolutePath)
                     val decompressed = YsmCrypt.read(cachedFileData, currentClientKey)
 
                     parseAndLoadModel(decompressed, ctx.modelId, ctx.isAuth)
-                }.onFailure { e ->
-                    Constants.LOGGER.error("Failed to save/parse downloaded model: " + ctx.modelId, e)
+                }.onFailure {
+                    Constants.LOGGER.error("Failed to save/parse downloaded model: ${ctx.modelId}", it)
                 }.also {
                     if (pendingModelsCount.decrementAndGet() <= 0) {
                         Constants.LOGGER.info("All missing models downloaded and loaded successfully!")
@@ -560,9 +558,9 @@ object ClientModelManager {
 
         val oldPreviews = modelPackMap
         if (oldPreviews.isNotEmpty()) {
-            for (preview in oldPreviews.values) {
-                if (preview.texture != null) {
-                    val loc = FileTypeUtil.getPackIconLocation(preview.path)
+            for ((path, _, _, texture) in oldPreviews.values) {
+                if (texture != null) {
+                    val loc = FileTypeUtil.getPackIconLocation(path)
                     Minecraft.getInstance().execute {
                         Minecraft.getInstance().textureManager.release(loc)
                     }
@@ -620,10 +618,8 @@ object ClientModelManager {
             var model = reg["default"]
             if (model == null) {
                 for (v in reg.values) {
-                    if (v != null) {
-                        model = v
-                        break
-                    }
+                    model = v
+                    break
                 }
             }
             if (model != null) {
@@ -757,9 +753,9 @@ object ClientModelManager {
             }
         }
 
-        for (packData in modelPackMap.values) {
-            if (!newPackMap.containsKey(packData.path) && packData.texture != null) {
-                val location = FileTypeUtil.getPackIconLocation(packData.path)
+        for ((path, _, _, texture) in modelPackMap.values) {
+            if (!newPackMap.containsKey(path) && texture != null) {
+                val location = FileTypeUtil.getPackIconLocation(path)
                 Minecraft.getInstance().submit { Minecraft.getInstance().textureManager.release(location) }
             }
         }
@@ -773,7 +769,7 @@ object ClientModelManager {
         isModelReady: BooleanArray
     ) {
         Minecraft.getInstance().execute {
-            val map = Object2ReferenceOpenHashMap<String, ModelAssembly>(modelAssemblyMap)
+            val map = Object2ReferenceOpenHashMap(modelAssemblyMap)
             if (removedModelIds != null) {
                 val removed = ArrayList<ModelAssembly>(removedModelIds.size)
                 for (str in removedModelIds) {
@@ -788,12 +784,8 @@ object ClientModelManager {
                             UploadManager.removeTexture(tex)
                         }
                         if (NativeLibLoader.isLoaded()) {
-                            for (entry in assembly.projectileModels.entries) {
-                                entry.value.model.freeNativeCache()
-                            }
-                            for (entry in assembly.vehicleModels.entries) {
-                                entry.value.model.freeNativeCache()
-                            }
+                            for ((_, value) in assembly.projectileModels) value.model.freeNativeCache()
+                            for ((_, value) in assembly.vehicleModels) value.model.freeNativeCache()
                             assembly.animationBundle.mainModel.freeNativeCache()
                             assembly.animationBundle.armModel.freeNativeCache()
                         }
@@ -814,7 +806,7 @@ object ClientModelManager {
                 }
             }
             modelAssemblyMap = map
-            if ((removedModelIds != null && removedModelIds.isNotEmpty()) || (previousModelIds != null && previousModelIds.isNotEmpty())) {
+            if (!removedModelIds.isNullOrEmpty() || !previousModelIds.isNullOrEmpty()) {
                 forEachGuiWidget { guiWidget ->
                     guiWidget.onModelsLoaded(map)
                 }
@@ -924,8 +916,7 @@ object ClientModelManager {
     @JvmStatic
     fun flushPendingModels() {
         if (pendingModelQueue.isEmpty()) return
-
-        val object2ReferenceOpenHashMap = Object2ReferenceOpenHashMap<String, ModelAssembly>(modelAssemblyMap)
+        val object2ReferenceOpenHashMap = Object2ReferenceOpenHashMap(modelAssemblyMap)
         while (true) {
             val pairPoll = pendingModelQueue.poll()
             if (pairPoll != null) {
@@ -1003,12 +994,12 @@ object ClientModelManager {
                             val rawModel = deserializer.deserializeKeepOpen()
                             coreDataLength = deserializer.reader.getRawBuf().readerIndex()
 
-                            val metaName = rawModel.metadata?.name
-                            if (!metaName.isNullOrBlank()) {
+                            val metaName = rawModel.metadata.name
+                            if (metaName.isNotBlank()) {
                                 exportName = metaName.trim()
                             } else {
-                                val sha256 = rawModel.properties?.sha256
-                                if (!sha256.isNullOrEmpty()) {
+                                val sha256 = rawModel.properties.sha256
+                                if (sha256.isNotEmpty()) {
                                     exportName = sha256
                                 }
                             }
