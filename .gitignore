@@ -112,3 +112,4 @@ gradle-app.setting
 .temp
 .junie
 .kotlin
+logs/

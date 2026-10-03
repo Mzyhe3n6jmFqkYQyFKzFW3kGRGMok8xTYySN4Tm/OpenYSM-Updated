@@ -105,6 +105,12 @@ dependencies {
     modImplementation(libs.crawl)
     modImplementation(libs.modmenu)
     modImplementation(libs.carryon)
+
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 tasks.processResources {

@@ -2,6 +2,9 @@ package rip.ysm.algorithms
 
 import io.airlift.compress.zstd.ZstdCompressor
 import io.airlift.compress.zstd.ZstdDecompressor
+import io.airlift.compress.zstd.ZstdInputStream
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -16,12 +19,23 @@ object YsmZstd {
     @JvmStatic
     @Throws(IOException::class)
     fun decompress(rawData: ByteArray, offset: Int, length: Int): ByteArray {
-        washInPlace(rawData, offset, length)
-        val uncompressedSize = ZstdDecompressor.getDecompressedSize(rawData, offset, length)
-        val output = ByteArray(uncompressedSize.toInt())
-        val decompressor = ZstdDecompressor()
-        decompressor.decompress(rawData, offset, length, output, 0, output.size)
-        return output
+        val actualLength = washInPlace(rawData, offset, length)
+        val uncompressedSize = ZstdDecompressor.getDecompressedSize(rawData, offset, actualLength)
+        if (uncompressedSize >= 0) {
+            val output = ByteArray(uncompressedSize.toInt())
+            val decompressor = ZstdDecompressor()
+            decompressor.decompress(rawData, offset, actualLength, output, 0, output.size)
+            return output
+        }
+        ZstdInputStream(ByteArrayInputStream(rawData, offset, actualLength)).use { input ->
+            val out = ByteArrayOutputStream(maxOf(64 * 1024, actualLength * 2))
+            val buffer = ByteArray(64 * 1024)
+            var read: Int
+            while (input.read(buffer).also { read = it } != -1) {
+                out.write(buffer, 0, read)
+            }
+            return out.toByteArray()
+        }
     }
 
     @JvmStatic
@@ -43,7 +57,7 @@ object YsmZstd {
         return data
     }
 
-    private fun washInPlace(data: ByteArray?, base: Int, length: Int) {
+    private fun washInPlace(data: ByteArray?, base: Int, length: Int): Int {
         if (data == null || length < 5) {
             throw IllegalArgumentException("Invalid data length")
         }
@@ -63,6 +77,7 @@ object YsmZstd {
         var offset = base + 4 + frameHeaderSize
         val end = base + length
 
+        var frameEnd = end
         while (offset + 3 <= end) {
             val b0 = data[offset].toInt() and 0xFF
             val b1 = data[offset + 1].toInt() and 0xFF
@@ -90,9 +105,11 @@ object YsmZstd {
             offset += 3 + blockDataSize
 
             if (lastBlock == 1) {
+                frameEnd = offset
                 break
             }
         }
+        return frameEnd - base
     }
 
     private fun obfuscate(data: ByteArray?): ByteArray {
@@ -150,13 +167,11 @@ object YsmZstd {
     }
 
     private fun calculateFrameHeaderSize(fhd: Byte): Int {
-        val size = 1
-        val fcsFieldSize = fhd.toInt() and 3
-        val singleSegment = ((fhd.toInt() shr 5) and 1) == 1
-        val dictIdFlag = (fhd.toInt() shr 0) and 3
+        val fhdInt = fhd.toInt() and 0xFF
+        val singleSegment = ((fhdInt shr 5) and 1) == 1
 
         var dictIdSize = 0
-        val dictIdBits = fhd.toInt() and 3
+        val dictIdBits = fhdInt and 3
         when (dictIdBits) {
             1 -> dictIdSize = 1
             2 -> dictIdSize = 2
@@ -164,7 +179,7 @@ object YsmZstd {
         }
 
         var fcsSize = 0
-        val fcsBits = (fhd.toInt() shr 6) and 3
+        val fcsBits = (fhdInt shr 6) and 3
         when (fcsBits) {
             0 -> fcsSize = if (singleSegment) 1 else 0
             1 -> fcsSize = 2
@@ -174,6 +189,6 @@ object YsmZstd {
 
         val windowDescSize = if (singleSegment) 0 else 1
 
-        return size + windowDescSize + dictIdSize + fcsSize
+        return 1 + windowDescSize + dictIdSize + fcsSize
     }
 }
