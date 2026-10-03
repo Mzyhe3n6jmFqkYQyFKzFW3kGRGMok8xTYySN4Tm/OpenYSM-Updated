@@ -34,10 +34,7 @@ import rip.ysm.api.entity.EntityDataBridge
 import java.util.*
 import java.util.function.Consumer
 
-abstract class AnimatableEntity<TEntity : Entity>(entity: TEntity) {
-    @JvmField
-    val entity: TEntity = entity
-
+abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity) {
     @JvmField
     var positionTracker: EntityFrameStateTracker<TEntity> = createPositionTracker(entity)
 
