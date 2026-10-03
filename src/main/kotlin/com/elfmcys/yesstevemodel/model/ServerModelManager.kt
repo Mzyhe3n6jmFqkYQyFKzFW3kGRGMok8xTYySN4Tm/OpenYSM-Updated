@@ -569,7 +569,7 @@ object ServerModelManager {
                         }
 
                         if (rawModel != null) {
-                            val data = processAndCacheModel(modelId, rawModel!!, cacheDir, isAuth, validCaches)
+                            val data = processAndCacheModel(modelId, rawModel, cacheDir, isAuth, validCaches)
                             if (data != null) {
                                 loaded[modelId] = data
                                 if (isAuth) authIds.add(modelId)
@@ -594,7 +594,7 @@ object ServerModelManager {
                     if (path == baseDir) return@forEach
                     val packJson = path.resolve("ysm-pack.json")
                     if (Files.exists(packJson)) {
-                        try {
+                        runCatching {
                             val packData = ServerPackData()
                             packData.folderPath = baseDir.toFile().toURI().relativize(path.toFile().toURI()).path
 
@@ -612,6 +612,7 @@ object ServerModelManager {
                                         for ((transKey, transVal) in langVal.asJsonObject.entrySet()) {
                                             translations[transKey] = transVal.asString
                                         }
+                                        @Suppress("ReplaceNotNullAssertionWithElvisReturn")
                                         packData.lang!![langKey] = translations
                                     }
                                 }
@@ -627,8 +628,8 @@ object ServerModelManager {
                                 packData.iconFormat = 2 // 2=PNG
                             }
                             packs[packData.folderPath] = packData
-                        } catch (e: Exception) {
-                            Constants.LOGGER.error("Failed to load pack metadata: $packJson", e)
+                        }.onFailure {
+                            Constants.LOGGER.error("Failed to load pack metadata: $packJson", it)
                         }
                     }
                 }

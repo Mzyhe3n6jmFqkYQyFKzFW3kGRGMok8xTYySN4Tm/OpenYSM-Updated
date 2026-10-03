@@ -11,6 +11,7 @@ import rip.ysm.compat.carryon.CarryOnDataHelper
 import java.util.*
 import java.util.function.BiFunction
 
+// TODO: Replace Optional
 object CarryOnCompatImpl {
     @JvmStatic
     fun getControllerFactory(): Optional<BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>> =

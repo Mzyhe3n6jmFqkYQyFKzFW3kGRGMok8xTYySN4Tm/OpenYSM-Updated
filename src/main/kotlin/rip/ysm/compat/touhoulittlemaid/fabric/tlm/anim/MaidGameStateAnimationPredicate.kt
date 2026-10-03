@@ -14,7 +14,6 @@ import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 
 @Environment(EnvType.CLIENT)
 open class MaidGameStateAnimationPredicate : IAnimationPredicate<MaidAnimatable> {
-
     override fun predicate(event: AnimationEvent<MaidAnimatable>, evaluator: ExpressionEvaluator<*>?): PlayState {
         val maid = event.getAnimatable().entity
         if (event.getAnimatable() is IPreviewAnimatable) return PlayState.STOP
