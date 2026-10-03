@@ -5,9 +5,7 @@ import com.elfmcys.yesstevemodel.client.entity.LivingAnimatable
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
 import com.elfmcys.yesstevemodel.client.renderer.RenderContext
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
-import com.elfmcys.yesstevemodel.geckolib3.core.util.Color
 import com.elfmcys.yesstevemodel.geckolib3.extended.LivingEntityRendererAccessor
-import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel
 import com.elfmcys.yesstevemodel.geckolib3.model.provider.data.EntityModelData
 import com.elfmcys.yesstevemodel.geckolib3.util.EModelRenderCycle
 import com.elfmcys.yesstevemodel.geckolib3.util.IRenderCycle
@@ -18,14 +16,11 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.model.geom.ModelLayers
 import net.minecraft.client.model.player.PlayerModel
 import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.SubmitNodeCollector
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer
 import net.minecraft.client.renderer.entity.LivingEntityRenderer
 import net.minecraft.client.renderer.entity.state.AvatarRenderState
-import net.minecraft.client.renderer.state.CameraRenderState
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.core.Direction
 import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.Pose
@@ -33,7 +28,6 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.block.HorizontalDirectionalBlock
 import org.joml.Matrix4f
 import org.joml.Quaternionf
-import org.joml.Vector3f
 import rip.ysm.api.client.RenderLivingBridge
 
 abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<TEntity>, S : AvatarRenderState>(
@@ -57,9 +51,7 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
 
     private var currentModelRenderCycle: IRenderCycle = EModelRenderCycle.INITIAL
 
-    override fun getCurrentModelRenderCycle(): IRenderCycle {
-        return currentModelRenderCycle
-    }
+    override fun getCurrentModelRenderCycle(): IRenderCycle = currentModelRenderCycle
 
     override fun setCurrentModelRenderCycle(cycle: IRenderCycle) {
         currentModelRenderCycle = cycle
@@ -116,7 +108,7 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
         multiBufferSource: MultiBufferSource,
         packedLight: Int
     ) {
-        val entity: TEntity = t.entity
+        val entity = t.entity
         if (RenderLivingBridge.firePre(entity, this, partialTick, poseStack, multiBufferSource, packedLight)) {
             return
         }
@@ -170,14 +162,14 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
         val minecraft = Minecraft.getInstance()
         val player = minecraft.player
         if (event != null && player != null) {
-            val modelData: EntityModelData = event.getModelData()
+            val modelData = event.getModelData()
             dispatchedMat.set(poseStack.last().pose())
             setCurrentModelRenderCycle(EModelRenderCycle.INITIAL)
             poseStack.pushPose()
             if (entity.pose == Pose.SLEEPING) {
-                val bedOrientation: Direction? = entity.bedOrientation
+                val bedOrientation = entity.bedOrientation
                 if (bedOrientation != null) {
-                    val eyeHeight: Float = entity.getEyeHeight(Pose.STANDING) - 0.1f
+                    val eyeHeight = entity.getEyeHeight(Pose.STANDING) - 0.1f
                     poseStack.translate(-bedOrientation.stepX * eyeHeight, 0.0f, -bedOrientation.stepZ * eyeHeight)
                 }
             }
@@ -185,14 +177,14 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
             val vehicle = entity.vehicle
             if (vehicle != null) {
                 val cap = VehicleCapability[vehicle]
-                val vector3f: Vector3f? = cap?.getExpressionOffset()
+                val vector3f = cap?.getExpressionOffset()
                 if (vector3f != null) {
                     poseStack.mulPose(Quaternionf().rotateZYX(vector3f.z, 0.0f, vector3f.x).invert())
                 }
             }
             preRenderCallback(entity, poseStack, partialTick)
             poseStack.translate(0.0f, 0.01f, 0.0f)
-            val animatedGeoModel: AnimatedGeoModel = t.getCurrentModel() ?: return
+            val animatedGeoModel = t.getCurrentModel() ?: return
             val textureIndex = if (identifier == null) t.getTextureIndex() else 0
             val textureLocation = identifier ?: t.getTextureLocation()
             val renderType = getRenderType(
@@ -202,7 +194,7 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
                 animatedGeoModel.getGeoModel().isTranslucentTexture(textureIndex)
             )
             val useExtraPlayer = t.isRenderLayersFirst()
-            val color: Color = getRenderColor(t, partialTick, poseStack, multiBufferSource, null, packedLight)
+            val color = getRenderColor(t, partialTick, poseStack, multiBufferSource, null, packedLight)
             renderWithBone(
                 animatedGeoModel,
                 t,
@@ -244,8 +236,8 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
             poseStack.popPose()
         }
 
-        val activeCollector: SubmitNodeCollector? = RenderContext.collector()
-        val activeCameraState: CameraRenderState? = RenderContext.camera()
+        val activeCollector = RenderContext.collector()
+        val activeCameraState = RenderContext.camera()
         if (activeCollector != null && activeCameraState != null && entity != minecraft.cameraEntity) {
             (this as LivingEntityRendererAccessor).`tlm$renderNameTag`(
                 state,
@@ -284,15 +276,13 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
         }
     }
 
-    open fun getHurtOverlayProgress(entity: TEntity, partialTick: Float): Float {
-        return 0.0f
-    }
+    open fun getHurtOverlayProgress(entity: TEntity, partialTick: Float): Float = 0.0f
 
     open fun preRenderCallback(entity: TEntity, poseStack: PoseStack, partialTick: Float) {
     }
 
     open fun setupRotations(
-        tentity: TEntity,
+        entity: TEntity,
         state: S,
         poseStack: PoseStack,
         ageInTicks: Float,
@@ -301,14 +291,14 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
         scale: Float
     ) {
         var yaw = rotationYaw
-        val t = tentity.deathTime
-        val zIsAutoSpinAttack = tentity.isAutoSpinAttack
-        if (t > 0) tentity.deathTime = 0
-        if (zIsAutoSpinAttack) tentity.setLivingEntityFlag(4, false)
-        if (tentity.onClimbable()) {
-            val lastClimbablePos = tentity.lastClimbablePos
+        val t = entity.deathTime
+        val zIsAutoSpinAttack = entity.isAutoSpinAttack
+        if (t > 0) entity.deathTime = 0
+        if (zIsAutoSpinAttack) entity.setLivingEntityFlag(4, false)
+        if (entity.onClimbable()) {
+            val lastClimbablePos = entity.lastClimbablePos
             if (lastClimbablePos.isPresent) {
-                val optionalValue = tentity.level().getBlockState(lastClimbablePos.get())
+                val optionalValue = entity.level().getBlockState(lastClimbablePos.get())
                     .getOptionalValue(HorizontalDirectionalBlock.FACING)
                 if (optionalValue.isPresent) {
                     yaw = (optionalValue.get().opposite.get2DDataValue() * 90).toFloat()
@@ -316,22 +306,18 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
             }
         }
         super.setupRotations(state, poseStack, yaw, scale)
-        if (t > 0) tentity.deathTime = t
-        if (zIsAutoSpinAttack) tentity.setLivingEntityFlag(4, true)
+        if (t > 0) entity.deathTime = t
+        if (zIsAutoSpinAttack) entity.setLivingEntityFlag(4, true)
     }
 
     override fun shouldShowName(entity: TEntity, distance: Double): Boolean {
-        val d: Double = if (entity.isDiscrete) 32.0 else 64.0
+        val d = if (entity.isDiscrete) 32.0 else 64.0
         return distance < d * d && entity == entityRenderDispatcher.crosshairPickEntity && entity.hasCustomName() && Minecraft.renderNames()
     }
 
-    fun addLayerRenderer(layerRenderer: GeoLayerRenderer<T>): Boolean {
-        return layerRenderers.add(layerRenderer)
-    }
+    fun addLayerRenderer(layerRenderer: GeoLayerRenderer<T>): Boolean = layerRenderers.add(layerRenderer)
 
-    override fun getCurrentRTB(): MultiBufferSource? {
-        return rtb
-    }
+    override fun getCurrentRTB(): MultiBufferSource? = rtb
 
     override fun setCurrentRTB(bufferSource: MultiBufferSource?) {
         rtb = bufferSource

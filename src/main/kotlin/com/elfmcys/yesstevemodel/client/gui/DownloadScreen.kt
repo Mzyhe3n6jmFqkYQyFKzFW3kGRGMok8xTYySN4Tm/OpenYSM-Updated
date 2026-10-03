@@ -13,15 +13,28 @@ class DownloadScreen(private val parentScreen: PlayerModelScreen) : Screen(Compo
     override fun init() {
         guiLeft = (width - 420) / 2
         guiTop = (height - 235) / 2
-        addRenderableWidget(FlatColorButton(guiLeft + 5, guiTop, 80, 18, Component.translatable("gui.yes_steve_model.model.return")) {
-            minecraft?.setScreen(parentScreen)
-        })
+        addRenderableWidget(
+            FlatColorButton(
+                guiLeft + 5,
+                guiTop,
+                80,
+                18,
+                Component.translatable("gui.yes_steve_model.model.return")
+            ) {
+                minecraft.setScreen(parentScreen)
+            })
     }
 
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         renderBackground(guiGraphics, mouseX, mouseY, partialTick)
         val color = ChatFormatting.DARK_RED.color ?: 0xAA0000
-        guiGraphics.drawCenteredString(font, "Coming Soooooooooooooooooooooooooon™", width / 2, (height / 2) - 5, color or 0xFF000000.toInt())
+        guiGraphics.drawCenteredString(
+            font,
+            "Coming Soooooooooooooooooooooooooon™",
+            width / 2,
+            (height / 2) - 5,
+            color or 0xFF000000.toInt()
+        )
         super.render(guiGraphics, mouseX, mouseY, partialTick)
     }
 

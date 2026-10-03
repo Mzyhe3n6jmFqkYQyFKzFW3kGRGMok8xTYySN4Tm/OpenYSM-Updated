@@ -60,10 +60,10 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
     override fun process(
         event: AnimationEvent<T>,
         evaluator: ExpressionEvaluator<AnimationContext<*>>,
-        isFirstPerson: Boolean
+        isSomething: Boolean
     ) {
         if (initialized) {
-            animationRuntime.process(event, evaluator, isFirstPerson)
+            animationRuntime.process(event, evaluator, isSomething)
             if (animationRuntime.isBuiltinAnimation()) {
                 if (activeController != controller) {
                     animationRuntime.getCurrentEntry()?.blendTransition?.asInterpolator()?.let {
@@ -71,7 +71,7 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
                     }
                     activeController = controller
                 }
-                controller.process(event, evaluator, isFirstPerson)
+                controller.process(event, evaluator, isSomething)
                 return
             }
             if (activeController != animationRuntime) {
@@ -82,7 +82,7 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
             }
             return
         }
-        controller.process(event, evaluator, isFirstPerson)
+        controller.process(event, evaluator, isSomething)
     }
 
     override fun forEachTransform(consumer: (BoneTransformProvider) -> Unit) {

@@ -8,19 +8,13 @@ import com.elfmcys.yesstevemodel.geckolib3.core.builder.Animation
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue
-import com.elfmcys.yesstevemodel.geckolib3.file.AnimationControllerFile
-import com.elfmcys.yesstevemodel.geckolib3.file.AnimationFile
-import com.elfmcys.yesstevemodel.geckolib3.file.ProjectileModelFiles
-import com.elfmcys.yesstevemodel.geckolib3.file.VehicleModelFiles
-import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
 import com.elfmcys.yesstevemodel.util.FileTypeUtil
 import it.unimi.dsi.fastutil.objects.*
 import net.minecraft.client.renderer.texture.AbstractTexture
 import net.minecraft.resources.Identifier
-import java.util.ArrayList
 
 object ModelAssemblyFactory {
-    const val FIRST_PERSON_ARM_BONE: String = "fp_arm"
+    private const val FIRST_PERSON_ARM_BONE: String = "fp_arm"
 
     @JvmStatic
     var primaryAssembly: ModelAssembly? = null
@@ -65,11 +59,8 @@ object ModelAssemblyFactory {
                     animation.sourceKey = str
                 }
             }
-            if (FIRST_PERSON_ARM_BONE == str) {
-                armAnimations.putAll(animationFile.animations)
-            } else {
+            if (FIRST_PERSON_ARM_BONE == str) armAnimations.putAll(animationFile.animations) else
                 object2ReferenceOpenHashMap.putAll(animationFile.animations)
-            }
         }
         if (!isPrimary) {
             primaryAssembly?.let { primary ->
@@ -94,9 +85,8 @@ object ModelAssemblyFactory {
             textureList.addAll(texture.suffixTextures.values)
         }
         var defaultTextureName = clientModelInfo.info.modelProperties.defaultTexture
-        if (defaultTextureName.isNullOrEmpty() || !hierarchyData.textureMap.containsKey(defaultTextureName)) {
+        if (defaultTextureName.isEmpty() || !hierarchyData.textureMap.containsKey(defaultTextureName))
             defaultTextureName = if (hierarchyData.textureMap.isEmpty()) "" else hierarchyData.textureMap.getKeyAt(0)
-        }
         return PlayerModelBundle(
             mainModel,
             armModel,
@@ -124,12 +114,13 @@ object ModelAssemblyFactory {
             val model = projectileFiles.model
             val animationFile = projectileFiles.animations
             val controllerFile = projectileFiles.animationController
-            val animations = if (animationFile != null) Object2ReferenceOpenHashMap<String, Animation>(animationFile.animations) else Object2ReferenceOpenHashMap<String, Animation>()
-            val controllers: Object2ReferenceMap<String, AnimationController> =
-                if (controllerFile != null) Object2ReferenceOpenHashMap<String, AnimationController>(controllerFile.animationControllers) else Object2ReferenceMaps.emptyMap()
+            val animations = Object2ReferenceOpenHashMap(animationFile.animations)
+            val controllers =
+                Object2ReferenceOpenHashMap(controllerFile.animationControllers)
             textureList.add(projectileFiles.texture)
             textureList.addAll(projectileFiles.texture.suffixTextures.values)
-            val projectileBundle = ProjectileModelBundle(model, animations, controllers, projectileFiles.texture, resourceBundle)
+            val projectileBundle =
+                ProjectileModelBundle(model, animations, controllers, projectileFiles.texture, resourceBundle)
             for (identifier in FileTypeUtil.resolveEntityTypes(projectileFiles.textureNames)) {
                 projectileMap[identifier] = projectileBundle
             }
@@ -149,9 +140,8 @@ object ModelAssemblyFactory {
             val model = vehicleFiles.model
             val animationFile = vehicleFiles.animations
             val controllerFile = vehicleFiles.animationController
-            val animations = if (animationFile != null) Object2ReferenceOpenHashMap<String, Animation>(animationFile.animations) else Object2ReferenceOpenHashMap<String, Animation>()
-            val controllers: Object2ReferenceMap<String, AnimationController> =
-                if (controllerFile != null) Object2ReferenceOpenHashMap<String, AnimationController>(controllerFile.animationControllers) else Object2ReferenceMaps.emptyMap()
+            val animations = Object2ReferenceOpenHashMap(animationFile.animations)
+            val controllers = Object2ReferenceOpenHashMap(controllerFile.animationControllers)
             textureList.add(vehicleFiles.texture)
             textureList.addAll(vehicleFiles.texture.suffixTextures.values)
             val vehicleBundle = VehicleModelBundle(model, animations, controllers, vehicleFiles.texture, resourceBundle)
@@ -215,13 +205,14 @@ object ModelAssemblyFactory {
     }
 
     @JvmStatic
-    fun extractExtraTextures(clientModelInfo: ClientModelInfo, textureList: MutableList<AbstractTexture>): Map<String, AbstractTexture> {
+    fun extractExtraTextures(
+        clientModelInfo: ClientModelInfo,
+        textureList: MutableList<AbstractTexture>
+    ): Map<String, AbstractTexture> {
         val extraTextures = Object2ObjectOpenHashMap<String, AbstractTexture>()
         for ((key, texture) in clientModelInfo.guiTextures) {
-            if (texture != null) {
-                textureList.add(texture)
-                extraTextures[key] = texture
-            }
+            textureList.add(texture)
+            extraTextures[key] = texture
         }
         return Object2ObjectMaps.unmodifiable(extraTextures)
     }

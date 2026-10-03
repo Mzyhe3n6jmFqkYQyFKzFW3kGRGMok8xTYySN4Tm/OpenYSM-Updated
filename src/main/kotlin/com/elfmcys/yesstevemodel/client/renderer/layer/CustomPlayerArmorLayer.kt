@@ -24,7 +24,7 @@ open class CustomPlayerArmorLayer(context: EntityRendererProvider.Context) : Geo
     override fun render(
         state: AvatarRenderState,
         poseStack: PoseStack,
-        bufferSource: MultiBufferSource,
+        multiBufferSource: MultiBufferSource,
         packedLightIn: Int,
         entityLivingBaseIn: CustomPlayerEntity,
         limbSwing: Float,
@@ -34,17 +34,14 @@ open class CustomPlayerArmorLayer(context: EntityRendererProvider.Context) : Geo
         netHeadYaw: Float,
         headPitch: Float
     ) {
-        val player: Player = entityLivingBaseIn.entity
-        val model: AnimatedGeoModel? = entityLivingBaseIn.getCurrentModel()
-        if (model != null && !model.headBones().isEmpty()) {
-            val itemBySlot: ItemStack = player.getItemBySlot(EquipmentSlot.HEAD)
-            if (!itemBySlot.isEmpty && !isArmorItem(itemBySlot)) {
-                renderArmorPiece(poseStack, bufferSource, packedLightIn, model, player, itemBySlot)
-            }
-            val stack: ItemStack? = SimpleHatsHelper.getHatItem(player)
-            if (stack != null && !stack.isEmpty) {
-                renderArmorPiece(poseStack, bufferSource, packedLightIn, model, player, stack)
-            }
+        val player = entityLivingBaseIn.entity
+        val model = entityLivingBaseIn.getCurrentModel()
+        if (model != null && model.headBones().isNotEmpty()) {
+            val itemBySlot = player.getItemBySlot(EquipmentSlot.HEAD)
+            if (!itemBySlot.isEmpty && !isArmorItem(itemBySlot))
+                renderArmorPiece(poseStack, multiBufferSource, packedLightIn, model, player, itemBySlot)
+            val stack = SimpleHatsHelper.getHatItem(player)
+            if (!stack.isEmpty) renderArmorPiece(poseStack, multiBufferSource, packedLightIn, model, player, stack)
         }
     }
 

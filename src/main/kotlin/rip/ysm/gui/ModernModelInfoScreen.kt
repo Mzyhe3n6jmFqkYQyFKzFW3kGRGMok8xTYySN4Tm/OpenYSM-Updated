@@ -3,20 +3,14 @@ package rip.ysm.gui
 import com.elfmcys.yesstevemodel.client.gui.ModelMetadataPresenter
 import com.elfmcys.yesstevemodel.client.gui.PlayerModelScreen
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
-import com.elfmcys.yesstevemodel.client.texture.OuterFileTexture
 import com.elfmcys.yesstevemodel.client.upload.IResourceLocatable
 import com.elfmcys.yesstevemodel.client.upload.UploadManager
 import com.elfmcys.yesstevemodel.model.format.ServerModelInfo
-import com.elfmcys.yesstevemodel.resource.models.AuthorInfo
-import com.elfmcys.yesstevemodel.resource.models.Metadata
-import com.elfmcys.yesstevemodel.util.data.OrderedStringMap
-import com.elfmcys.yesstevemodel.util.data.StringPair
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.ConfirmLinkScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Util
 import rip.ysm.gui.components.*
-import rip.ysm.gui.components.buttons.FooterButton
 import rip.ysm.gui.components.groups.InfoGroup
 import kotlin.math.max
 import kotlin.math.min
@@ -36,10 +30,10 @@ open class ModernModelInfoScreen(
 
     private fun resolveAvatarTextures() {
         avatarLocatables.clear()
-        val authors: List<AuthorInfo> = modelData.metadata?.authors ?: emptyList()
-        val avatars: Map<String, OuterFileTexture> = renderContext.textureRegistry.authorAvatars
-        for (author in authors) {
-            val avatar: OuterFileTexture? = avatars[author.name]
+        val authors = modelData.metadata?.authors ?: emptyList()
+        val avatars = renderContext.textureRegistry.authorAvatars
+        for ((name) in authors) {
+            val avatar = avatars[name]
             avatarLocatables.add(avatar?.let { UploadManager.getOrCreateLocatable(it, true) })
         }
     }
@@ -51,31 +45,29 @@ open class ModernModelInfoScreen(
     override fun showTabs(): Boolean = false
 
     override fun registerGroups() {
-        val meta: Metadata? = modelData.metadata
-        if (meta == null) return
-
+        val meta = modelData.metadata ?: return
         val page = InfoGroup("page")
         val name = ModelMetadataPresenter.getLocalizedModelString(renderContext, "metadata.name", meta.name)
-        if (!name.isNullOrBlank()) {
+        if (name.isNotBlank()) {
             page.add(HeaderRow(name))
         }
-        val license: StringPair = meta.license
-        if (license != null && !license.first.isNullOrBlank()) {
+        val license = meta.license
+        if (license.first.isNotBlank()) {
             val licenseValue =
-                if (!license.second.isNullOrBlank()) "${license.first}  —  ${license.second}" else license.first
+                if (license.second.isNotBlank()) "${license.first}  —  ${license.second}" else license.first
             page.add(LabelValueRow("gui.yes_steve_model.model_info.license", licenseValue))
         }
         val tips = ModelMetadataPresenter.getLocalizedModelString(renderContext, "metadata.tips", meta.tips)
-        if (!tips.isNullOrBlank()) {
+        if (tips.isNotBlank()) {
             page.add(TipsRow(tips))
         }
-        val links: OrderedStringMap<String, String> = meta.link
-        if (links != null && links.size > 0) {
+        val links = meta.link
+        if (links.isNotEmpty()) {
             for (i in 0 until links.size) {
                 page.add(LinkRow(this, links.getKeyAt(i), links.getValueAt(i)))
             }
         }
-        val authors: List<AuthorInfo> = meta.authors
+        val authors = meta.authors
         for (i in authors.indices) {
             page.add(AuthorRow(this, authors[i], i, avatarLocatables[i]))
         }
@@ -86,10 +78,10 @@ open class ModernModelInfoScreen(
 
     override fun init() {
         super.init()
-        applyBtn?.let { removeWidget(it); it.visible = false; it.active = false }
-        undoBtn?.let { removeWidget(it); it.visible = false; it.active = false }
-        cancelBtn?.let { removeWidget(it); it.visible = false }
-        saveBtn?.let {
+        applyBtn.let { removeWidget(it); it.visible = false; it.active = false }
+        undoBtn.let { removeWidget(it); it.visible = false; it.active = false }
+        cancelBtn.let { removeWidget(it); it.visible = false }
+        saveBtn.let {
             it.message = Component.translatable("gui.yes_steve_model.config.done")
             it.x = panelRight - it.width
         }
@@ -112,7 +104,7 @@ open class ModernModelInfoScreen(
             val bot = min(yBot, rowAreaBottom)
             out.add(intArrayOf(row.x, top, row.width, bot - top))
         }
-        val btn: FooterButton? = saveBtn
+        val btn = saveBtn
         if (btn != null && btn.visible) {
             out.add(intArrayOf(btn.x, btn.y, btn.width, btn.height))
         }

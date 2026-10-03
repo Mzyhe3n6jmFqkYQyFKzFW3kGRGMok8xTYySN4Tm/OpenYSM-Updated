@@ -6,10 +6,8 @@ import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity
 import com.elfmcys.yesstevemodel.client.gui.PlayerModelScreen
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
-import com.elfmcys.yesstevemodel.geckolib3.core.builder.Animation
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import com.elfmcys.yesstevemodel.util.data.OrderedStringMap
-import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.EditBox
@@ -33,7 +31,6 @@ open class ModernPlayerTextureScreen(
     val modelId: String,
     val renderContext: ModelAssembly
 ) : OptionScreen(Component.translatable("gui.yes_steve_model.texture_screen.title"), parent) {
-
     val textureMap: OrderedStringMap<String, out AbstractTexture> = renderContext.animationBundle.textures
     private val modelHolder: PlayerPreviewEntity = PlayerPreviewEntity()
     private val icons: MutableList<IconButton> = ArrayList()
@@ -72,7 +69,7 @@ open class ModernPlayerTextureScreen(
             tg.add(TextureGrid(this))
             groups.add(tg)
         }
-        val mainAnims: Object2ReferenceMap<String, Animation> = renderContext.animationBundle.mainAnimations
+        val mainAnims = renderContext.animationBundle.mainAnimations
         val buckets: MutableMap<String, MutableList<String>> = LinkedHashMap()
         for ((name, anim) in mainAnims) {
             if (name.startsWith("——")) continue
@@ -99,10 +96,10 @@ open class ModernPlayerTextureScreen(
 
     override fun init() {
         super.init()
-        applyBtn?.let { removeWidget(it); it.visible = false; it.active = false }
-        undoBtn?.let { removeWidget(it); it.visible = false; it.active = false }
-        cancelBtn?.let { removeWidget(it); it.visible = false }
-        saveBtn?.let {
+        applyBtn.let { removeWidget(it); it.visible = false; it.active = false }
+        undoBtn.let { removeWidget(it); it.visible = false; it.active = false }
+        cancelBtn.let { removeWidget(it); it.visible = false }
+        saveBtn.let {
             it.message = Component.translatable("gui.yes_steve_model.config.done")
             it.x = panelRight - it.width
         }
@@ -398,25 +395,28 @@ open class ModernPlayerTextureScreen(
         return super.mouseReleased(event)
     }
 
-    override fun mouseDragged(event: MouseButtonEvent, dragX: Double, dragY: Double): Boolean {
+    override fun mouseDragged(event: MouseButtonEvent, dx: Double, dy: Double): Boolean {
         val button = event.button()
         if (draggingPreview && button == draggingButton) {
-            if (button == 0) {
-                yaw = (yaw + dragX * 1.2).toFloat()
-                pitch = Mth.clamp((pitch - dragY * 0.8).toFloat(), -90.0f, 90.0f)
-            } else if (button == 1) {
-                offsetX = (offsetX + dragX).toFloat()
-                offsetY = (offsetY + dragY).toFloat()
+            when (button) {
+                0 -> {
+                    yaw = (yaw + dx * 1.2).toFloat()
+                    pitch = Mth.clamp((pitch - dy * 0.8).toFloat(), -90.0f, 90.0f)
+                }
+
+                1 -> {
+                    offsetX = (offsetX + dx).toFloat()
+                    offsetY = (offsetY + dy).toFloat()
+                }
             }
             return true
         }
-        return super.mouseDragged(event, dragX, dragY)
+        return super.mouseDragged(event, dx, dy)
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
-        val delta = scrollY
         if (isInPreview(mouseX, mouseY)) {
-            zoom = Mth.clamp((zoom * (1.0 + delta * 0.1)).toFloat(), 18.0f, 360.0f)
+            zoom = Mth.clamp((zoom * (1.0 + scrollY * 0.1)).toFloat(), 18.0f, 360.0f)
             return true
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)

@@ -35,11 +35,11 @@ object YSMBinarySerializer {
         buf.writeVarInt(if (model.footer.version != 0) model.footer.version else 65535)
         buf.writeVarInt(model.footer.unkInt1)
         if (model.footer.unkInt1 != 0) {
-            buf.writeString(model.footer.rand ?: "")
+            buf.writeString(model.footer.rand)
         }
         buf.writeVarLong(model.footer.time)
         if (model.footer.unkInt1 != 0) {
-            buf.writeString(model.footer.extra ?: "")
+            buf.writeString(model.footer.extra)
             buf.writeVarInt(model.footer.unkInt2)
         }
     }
@@ -69,16 +69,12 @@ object YSMBinarySerializer {
         writeTextureFiles(buf, model.mainEntity.textures)
 
         val geoList = ArrayList<RawYsmModel.RawGeometry>()
-        if (model.mainEntity.mainModel != null) {
-            geoList.add(model.mainEntity.mainModel!!)
-        }
-        if (model.mainEntity.armModel != null) {
-            geoList.add(model.mainEntity.armModel!!)
-        }
+        model.mainEntity.mainModel?.let { geoList.add(it) }
+        model.mainEntity.armModel?.let { geoList.add(it) }
         buf.writeVarInt(geoList.size)
         for (geo in geoList) {
             buf.writeVarInt(geo.modelType)
-            buf.writeString(geo.sha256 ?: "")
+            buf.writeString(geo.sha256)
             writeGeometry(buf, geo, format)
         }
         writeYsmJson(buf, model, format)
@@ -98,8 +94,7 @@ object YSMBinarySerializer {
             }
         }
         buf.writeVarInt(valid.size)
-        var index = 0
-        for (sub in valid) {
+        for ((_, sub) in valid.withIndex()) {
             buf.writeVarInt(sub.animationFiles.size)
             for (animFile in sub.animationFiles.values) {
                 buf.writeString(animFile.fileHash ?: "")
@@ -135,12 +130,11 @@ object YSMBinarySerializer {
                 buf.writeVarInt(subTex.unknownFlag)
             }
             buf.writeString(sub.model?.sha256 ?: "")
-            writeGeometry(buf, sub.model!!, format)
+            sub.model?.let { writeGeometry(buf, it, format) }
             if (format > 26) {
                 buf.writeVarInt(0x01)
                 buf.writeString(sub.identifier ?: "")
             }
-            index++
         }
     }
 
@@ -173,14 +167,14 @@ object YSMBinarySerializer {
             writeVector3D(buf, bone.pivot)
             writeVector3D(buf, bone.rotation)
         }
-        buf.writeString(geo.identifier ?: "")
+        buf.writeString(geo.identifier)
         buf.writeFloat(geo.textureHeight)
         buf.writeFloat(geo.textureWidth)
         buf.writeFloat(geo.visibleBoundsHeight)
         buf.writeFloat(geo.visibleBoundsWidth)
         buf.writeVarInt(geo.visibleBoundsOffset?.size ?: 0)
         if (geo.visibleBoundsOffset != null) {
-            for (v in geo.visibleBoundsOffset!!) {
+            for (v in geo.visibleBoundsOffset) {
                 buf.writeFloat(v)
             }
         }
@@ -530,11 +524,7 @@ object YSMBinarySerializer {
             buf.writeString(props.guiBackground)
 
             val avatars = ArrayList<RawYsmModel.RawImage>()
-            for (author in meta.authors) {
-                if (author.avatarImage != null) {
-                    avatars.add(author.avatarImage!!)
-                }
-            }
+            for (author in meta.authors) author.avatarImage?.let { avatars.add(it) }
             avatars.addAll(meta.extraAvatars)
             buf.writeVarInt(avatars.size)
             for (img in avatars) {

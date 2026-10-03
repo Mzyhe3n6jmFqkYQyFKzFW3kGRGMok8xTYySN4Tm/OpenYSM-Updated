@@ -43,7 +43,7 @@ open class VehicleRotationController(
     override fun process(
         event: AnimationEvent<GeckoVehicleEntity>,
         evaluator: ExpressionEvaluator<AnimationContext<*>>,
-        isFirstPerson: Boolean
+        isSomething: Boolean
     ) {
         val rot = ImmersiveAirCraftCompat.getAircraftRotation(event)
             ?: SimplePlanesCompat.getSimplePlanesRotation(event).orElse(null)

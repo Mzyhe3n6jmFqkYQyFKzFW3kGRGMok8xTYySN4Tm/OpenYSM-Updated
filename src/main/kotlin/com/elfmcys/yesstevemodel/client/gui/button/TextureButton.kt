@@ -32,9 +32,15 @@ open class TextureButton(
         val minecraft = Minecraft.getInstance()
         val font = minecraft.font
         guiGraphics.fillGradient(x, y, x + width, y + height, -12369342, -12369342)
-        renderPlayerPreview(guiGraphics, minecraft.deltaTracker?.getGameTimeDeltaPartialTick(false) ?: partialTick)
+        renderPlayerPreview(guiGraphics, minecraft.deltaTracker.getGameTimeDeltaPartialTick(false))
         val str = previewEntity.getCurrentTextureName() ?: ""
-        val component = Component.literal(ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "files.player.texture.$str", str))
+        val component = Component.literal(
+            ModelMetadataPresenter.getLocalizedModelString(
+                modelAssembly,
+                "files.player.texture.$str",
+                str
+            )
+        )
         val listSplit = font.split(component, 50)
         if (listSplit.size > 1) {
             guiGraphics.drawCenteredString(font, listSplit[0], x + (width / 2), (y + height) - 19, 0xFFF3F0E0.toInt())
@@ -51,6 +57,17 @@ open class TextureButton(
     }
 
     open fun renderPlayerPreview(guiGraphics: GuiGraphics, partialTick: Float) {
-        ModelPreviewRenderer.submitLivingEntityPreview(guiGraphics, x, y, x + width, (y + height) - 20, 35, partialTick, previewEntity, false, true)
+        ModelPreviewRenderer.submitLivingEntityPreview(
+            guiGraphics,
+            x,
+            y,
+            x + width,
+            (y + height) - 20,
+            35,
+            partialTick,
+            previewEntity,
+            false,
+            true
+        )
     }
 }

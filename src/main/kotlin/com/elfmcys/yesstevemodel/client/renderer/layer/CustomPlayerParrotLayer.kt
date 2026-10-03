@@ -26,7 +26,7 @@ open class CustomPlayerParrotLayer(context: EntityRendererProvider.Context) : Ge
     override fun render(
         state: AvatarRenderState,
         poseStack: PoseStack,
-        bufferSource: MultiBufferSource,
+        multiBufferSource: MultiBufferSource,
         packedLightIn: Int,
         entityLivingBaseIn: CustomPlayerEntity,
         limbSwing: Float,
@@ -36,16 +36,37 @@ open class CustomPlayerParrotLayer(context: EntityRendererProvider.Context) : Ge
         netHeadYaw: Float,
         headPitch: Float
     ) {
-        val player: Player = entityLivingBaseIn.entity
-        val model: AnimatedGeoModel? = entityLivingBaseIn.getCurrentModel()
-        if (model == null) {
-            return
+        val player = entityLivingBaseIn.entity
+        val model = entityLivingBaseIn.getCurrentModel() ?: return
+        if (model.leftShoulderBones().isNotEmpty()) {
+            renderParrot(
+                poseStack,
+                state,
+                multiBufferSource,
+                model,
+                packedLightIn,
+                player,
+                limbSwing,
+                limbSwingAmount,
+                netHeadYaw,
+                headPitch,
+                true
+            )
         }
-        if (!model.leftShoulderBones().isEmpty()) {
-            renderParrot(poseStack, state, bufferSource, model, packedLightIn, player, limbSwing, limbSwingAmount, netHeadYaw, headPitch, true)
-        }
-        if (!model.rightShoulderBones().isEmpty()) {
-            renderParrot(poseStack, state, bufferSource, model, packedLightIn, player, limbSwing, limbSwingAmount, netHeadYaw, headPitch, false)
+        if (model.rightShoulderBones().isNotEmpty()) {
+            renderParrot(
+                poseStack,
+                state,
+                multiBufferSource,
+                model,
+                packedLightIn,
+                player,
+                limbSwing,
+                limbSwingAmount,
+                netHeadYaw,
+                headPitch,
+                false
+            )
         }
     }
 
@@ -62,7 +83,7 @@ open class CustomPlayerParrotLayer(context: EntityRendererProvider.Context) : Ge
         headPitch: Float,
         isLeftShoulder: Boolean
     ) {
-        val variant: Parrot.Variant = (if (isLeftShoulder) state.parrotOnLeftShoulder else state.parrotOnRightShoulder) ?: return
+        val variant = (if (isLeftShoulder) state.parrotOnLeftShoulder else state.parrotOnRightShoulder) ?: return
         poseStack.pushPose()
         applyParrotTransform(poseStack, model, isLeftShoulder)
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0f))

@@ -16,7 +16,7 @@ open class CustomPlayerCarryOnLayer : GeoLayerRenderer<CustomPlayerEntity>() {
     override fun render(
         state: AvatarRenderState,
         poseStack: PoseStack,
-        bufferSource: MultiBufferSource,
+        multiBufferSource: MultiBufferSource,
         packedLightIn: Int,
         entityLivingBaseIn: CustomPlayerEntity,
         limbSwing: Float,
@@ -26,16 +26,10 @@ open class CustomPlayerCarryOnLayer : GeoLayerRenderer<CustomPlayerEntity>() {
         netHeadYaw: Float,
         headPitch: Float
     ) {
-        if (!CarryOnCompat.isLoaded()) {
-            return
-        }
-        val entity: LivingEntity = entityLivingBaseIn.entity
-        if (entity !is Player) {
-            return
-        }
-        if (!CarryOnDataHelper.isPlayerCarrying(entity)) {
-            return
-        }
+        if (!CarryOnCompat.isLoaded()) return
+        val entity = entityLivingBaseIn.entity as LivingEntity
+        if (entity !is Player) return
+        if (!CarryOnDataHelper.isPlayerCarrying(entity)) return
         val collector = RenderContext.collector() ?: return
         CarryOnRenderer.render(entity, poseStack, packedLightIn, partialTick, collector)
     }

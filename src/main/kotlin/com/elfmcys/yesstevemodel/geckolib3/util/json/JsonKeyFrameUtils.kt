@@ -3,11 +3,9 @@ package com.elfmcys.yesstevemodel.geckolib3.util.json
 import com.elfmcys.yesstevemodel.geckolib3.core.keyframe.bone.EasingType
 import com.elfmcys.yesstevemodel.geckolib3.core.keyframe.bone.RawBoneKeyFrame
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.MolangParser
-import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue
 import com.elfmcys.yesstevemodel.geckolib3.util.AnimationUtils.convertSecondsToTicks
 import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import java.util.Locale
+import java.util.*
 
 /**
  * 用于将 json 转换成关键帧的工具类
@@ -16,9 +14,7 @@ object JsonKeyFrameUtils {
     @JvmStatic
     @Throws(NumberFormatException::class)
     fun getKeyFrames(boneKeyFrames: MutableList<RawBoneKeyFrame>, element: JsonElement?, parser: MolangParser) {
-        if (element == null) {
-            return
-        }
+        if (element == null) return
 
         if (element.isJsonPrimitive || element.isJsonArray) {
             val keyframe = RawBoneKeyFrame()
@@ -32,12 +28,12 @@ object JsonKeyFrameUtils {
             return
         }
 
-        val obj: JsonObject = element.asJsonObject
+        val obj = element.asJsonObject
         for (time in obj.keySet()) {
             val keyframe = RawBoneKeyFrame()
             keyframe.startTick = convertSecondsToTicks(time.toFloat()).toDouble()
 
-            val item: JsonElement = obj.get(time)
+            val item = obj.get(time)
             if (item.isJsonPrimitive || item.isJsonArray) {
                 readPreKeyFrame(item, keyframe, parser)
             } else if (item.isJsonObject) {
@@ -71,20 +67,15 @@ object JsonKeyFrameUtils {
         }
 
         // 排序
-        boneKeyFrames.sortWith(Comparator.comparingDouble { it.startTick.toDouble() })
+        boneKeyFrames.sortWith(Comparator.comparingDouble { it.startTick })
     }
 
     @JvmStatic
     fun tryGetEasingType(element: JsonElement?, keyframe: RawBoneKeyFrame) {
-        if (element == null || !element.isJsonPrimitive || !element.asJsonPrimitive.isString) {
-            return
-        }
+        if (element == null || !element.isJsonPrimitive || !element.asJsonPrimitive.isString) return
         val easingTypeText = element.asJsonPrimitive.asString.lowercase(Locale.ENGLISH)
-        if ("linear" == easingTypeText) {
-            keyframe.easingType = EasingType.LINEAR
-        } else if ("catmullrom" == easingTypeText) {
-            keyframe.easingType = EasingType.CATMULLROM
-        }
+        if ("linear" == easingTypeText) keyframe.easingType =
+            EasingType.LINEAR else if ("catmullrom" == easingTypeText) keyframe.easingType = EasingType.CATMULLROM
     }
 
     @JvmStatic
@@ -92,7 +83,7 @@ object JsonKeyFrameUtils {
         if (element.isJsonPrimitive) {
             val primitive = element.asJsonPrimitive
             if (primitive.isString) {
-                val value: IValue = parser.parseExpression(primitive.asString, false)
+                val value = parser.parseExpression(primitive.asString, false)
                 keyframe.preXValue = value
                 keyframe.preYValue = value
                 keyframe.preZValue = value
@@ -139,7 +130,7 @@ object JsonKeyFrameUtils {
 
             val primitive = array[0].asJsonPrimitive
             if (primitive.isString) {
-                val value: IValue = parser.parseExpression(primitive.asString, false)
+                val value = parser.parseExpression(primitive.asString, false)
                 keyframe.preXValue = value
                 keyframe.preYValue = value
                 keyframe.preZValue = value
@@ -157,7 +148,7 @@ object JsonKeyFrameUtils {
         if (element.isJsonPrimitive) {
             val primitive = element.asJsonPrimitive
             if (primitive.isString) {
-                val value: IValue = parser.parseExpression(primitive.asString, false)
+                val value = parser.parseExpression(primitive.asString, false)
                 keyframe.postXValue = value
                 keyframe.postYValue = value
                 keyframe.postZValue = value
@@ -204,7 +195,7 @@ object JsonKeyFrameUtils {
 
             val primitive = array[0].asJsonPrimitive
             if (primitive.isString) {
-                val value: IValue = parser.parseExpression(primitive.asString, false)
+                val value = parser.parseExpression(primitive.asString, false)
                 keyframe.postXValue = value
                 keyframe.postYValue = value
                 keyframe.postZValue = value

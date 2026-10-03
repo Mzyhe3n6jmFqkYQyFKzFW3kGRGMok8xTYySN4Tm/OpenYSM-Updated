@@ -3,7 +3,6 @@ package com.elfmcys.yesstevemodel.client.gui.button
 import com.elfmcys.yesstevemodel.NameSpaces
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
 import com.elfmcys.yesstevemodel.capability.StarModelsCapability
-import com.elfmcys.yesstevemodel.client.animation.AnimationTracker
 import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity
 import com.elfmcys.yesstevemodel.client.gui.ModelMetadataPresenter
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
@@ -13,11 +12,9 @@ import com.elfmcys.yesstevemodel.client.upload.UploadManager
 import com.elfmcys.yesstevemodel.config.GeneralConfig
 import com.elfmcys.yesstevemodel.network.NetworkHandler
 import com.elfmcys.yesstevemodel.network.message.C2SRequestSwitchModelPacket
-import com.elfmcys.yesstevemodel.resource.models.Metadata
 import com.elfmcys.yesstevemodel.util.FileTypeUtil
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.screens.Screen
@@ -27,7 +24,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.resources.Identifier
 import net.minecraft.util.Util
-import java.util.Objects
+import java.util.*
 
 open class ModelButton(
     x: Int,
@@ -36,19 +33,19 @@ open class ModelButton(
     val modelIdHolder: PlayerPreviewEntity,
     val renderContext: ModelAssembly
 ) : Button(x, y, 52, 90, createDisplayName(modelIdHolder, renderContext), {}, DEFAULT_NARRATION) {
-
     private val backgroundColor: Int = if (isStarred) 2130706432 else -12369342
     private val modelId: String
     private val modelName: String
     private val authorName: String
     private val animationDuration: Double
     private val disablePreviewRotation: Boolean = renderContext.modelData.modelProperties.disablePreviewRotation
-    private val displayName: Component = Component.literal(FileTypeUtil.getNameWithoutArchiveExtension(modelIdHolder.getModelId()))
+    private val displayName: Component =
+        Component.literal(FileTypeUtil.getNameWithoutArchiveExtension(modelIdHolder.getModelId()))
     private var backgroundTexture: IResourceLocatable? = renderContext.textureRegistry.getGuiBackground()?.let {
-        UploadManager.getOrCreateLocatableWithSize(it, true, 200)
+        UploadManager.getOrCreateLocatableWithSize(it, true)
     }
     private var foregroundTexture: IResourceLocatable? = renderContext.textureRegistry.getGuiForeground()?.let {
-        UploadManager.getOrCreateLocatableWithSize(it, true, 200)
+        UploadManager.getOrCreateLocatableWithSize(it, true)
     }
     private var cachedLanguage: String? = null
     private var tooltipLines: List<Component>? = null
@@ -84,7 +81,12 @@ open class ModelButton(
                 val modelAssembly = modelIdHolder.getModelAssembly()
                 if (modelAssembly != null && cap.hasMolangVars(modelAssembly.modelData.hashId)) {
                     cap.initModelWithTexture(modelIdHolder.getModelId(), currentTexture)
-                    NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(cap.getModelId(), cap.getCurrentTextureName() ?: currentTexture))
+                    NetworkHandler.sendToServer(
+                        C2SRequestSwitchModelPacket(
+                            cap.getModelId(),
+                            cap.getCurrentTextureName() ?: currentTexture
+                        )
+                    )
                     return
                 } else {
                     NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(modelIdHolder.getModelId(), currentTexture))
@@ -96,7 +98,7 @@ open class ModelButton(
     }
 
     override fun renderContents(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        val tracker: AnimationTracker = modelIdHolder.getAnimationStateMachine()
+        val tracker = modelIdHolder.getAnimationStateMachine()
         if (isHovered) {
             lastHoverTime = Util.getMillis()
             tracker.setPreviousAnimation(modelId)
@@ -114,7 +116,7 @@ open class ModelButton(
         }
 
         val minecraft = Minecraft.getInstance()
-        val font: Font = minecraft.font
+        val font = minecraft.font
         guiGraphics.fillGradient(x, y, x + width, y + height, backgroundColor, backgroundColor)
 
         val bg = backgroundTexture
@@ -130,7 +132,7 @@ open class ModelButton(
             x, y,
             x + width, y + 76,
             30,
-            minecraft.deltaTracker?.getGameTimeDeltaPartialTick(false) ?: partialTick,
+            minecraft.deltaTracker.getGameTimeDeltaPartialTick(false),
             modelIdHolder,
             disablePreviewRotation,
             true
@@ -167,7 +169,18 @@ open class ModelButton(
         if (player != null) {
             val starCap = StarModelsCapability[player]
             if (starCap != null && starCap.containsModel(modelIdHolder.getModelId())) {
-                guiGraphics.blit(RenderPipelines.GUI_TEXTURED, ICON_TEXTURE, (x + width) - 14, y, 16.0f, 0.0f, 16, 16, 256, 256)
+                guiGraphics.blit(
+                    RenderPipelines.GUI_TEXTURED,
+                    ICON_TEXTURE,
+                    (x + width) - 14,
+                    y,
+                    16.0f,
+                    0.0f,
+                    16,
+                    16,
+                    256,
+                    256
+                )
             }
         }
     }
@@ -180,34 +193,62 @@ open class ModelButton(
                 detailedTooltipLines = null
                 tooltipLines = null
             }
-            if (InputConstants.isKeyDown(Minecraft.getInstance().window, 340) || InputConstants.isKeyDown(Minecraft.getInstance().window, 344)) {
+            if (InputConstants.isKeyDown(
+                    Minecraft.getInstance().window,
+                    340
+                ) || InputConstants.isKeyDown(Minecraft.getInstance().window, 344)
+            ) {
                 if (detailedTooltipLines == null) {
-                    detailedTooltipLines = ModelMetadataPresenter.buildModelTooltip(renderContext, selected, modelIdHolder.getModelId(), true)
+                    detailedTooltipLines = ModelMetadataPresenter.buildModelTooltip(
+                        renderContext,
+                        selected,
+                        modelIdHolder.getModelId(),
+                        true
+                    )
                 }
-                guiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, detailedTooltipLines!!, mouseX, mouseY)
+                guiGraphics.setComponentTooltipForNextFrame(
+                    Minecraft.getInstance().font,
+                    detailedTooltipLines ?: return,
+                    mouseX,
+                    mouseY
+                )
             } else {
                 if (tooltipLines == null) {
-                    tooltipLines = ModelMetadataPresenter.buildModelTooltip(renderContext, selected, modelIdHolder.getModelId(), false)
+                    tooltipLines = ModelMetadataPresenter.buildModelTooltip(
+                        renderContext,
+                        selected,
+                        modelIdHolder.getModelId(),
+                        false
+                    )
                 }
-                guiGraphics.setComponentTooltipForNextFrame(Minecraft.getInstance().font, tooltipLines!!, mouseX, mouseY)
+                guiGraphics.setComponentTooltipForNextFrame(
+                    Minecraft.getInstance().font,
+                    tooltipLines ?: return,
+                    mouseX,
+                    mouseY
+                )
             }
         }
     }
 
-    fun clicked(mouseX: Double, mouseY: Double): Boolean {
-        return !isStarred && active && visible && isMouseOver(mouseX, mouseY)
-    }
+    fun clicked(mouseX: Double, mouseY: Double): Boolean =
+        !isStarred && active && visible && isMouseOver(mouseX, mouseY)
 
     companion object {
         val ICON_TEXTURE: Identifier = NameSpaces.MOD.path("texture/icon.png")
 
         @JvmStatic
         fun createDisplayName(previewEntity: PlayerPreviewEntity, modelAssembly: ModelAssembly): MutableComponent {
-            val metadata: Metadata? = modelAssembly.modelData.metadata
-            if (metadata == null || metadata.name.isBlank()) {
+            val metadata = modelAssembly.modelData.metadata
+            if (metadata == null || metadata.name.isBlank())
                 return Component.literal(FileTypeUtil.getNameWithoutArchiveExtension(previewEntity.getModelId()))
-            }
-            return Component.literal(ModelMetadataPresenter.getLocalizedModelString(modelAssembly, "metadata.name", metadata.name))
+            return Component.literal(
+                ModelMetadataPresenter.getLocalizedModelString(
+                    modelAssembly,
+                    "metadata.name",
+                    metadata.name
+                )
+            )
         }
     }
 }

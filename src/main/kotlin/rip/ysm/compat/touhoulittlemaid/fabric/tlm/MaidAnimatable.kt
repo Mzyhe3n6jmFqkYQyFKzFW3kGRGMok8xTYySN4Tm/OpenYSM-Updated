@@ -1,6 +1,5 @@
 package rip.ysm.compat.touhoulittlemaid.fabric.tlm
 
-import com.elfmcys.yesstevemodel.client.entity.GeoEntity
 import com.elfmcys.yesstevemodel.client.entity.LivingAnimatable
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
 import com.elfmcys.yesstevemodel.molang.runtime.Struct
@@ -12,7 +11,6 @@ import com.github.tartaricacid.touhoulittlemaid.geckolib3.geo.animated.ILocation
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import java.util.function.Consumer
 
 @Environment(EnvType.CLIENT)
 open class MaidAnimatable(entityMaid: EntityMaid, isActive: Boolean) :
@@ -24,23 +22,21 @@ open class MaidAnimatable(entityMaid: EntityMaid, isActive: Boolean) :
         getModelAssembly()?.animationBundle?.maidControllerInstaller?.accept(this)
     }
 
-    override fun buildRenderShape(modelAssembly: ModelAssembly, isActive: Boolean): ModelWrapper {
+    override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper {
         return TexturedModelWrapper(
             modelAssembly,
-            isActive,
+            isDefault,
             collectAllTextures = true,
             registerImmediately = true,
             textureResolution = 600
         )
     }
 
-    override fun createPositionTracker(entityMaid: EntityMaid): MaidFrameState {
-        return MaidFrameState(entityMaid)
+    override fun createPositionTracker(entity: EntityMaid): MaidFrameState {
+        return MaidFrameState(entity)
     }
 
-    override fun getPositionTracker(): MaidFrameState {
-        return super.getPositionTracker() as MaidFrameState
-    }
+    override fun getPositionTracker(): MaidFrameState = super.getPositionTracker() as MaidFrameState
 
     fun hasModel(): Boolean = entity.rouletteAnimDirty
 

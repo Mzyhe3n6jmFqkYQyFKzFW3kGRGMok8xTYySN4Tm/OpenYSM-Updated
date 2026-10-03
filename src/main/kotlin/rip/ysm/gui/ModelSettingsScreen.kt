@@ -19,14 +19,10 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.MouseButtonEvent
-import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.state.AvatarRenderState
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
-import org.joml.Matrix4fStack
-import org.joml.Quaternionf
 import rip.ysm.gui.components.BooleanOptionRow
 import rip.ysm.gui.components.RadioOptionRow
 import rip.ysm.gui.components.SliderOptionRow
@@ -71,10 +67,10 @@ open class ModelSettingsScreen(
 
     override fun init() {
         super.init()
-        applyBtn?.let { removeWidget(it); it.visible = false; it.active = false }
-        undoBtn?.let { removeWidget(it); it.visible = false; it.active = false }
-        cancelBtn?.let { removeWidget(it); it.visible = false }
-        saveBtn?.let {
+        applyBtn.let { removeWidget(it); it.visible = false; it.active = false }
+        undoBtn.let { removeWidget(it); it.visible = false; it.active = false }
+        cancelBtn.let { removeWidget(it); it.visible = false }
+        saveBtn.let {
             it.message = Component.translatable("gui.yes_steve_model.config.done")
             it.x = panelRight - it.width
         }
@@ -106,20 +102,18 @@ open class ModelSettingsScreen(
         ordered.sortWith(compareBy { it.id })
         for (cfgGroup in ordered) {
             val g = IdentifiedGroup(cfgGroup.id, groupLabel(cfgGroup))
-            var formIndex = 0
-            for (form in cfgGroup.configForms) {
+            for ((formIndex, form) in cfgGroup.configForms.withIndex()) {
                 val row = buildRow(cfgGroup.id, formIndex, form)
                 if (row != null) {
                     g.add(row)
                 }
-                formIndex++
             }
             groups.add(g)
         }
     }
 
     private fun groupLabel(group: ExtraAnimationButtons): String {
-        val fallback = if (group.name.isNullOrEmpty()) group.id else group.name
+        val fallback = group.name.ifEmpty { group.id }
         return ModelMetadataPresenter.getLocalizedModelString(
             modelAssembly,
             "properties.extra_animation_buttons.${group.id}.name",
@@ -190,10 +184,10 @@ open class ModelSettingsScreen(
         if (mc.player == null) return
         val la = animatable as? LivingAnimatable<*> ?: return
         val scale = mc.window.guiScale
-        val sx = (previewLeft * scale).toInt()
-        val sy = (mc.window.height - previewBottom * scale).toInt()
-        val sw = ((previewRight - previewLeft) * scale).toInt()
-        val sh = ((previewBottom - previewTop) * scale).toInt()
+        val sx = (previewLeft * scale)
+        val sy = (mc.window.height - previewBottom * scale)
+        val sw = ((previewRight - previewLeft) * scale)
+        val sh = ((previewBottom - previewTop) * scale)
         RenderSystem.enableScissorForRenderTypeDraws(sx, sy, sw, sh)
         val cx = (previewLeft + previewRight) / 2.0f + offsetX
         val cy = previewTop + (previewBottom - previewTop) * 0.65f + offsetY
@@ -219,25 +213,24 @@ open class ModelSettingsScreen(
         return super.mouseReleased(event)
     }
 
-    override fun mouseDragged(event: MouseButtonEvent, dragX: Double, dragY: Double): Boolean {
+    override fun mouseDragged(event: MouseButtonEvent, dx: Double, dy: Double): Boolean {
         val button = event.button()
         if (draggingPreview && button == draggingButton) {
             if (button == 0) {
-                yaw = (yaw + dragX * 1.2).toFloat()
-                pitch = Mth.clamp((pitch - dragY * 0.8).toFloat(), -85.0f, 85.0f)
+                yaw = (yaw + dx * 1.2).toFloat()
+                pitch = Mth.clamp((pitch - dy * 0.8).toFloat(), -85.0f, 85.0f)
             } else if (button == 1) {
-                offsetX = (offsetX + dragX).toFloat()
-                offsetY = (offsetY + dragY).toFloat()
+                offsetX = (offsetX + dx).toFloat()
+                offsetY = (offsetY + dy).toFloat()
             }
             return true
         }
-        return super.mouseDragged(event, dragX, dragY)
+        return super.mouseDragged(event, dx, dy)
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
-        val delta = scrollY
         if (isInPreview(mouseX, mouseY)) {
-            zoom = Mth.clamp((zoom * (1.0 + delta * 0.1)).toFloat(), 30.0f, 400.0f)
+            zoom = Mth.clamp((zoom * (1.0 + scrollY * 0.1)).toFloat(), 30.0f, 400.0f)
             return true
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
@@ -260,7 +253,7 @@ open class ModelSettingsScreen(
         ) {
             ModelPreviewRenderer.setPreviewMode(true)
             val livingEntity = animatable.entity
-            val modelViewStack: Matrix4fStack = RenderSystem.getModelViewStack()
+            val modelViewStack = RenderSystem.getModelViewStack()
             modelViewStack.pushMatrix()
             modelViewStack.translate(x, y, 1250.0f)
             modelViewStack.scale(1.0f, 1.0f, -1.0f)
@@ -268,8 +261,8 @@ open class ModelSettingsScreen(
             poseStack.translate(0.0, 0.0, 1000.0)
             poseStack.scale(scale, scale, scale)
             poseStack.translate(0.0, 0.8, 0.0)
-            val rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.0f)
-            val rotationX: Quaternionf = Axis.XP.rotationDegrees(-10.0f + pitch)
+            val rotationZ = Axis.ZP.rotationDegrees(180.0f)
+            val rotationX = Axis.XP.rotationDegrees(-10.0f + pitch)
             rotationZ.mul(rotationX)
             poseStack.mulPose(rotationZ)
             val oldBodyRot = livingEntity.yBodyRot
@@ -290,7 +283,7 @@ open class ModelSettingsScreen(
             livingEntity.yHeadRotO = -yaw
             rotationX.conjugate()
             poseStack.mulPose(rotationX)
-            val bufferSource: MultiBufferSource.BufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
+            val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
             val state = AvatarRenderState()
             try {
                 @Suppress("UNCHECKED_CAST")

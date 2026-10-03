@@ -1,7 +1,6 @@
 package com.elfmcys.yesstevemodel.client.gui
 
 import com.elfmcys.yesstevemodel.config.GeneralConfig
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.Checkbox
@@ -32,9 +31,9 @@ class DisclaimerScreen : Screen(Component.literal("Disclaimer GUI")) {
         val closeButton = Button.builder(Component.translatable("gui.yes_steve_model.disclaimer.close")) {
             if (cb.selected()) {
                 GeneralConfig.DISCLAIMER_SHOW.set(false)
-                minecraft?.setScreen(PlayerModelScreen())
+                minecraft.setScreen(PlayerModelScreen())
             } else {
-                minecraft?.setScreen(null)
+                minecraft.setScreen(null)
             }
         }.bounds((width - 300) / 2, (textHeight + totalHeight) - 20, 300, 20).build()
         addRenderableWidget(closeButton)
@@ -43,7 +42,14 @@ class DisclaimerScreen : Screen(Component.literal("Disclaimer GUI")) {
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         renderBackground(guiGraphics, mouseX, mouseY, partialTick)
         super.render(guiGraphics, mouseX, mouseY, partialTick)
-        guiGraphics.drawWordWrap(font, Component.translatable("gui.yes_steve_model.disclaimer.text"), textY, textHeight, 400, -1)
+        guiGraphics.drawWordWrap(
+            font,
+            Component.translatable("gui.yes_steve_model.disclaimer.text"),
+            textY,
+            textHeight,
+            400,
+            -1
+        )
     }
 
     override fun renderBlurredBackground(guiGraphics: GuiGraphics) {

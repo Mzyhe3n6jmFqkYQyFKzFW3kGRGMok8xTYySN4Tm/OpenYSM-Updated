@@ -261,18 +261,18 @@ object MaidAnimationController {
 
     private object MaidAnimationDataProvider : AnimationDataProvider<PlayerModelBundle> {
         override fun getAnimationEntries(
-            modelBundle: PlayerModelBundle,
+            t: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
-        ): Object2ReferenceMap<String, AnimationController> = modelBundle.animationEntries
+        ): Object2ReferenceMap<String, AnimationController> = t.animationEntries
 
         override fun getAnimations(
-            modelBundle: PlayerModelBundle,
+            t: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
-        ): Object2ReferenceMap<String, Animation> = modelBundle.mainAnimations
+        ): Object2ReferenceMap<String, Animation> = t.mainAnimations
 
         override fun getConditionArmor(
-            modelBundle: PlayerModelBundle,
+            t: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
-        ): ConditionArmor = modelBundle.conditionManager.armor
+        ): ConditionArmor = t.conditionManager.armor
     }
 }

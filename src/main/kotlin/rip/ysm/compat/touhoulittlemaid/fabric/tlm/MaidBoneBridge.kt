@@ -11,7 +11,6 @@ import net.fabricmc.api.Environment
 
 @Environment(EnvType.CLIENT)
 object MaidBoneBridge {
-
     @JvmStatic
     fun createLocationBone(bone: AnimatedGeoBone): ILocationBone {
         return object : ILocationBone {
@@ -40,8 +39,8 @@ object MaidBoneBridge {
                 return toTlmBones(model.leftHandBones())
             }
 
-            override fun extraLeftHandBones(): List<List<out ILocationBone>> {
-                val chains = ReferenceArrayList<List<out ILocationBone>>()
+            override fun extraLeftHandBones(): List<List<ILocationBone>> {
+                val chains = ReferenceArrayList<List<ILocationBone>>()
                 model.rightHandChain().forEach { list -> chains.add(toTlmBones(list)) }
                 return chains
             }
@@ -50,8 +49,8 @@ object MaidBoneBridge {
                 return toTlmBones(model.rightHandBones())
             }
 
-            override fun extraRightHandBones(): List<List<out ILocationBone>> {
-                val chains = ReferenceArrayList<List<out ILocationBone>>()
+            override fun extraRightHandBones(): List<List<ILocationBone>> {
+                val chains = ReferenceArrayList<List<ILocationBone>>()
                 model.leftHandChains().forEach { list -> chains.add(toTlmBones(list)) }
                 return chains
             }

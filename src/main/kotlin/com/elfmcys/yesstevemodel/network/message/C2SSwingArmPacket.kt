@@ -2,8 +2,6 @@ package com.elfmcys.yesstevemodel.network.message
 
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.protocol.game.ClientboundAnimatePacket
-import net.minecraft.server.level.ServerChunkCache
-import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.effect.MobEffectUtil
@@ -43,12 +41,10 @@ class C2SSwingArmPacket(val hand: InteractionHand) {
                     sender.swingTime = -1
                     sender.swinging = true
                     sender.swingingArm = interactionHand
-                    if (sender.level() is ServerLevel) {
-                        (sender.level().chunkSource as ServerChunkCache).sendToTrackingPlayersAndSelf(
-                            sender,
-                            ClientboundAnimatePacket(sender, if (interactionHand == InteractionHand.MAIN_HAND) 0 else 3)
-                        )
-                    }
+                    sender.level().chunkSource.sendToTrackingPlayersAndSelf(
+                        sender,
+                        ClientboundAnimatePacket(sender, if (interactionHand == InteractionHand.MAIN_HAND) 0 else 3)
+                    )
                 }
             }
         }

@@ -24,8 +24,8 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import it.unimi.dsi.fastutil.objects.ReferenceLists
 import org.apache.commons.lang3.StringUtils
 import org.joml.Vector3f
-import java.util.function.Consumer
 
+@Suppress("unused")
 open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     private val animatable: T,
     private val name: String,
@@ -49,28 +49,24 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     override fun process(
         event: AnimationEvent<T>,
         evaluator: ExpressionEvaluator<AnimationContext<*>>,
-        isMoving: Boolean
+        isSomething: Boolean
     ) {
-        if (animationEntries == null) {
-            return
-        }
+        if (animationEntries == null) return
         evaluator.entity().setAnimationControllerContext(null)
         evaluator.entity().setPlaybackFlags(playbackFlags)
-        val currentTick: Float = event.currentTick
+        val currentTick = event.currentTick
         visitedEntries.clear()
         var transitioned = false
         while (evaluateTransitions(evaluator)) {
             transitioned = true
-            if (activeSlotCount != 0) {
-                break
-            }
+            if (activeSlotCount != 0) break
         }
         val currEntry = currentEntry
-        if (currEntry != null && currEntry.subName != null && depth != MAX_DEPTH) {
+        if (currEntry?.subName != null && depth != MAX_DEPTH) {
             if (transitioned) {
-                val subControllerName: String =
+                val subControllerName =
                     if (depth > 1) "${parentName}.${currEntry.subName}" else currEntry.subName
-                val childCtrl: AnimationController? = animatable.getAnimationEntries("${name}.${subControllerName}")
+                val childCtrl = animatable.getAnimationEntries("${name}.${subControllerName}")
                 if (childCtrl != null) {
                     val existingChild = childController
                     if (existingChild == null) {
@@ -83,19 +79,19 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                     childController?.setParentInfo(subControllerName, depth + 1)
                 }
             }
-            childController?.process(event, evaluator, isMoving)
+            childController?.process(event, evaluator, isSomething)
             return
         }
         for (slotIndex in 0 until activeSlotCount) {
-            val slot: AnimationSlot = animationSlots.get(slotIndex)
+            val slot = animationSlots[slotIndex]
             slot.condition.evaluate(evaluator)
-            slot.resampler.process(currentTick, evaluator, isMoving && slot.condition.isActive())
+            slot.resampler.process(currentTick, evaluator, isSomething && slot.condition.isActive())
         }
         if (needsRebuild) {
             for (i2 in 0 until activeSlotCount) {
-                val slot2: AnimationSlot = animationSlots.get(i2)
+                val slot2 = animationSlots[i2]
                 for (boneQueue in slot2.animationControllerInstance.activeBoneAnimationQueues) {
-                    val blendState: BoneBlendState = boneTransformMap.get(boneQueue.topLevelSnapshot.boneId)
+                    val blendState = boneTransformMap.get(boneQueue.topLevelSnapshot.boneId)
                     if (!blendState.checkMarked()) {
                         blendState.mark()
                         activeBoneTransforms.add(blendState)
@@ -132,7 +128,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         list: MutableList<BoneTopLevelSnapshot>,
         object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>
     ) {
-        val childCtrl: AnimationController? = animatable.getAnimationEntries(name)
+        val childCtrl = animatable.getAnimationEntries(name)
         if (childCtrl != null) {
             initWithBones(list, childCtrl)
         } else {
@@ -172,7 +168,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         playbackFlags.setStopped(false)
         playbackFlags.setPaused(true)
         for (slotIndex in 0 until activeSlotCount) {
-            val slot: AnimationSlot = animationSlots.get(slotIndex)
+            val slot = animationSlots[slotIndex]
             if (slot.condition.isActive()) {
                 activeCount++
                 if (slot.animationControllerInstance.isAnimationFinished) {
@@ -187,7 +183,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         }
         for (transition in currEntry.transitions) {
             if (transition.right().evalAsBoolean(evaluator)) {
-                val nextState2: AnimationState? = entries.states.get(transition.leftInt())
+                val nextState2 = entries.states.get(transition.leftInt())
                 if (nextState2 == null || !visitedEntries.add(nextState2.hashId)) {
                     return false
                 }
@@ -232,21 +228,21 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         }
         activeBoneTransforms.clear()
         needsRebuild = true
-        val size: Int =
+        val size =
             if (nextState == null || nextState.isBuiltinEntry || nextState.subName != null) 0 else nextState.animations.size
         for (size2 in animationSlots.size until size) {
             animationSlots.add(AnimationSlot(animatable, transitionLengthTicks))
         }
         for (i in size until activeSlotCount) {
-            val animInstance: AnimationControllerInstance = animationSlots.get(i).animationControllerInstance
+            val animInstance = animationSlots[i].animationControllerInstance
             animInstance.executeRenderLayers(evaluator)
             animInstance.cancelAnimation()
         }
         activeSlotCount = size
         if (nextState != null) {
             for (i in 0 until size) {
-                val slot: AnimationSlot = animationSlots.get(i)
-                val pair = nextState.animations.get(i)
+                val slot = animationSlots[i]
+                val pair = nextState.animations[i]
                 if (slot.isNewSlot) {
                     slot.resampler.initBoneQueues(boneTargets ?: ReferenceLists.emptyList())
                     slot.markInitialized()
@@ -260,19 +256,19 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         }
     }
 
-    override fun forEachTransform(consumer: Consumer<BoneTransformProvider>) {
+    override fun forEachTransform(consumer: (BoneTransformProvider) -> Unit) {
         val curr = currentEntry
         if (curr != null) {
             if (curr.subName != null && childController != null) {
                 childController?.forEachTransform(consumer)
                 return
             }
-            val list: ReferenceArrayList<BoneBlendState> = activeBoneTransforms
-            val size: Int = list.size
+            val list = activeBoneTransforms
+            val size = list.size
             for (i in 0 until size) {
-                val blendState: BoneBlendState = list.get(i)
+                val blendState = list[i]
                 if (blendState.hasActiveSources()) {
-                    consumer.accept(blendState)
+                    consumer(blendState)
                 }
             }
         }
@@ -350,12 +346,8 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         }
 
         fun hasActiveSources(): Boolean {
-            val size: Int = blendSources.size
-            for (i in 0 until size) {
-                if (blendSources.get(i).left().isActive()) {
-                    return true
-                }
-            }
+            val size = blendSources.size
+            for (i in 0 until size) if (blendSources[i].left().isActive()) return true
             return false
         }
 
@@ -374,10 +366,10 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
 
         override fun getRotation(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
             val sources = blendSources
-            val size: Int = sources.size
+            val size = sources.size
             if (size == 0) return null
-            var animationPoint: AnimationPoint? = null
-            val transitionVector3f: TransitionVector3f = rotationOut
+            var animationPoint: AnimationPoint?
+            val transitionVector3f = rotationOut
             transitionVector3f.set(0.0f, 0.0f, 0.0f)
             transitionVector3f.percentCompleted = 1.0f
             var hasData = false
@@ -387,9 +379,9 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             var initialRotation: Vector3f? = null
             var lerpFactor = 0.0f
             for (i in 0 until size) {
-                val pair = sources.get(i)
+                val pair = sources[i]
                 if (pair.left().isActive()) {
-                    val boneQueue: BoneAnimationQueue = pair.right()
+                    val boneQueue = pair.right()
                     val point = boneQueue.rotationQueue
                     if (boneQueue.isActive() && point != null) {
                         animationPoint = point
@@ -405,10 +397,10 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                             }
                         }
                         if (!isTransition) {
-                            val lerpPoint: Vector3f = animationPoint.getLerpPoint(evaluator)
-                            var blendWeight: Float = boneQueue.getBlendWeight()
+                            val lerpPoint = animationPoint.getLerpPoint(evaluator)
+                            var blendWeight = boneQueue.getBlendWeight()
                             if (animationPoint is ConstantPoint) {
-                                val percentCompleted: Float = animationPoint.getPercentCompleted()
+                                val percentCompleted = animationPoint.getPercentCompleted()
                                 blendWeight *= 1.0f - percentCompleted
                                 transitionVector3f.setPercentCompleted(percentCompleted)
                             } else {
@@ -447,10 +439,10 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
 
         override fun getPosition(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
             val sources = blendSources
-            val size: Int = sources.size
+            val size = sources.size
             if (size == 0) return null
-            var point: AnimationPoint? = null
-            val result: TransitionVector3f = positionOut
+            var point: AnimationPoint?
+            val result = positionOut
             result.set(0.0f, 0.0f, 0.0f)
             result.percentCompleted = 1.0f
             var hasData = false
@@ -459,9 +451,9 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             var offsetPoint: Vector3f? = null
             var lerpFactor = 0.0f
             for (i in 0 until size) {
-                val pair = sources.get(i)
+                val pair = sources[i]
                 if (pair.left().isActive()) {
-                    val boneQueue: BoneAnimationQueue = pair.right()
+                    val boneQueue = pair.right()
                     val p = boneQueue.positionQueue
                     if (boneQueue.isActive() && p != null) {
                         point = p
@@ -476,10 +468,10 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                             }
                         }
                         if (!isTransition) {
-                            val lerpPoint: Vector3f = point.getLerpPoint(evaluator)
-                            var blendWeight: Float = boneQueue.getBlendWeight()
+                            val lerpPoint = point.getLerpPoint(evaluator)
+                            var blendWeight = boneQueue.getBlendWeight()
                             if (point is ConstantPoint) {
-                                val percentCompleted: Float = point.getPercentCompleted()
+                                val percentCompleted = point.getPercentCompleted()
                                 blendWeight *= 1.0f - percentCompleted
                                 result.setPercentCompleted(percentCompleted)
                             } else {
@@ -511,22 +503,22 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
 
         override fun getScale(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
             val sources = blendSources
-            val size: Int = sources.size
+            val size = sources.size
             if (size == 0) return null
-            var point: AnimationPoint? = null
-            val result: TransitionVector3f = scaleOut
+            var point: AnimationPoint?
+            val result = scaleOut
             result.set(1.0f, 1.0f, 1.0f)
             result.percentCompleted = 1.0f
-            val tmp: Vector3f = scaleLerpTmp
+            val tmp = scaleLerpTmp
             var hasData = false
             var isFirst = true
             var isTransition = false
             var offsetPoint: Vector3f? = null
             var lerpFactor = 0.0f
             for (i in 0 until size) {
-                val pair = sources.get(i)
+                val pair = sources[i]
                 if (pair.left().isActive()) {
-                    val boneQueue: BoneAnimationQueue = pair.right()
+                    val boneQueue = pair.right()
                     val p = boneQueue.scaleQueue
                     if (boneQueue.isActive() && p != null) {
                         point = p
@@ -541,10 +533,10 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                             }
                         }
                         if (!isTransition) {
-                            val lerpPoint: Vector3f = point.getLerpPoint(evaluator)
-                            var blendWeight: Float = boneQueue.getBlendWeight()
+                            val lerpPoint = point.getLerpPoint(evaluator)
+                            var blendWeight = boneQueue.getBlendWeight()
                             if (point is ConstantPoint) {
-                                val percentCompleted: Float = point.getPercentCompleted()
+                                val percentCompleted = point.getPercentCompleted()
                                 blendWeight *= 1.0f - percentCompleted
                                 result.setPercentCompleted(percentCompleted)
                             } else {

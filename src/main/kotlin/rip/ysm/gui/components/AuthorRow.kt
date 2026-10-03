@@ -4,16 +4,13 @@ import com.elfmcys.yesstevemodel.NameSpaces
 import com.elfmcys.yesstevemodel.client.gui.ModelMetadataPresenter
 import com.elfmcys.yesstevemodel.client.upload.IResourceLocatable
 import com.elfmcys.yesstevemodel.resource.models.AuthorInfo
-import com.elfmcys.yesstevemodel.util.data.OrderedStringMap
 import net.minecraft.ChatFormatting
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
-import net.minecraft.util.FormattedCharSequence
 import rip.ysm.gui.ModernModelInfoScreen
 import rip.ysm.gui.OptionRow
 import kotlin.math.max
@@ -25,7 +22,6 @@ class AuthorRow(
     private val authorIndex: Int,
     private val avatarLocatable: IResourceLocatable?
 ) : OptionRow<Any?>(0, 0, 0, AVATAR_SIZE + 8, null) {
-
     private var hoveredContactIndex: Int = -1
 
     override fun renderWidget(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
@@ -36,7 +32,7 @@ class AuthorRow(
         val avatar = avatarLocatable?.getResourceLocation() ?: DEFAULT_AVATAR
         g.blit(RenderPipelines.GUI_TEXTURED, avatar, ax, ay, 0.0f, 0.0f, AVATAR_SIZE, AVATAR_SIZE, 64, 64, 64, 64)
 
-        val font: Font = Minecraft.getInstance().font
+        val font = Minecraft.getInstance().font
         val name = ModelMetadataPresenter.getLocalizedModelString(
             owner.renderContext,
             "metadata.authors.$authorIndex.name",
@@ -64,7 +60,7 @@ class AuthorRow(
             -1,
             false
         )
-        if (!role.isNullOrBlank()) {
+        if (role.isNotBlank()) {
             val nameW = font.width(name)
             g.drawString(
                 font,
@@ -76,8 +72,8 @@ class AuthorRow(
             )
         }
         var commentY = y + 17
-        if (!comment.isNullOrBlank()) {
-            val lines: List<FormattedCharSequence> = font.split(Component.literal(comment), maxTextW)
+        if (comment.isNotBlank()) {
+            val lines = font.split(Component.literal(comment), maxTextW)
             val maxLines = min(lines.size, 2)
             for (i in 0 until maxLines) {
                 g.drawString(font, lines[i], tx, commentY, 0xFFCCCCCC.toInt(), false)
@@ -85,16 +81,14 @@ class AuthorRow(
             }
         }
         hoveredContactIndex = -1
-        val contacts: OrderedStringMap<String, String> = author.contact
-        if (contacts != null && contacts.size > 0) {
+        val contacts = author.contact
+        if (contacts.isNotEmpty()) {
             val chipY = y + height - 14
             var chipX = tx
             for (i in 0 until contacts.size) {
                 val key = contacts.getKeyAt(i)
                 val chipW = font.width(key) + 8
-                if (chipX + chipW > textRight) {
-                    break
-                }
+                if (chipX + chipW > textRight) break
                 val chipHover = mouseX >= chipX && mouseX < chipX + chipW && mouseY >= chipY && mouseY < chipY + 12
                 g.fill(
                     chipX,
@@ -103,7 +97,14 @@ class AuthorRow(
                     chipY + 12,
                     if (chipHover) 0xC0444444.toInt() else 0x80222222.toInt()
                 )
-                g.drawString(font, Component.literal(key).withStyle(ChatFormatting.YELLOW), chipX + 4, chipY + 2, -1, false)
+                g.drawString(
+                    font,
+                    Component.literal(key).withStyle(ChatFormatting.YELLOW),
+                    chipX + 4,
+                    chipY + 2,
+                    -1,
+                    false
+                )
                 if (chipHover) {
                     hoveredContactIndex = i
                 }
@@ -116,17 +117,11 @@ class AuthorRow(
     }
 
     override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
-        if (hoveredContactIndex < 0) {
-            return
-        }
-        val contacts: OrderedStringMap<String, String> = author.contact
-        if (contacts == null || hoveredContactIndex >= contacts.size) {
-            return
-        }
+        if (hoveredContactIndex < 0) return
+        val contacts = author.contact
+        if (hoveredContactIndex >= contacts.size) return
         val value = contacts.getValueAt(hoveredContactIndex)
-        if (value.isNullOrBlank()) {
-            return
-        }
+        if (value.isBlank()) return
         if (value.startsWith("http://") || value.startsWith("https://")) {
             owner.openUrlWithConfirm(value)
         } else {

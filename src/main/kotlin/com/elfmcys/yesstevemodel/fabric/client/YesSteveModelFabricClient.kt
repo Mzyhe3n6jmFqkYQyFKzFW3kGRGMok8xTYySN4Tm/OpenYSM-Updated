@@ -7,14 +7,14 @@ import com.elfmcys.yesstevemodel.client.renderer.ModelSyncStateOverlay
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback
 import net.minecraft.client.Minecraft
-import rip.ysm.api.client.HudOverlay
 import rip.ysm.compat.touhoulittlemaid.fabric.TouhouLittleMaidCompatImpl
 
 class YesSteveModelFabricClient : ClientModInitializer {
     override fun onInitializeClient() {
-        val debugOverlay: HudOverlay = AnimationDebugOverlay.createOverlay()
-        val loadingOverlay: HudOverlay = ExtraPlayerOverlay()
-        val syncOverlay: HudOverlay = ModelSyncStateOverlay()
+        val debugOverlay = AnimationDebugOverlay.createOverlay()
+        val loadingOverlay = ExtraPlayerOverlay()
+        val syncOverlay = ModelSyncStateOverlay()
+        // TODO: 'interface HudRenderCallback : Any' is deprecated. Deprecated in Java
         HudRenderCallback.EVENT.register { guiGraphics, tickDelta ->
             val mc = Minecraft.getInstance()
             val w = mc.window.guiScaledWidth
