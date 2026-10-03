@@ -17,7 +17,7 @@ import rip.ysm.compat.slashblade.SlashBladeCompat
 class ItemHoldAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>> {
     override fun predicate(event: AnimationEvent<LivingAnimatable<*>>, evaluator: ExpressionEvaluator<*>?): PlayState {
         val animatable = event.getAnimatable()
-        val livingEntity: LivingEntity = animatable.entity as? LivingEntity ?: return PlayState.STOP
+        val livingEntity: LivingEntity = animatable.entity ?: return PlayState.STOP
         if (animatable is IPreviewAnimatable) {
             return PlayState.STOP
         }
@@ -33,7 +33,12 @@ class ItemHoldAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>> {
             val str: String = SlashBladeCompat.getComboAnimName(event)
             if (str.isNotBlank()) {
                 if (animatable.getAnimation(str) != null) {
-                    return IAnimationPredicate.playAnimationWithValid(event, str, ILoopType.EDefaultLoopTypes.PLAY_ONCE, i)
+                    return IAnimationPredicate.playAnimationWithValid(
+                        event,
+                        str,
+                        ILoopType.EDefaultLoopTypes.PLAY_ONCE,
+                        i
+                    )
                 }
                 return PlayState.CONTINUE
             }
@@ -43,12 +48,18 @@ class ItemHoldAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>> {
                 event.getController()?.stopTransition()
             }
             val conditionManager: ConditionManager = animatable.getModelConfig() ?: return PlayState.CONTINUE
-            val conditionSwing: ConditionSwing = if (livingEntity.swingingArm == InteractionHand.MAIN_HAND) conditionManager.swingMainhand else conditionManager.swingOffhand
+            val conditionSwing: ConditionSwing =
+                if (livingEntity.swingingArm == InteractionHand.MAIN_HAND) conditionManager.swingMainhand else conditionManager.swingOffhand
             val str2: String = conditionSwing.doTest(livingEntity, livingEntity.swingingArm)
             if (str2.isNotBlank()) {
                 return IAnimationPredicate.playAnimationWithValid(event, str2, ILoopType.EDefaultLoopTypes.PLAY_ONCE, i)
             }
-            return IAnimationPredicate.playAnimationWithValid(event, if (livingEntity.swingingArm == InteractionHand.MAIN_HAND) "swing_hand" else "swing_offhand", ILoopType.EDefaultLoopTypes.PLAY_ONCE, i)
+            return IAnimationPredicate.playAnimationWithValid(
+                event,
+                if (livingEntity.swingingArm == InteractionHand.MAIN_HAND) "swing_hand" else "swing_offhand",
+                ILoopType.EDefaultLoopTypes.PLAY_ONCE,
+                i
+            )
         }
         return PlayState.CONTINUE
     }

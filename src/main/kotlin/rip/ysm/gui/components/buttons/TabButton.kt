@@ -6,7 +6,6 @@ import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.client.input.MouseButtonEvent
 import rip.ysm.gui.OptionGroup
-import java.util.function.Consumer
 import kotlin.math.max
 
 open class TabButton(
@@ -15,21 +14,11 @@ open class TabButton(
     width: Int,
     height: Int,
     val group: OptionGroup,
-    private val onSelect: Consumer<OptionGroup>
+    private val onSelect: (OptionGroup) -> Unit
 ) : AbstractWidget(x, y, width, height, group.getTitle()) {
 
     var selected: Boolean = false
     var horizontal: Boolean = false
-
-    fun getGroup(): OptionGroup = group
-
-    fun setSelected(selected: Boolean) {
-        this.selected = selected
-    }
-
-    fun setHorizontal(horizontal: Boolean) {
-        this.horizontal = horizontal
-    }
 
     override fun renderWidget(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         val bg = if (selected) 0x90171717.toInt() else if (isHovered) 0x900B0B0B.toInt() else 0x90000000.toInt()
@@ -53,7 +42,7 @@ open class TabButton(
     }
 
     override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
-        onSelect.accept(group)
+        onSelect(group)
     }
 
     override fun updateWidgetNarration(out: NarrationElementOutput) {

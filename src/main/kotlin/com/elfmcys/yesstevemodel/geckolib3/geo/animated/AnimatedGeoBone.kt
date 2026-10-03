@@ -1,9 +1,9 @@
 package com.elfmcys.yesstevemodel.geckolib3.geo.animated
 
-import rip.ysm.compat.touhoulittlemaid.TouhouMaidBoneProcessor
 import com.elfmcys.yesstevemodel.geckolib3.core.processor.IBone
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoBone
 import org.joml.Vector3f
+import rip.ysm.compat.touhoulittlemaid.TouhouMaidBoneProcessor
 
 class AnimatedGeoBone(
     geoBone: GeoBone,
@@ -12,7 +12,6 @@ class AnimatedGeoBone(
     private val stateBuffer: FloatArray,
     private val stateOffset: Int
 ) : IBone {
-
     private val name: String = geoBone.name
     private val boneId: Int = geoBone.boneId
     private val pivotX: Float = geoBone.pivotX

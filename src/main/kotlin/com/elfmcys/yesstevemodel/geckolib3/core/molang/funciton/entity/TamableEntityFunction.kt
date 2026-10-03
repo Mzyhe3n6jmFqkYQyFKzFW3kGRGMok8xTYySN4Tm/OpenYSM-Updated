@@ -5,7 +5,7 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.funciton.ContextFunction
 import net.minecraft.world.entity.TamableAnimal
 
 abstract class TamableEntityFunction : ContextFunction<TamableAnimal>() {
-    open fun validateContext(context: IContext<*>): Boolean {
+    override fun validateContext(context: IContext<*>): Boolean {
         return context.entity() is TamableAnimal
     }
 }

@@ -5,7 +5,7 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.funciton.ContextFunction
 import net.minecraft.client.player.LocalPlayer
 
 abstract class LocalPlayerEntityFunction : ContextFunction<LocalPlayer>() {
-    open fun validateContext(context: IContext<*>): Boolean {
+    override fun validateContext(context: IContext<*>): Boolean {
         return context.entity() is LocalPlayer
     }
 }

@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
+import kotlin.math.min
 
 abstract class OptionRow<T>(
     x: Int,
@@ -15,15 +16,11 @@ abstract class OptionRow<T>(
     val option: Option<T>?
 ) : AbstractWidget(x, y, width, height, option?.getLabel() ?: Component.empty()) {
 
-    open fun getOption(): Option<T>? {
-        return option
-    }
-
     open fun refresh() {
     }
 
     override fun renderWidget(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        val dirty = option != null && option.isDirty()
+        val dirty = option?.isDirty() == true
         val bg = if (isHovered) 0x90171717.toInt() else if (dirty) 0x90060606.toInt() else 0x90000000.toInt()
         g.fill(x, y, x + width, y + height, bg)
         val label = message
@@ -35,21 +32,13 @@ abstract class OptionRow<T>(
 
     protected abstract fun renderControl(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float)
 
-    open fun controlX(): Int {
-        return x + width - controlWidth() - 6
-    }
+    open fun controlX(): Int = x + width - controlWidth() - 6
 
-    open fun controlY(): Int {
-        return y + (height - controlHeight()) / 2
-    }
+    open fun controlY(): Int = y + (height - controlHeight()) / 2
 
-    open fun controlWidth(): Int {
-        return 90
-    }
+    open fun controlWidth(): Int = 90
 
-    open fun controlHeight(): Int {
-        return Math.min(height - 4, 16)
-    }
+    open fun controlHeight(): Int = min(height - 4, 16)
 
     open fun isMouseOverControl(mx: Double, my: Double): Boolean {
         val cx = controlX()
@@ -57,9 +46,7 @@ abstract class OptionRow<T>(
         return mx >= cx && mx < cx + controlWidth() && my >= cy && my < cy + controlHeight()
     }
 
-    open fun isOverlayOpen(): Boolean {
-        return false
-    }
+    open fun isOverlayOpen(): Boolean = false
 
     open fun closeOverlay() {
     }
@@ -67,13 +54,9 @@ abstract class OptionRow<T>(
     open fun renderOverlay(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float, scrollDisplay: Float) {
     }
 
-    open fun overlayMouseClicked(mouseX: Double, mouseY: Double, button: Int, scrollDisplay: Float): Boolean {
-        return false
-    }
+    open fun overlayMouseClicked(mouseX: Double, mouseY: Double, button: Int, scrollDisplay: Float): Boolean = false
 
-    open fun overlayMouseScrolled(mouseX: Double, mouseY: Double, delta: Double, scrollDisplay: Float): Boolean {
-        return false
-    }
+    open fun overlayMouseScrolled(mouseX: Double, mouseY: Double, delta: Double, scrollDisplay: Float): Boolean = false
 
     override fun updateWidgetNarration(out: NarrationElementOutput) {
         defaultButtonNarrationText(out)
@@ -82,9 +65,7 @@ abstract class OptionRow<T>(
     companion object {
         @JvmStatic
         fun blendBg(hover: Boolean, base: Int): Int {
-            if (!hover) {
-                return base
-            }
+            if (!hover) return base
             val a = (base ushr 24) and 0xFF
             val r = Mth.clamp(((base shr 16) and 0xFF) + 40, 0, 255)
             val gn = Mth.clamp(((base shr 8) and 0xFF) + 40, 0, 255)

@@ -21,6 +21,7 @@ import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 import java.util.function.BiFunction
 import java.util.function.Consumer
 
+// TODO: Remove Suppress
 @Suppress("UNCHECKED_CAST")
 @Environment(EnvType.CLIENT)
 object MaidAnimationController {
@@ -34,9 +35,7 @@ object MaidAnimationController {
         modelBundle: PlayerModelBundle,
         resourceBundle: ModelResourceBundle
     ): Consumer<MaidAnimatable> {
-        if (REGISTRY.isEmpty()) {
-            registerControllers()
-        }
+        if (REGISTRY.isEmpty()) registerControllers()
         return REGISTRY.buildAll(modelBundle, resourceBundle)
     }
 

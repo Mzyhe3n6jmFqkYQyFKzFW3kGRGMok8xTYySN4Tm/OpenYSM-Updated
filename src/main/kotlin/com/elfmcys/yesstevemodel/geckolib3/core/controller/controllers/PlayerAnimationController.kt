@@ -25,7 +25,7 @@ import java.util.function.BiFunction
 import java.util.function.Consumer
 
 object PlayerAnimationController {
-    open class PlayerAnimationDataProvider : AnimationDataProvider<PlayerModelBundle> {
+    object PlayerAnimationDataProvider : AnimationDataProvider<PlayerModelBundle> {
         override fun getAnimationEntries(
             modelBundle: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
@@ -44,19 +44,13 @@ object PlayerAnimationController {
             modelBundle: PlayerModelBundle,
             resourceBundle: ModelResourceBundle
         ): ConditionArmor = modelBundle.conditionManager.armor
-
-        companion object {
-            @JvmField
-            val INSTANCE: PlayerAnimationDataProvider = PlayerAnimationDataProvider()
-        }
     }
 
     @JvmField
     val REGISTRY: ProcessorPipeline<CustomPlayerEntity, PlayerModelBundle> = ProcessorPipeline()
-    const val PLAYER_PREFIX: String = "player"
+    private const val PLAYER_PREFIX: String = "player"
 
-    @JvmField
-    val CAP_CONTROLLER_KEY: String = "$PLAYER_PREFIX.cap"
+    const val CAP_CONTROLLER_KEY: String = "$PLAYER_PREFIX.cap"
 
     @JvmStatic
     fun registerControllers() {
@@ -99,7 +93,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
         registerSlotController("pre_hold") { animationEntryKey, entity ->
@@ -107,7 +101,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
         registerController("hold_offhand") { animationEntryKey, entity ->
@@ -149,7 +143,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
         registerController("swing") { animationEntryKey, entity ->
@@ -165,7 +159,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
         registerSlotController("pre_use") { animationEntryKey, entity ->
@@ -288,7 +282,7 @@ object PlayerAnimationController {
             ControllerSlotBinder(
                 PLAYER_PREFIX,
                 slotName,
-                PlayerAnimationDataProvider.INSTANCE,
+                PlayerAnimationDataProvider,
                 controllerFactory
             )
         )
@@ -307,7 +301,7 @@ object PlayerAnimationController {
                 slotName,
                 requiredAnimations,
                 checkAnimationEntries,
-                PlayerAnimationDataProvider.INSTANCE,
+                PlayerAnimationDataProvider,
                 controllerFactory
             )
         )
@@ -338,7 +332,7 @@ object PlayerAnimationController {
             ArmorSlotProcessor(
                 PLAYER_PREFIX,
                 category,
-                PlayerAnimationDataProvider.INSTANCE,
+                PlayerAnimationDataProvider,
                 controllerFactory
             )
         )

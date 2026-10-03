@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.elfmcys.yesstevemodel.geckolib3.core.event.predicate
 
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
@@ -5,7 +7,7 @@ import com.elfmcys.yesstevemodel.geckolib3.core.controller.PredicateBasedControl
 import com.elfmcys.yesstevemodel.geckolib3.model.provider.data.EntityModelData
 
 open class AnimationEvent<T : AnimatableEntity<*>>(
-    private val animatable: T,
+    val animatable: T,
     val limbSwing: Float,
     val limbSwingAmount: Float,
     val tickCount: Int,
@@ -15,8 +17,11 @@ open class AnimationEvent<T : AnimatableEntity<*>>(
     val isFirstPerson: Boolean,
     val modelData: EntityModelData
 ) {
-    @JvmField var currentTick: Float = tickCount + frameTime
-    @JvmField var controller: PredicateBasedController<T>? = null
+    @JvmField
+    val currentTick: Float = tickCount + frameTime
+
+    @JvmField
+    var controller: PredicateBasedController<T>? = null
 
     open fun getCurrentTick(): Float = currentTick
     open fun getAnimatable(): T = animatable
@@ -31,5 +36,6 @@ open class AnimationEvent<T : AnimatableEntity<*>>(
     open fun setController(controller: PredicateBasedController<T>?) {
         this.controller = controller
     }
+
     open fun getModelData(): EntityModelData = modelData
 }

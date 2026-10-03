@@ -46,45 +46,29 @@ object ParticleEffectUtil {
         var lifetime = 20
         val argCount = arguments.size()
 
-        if (argCount > 1) {
-            offset.x = arguments.getAsDouble(context, 1)
-        }
-        if (argCount > 2) {
-            offset.y = arguments.getAsDouble(context, 2)
-        }
-        if (argCount > 3) {
-            offset.z = arguments.getAsDouble(context, 3)
-        }
-        if (argCount > 4) {
-            delta.x = arguments.getAsDouble(context, 4)
-        }
-        if (argCount > 5) {
-            delta.y = arguments.getAsDouble(context, 5)
-        }
-        if (argCount > 6) {
-            delta.z = arguments.getAsDouble(context, 6)
-        }
-        if (argCount > 7) {
-            speed = arguments.getAsDouble(context, 7)
-        }
-        if (argCount > 8) {
-            count = max(arguments.getAsInt(context, 8), 0)
-        }
-        if (argCount > 9) {
-            lifetime = max(arguments.getAsInt(context, 9), 1)
-        }
+        if (argCount > 1) offset.x = arguments.getAsDouble(context, 1)
+        if (argCount > 2) offset.y = arguments.getAsDouble(context, 2)
+        if (argCount > 3) offset.z = arguments.getAsDouble(context, 3)
+        if (argCount > 4) delta.x = arguments.getAsDouble(context, 4)
+        if (argCount > 5) delta.y = arguments.getAsDouble(context, 5)
+        if (argCount > 6) delta.z = arguments.getAsDouble(context, 6)
+        if (argCount > 7) speed = arguments.getAsDouble(context, 7)
+        if (argCount > 8) count = max(arguments.getAsInt(context, 8), 0)
+        if (argCount > 9) lifetime = max(arguments.getAsInt(context, 9), 1)
 
-        spawnParticles(
-            context.entity().entity(),
-            particleId,
-            offset,
-            delta,
-            speed,
-            count,
-            lifetime,
-            isAbsolute,
-            context.entity().random()
-        )
+        context.entity().random()?.let {
+            spawnParticles(
+                context.entity().entity(),
+                particleId,
+                offset,
+                delta,
+                speed,
+                count,
+                lifetime,
+                isAbsolute,
+                it
+            )
+        }
         return true
     }
 

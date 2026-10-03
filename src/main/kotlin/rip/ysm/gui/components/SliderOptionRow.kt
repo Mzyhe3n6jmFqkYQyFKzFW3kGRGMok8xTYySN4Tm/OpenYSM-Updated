@@ -31,9 +31,7 @@ open class SliderOptionRow(
     private val format: DecimalFormat = if (this.step >= 1.0) DecimalFormat("0") else DecimalFormat("0.0")
     private var dragging: Boolean = false
 
-    override fun controlWidth(): Int {
-        return Mth.clamp(width / 2, 100, 260)
-    }
+    override fun controlWidth(): Int = Mth.clamp(width / 2, 100, 260)
 
     override fun renderControl(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         val cx = controlX()

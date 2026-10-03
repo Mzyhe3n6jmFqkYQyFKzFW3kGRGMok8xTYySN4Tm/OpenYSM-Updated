@@ -1,49 +1,32 @@
 package rip.ysm.gui
 
 import net.minecraft.network.chat.Component
-import java.util.ArrayList
-import java.util.Collections
-import java.util.List
 
-open class OptionGroup {
-    var translationKey: String = null
+open class OptionGroup(val translationKey: String) {
     val rows: MutableList<OptionRow<*>> = ArrayList()
-    constructor(translationKey: String) {
-        this.translationKey = translationKey
-    }
-    open fun getTranslationKey(): String {
-        return translationKey
-    }
-    open fun getTitle(): Component {
-        return Component.translatable("gui.yes_steve_model.config.group." + translationKey)
-    }
+
+    open fun getTitle(): Component =
+        Component.translatable("gui.yes_steve_model.config.group.$translationKey")
+
     open fun add(row: OptionRow<*>): OptionGroup {
         rows.add(row)
         return this
     }
-    open fun getRows(): MutableList<OptionRow<*>> {
-        return Collections.unmodifiableList(rows)
-    }
-    open fun isDirty(): Boolean {
-        for (row in rows) {
-            if (row.getOption() != null && row.getOption().isDirty()) {
-                return true
-            }
-        }
-        return false
-    }
+
+    open fun getRows(): List<OptionRow<*>> = rows
+
+    open fun isDirty(): Boolean =
+        rows.any { it.option?.isDirty() == true }
+
     open fun apply() {
         for (row in rows) {
-            if (row.getOption() != null) {
-                row.getOption().apply()
-            }
+            row.option?.apply()
         }
     }
+
     open fun undo() {
         for (row in rows) {
-            if (row.getOption() != null) {
-                row.getOption().undo()
-            }
+            row.option?.undo()
             row.refresh()
         }
     }

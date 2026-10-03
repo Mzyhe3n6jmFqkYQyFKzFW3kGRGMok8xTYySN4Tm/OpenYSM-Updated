@@ -21,26 +21,27 @@ import java.util.function.BiFunction
 import java.util.function.Consumer
 
 object FirstPersonArmAnimationController {
-    open class DefaultBoneExpressionProvider : AnimationDataProvider<PlayerModelBundle> {
-        override fun getAnimationEntries(modelBundle: PlayerModelBundle, resourceBundle: ModelResourceBundle): Object2ReferenceMap<String, AnimationController> {
-            return modelBundle.getAnimationEntries()
-        }
+    object DefaultBoneExpressionProvider : AnimationDataProvider<PlayerModelBundle> {
+        override fun getAnimationEntries(
+            modelBundle: PlayerModelBundle,
+            resourceBundle: ModelResourceBundle
+        ): Object2ReferenceMap<String, AnimationController> = modelBundle.animationEntries
 
-        override fun getAnimations(modelBundle: PlayerModelBundle, resourceBundle: ModelResourceBundle): Object2ReferenceMap<String, Animation> {
-            return modelBundle.getArmAnimations()
-        }
+        override fun getAnimations(
+            modelBundle: PlayerModelBundle,
+            resourceBundle: ModelResourceBundle
+        ): Object2ReferenceMap<String, Animation> = modelBundle.armAnimations
 
-        override fun getConditionArmor(modelBundle: PlayerModelBundle, resourceBundle: ModelResourceBundle): ConditionArmor? {
-            return modelBundle.getModelProcessor().getConditionArmor()
-        }
-
-        companion object {
-            @JvmField val INSTANCE: DefaultBoneExpressionProvider = DefaultBoneExpressionProvider()
-        }
+        override fun getConditionArmor(
+            modelBundle: PlayerModelBundle,
+            resourceBundle: ModelResourceBundle
+        ): ConditionArmor = modelBundle.modelProcessor.conditionArmor
     }
 
-    const val FP_ARM_PREFIX: String = "fp.arm"
-    @JvmField val processorRegistry: ProcessorPipeline<PlayerGeoEntity, PlayerModelBundle> = ProcessorPipeline()
+    private const val FP_ARM_PREFIX: String = "fp.arm"
+
+    @JvmField
+    val processorRegistry: ProcessorPipeline<PlayerGeoEntity, PlayerModelBundle> = ProcessorPipeline()
 
     @JvmStatic
     fun registerDefaultProcessors() {
@@ -57,12 +58,20 @@ object FirstPersonArmAnimationController {
             )
         }
         registerArmorProcessor("armor") { animationEntryKey, entity, equipmentSlot ->
-            CompositeAnimationController(entity, animationEntryKey, 0.0f, EquipmentSlotAnimationPredicate(equipmentSlot))
+            CompositeAnimationController(
+                entity,
+                animationEntryKey,
+                0.0f,
+                EquipmentSlotAnimationPredicate(equipmentSlot)
+            )
         }
     }
 
     @JvmStatic
-    fun buildControllers(modelBundle: PlayerModelBundle, resourceBundle: ModelResourceBundle): Consumer<PlayerGeoEntity> {
+    fun buildControllers(
+        modelBundle: PlayerModelBundle,
+        resourceBundle: ModelResourceBundle
+    ): Consumer<PlayerGeoEntity> {
         if (processorRegistry.isEmpty()) {
             registerDefaultProcessors()
         }
@@ -70,12 +79,19 @@ object FirstPersonArmAnimationController {
     }
 
     @JvmStatic
-    fun registerSimpleProcessor(slotName: String, controllerFactory: BiFunction<String, PlayerGeoEntity, IAnimationController<PlayerGeoEntity>>) {
+    fun registerSimpleProcessor(
+        slotName: String,
+        controllerFactory: BiFunction<String, PlayerGeoEntity, IAnimationController<PlayerGeoEntity>>
+    ) {
         registerProcessorWithFilter(slotName, false, controllerFactory)
     }
 
     @JvmStatic
-    fun registerProcessorWithFilter(slotName: String, skipOnPreview: Boolean, controllerFactory: BiFunction<String, PlayerGeoEntity, IAnimationController<PlayerGeoEntity>>) {
+    fun registerProcessorWithFilter(
+        slotName: String,
+        skipOnPreview: Boolean,
+        controllerFactory: BiFunction<String, PlayerGeoEntity, IAnimationController<PlayerGeoEntity>>
+    ) {
         val animationEntryKey = "$FP_ARM_PREFIX.$slotName"
         var processor: ModelProcessor<PlayerGeoEntity, PlayerModelBundle> = { _, _ ->
             { entity, consumer -> consumer.accept(controllerFactory.apply(animationEntryKey, entity)) }
@@ -87,8 +103,18 @@ object FirstPersonArmAnimationController {
     }
 
     @JvmStatic
-    fun registerMolangProcessor(slotName: String, controllerFactory: BiFunction<String, PlayerGeoEntity, IAnimationController<PlayerGeoEntity>>) {
-        processorRegistry.register(ControllerSlotBinder(FP_ARM_PREFIX, slotName, DefaultBoneExpressionProvider.INSTANCE, controllerFactory))
+    fun registerMolangProcessor(
+        slotName: String,
+        controllerFactory: BiFunction<String, PlayerGeoEntity, IAnimationController<PlayerGeoEntity>>
+    ) {
+        processorRegistry.register(
+            ControllerSlotBinder(
+                FP_ARM_PREFIX,
+                slotName,
+                DefaultBoneExpressionProvider.INSTANCE,
+                controllerFactory
+            )
+        )
     }
 
     @JvmStatic
@@ -98,16 +124,46 @@ object FirstPersonArmAnimationController {
         checkAnimationEntries: Boolean,
         controllerFactory: BiFunction<String, PlayerGeoEntity, IAnimationController<PlayerGeoEntity>>
     ) {
-        processorRegistry.register(NamedModelProcessor(FP_ARM_PREFIX, slotName, requiredAnimations, checkAnimationEntries, DefaultBoneExpressionProvider.INSTANCE, controllerFactory))
+        processorRegistry.register(
+            NamedModelProcessor(
+                FP_ARM_PREFIX,
+                slotName,
+                requiredAnimations,
+                checkAnimationEntries,
+                DefaultBoneExpressionProvider.INSTANCE,
+                controllerFactory
+            )
+        )
     }
 
     @JvmStatic
-    fun registerParallelProcessor(slotName: String, controllerFactory: TriFunction<String, PlayerGeoEntity, String, IAnimationController<PlayerGeoEntity>>) {
-        processorRegistry.register(ParallelProcessor(FP_ARM_PREFIX, slotName, true, DefaultBoneExpressionProvider.INSTANCE, controllerFactory))
+    fun registerParallelProcessor(
+        slotName: String,
+        controllerFactory: TriFunction<String, PlayerGeoEntity, String, IAnimationController<PlayerGeoEntity>>
+    ) {
+        processorRegistry.register(
+            ParallelProcessor(
+                FP_ARM_PREFIX,
+                slotName,
+                true,
+                DefaultBoneExpressionProvider.INSTANCE,
+                controllerFactory
+            )
+        )
     }
 
     @JvmStatic
-    fun registerArmorProcessor(category: String, controllerFactory: TriFunction<String, PlayerGeoEntity, EquipmentSlot, IAnimationController<PlayerGeoEntity>>) {
-        processorRegistry.register(ArmorSlotProcessor(FP_ARM_PREFIX, category, DefaultBoneExpressionProvider.INSTANCE, controllerFactory))
+    fun registerArmorProcessor(
+        category: String,
+        controllerFactory: TriFunction<String, PlayerGeoEntity, EquipmentSlot, IAnimationController<PlayerGeoEntity>>
+    ) {
+        processorRegistry.register(
+            ArmorSlotProcessor(
+                FP_ARM_PREFIX,
+                category,
+                DefaultBoneExpressionProvider.INSTANCE,
+                controllerFactory
+            )
+        )
     }
 }

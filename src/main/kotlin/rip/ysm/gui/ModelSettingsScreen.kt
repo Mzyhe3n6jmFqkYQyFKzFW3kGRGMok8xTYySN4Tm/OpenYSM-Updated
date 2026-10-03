@@ -12,7 +12,6 @@ import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
 import com.elfmcys.yesstevemodel.client.renderer.RendererManager
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
 import com.elfmcys.yesstevemodel.geckolib3.geo.GeoReplacedEntityRenderer
-import com.elfmcys.yesstevemodel.util.data.OrderedStringMap
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
@@ -25,6 +24,7 @@ import net.minecraft.client.renderer.entity.state.AvatarRenderState
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.player.Player
 import org.joml.Matrix4fStack
 import org.joml.Quaternionf
 import rip.ysm.gui.components.BooleanOptionRow
@@ -32,74 +32,59 @@ import rip.ysm.gui.components.RadioOptionRow
 import rip.ysm.gui.components.SliderOptionRow
 import rip.ysm.gui.components.groups.IdentifiedGroup
 import rip.ysm.gui.molang.MolangOption
-import java.util.Comparator
+import kotlin.math.min
 
-open class ModelSettingsScreen : OptionScreen() {
-    var modelAssembly: ModelAssembly = null
-    var animatable: AnimatableEntity<*> = null
-    var initialGroupId: String = null
-    var previewLeft: Int = 0
-    var previewTop: Int = 0
-    var previewRight: Int = 0
-    var previewBottom: Int = 0
-    var yaw: Float = 200.0f
-    var pitch: Float = 0.0f
-    var zoom: Float = 90.0f
-    var offsetX: Float = 0.0f
-    var offsetY: Float = 0.0f
-    var draggingPreview: Boolean = false
-    var draggingButton: Int = -1
+open class ModelSettingsScreen(
+    private val modelAssembly: ModelAssembly,
+    private val animatable: AnimatableEntity<*>,
+    parent: Screen? = null,
+    private val initialGroupId: String? = null
+) : OptionScreen(Component.translatable("gui.yes_steve_model.model_settings.title"), parent) {
 
-    constructor(modelAssembly: ModelAssembly, animatable: AnimatableEntity<*>, parent: Screen, initialGroupId: String) {
-        super(Component.translatable("gui.yes_steve_model.model_settings.title"), parent)
-        this.modelAssembly = modelAssembly
-        this.animatable = animatable
-        this.initialGroupId = initialGroupId
-    }
+    private var previewLeft: Int = 0
+    private var previewTop: Int = 0
+    private var previewRight: Int = 0
+    private var previewBottom: Int = 0
+    private var yaw: Float = 200.0f
+    private var pitch: Float = 0.0f
+    private var zoom: Float = 90.0f
+    private var offsetX: Float = 0.0f
+    private var offsetY: Float = 0.0f
+    private var draggingPreview: Boolean = false
+    private var draggingButton: Int = -1
 
-    open fun computePanelWidth(): Int {
-        return Math.min(this.width - 40, 640)
-    }
+    override fun computePanelWidth(): Int = min(width - 40, 640)
 
-    open fun computePanelHeight(): Int {
-        return Math.min(this.height - 40, 360)
-    }
+    override fun computePanelHeight(): Int = min(height - 40, 360)
 
-    open fun shouldUseCompactTabs(): Boolean {
-        return this.width < 620
-    }
+    override fun shouldUseCompactTabs(): Boolean = width < 620
 
-    open fun computeRowAreaRight(): Int {
-        return panelRight - previewWidth() - 4
-    }
+    override fun computeRowAreaRight(): Int = panelRight - previewWidth() - 4
 
-    open fun previewWidth(): Int {
+    private fun previewWidth(): Int {
         if (compactTabs) {
-            var panelW: Int = panelRight - panelLeft
+            val panelW = panelRight - panelLeft
             return Mth.clamp(panelW / 3, 110, 180)
         }
         return 200
     }
 
-    open fun init() {
+    override fun init() {
         super.init()
-        removeWidget(applyBtn)
-        removeWidget(undoBtn)
-        removeWidget(cancelBtn)
-        applyBtn.visible = false
-        undoBtn.visible = false
-        cancelBtn.visible = false
-        applyBtn.active = false
-        undoBtn.active = false
-        saveBtn.setMessage(Component.translatable("gui.yes_steve_model.config.done"))
-        saveBtn.setX(panelRight - saveBtn.getWidth())
+        applyBtn?.let { removeWidget(it); it.visible = false; it.active = false }
+        undoBtn?.let { removeWidget(it); it.visible = false; it.active = false }
+        cancelBtn?.let { removeWidget(it); it.visible = false }
+        saveBtn?.let {
+            it.message = Component.translatable("gui.yes_steve_model.config.done")
+            it.x = panelRight - it.width
+        }
         previewLeft = panelRight - previewWidth()
         previewTop = rowAreaTop
         previewRight = panelRight
         previewBottom = panelBottom - 60
         if (initialGroupId != null) {
             for (g in groups) {
-                if (g is IdentifiedGroup && initialGroupId.equals(ig.id)) {
+                if (g is IdentifiedGroup && initialGroupId == g.id) {
                     selectGroup(g)
                     break
                 }
@@ -107,26 +92,23 @@ open class ModelSettingsScreen : OptionScreen() {
         }
     }
 
-    open fun onClose() {
-        if (this.minecraft != null) {
-            this.minecraft.setScreen(parentScreen)
-        }
+    override fun onClose() {
+        minecraft.setScreen(parentScreen)
     }
 
-    open fun collectBlurRegions(out: MutableList<IntArray>) {
+    override fun collectBlurRegions(out: MutableList<IntArray>) {
         super.collectBlurRegions(out)
         out.add(intArrayOf(previewLeft, previewTop, previewRight - previewLeft, previewBottom - previewTop))
     }
 
-    open fun registerGroups() {
-        var ordered: MutableList<ExtraAnimationButtons> =
-            ArrayList(modelAssembly.getModelData().getModelProperties().getExtraAnimationButtons().values())
-        ordered.sortWith(Comparator({ a, b -> a.getId().compareTo(b.getId()) }))
+    override fun registerGroups() {
+        val ordered = ArrayList(modelAssembly.modelData.modelProperties.extraAnimationButtons.values)
+        ordered.sortWith(compareBy { it.id })
         for (cfgGroup in ordered) {
-            var g: IdentifiedGroup = IdentifiedGroup(cfgGroup.getId(), groupLabel(cfgGroup))
-            var formIndex: Int = 0
-            for (form in cfgGroup.getConfigForms()) {
-                var row: OptionRow<*> = buildRow(cfgGroup.getId(), formIndex, form)
+            val g = IdentifiedGroup(cfgGroup.id, groupLabel(cfgGroup))
+            var formIndex = 0
+            for (form in cfgGroup.configForms) {
+                val row = buildRow(cfgGroup.id, formIndex, form)
                 if (row != null) {
                     g.add(row)
                 }
@@ -136,29 +118,28 @@ open class ModelSettingsScreen : OptionScreen() {
         }
     }
 
-    open fun groupLabel(group: ExtraAnimationButtons): String {
-        var fallback: String =
-            if (group.getName() == null || group.getName().isEmpty()) group.getId() else group.getName()
+    private fun groupLabel(group: ExtraAnimationButtons): String {
+        val fallback = if (group.name.isNullOrEmpty()) group.id else group.name
         return ModelMetadataPresenter.getLocalizedModelString(
             modelAssembly,
-            "properties.extra_animation_buttons.%s.name".formatted(group.getId()),
+            "properties.extra_animation_buttons.${group.id}.name",
             fallback
         )
     }
 
-    open fun buildRow(groupId: String, formIndex: Int, form: AbstractConfig): OptionRow<*> {
-        var title: String = ModelMetadataPresenter.getLocalizedModelString(
+    private fun buildRow(groupId: String, formIndex: Int, form: AbstractConfig): OptionRow<*>? {
+        val title = ModelMetadataPresenter.getLocalizedModelString(
             modelAssembly,
-            "properties.extra_animation_buttons.%s.config_forms.%d.title".formatted(groupId, formIndex),
-            form.getTitle()
+            "properties.extra_animation_buttons.$groupId.config_forms.$formIndex.title",
+            form.title
         )
-        var desc: String = ModelMetadataPresenter.getLocalizedModelString(
+        val desc = ModelMetadataPresenter.getLocalizedModelString(
             modelAssembly,
-            "properties.extra_animation_buttons.%s.config_forms.%d.description".formatted(groupId, formIndex),
-            form.getDescription()
+            "properties.extra_animation_buttons.$groupId.config_forms.$formIndex.description",
+            form.description
         )
         if (form is CheckboxConfig) {
-            return BooleanOptionRow(0, 0, 0, 22, MolangOption.ofBoolean(title, desc, animatable, cfg.getValue()))
+            return BooleanOptionRow(0, 0, 0, 22, MolangOption.ofBoolean(title, desc, animatable, form.value))
         }
         if (form is RangeConfig) {
             return SliderOptionRow(
@@ -166,70 +147,61 @@ open class ModelSettingsScreen : OptionScreen() {
                 0,
                 0,
                 22,
-                MolangOption.ofDouble(title, desc, animatable, cfg.getValue()),
-                cfg.getMin(),
-                cfg.getMax(),
-                cfg.getStep(),
+                MolangOption.ofDouble(title, desc, animatable, form.value),
+                form.min,
+                form.max,
+                form.step,
                 ""
             )
         }
         if (form is RadioConfig) {
-            var labels: OrderedStringMap<String, String> = cfg.getLabels()
-            var texts: MutableList<String> = ArrayList(labels.size())
-            var writeExprs: Array<String> = arrayOfNulls<String>(labels.size())
-            var i = 0
-            while (i < labels.size()) {
+            val labels = form.labels
+            val texts = ArrayList<String>(labels.size)
+            val writeExprs = Array(labels.size) { "" }
+            for (i in 0 until labels.size) {
                 texts.add(
                     ModelMetadataPresenter.getLocalizedModelString(
                         modelAssembly,
-                        "properties.extra_animation_buttons.%s.config_forms.%d.labels.%d".formatted(
-                            groupId,
-                            formIndex,
-                            i
-                        ),
+                        "properties.extra_animation_buttons.$groupId.config_forms.$formIndex.labels.$i",
                         labels.getKeyAt(i)
                     )
                 )
                 writeExprs[i] = labels.getValueAt(i)
-                i++
             }
             return RadioOptionRow(
                 0,
                 0,
                 0,
                 22,
-                MolangOption.ofIndex(title, desc, animatable, cfg.getValue(), writeExprs),
+                MolangOption.ofIndex(title, desc, animatable, form.value, writeExprs),
                 texts
             )
         }
         return null
     }
 
-    open fun renderExtras(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    override fun renderExtras(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         g.fill(previewLeft, previewTop, previewRight, previewBottom, 0x66000000)
         renderPreview(g, partialTick)
     }
 
-    open fun renderPreview(g: GuiGraphics, partialTick: Float) {
-        if (this.minecraft == null || this.minecraft.player == null) {
-            return
-        }
-        if (!animatable is LivingAnimatable<*>) {
-            return
-        }
-        var scale: Double = this.minecraft.window.guiScale
-        var sx: Int = (previewLeft * scale as Int)
-        var sy: Int = (this.minecraft.window.height - previewBottom * scale as Int)
-        var sw: Int = (previewRight - previewLeft * scale as Int)
-        var sh: Int = (previewBottom - previewTop * scale as Int)
+    private fun renderPreview(g: GuiGraphics, partialTick: Float) {
+        val mc = minecraft
+        if (mc.player == null) return
+        val la = animatable as? LivingAnimatable<*> ?: return
+        val scale = mc.window.guiScale
+        val sx = (previewLeft * scale).toInt()
+        val sy = (mc.window.height - previewBottom * scale).toInt()
+        val sw = ((previewRight - previewLeft) * scale).toInt()
+        val sh = ((previewBottom - previewTop) * scale).toInt()
         RenderSystem.enableScissorForRenderTypeDraws(sx, sy, sw, sh)
-        var cx: Float = previewLeft + previewRight / 2.0f + offsetX
-        var cy: Float = previewTop + previewBottom - previewTop * 0.65f + offsetY
+        val cx = (previewLeft + previewRight) / 2.0f + offsetX
+        val cy = previewTop + (previewBottom - previewTop) * 0.65f + offsetY
         renderPlayerForSettings(cx, cy, zoom, pitch, yaw, partialTick, la, RendererManager.getPlayerRenderer())
         RenderSystem.disableScissorForRenderTypeDraws()
     }
 
-    open fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
         if (isInPreview(event.x(), event.y())) {
             draggingPreview = true
             draggingButton = event.button()
@@ -238,7 +210,7 @@ open class ModelSettingsScreen : OptionScreen() {
         return super.mouseClicked(event, doubleClick)
     }
 
-    open fun mouseReleased(event: MouseButtonEvent): Boolean {
+    override fun mouseReleased(event: MouseButtonEvent): Boolean {
         if (draggingPreview && event.button() == draggingButton) {
             draggingPreview = false
             draggingButton = -1
@@ -247,35 +219,32 @@ open class ModelSettingsScreen : OptionScreen() {
         return super.mouseReleased(event)
     }
 
-    open fun mouseDragged(event: MouseButtonEvent, dragX: Double, dragY: Double): Boolean {
-        var button: Int = event.button()
+    override fun mouseDragged(event: MouseButtonEvent, dragX: Double, dragY: Double): Boolean {
+        val button = event.button()
         if (draggingPreview && button == draggingButton) {
             if (button == 0) {
-                yaw = (yaw + dragX * 1.2 as Float)
-                pitch = Mth.clamp((pitch - dragY * 0.8 as Float), -85.0f, 85.0f)
-            } else {
-                if (button == 1) {
-                    offsetX = (offsetX + dragX as Float)
-                    offsetY = (offsetY + dragY as Float)
-                }
+                yaw = (yaw + dragX * 1.2).toFloat()
+                pitch = Mth.clamp((pitch - dragY * 0.8).toFloat(), -85.0f, 85.0f)
+            } else if (button == 1) {
+                offsetX = (offsetX + dragX).toFloat()
+                offsetY = (offsetY + dragY).toFloat()
             }
             return true
         }
         return super.mouseDragged(event, dragX, dragY)
     }
 
-    open fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
-        var delta: Double = scrollY
+    override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
+        val delta = scrollY
         if (isInPreview(mouseX, mouseY)) {
-            zoom = Mth.clamp((zoom * 1.0 + delta * 0.1 as Float), 30.0f, 400.0f)
+            zoom = Mth.clamp((zoom * (1.0 + delta * 0.1)).toFloat(), 30.0f, 400.0f)
             return true
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
     }
 
-    open fun isInPreview(mouseX: Double, mouseY: Double): Boolean {
-        return mouseX >= previewLeft && mouseX < previewRight && mouseY >= previewTop && mouseY < previewBottom
-    }
+    private fun isInPreview(mouseX: Double, mouseY: Double): Boolean =
+        mouseX >= previewLeft && mouseX < previewRight && mouseY >= previewTop && mouseY < previewBottom
 
     companion object {
         @JvmStatic
@@ -286,31 +255,31 @@ open class ModelSettingsScreen : OptionScreen() {
             pitch: Float,
             yaw: Float,
             partialTick: Float,
-            animatable: LivingAnimatable,
-            renderer: GeoReplacedEntityRenderer
+            animatable: LivingAnimatable<*>,
+            renderer: GeoReplacedEntityRenderer<*, *, *>
         ) {
             ModelPreviewRenderer.setPreviewMode(true)
-            var livingEntity: LivingEntity = (animatable.getEntity() as LivingEntity)
-            var modelViewStack: Matrix4fStack = RenderSystem.getModelViewStack()
+            val livingEntity = animatable.entity
+            val modelViewStack: Matrix4fStack = RenderSystem.getModelViewStack()
             modelViewStack.pushMatrix()
             modelViewStack.translate(x, y, 1250.0f)
             modelViewStack.scale(1.0f, 1.0f, -1.0f)
-            var poseStack: PoseStack = PoseStack()
+            val poseStack = PoseStack()
             poseStack.translate(0.0, 0.0, 1000.0)
             poseStack.scale(scale, scale, scale)
             poseStack.translate(0.0, 0.8, 0.0)
-            var rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.0f)
-            var rotationX: Quaternionf = Axis.XP.rotationDegrees(-10.0f + pitch)
+            val rotationZ: Quaternionf = Axis.ZP.rotationDegrees(180.0f)
+            val rotationX: Quaternionf = Axis.XP.rotationDegrees(-10.0f + pitch)
             rotationZ.mul(rotationX)
             poseStack.mulPose(rotationZ)
-            var oldBodyRot: Float = livingEntity.yBodyRot
-            var oldBodyRotO: Float = livingEntity.yBodyRotO
-            var oldYRot: Float = livingEntity.yRot
-            var oldYRotO: Float = livingEntity.yRotO
-            var oldXRot: Float = livingEntity.xRot
-            var oldXRotO: Float = livingEntity.xRotO
-            var oldHeadRot: Float = livingEntity.yHeadRot
-            var oldHeadRotO: Float = livingEntity.yHeadRotO
+            val oldBodyRot = livingEntity.yBodyRot
+            val oldBodyRotO = livingEntity.yBodyRotO
+            val oldYRot = livingEntity.yRot
+            val oldYRotO = livingEntity.yRotO
+            val oldXRot = livingEntity.xRot
+            val oldXRotO = livingEntity.xRotO
+            val oldHeadRot = livingEntity.yHeadRot
+            val oldHeadRotO = livingEntity.yHeadRotO
             livingEntity.yBodyRot = -yaw
             livingEntity.yBodyRotO = -yaw
             livingEntity.yRot = 180.0f
@@ -321,10 +290,19 @@ open class ModelSettingsScreen : OptionScreen() {
             livingEntity.yHeadRotO = -yaw
             rotationX.conjugate()
             poseStack.mulPose(rotationX)
-            var bufferSource: MultiBufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
-            var state: AvatarRenderState = AvatarRenderState()
+            val bufferSource: MultiBufferSource.BufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
+            val state = AvatarRenderState()
             try {
-                renderer.renderEntity(animatable, state, 0.0f, partialTick, poseStack, bufferSource, 15728880)
+                @Suppress("UNCHECKED_CAST")
+                (renderer as GeoReplacedEntityRenderer<Player, LivingAnimatable<Player>, AvatarRenderState>).renderEntity(
+                    animatable as LivingAnimatable<Player>,
+                    state,
+                    0.0f,
+                    partialTick,
+                    poseStack,
+                    bufferSource,
+                    15728880
+                )
                 bufferSource.endBatch()
             } finally {
                 livingEntity.yBodyRot = oldBodyRot

@@ -2,12 +2,14 @@ package com.elfmcys.yesstevemodel.geckolib3.core.molang.builtin.math
 
 import com.elfmcys.yesstevemodel.molang.runtime.ExecutionContext
 import com.elfmcys.yesstevemodel.molang.runtime.Function
+import kotlin.math.atan2
 
-open class ATan2 : Function {
-    open fun evaluate(context: ExecutionContext<*>, arguments: ArgumentCollection): Any {
-        return Math.atan2(arguments.getAsDouble(context, 0), arguments.getAsDouble(context, 1))
+class ATan2 : Function {
+    override fun evaluate(context: ExecutionContext<*>, arguments: Function.ArgumentCollection): Any {
+        return atan2(arguments.getAsDouble(context, 0), arguments.getAsDouble(context, 1))
     }
-    open fun validateArgumentSize(size: Int): Boolean {
+
+    override fun validateArgumentSize(size: Int): Boolean {
         return size == 2
     }
 }

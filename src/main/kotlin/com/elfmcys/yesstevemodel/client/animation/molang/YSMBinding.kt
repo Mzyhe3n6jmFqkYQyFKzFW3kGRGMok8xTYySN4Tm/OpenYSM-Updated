@@ -14,7 +14,6 @@ import com.elfmcys.yesstevemodel.geckolib3.util.MathInterpolation
 import com.elfmcys.yesstevemodel.mixin.client.ThrowableItemProjectileAccessor
 import com.elfmcys.yesstevemodel.util.CameraUtil
 import com.elfmcys.yesstevemodel.util.accessors.ProjectileStateAccessor
-import com.elfmcys.yesstevemodel.util.data.LazySupplier
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
@@ -60,7 +59,7 @@ import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat
 import java.util.*
 import kotlin.math.abs
 
-class YSMBinding private constructor() : ContextBinding() {
+object YSMBinding : ContextBinding() {
     init {
         function("dump_equipped_item", DumpEquippedItem())
         function("dump_relative_block", DumpRelativeBlock())
@@ -327,256 +326,249 @@ class YSMBinding private constructor() : ContextBinding() {
         CuriosCompat.registerCuriosItems(this)
     }
 
-    companion object {
-        @JvmField
-        val INSTANCE: LazySupplier<YSMBinding> = LazySupplier(::YSMBinding)
-
-        @JvmStatic
-        fun getHitTargetId(context: IContext<LocalPlayer>): String {
-            val hitResult: HitResult? = Minecraft.getInstance().hitResult
-            if (hitResult is BlockHitResult) {
-                val clientLevel: ClientLevel = Minecraft.getInstance().level ?: return StringPool.EMPTY
-                if (hitResult.type == HitResult.Type.MISS) {
-                    return StringPool.EMPTY
-                }
-                val key: Identifier =
-                    BuiltInRegistries.BLOCK.getKey(clientLevel.getBlockState(hitResult.blockPos).block)
-                return key?.toString() ?: StringPool.EMPTY
+    @JvmStatic
+    fun getHitTargetId(context: IContext<LocalPlayer>): String {
+        val hitResult: HitResult? = Minecraft.getInstance().hitResult
+        if (hitResult is BlockHitResult) {
+            val clientLevel: ClientLevel = Minecraft.getInstance().level ?: return StringPool.EMPTY
+            if (hitResult.type == HitResult.Type.MISS) {
+                return StringPool.EMPTY
             }
-            if (hitResult is EntityHitResult) {
-                val key2: Identifier = BuiltInRegistries.ENTITY_TYPE.getKey(hitResult.entity.type)
-                return key2?.toString() ?: StringPool.EMPTY
-            }
-            return StringPool.EMPTY
-        }
-
-        @JvmStatic
-        fun getHitTargetType(context: IContext<LocalPlayer>): String {
-            val hitResult: HitResult = Minecraft.getInstance().hitResult ?: return StringPool.EMPTY
-            return when (hitResult.type) {
-                HitResult.Type.BLOCK -> "block"
-                HitResult.Type.ENTITY -> "entity"
-                else -> StringPool.EMPTY
-            }
-        }
-
-        @JvmStatic
-        fun getHookedEntityType(context: IContext<FishingHook>): String {
-            val entity = context.entity().hookedIn
-            if (entity != null) {
-                val key = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
-                return key.toString()
-            }
-            return StringPool.EMPTY
-        }
-
-        @JvmStatic
-        fun getThrowableItemId(context: IContext<ThrowableItemProjectile>): String {
-            val projectile = context.entity()
-            if (projectile is ThrowableItemProjectileAccessor) {
-                val key = BuiltInRegistries.ITEM.getKey(projectile.invokeGetDefaultItem())
-                return key.toString()
-            }
-            return StringPool.EMPTY
-        }
-
-        @JvmStatic
-        fun getGroundSpeed2(context: IContext<Entity>): Float {
-            val tracker: EntityFrameStateTracker<*> = context.geoInstance().positionTracker
-            val delta: Vec3 = tracker.positionDelta
-            return (20.0f * Mth.sqrt((delta.x * delta.x + delta.z * delta.z).toFloat())) / tracker.timeDelta
-        }
-
-        @JvmStatic
-        fun getXxa(context: IContext<LivingEntity>): Float {
-            val animatable: AnimatableEntity<*> = context.geoInstance()
-            if (animatable is PlayerCapability) {
-                if (!animatable.isLocalPlayerModel()) {
-                    return animatable.getPositionTracker().strafeInput
-                }
-            }
-            return context.entity().xxa
-        }
-
-        @JvmStatic
-        fun getYya(context: IContext<LivingEntity>): Float {
-            val animatable: AnimatableEntity<*> = context.geoInstance()
-            if (animatable is PlayerCapability) {
-                if (!animatable.isLocalPlayerModel()) {
-                    return animatable.getPositionTracker().verticalInput
-                }
-            }
-            return context.entity().yya
-        }
-
-        @JvmStatic
-        fun getZza(context: IContext<LivingEntity>): Float {
-            val animatable: AnimatableEntity<*> = context.geoInstance()
-            if (animatable is PlayerCapability) {
-                if (!animatable.isLocalPlayerModel()) {
-                    return animatable.getPositionTracker().forwardInput
-                }
-            }
-            return context.entity().zza
-        }
-
-        @JvmStatic
-        fun isInShieldBlockCooldown(context: IContext<Player>): Boolean {
-            val animatable: AnimatableEntity<*> = context.geoInstance()
-            return animatable is PlayerCapability && animatable.getPositionTracker().isShieldBlocking
-        }
-
-        @JvmStatic
-        fun isFishing(context: IContext<LivingEntity>): Boolean {
-            val livingEntity = context.entity()
-            if (livingEntity is Player) {
-                return livingEntity.fishing != null
-            }
-            return TouhouLittleMaidCompat.isMaidSitting(livingEntity)
-        }
-
-        @JvmStatic
-        fun isChargedCrossbow(context: IContext<LivingEntity>, interactionHand: InteractionHand): Boolean {
-            val itemInHand: ItemStack = context.entity().getItemInHand(interactionHand)
-            return itemInHand.`is`(Items.CROSSBOW) && CrossbowItem.isCharged(itemInHand)
-        }
-
-        @JvmStatic
-        fun getEntityTypeName(context: IContext<LivingEntity>): String {
-            val livingEntity = context.entity()
-            if (livingEntity is Player) {
-                return "player"
-            }
-            val key: Identifier = BuiltInRegistries.ENTITY_TYPE.getKey(livingEntity.type)
-            if ("touhou_little_maid" == key.namespace && "maid" == key.path) {
-                return "maid"
-            }
+            val key: Identifier =
+                BuiltInRegistries.BLOCK.getKey(clientLevel.getBlockState(hitResult.blockPos).block)
             return key.toString()
         }
+        if (hitResult is EntityHitResult) {
+            val key2: Identifier = BuiltInRegistries.ENTITY_TYPE.getKey(hitResult.entity.type)
+            return key2.toString()
+        }
+        return StringPool.EMPTY
+    }
 
-        @JvmStatic
-        fun getFoodLevel(context: IContext<LivingEntity>): Any {
-            val animatable: AnimatableEntity<*> = context.geoInstance()
-            if (animatable is PlayerCapability) {
-                if (!animatable.isLocalPlayerModel()) return animatable.getPositionTracker().foodLevel
+    @JvmStatic
+    fun getHitTargetType(context: IContext<LocalPlayer>): String {
+        val hitResult: HitResult = Minecraft.getInstance().hitResult ?: return StringPool.EMPTY
+        return when (hitResult.type) {
+            HitResult.Type.BLOCK -> "block"
+            HitResult.Type.ENTITY -> "entity"
+            else -> StringPool.EMPTY
+        }
+    }
+
+    @JvmStatic
+    fun getHookedEntityType(context: IContext<FishingHook>): String {
+        val entity = context.entity().hookedIn
+        if (entity != null) {
+            val key = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
+            return key.toString()
+        }
+        return StringPool.EMPTY
+    }
+
+    @JvmStatic
+    fun getThrowableItemId(context: IContext<ThrowableItemProjectile>): String {
+        val projectile = context.entity()
+        if (projectile is ThrowableItemProjectileAccessor) {
+            val key = BuiltInRegistries.ITEM.getKey(projectile.invokeGetDefaultItem())
+            return key.toString()
+        }
+        return StringPool.EMPTY
+    }
+
+    @JvmStatic
+    fun getGroundSpeed2(context: IContext<Entity>): Float {
+        val tracker: EntityFrameStateTracker<*> = context.geoInstance().positionTracker
+        val delta: Vec3 = tracker.positionDelta
+        return (20.0f * Mth.sqrt((delta.x * delta.x + delta.z * delta.z).toFloat())) / tracker.timeDelta
+    }
+
+    @JvmStatic
+    fun getXxa(context: IContext<LivingEntity>): Float {
+        val animatable: AnimatableEntity<*> = context.geoInstance()
+        if (animatable is PlayerCapability) {
+            if (!animatable.isLocalPlayerModel()) {
+                return animatable.getPositionTracker().strafeInput
             }
-            val livingEntity = context.entity()
-            if (livingEntity is Player) return livingEntity.foodData.foodLevel
-            return 20
         }
+        return context.entity().xxa
+    }
 
-        @JvmStatic
-        fun isCloseEyes(event: AnimationEvent<*>, livingEntity: LivingEntity): Boolean {
-            val blinkPhase: Float = (event.currentTick + (abs(livingEntity.uuid.leastSignificantBits) % 10)) % 90.0f
-            return livingEntity.isSleeping || (blinkPhase in 85.0f..90.0f)
+    @JvmStatic
+    fun getYya(context: IContext<LivingEntity>): Float {
+        val animatable: AnimatableEntity<*> = context.geoInstance()
+        if (animatable is PlayerCapability) {
+            if (!animatable.isLocalPlayerModel()) {
+                return animatable.getPositionTracker().verticalInput
+            }
         }
+        return context.entity().yya
+    }
 
-        @JvmStatic
-        fun hasEquipment(livingEntity: LivingEntity, equipmentSlot: EquipmentSlot): Boolean {
-            return !CosmeticArmorHelper.getArmorItem(livingEntity, equipmentSlot).isEmpty
+    @JvmStatic
+    fun getZza(context: IContext<LivingEntity>): Float {
+        val animatable: AnimatableEntity<*> = context.geoInstance()
+        if (animatable is PlayerCapability) {
+            if (!animatable.isLocalPlayerModel()) {
+                return animatable.getPositionTracker().forwardInput
+            }
         }
+        return context.entity().zza
+    }
 
-        @JvmStatic
-        fun getWeather(clientLevel: ClientLevel?): Int = when {
-            clientLevel == null -> 0
-            clientLevel.isThundering -> 2
-            clientLevel.isRaining -> 1
-            else -> 0
+    @JvmStatic
+    fun isInShieldBlockCooldown(context: IContext<Player>): Boolean {
+        val animatable: AnimatableEntity<*> = context.geoInstance()
+        return animatable is PlayerCapability && animatable.getPositionTracker().isShieldBlocking
+    }
+
+    @JvmStatic
+    fun isFishing(context: IContext<LivingEntity>): Boolean {
+        val livingEntity = context.entity()
+        if (livingEntity is Player) {
+            return livingEntity.fishing != null
         }
+        return TouhouLittleMaidCompat.isMaidSitting(livingEntity)
+    }
 
-        @Deprecated("")
-        @JvmStatic
-        fun getBiomeCategory(entity: Entity): String? {
+    @JvmStatic
+    fun isChargedCrossbow(context: IContext<LivingEntity>, interactionHand: InteractionHand): Boolean {
+        val itemInHand: ItemStack = context.entity().getItemInHand(interactionHand)
+        return itemInHand.`is`(Items.CROSSBOW) && CrossbowItem.isCharged(itemInHand)
+    }
+
+    @JvmStatic
+    fun getEntityTypeName(context: IContext<LivingEntity>): String {
+        val livingEntity = context.entity()
+        if (livingEntity is Player) {
+            return "player"
+        }
+        val key: Identifier = BuiltInRegistries.ENTITY_TYPE.getKey(livingEntity.type)
+        if ("touhou_little_maid" == key.namespace && "maid" == key.path) {
+            return "maid"
+        }
+        return key.toString()
+    }
+
+    @JvmStatic
+    fun getFoodLevel(context: IContext<LivingEntity>): Any {
+        val animatable: AnimatableEntity<*> = context.geoInstance()
+        if (animatable is PlayerCapability) {
+            if (!animatable.isLocalPlayerModel()) return animatable.getPositionTracker().foodLevel
+        }
+        val livingEntity = context.entity()
+        if (livingEntity is Player) return livingEntity.foodData.foodLevel
+        return 20
+    }
+
+    @JvmStatic
+    fun isCloseEyes(event: AnimationEvent<*>, livingEntity: LivingEntity): Boolean {
+        val blinkPhase: Float = (event.currentTick + (abs(livingEntity.uuid.leastSignificantBits) % 10)) % 90.0f
+        return livingEntity.isSleeping || (blinkPhase in 85.0f..90.0f)
+    }
+
+    @JvmStatic
+    fun hasEquipment(livingEntity: LivingEntity, equipmentSlot: EquipmentSlot): Boolean {
+        return !CosmeticArmorHelper.getArmorItem(livingEntity, equipmentSlot).isEmpty
+    }
+
+    @JvmStatic
+    fun getWeather(clientLevel: ClientLevel?): Int = when {
+        clientLevel == null -> 0
+        clientLevel.isThundering -> 2
+        clientLevel.isRaining -> 1
+        else -> 0
+    }
+
+    @Deprecated("")
+    @JvmStatic
+    fun getBiomeCategory(entity: Entity): String? {
+        return null
+    }
+
+    @JvmStatic
+    fun dumpMods(context: IContext<*>): Any? {
+        if (!context.isDebugMode()) return null
+        FabricLoader.getInstance().allMods.sortedBy { it.metadata.name }.forEach { mod ->
+            context.logWarningComponent(
+                Component.literal("Mod: display ")
+                    .append(ComponentUtils.copyOnClickText(mod.metadata.name))
+                    .append(Component.literal("  id "))
+                    .append(ComponentUtils.copyOnClickText(mod.metadata.id))
+            )
+        }
+        return null
+    }
+
+    @JvmStatic
+    fun dumpEffects(context: IContext<Entity>): Any? {
+        if (!context.isDebugMode()) {
             return null
         }
+        val activeEffects: Collection<MobEffectInstance> = when (val entity = context.entity()) {
+            is Arrow -> {
+                val potionContents: PotionContents =
+                    entity.pickupItemStackOrigin.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY)
+                potionContents.allEffects.toList()
+            }
 
-        @JvmStatic
-        fun dumpMods(context: IContext<*>): Any? {
-            if (!context.isDebugMode()) {
-                return null
-            }
-            FabricLoader.getInstance().allMods.sortedBy { it.metadata.name }.forEach { mod ->
-                context.logWarningComponent(
-                    Component.literal("Mod: display ")
-                        .append(ComponentUtils.copyOnClickText(mod.metadata.name))
-                        .append(Component.literal("  id "))
-                        .append(ComponentUtils.copyOnClickText(mod.metadata.id))
-                )
-            }
-            return null
+            is LivingEntity -> entity.activeEffects
+            else -> return null
         }
-
-        @JvmStatic
-        fun dumpEffects(context: IContext<Entity>): Any? {
-            if (!context.isDebugMode()) {
-                return null
-            }
-            val activeEffects: Collection<MobEffectInstance> = when (val entity = context.entity()) {
-                is Arrow -> {
-                    val potionContents: PotionContents =
-                        entity.pickupItemStackOrigin.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY)
-                    potionContents.allEffects.toList()
-                }
-
-                is LivingEntity -> entity.activeEffects
-                else -> return null
-            }
-            for (mobEffectInstance in activeEffects) {
-                context.logWarningComponent(
-                    Component.literal("Effect: display ")
-                        .append(ComponentUtils.copyOnClickText(mobEffectInstance.effect.value().displayName.getString(99)))
-                        .append(Component.literal("  name "))
-                        .append(
-                            ComponentUtils.copyOnClickText(
-                                BuiltInRegistries.MOB_EFFECT.getKey(mobEffectInstance.effect.value()).toString()
-                            )
+        for (mobEffectInstance in activeEffects) {
+            context.logWarningComponent(
+                Component.literal("Effect: display ")
+                    .append(ComponentUtils.copyOnClickText(mobEffectInstance.effect.value().displayName.getString(99)))
+                    .append(Component.literal("  name "))
+                    .append(
+                        ComponentUtils.copyOnClickText(
+                            BuiltInRegistries.MOB_EFFECT.getKey(mobEffectInstance.effect.value()).toString()
                         )
-                        .append("  lv=")
-                        .append((mobEffectInstance.amplifier + 1).toString())
-                )
-            }
+                    )
+                    .append("  lv=")
+                    .append((mobEffectInstance.amplifier + 1).toString())
+            )
+        }
+        return null
+    }
+
+    @JvmStatic
+    fun dumpBiome(context: IContext<Entity>): Any? {
+        if (!context.isDebugMode()) {
             return null
         }
-
-        @JvmStatic
-        fun dumpBiome(context: IContext<Entity>): Any? {
-            if (!context.isDebugMode()) {
-                return null
-            }
-            val biome: Holder<Biome> = context.entity().level().getBiome(context.entity().blockPosition())
-            biome.unwrapKey().ifPresent { resourceKey ->
-                context.logWarningComponent(
-                    Component.literal("Name ")
-                        .append(ComponentUtils.copyOnClickText(resourceKey.identifier().toString()))
-                )
-            }
-            biome.tags().forEach { tagKey ->
-                context.logWarningComponent(
-                    Component.literal("Tag ").append(ComponentUtils.copyOnClickText(tagKey.location().toString()))
-                )
-            }
-            return null
+        val biome: Holder<Biome> = context.entity().level().getBiome(context.entity().blockPosition())
+        biome.unwrapKey().ifPresent { resourceKey ->
+            context.logWarningComponent(
+                Component.literal("Name ")
+                    .append(ComponentUtils.copyOnClickText(resourceKey.identifier().toString()))
+            )
         }
-
-        @JvmStatic
-        fun isOpenAir(entity: Entity): Boolean {
-            val blockPos: BlockPos = entity.blockPosition()
-            return entity.level().canSeeSky(blockPos) && entity.level()
-                .getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, blockPos).y <= blockPos.y
+        biome.tags().forEach { tagKey ->
+            context.logWarningComponent(
+                Component.literal("Tag ").append(ComponentUtils.copyOnClickText(tagKey.location().toString()))
+            )
         }
+        return null
+    }
 
-        @JvmStatic
-        fun getShoulderParrotVariant(player: Player, leftShoulder: Boolean): String {
-            if (player !is AbstractClientPlayer) {
-                return "empty"
-            }
-            val variant: Parrot.Variant? = player.getParrotVariantOnShoulder(leftShoulder)
-            return variant?.name?.lowercase(Locale.ENGLISH) ?: "empty"
-        }
+    @JvmStatic
+    fun isOpenAir(entity: Entity): Boolean {
+        val blockPos: BlockPos = entity.blockPosition()
+        return entity.level().canSeeSky(blockPos) && entity.level()
+            .getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, blockPos).y <= blockPos.y
+    }
 
-        @JvmStatic
-        fun hasShoulderParrot(player: Player, leftShoulder: Boolean): Boolean {
-            return player is AbstractClientPlayer && player.getParrotVariantOnShoulder(leftShoulder) != null
+    @JvmStatic
+    fun getShoulderParrotVariant(player: Player, leftShoulder: Boolean): String {
+        if (player !is AbstractClientPlayer) {
+            return "empty"
         }
+        val variant: Parrot.Variant? = player.getParrotVariantOnShoulder(leftShoulder)
+        return variant?.name?.lowercase(Locale.ENGLISH) ?: "empty"
+    }
+
+    @JvmStatic
+    fun hasShoulderParrot(player: Player, leftShoulder: Boolean): Boolean {
+        return player is AbstractClientPlayer && player.getParrotVariantOnShoulder(leftShoulder) != null
     }
 }

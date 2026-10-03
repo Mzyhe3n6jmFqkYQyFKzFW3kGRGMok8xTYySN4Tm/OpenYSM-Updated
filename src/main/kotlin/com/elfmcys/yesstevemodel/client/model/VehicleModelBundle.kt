@@ -16,7 +16,9 @@ open class VehicleModelBundle(
     val texture: AbstractTexture,
     modelResourceBundle: ModelResourceBundle
 ) {
-    val controllerInitializer: Consumer<GeckoVehicleEntity>? = VehicleAnimationController.buildControllers(this, modelResourceBundle)
+    // TODO: Replace All Consumer
+    val controllerInitializer: Consumer<GeckoVehicleEntity> =
+        VehicleAnimationController.buildControllers(this, modelResourceBundle)
 
-    fun getAnimatableConsumer(): Consumer<GeckoVehicleEntity>? = controllerInitializer
+    fun getAnimatableConsumer(): Consumer<GeckoVehicleEntity> = controllerInitializer
 }

@@ -1,19 +1,17 @@
 package com.elfmcys.yesstevemodel.geckolib3.geo.animated
 
-import rip.ysm.compat.touhoulittlemaid.TouhouMaidBoneProcessor
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import com.elfmcys.yesstevemodel.geckolib3.core.processor.IBone
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
-import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoBone
 import it.unimi.dsi.fastutil.ints.Int2ReferenceMap
 import it.unimi.dsi.fastutil.ints.Int2ReferenceMaps
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.ints.IntList
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import it.unimi.dsi.fastutil.objects.ReferenceLists
+import rip.ysm.compat.touhoulittlemaid.TouhouMaidBoneProcessor
 
 class AnimatedGeoModel(val geoModel: GeoModel) {
-
     private val boneIdsMap: Int2ReferenceMap<IBone>
     private val matrixData: FloatArray
     private val absPivotData: FloatArray
@@ -44,7 +42,10 @@ class AnimatedGeoModel(val geoModel: GeoModel) {
         val map = Int2ReferenceOpenHashMap<IBone>(bones.size)
         for (i in bones.indices) {
             val renderConfig = bones[i]
-            map.put(renderConfig.boneId, AnimatedGeoBone(renderConfig, matrixData, i * MATRIX_STRIDE, absPivotData, i * ABS_PIVOT_DATA_STRIDE))
+            map.put(
+                renderConfig.boneId,
+                AnimatedGeoBone(renderConfig, matrixData, i * MATRIX_STRIDE, absPivotData, i * ABS_PIVOT_DATA_STRIDE)
+            )
         }
         boneIdsMap = Int2ReferenceMaps.unmodifiable(map)
         headBones = lookupBones(geoModel.headIds)
@@ -117,6 +118,7 @@ class AnimatedGeoModel(val geoModel: GeoModel) {
 
     fun headBones(): List<IBone> = headBones
 
+    // TODO: Remove Suppress
     @Suppress("UNCHECKED_CAST")
     fun <T> getTouhouMaidData(): T? {
         if (touhouMaidData == null) {

@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import rip.ysm.gui.Option
 import rip.ysm.gui.OptionRow
-import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
 
@@ -23,9 +22,7 @@ open class RadioOptionRow(
     private var open: Boolean = false
     private var listScroll: Float = 0.0f
 
-    override fun controlWidth(): Int {
-        return Mth.clamp(width / 2, 100, 220)
-    }
+    override fun controlWidth(): Int = Mth.clamp(width / 2, 100, 220)
 
     override fun renderControl(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         val cx = controlX()
@@ -48,9 +45,7 @@ open class RadioOptionRow(
     }
 
     override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
-        if (!isMouseOverControl(event.x(), event.y())) {
-            return
-        }
+        if (!isMouseOverControl(event.x(), event.y())) return
         open = !open
         if (open) {
             val cur = currentIndex()
@@ -61,18 +56,14 @@ open class RadioOptionRow(
         }
     }
 
-    override fun isOverlayOpen(): Boolean {
-        return open
-    }
+    override fun isOverlayOpen(): Boolean = open
 
     override fun closeOverlay() {
         open = false
     }
 
     override fun renderOverlay(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float, scrollDisplay: Float) {
-        if (!open || labels.isEmpty()) {
-            return
-        }
+        if (!open || labels.isEmpty()) return
         val cx = controlX()
         val cw = controlWidth()
         val cy = controlY() - scrollDisplay.toInt()
@@ -86,18 +77,15 @@ open class RadioOptionRow(
         g.pose().pushMatrix()
         g.fill(listX, listY, listX + cw, listY + listH, 0xFF111111.toInt())
 
-        var first = (listScroll / 14).toInt()
-        first = max(0, min(first, max(0, labels.size - visible)))
+        val first = max(0, min((listScroll / 14).toInt(), max(0, labels.size - visible)))
 
         for (i in 0 until visible) {
             val idx = first + i
-            if (idx >= labels.size) {
-                break
-            }
+            if (idx >= labels.size) break
             val itemY = listY + 1 + i * 14
             val hover = mouseX >= listX && mouseX < listX + cw && mouseY >= itemY && mouseY < itemY + 14
             val selected = idx == currentIndex()
-            val bg = if (selected) Color(255, 255, 255, 60).rgb else if (hover) 0xFF333333.toInt() else 0
+            val bg = if (selected) 0x3CFFFFFF else if (hover) 0xFF333333.toInt() else 0
             if (bg != 0) {
                 g.fill(listX + 1, itemY, listX + cw - 1, itemY + 14, bg)
             }
@@ -125,9 +113,7 @@ open class RadioOptionRow(
     }
 
     override fun overlayMouseClicked(mouseX: Double, mouseY: Double, button: Int, scrollDisplay: Float): Boolean {
-        if (!open) {
-            return false
-        }
+        if (!open) return false
         val cx = controlX()
         val cw = controlWidth()
         val cy = controlY() - scrollDisplay.toInt()
@@ -139,8 +125,7 @@ open class RadioOptionRow(
         if (mouseX < listX || mouseX >= listX + cw || mouseY < listY || mouseY >= listY + listH) {
             return false
         }
-        var first = (listScroll / 14).toInt()
-        first = max(0, min(first, max(0, labels.size - visible)))
+        val first = max(0, min((listScroll / 14).toInt(), max(0, labels.size - visible)))
         val slot = ((mouseY - listY - 1) / 14).toInt()
         val idx = first + slot
         if (idx in labels.indices) {
@@ -151,9 +136,7 @@ open class RadioOptionRow(
     }
 
     override fun overlayMouseScrolled(mouseX: Double, mouseY: Double, delta: Double, scrollDisplay: Float): Boolean {
-        if (!open) {
-            return false
-        }
+        if (!open) return false
         val cx = controlX()
         val cw = controlWidth()
         val cy = controlY() - scrollDisplay.toInt()
@@ -171,9 +154,7 @@ open class RadioOptionRow(
     }
 
     fun labelAt(idx: Int): String {
-        if (idx < 0 || idx >= labels.size) {
-            return ""
-        }
+        if (idx !in labels.indices) return ""
         return labels[idx]
     }
 

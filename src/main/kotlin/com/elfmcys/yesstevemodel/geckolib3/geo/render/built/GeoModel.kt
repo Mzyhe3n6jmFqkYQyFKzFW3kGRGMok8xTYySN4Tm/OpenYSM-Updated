@@ -194,10 +194,7 @@ open class GeoModel(
     open fun getProperties(): GeometryDescription = properties
 
     open fun isTranslucentTexture(i: Int): Boolean {
-        if (i < 0 || i >= translucentTexture.size) {
-            return false
-        }
-        return translucentTexture[i]
+        return !(i < 0 || i >= translucentTexture.size) && translucentTexture[i]
     }
 
     open fun setTranslucentTexture(i: Int, translucent: Boolean) {
@@ -214,53 +211,111 @@ open class GeoModel(
     }
 
     open class BakedBone {
-        @JvmField var name: String = ""
-        @JvmField var glow: Boolean = false
-        @JvmField var parentIdx: Int = -1
-        @JvmField var pivotX: Float = 0f
-        @JvmField var pivotY: Float = 0f
-        @JvmField var pivotZ: Float = 0f
-        @JvmField var rotX: Float = 0f
-        @JvmField var rotY: Float = 0f
-        @JvmField var rotZ: Float = 0f
-        @JvmField var cubes: MutableList<BakedCube> = ObjectArrayList()
-        @JvmField var partMask: Int = 0
+        @JvmField
+        var name: String = ""
+
+        @JvmField
+        var glow: Boolean = false
+
+        @JvmField
+        var parentIdx: Int = -1
+
+        @JvmField
+        var pivotX: Float = 0f
+
+        @JvmField
+        var pivotY: Float = 0f
+
+        @JvmField
+        var pivotZ: Float = 0f
+
+        @JvmField
+        var rotX: Float = 0f
+
+        @JvmField
+        var rotY: Float = 0f
+
+        @JvmField
+        var rotZ: Float = 0f
+
+        @JvmField
+        var cubes: MutableList<BakedCube> = ObjectArrayList()
+
+        @JvmField
+        var partMask: Int = 0
     }
 
     open class BakedCube {
-        @JvmField var cullable: Boolean = false
-        @JvmField var quads: MutableList<BakedQuad> = ObjectArrayList()
+        @JvmField
+        var cullable: Boolean = false
+
+        @JvmField
+        var quads: MutableList<BakedQuad> = ObjectArrayList()
     }
 
     open class BakedQuad {
-        @JvmField var positions: Array<Vector3f> = Array(4) { Vector3f() }
-        @JvmField var uvs: Array<Vector2f> = Array(4) { Vector2f() }
-        @JvmField var normal: Vector3f = Vector3f()
+        @JvmField
+        var positions: Array<Vector3f> = Array(4) { Vector3f() }
+
+        @JvmField
+        var uvs: Array<Vector2f> = Array(4) { Vector2f() }
+
+        @JvmField
+        var normal: Vector3f = Vector3f()
     }
 
     companion object {
-        @JvmStatic external fun nInitModelCache(buffer: ByteBuffer): Long
-        @JvmStatic external fun nDestroyModelCache(handle: Long)
-        @JvmStatic external fun nComputeModelVertices(
+        @JvmStatic
+        external fun nInitModelCache(buffer: ByteBuffer): Long
+
+        @JvmStatic
+        external fun nDestroyModelCache(handle: Long)
+
+        @JvmStatic
+        external fun nComputeModelVertices(
             handle: Long, vertexConsumer: Any,
             matrixTransfer: FloatArray, animTransfer: FloatArray,
             renderPartMask: Int, packedLight: Int, packedOverlay: Int,
             r: Float, g: Float, b: Float, a: Float
         )
-        @JvmStatic external fun nBuildGpuMesh(buffer: ByteBuffer, outMeta: IntArray): Long
-        @JvmStatic external fun nGetGpuMeshVertexBuffer(pointer: Long): ByteBuffer
-        @JvmStatic external fun nGetGpuMeshIndexBuffer(pointer: Long): ByteBuffer
-        @JvmStatic external fun nReleaseGpuMeshScratch(pointer: Long)
-        @JvmStatic external fun nFreeGpuMesh(pointer: Long)
-        @JvmStatic external fun nComputeBoneMatrices(pointer: Long, rootPose: FloatArray, rootNormal: FloatArray, anim: FloatArray, packedLight: Int, outBoneBuffer: ByteBuffer)
-        @JvmStatic external fun nComputeBoneMatricesLocal(handle: Long, animArray: FloatArray, packedLight: Int, outBoneBuffer: ByteBuffer)
+
+        @JvmStatic
+        external fun nBuildGpuMesh(buffer: ByteBuffer, outMeta: IntArray): Long
+
+        @JvmStatic
+        external fun nGetGpuMeshVertexBuffer(pointer: Long): ByteBuffer
+
+        @JvmStatic
+        external fun nGetGpuMeshIndexBuffer(pointer: Long): ByteBuffer
+
+        @JvmStatic
+        external fun nReleaseGpuMeshScratch(pointer: Long)
+
+        @JvmStatic
+        external fun nFreeGpuMesh(pointer: Long)
+
+        @JvmStatic
+        external fun nComputeBoneMatrices(
+            pointer: Long,
+            rootPose: FloatArray,
+            rootNormal: FloatArray,
+            anim: FloatArray,
+            packedLight: Int,
+            outBoneBuffer: ByteBuffer
+        )
+
+        @JvmStatic
+        external fun nComputeBoneMatricesLocal(
+            handle: Long,
+            animArray: FloatArray,
+            packedLight: Int,
+            outBoneBuffer: ByteBuffer
+        )
 
         @JvmStatic
         fun resolveBoneIds(strArr: Array<String>): IntList {
             val intArrayList = IntArrayList(strArr.size)
-            for (str in strArr) {
-                intArrayList.add(StringPool.computeIfAbsent(str))
-            }
+            for (str in strArr) intArrayList.add(StringPool.computeIfAbsent(str))
             return IntLists.unmodifiable(intArrayList)
         }
     }

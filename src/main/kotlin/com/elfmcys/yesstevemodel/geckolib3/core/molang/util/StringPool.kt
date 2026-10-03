@@ -11,25 +11,20 @@ object StringPool {
     private val MAP = ConcurrentHashMap<Int, String>()
 
     const val EMPTY: String = ""
+
     @JvmField
     val EMPTY_ID: Int = computeIfAbsent(EMPTY)
 
     @JvmStatic
-    fun computeIfAbsent(str: String): Int {
-        return POOL.computeIfAbsent(str) { k ->
-            val name = COUNTER.incrementAndGet()
-            MAP[name] = k
-            name
-        }
+    fun computeIfAbsent(str: String): Int = POOL.computeIfAbsent(str) { k ->
+        val name = COUNTER.incrementAndGet()
+        MAP[name] = k
+        name
     }
 
     @JvmStatic
-    fun getName(str: String): Int {
-        return POOL.getOrDefault(str, NONE)
-    }
+    fun getName(str: String): Int = POOL.getOrDefault(str, NONE)
 
     @JvmStatic
-    fun getString(name: Int): String {
-        return MAP.getOrDefault(name, EMPTY)
-    }
+    fun getString(name: Int): String = MAP.getOrDefault(name, EMPTY)
 }

@@ -18,7 +18,7 @@ open class SoundKeyFrameExecutor(
             }
             nextIndex++
             val eventData = sound.getEventData()
-            if (playAudio && !eventData.isNullOrEmpty()) {
+            if (playAudio && eventData.isNotEmpty()) {
                 audioPlayerManager?.playSound(entity, 0, eventData, false, null)
             }
         }

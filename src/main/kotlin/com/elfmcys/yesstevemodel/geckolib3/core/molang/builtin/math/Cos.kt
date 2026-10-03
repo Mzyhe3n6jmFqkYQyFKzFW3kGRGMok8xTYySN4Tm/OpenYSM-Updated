@@ -4,11 +4,12 @@ import com.elfmcys.yesstevemodel.molang.runtime.ExecutionContext
 import com.elfmcys.yesstevemodel.molang.runtime.Function
 import net.minecraft.util.Mth
 
-open class Cos : Function {
-    open fun evaluate(context: ExecutionContext<*>, arguments: ArgumentCollection): Any {
-        return Mth.cos(arguments.getAsFloat(context, 0) / 180.0f * 3.1415927f)
+class Cos : Function {
+    override fun evaluate(context: ExecutionContext<*>, arguments: Function.ArgumentCollection): Any {
+        return Mth.cos((arguments.getAsFloat(context, 0) / 180.0f * 3.1415927f).toDouble())
     }
-    open fun validateArgumentSize(size: Int): Boolean {
+
+    override fun validateArgumentSize(size: Int): Boolean {
         return size == 1
     }
 }

@@ -5,7 +5,7 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.funciton.ContextFunction
 import net.minecraft.world.item.ItemStack
 
 abstract class ItemStackFunction : ContextFunction<ItemStack>() {
-    open fun validateContext(context: IContext<*>): Boolean {
+    override fun validateContext(context: IContext<*>): Boolean {
         return context.entity() is ItemStack
     }
 }

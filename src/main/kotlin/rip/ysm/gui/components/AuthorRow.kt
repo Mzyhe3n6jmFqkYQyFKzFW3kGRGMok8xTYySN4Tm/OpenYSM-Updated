@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
 import net.minecraft.util.FormattedCharSequence
-import org.apache.commons.lang3.StringUtils
 import rip.ysm.gui.ModernModelInfoScreen
 import rip.ysm.gui.OptionRow
 import kotlin.math.max
@@ -40,17 +39,17 @@ class AuthorRow(
         val font: Font = Minecraft.getInstance().font
         val name = ModelMetadataPresenter.getLocalizedModelString(
             owner.renderContext,
-            "metadata.authors.%d.name".format(authorIndex),
+            "metadata.authors.$authorIndex.name",
             author.name
         )
         val role = ModelMetadataPresenter.getLocalizedModelString(
             owner.renderContext,
-            "metadata.authors.%d.role".format(authorIndex),
+            "metadata.authors.$authorIndex.role",
             author.role
         )
         val comment = ModelMetadataPresenter.getLocalizedModelString(
             owner.renderContext,
-            "metadata.authors.%d.comment".format(authorIndex),
+            "metadata.authors.$authorIndex.comment",
             author.comment
         )
         val tx = ax + AVATAR_SIZE + 8
@@ -65,7 +64,7 @@ class AuthorRow(
             -1,
             false
         )
-        if (StringUtils.isNotBlank(role)) {
+        if (!role.isNullOrBlank()) {
             val nameW = font.width(name)
             g.drawString(
                 font,
@@ -77,7 +76,7 @@ class AuthorRow(
             )
         }
         var commentY = y + 17
-        if (StringUtils.isNotBlank(comment)) {
+        if (!comment.isNullOrBlank()) {
             val lines: List<FormattedCharSequence> = font.split(Component.literal(comment), maxTextW)
             val maxLines = min(lines.size, 2)
             for (i in 0 until maxLines) {
@@ -125,7 +124,7 @@ class AuthorRow(
             return
         }
         val value = contacts.getValueAt(hoveredContactIndex)
-        if (StringUtils.isBlank(value)) {
+        if (value.isNullOrBlank()) {
             return
         }
         if (value.startsWith("http://") || value.startsWith("https://")) {
@@ -136,7 +135,6 @@ class AuthorRow(
     }
 
     companion object {
-        @JvmField
         val DEFAULT_AVATAR: Identifier = NameSpaces.MOD.path("texture/default_avatar.png")
         const val AVATAR_SIZE: Int = 48
     }

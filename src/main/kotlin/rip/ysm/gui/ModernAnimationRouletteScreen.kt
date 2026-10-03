@@ -34,38 +34,36 @@ import net.minecraft.util.FormattedCharSequence
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
-import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.tuple.MutablePair
-import org.apache.commons.lang3.tuple.Pair
 import org.lwjgl.opengl.GL11
 import rip.ysm.api.client.KeyMappingFactory
 import rip.ysm.gpu.BlurStack
 import rip.ysm.gpu.Pie
-import java.util.LinkedList
-import java.util.List
-import java.util.Map
+import java.util.*
+import kotlin.math.*
 
-open class ModernAnimationRouletteScreen : Screen() {
-    var centerX: Int = 0
-    var centerY: Int = 0
-    var hoveredIndex: Int = -1
-    var hoveredGearIndex: Int = -1
-    var hoveredPathSegment: Int = -1
-    var hoveredPrev: Boolean = false
-    var hoveredNext: Boolean = false
-    var currentNavEntry: Pair<String, Integer> = null
-    var currentProperties: OrderedStringMap<String, String> = null
-    var renderGroups: MutableMap<String, ExtraAnimationButtons> = null
-    var textProperties: MutableMap<String, OrderedStringMap<String, String>> = null
-    var animatableModel: AnimatableEntity<*> = null
-    var renderContext: ModelAssembly = null
-    constructor(modelId: String, modelAssembly: ModelAssembly, animatable: AnimatableEntity<*>) {
-        super(Component.literal("YSM Roulette"))
-        this.renderContext = modelAssembly
-        this.animatableModel = animatable
-        this.textProperties = modelAssembly.getModelData().getModelProperties().getExtraAnimationClassify()
-        this.renderGroups = modelAssembly.getModelData().getModelProperties().getExtraAnimationButtons()
-        if (!lastModelId.equals(modelId)) {
+open class ModernAnimationRouletteScreen(
+    modelId: String,
+    private val renderContext: ModelAssembly,
+    private val animatableModel: AnimatableEntity<*>
+) : Screen(Component.literal("YSM Roulette")) {
+
+    private var centerX: Int = 0
+    private var centerY: Int = 0
+    private var hoveredIndex: Int = -1
+    private var hoveredGearIndex: Int = -1
+    private var hoveredPathSegment: Int = -1
+    private var hoveredPrev: Boolean = false
+    private var hoveredNext: Boolean = false
+    private var currentNavEntry: MutablePair<String, Int>
+    private val currentProperties: OrderedStringMap<String, String>
+    private val renderGroups: Map<String, ExtraAnimationButtons>
+    private val textProperties: Map<String, OrderedStringMap<String, String>>
+
+    init {
+        this.textProperties = renderContext.modelData.modelProperties.extraAnimationClassify
+        this.renderGroups = renderContext.modelData.modelProperties.extraAnimationButtons
+        if (lastModelId != modelId) {
             navigationStack.clear()
             lastModelId = modelId
         }
@@ -73,33 +71,34 @@ open class ModernAnimationRouletteScreen : Screen() {
             navigationStack.add(MutablePair.of(StringPool.EMPTY, 0))
         }
         this.currentNavEntry = navigationStack.peekLast()
-        if (this.textProperties.containsKey(this.currentNavEntry.getLeft())) {
-            this.currentProperties = this.textProperties.get(this.currentNavEntry.getLeft())
+        val navKey = this.currentNavEntry.left
+        if (navKey != null && this.textProperties.containsKey(navKey)) {
+            this.currentProperties =
+                this.textProperties[navKey] ?: renderContext.modelData.modelProperties.extraAnimation
         } else {
-            this.currentProperties = modelAssembly.getModelData().getModelProperties().getExtraAnimation()
+            this.currentProperties = renderContext.modelData.modelProperties.extraAnimation
             navigationStack.clear()
-            navigationStack.add(MutablePair.of(StringPool.EMPTY, this.currentNavEntry.getRight()))
+            navigationStack.add(MutablePair.of(StringPool.EMPTY, this.currentNavEntry.right))
             this.currentNavEntry = navigationStack.peekLast()
         }
     }
-    open fun init() {
+
+    override fun init() {
         this.centerX = this.width / 2
         this.centerY = this.height / 2
-        if (currentNavEntry.getRight() >= pageCount()) {
+        if (currentNavEntry.right >= pageCount()) {
             currentNavEntry.setValue(0)
         }
     }
-    open fun pageCount(): Int {
-        return Math.max(1, currentProperties.size() + 7 / 8)
-    }
-    open fun page(): Int {
-        return currentNavEntry.getRight()
-    }
-    open fun sliceStartOffset(): Float {
-        return -Pie.tau / 16.0f
-    }
-    open fun render(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        if (GeneralConfig.BLUR_GUI != null && GeneralConfig.BLUR_GUI.get()) {
+
+    private fun pageCount(): Int = max(1, (currentProperties.size + 7) / 8)
+
+    private fun page(): Int = currentNavEntry.right
+
+    private fun sliceStartOffset(): Float = -Pie.tau / 16.0f
+
+    override fun render(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+        if (GeneralConfig.BLUR_GUI.get() == true) {
             collectAndFlushBlur(g)
         }
         updateHover(mouseX, mouseY)
@@ -110,231 +109,256 @@ open class ModernAnimationRouletteScreen : Screen() {
         renderPathAndPage(g, mouseX, mouseY)
         super.render(g, mouseX, mouseY, partialTick)
     }
-    open fun collectAndFlushBlur(g: GuiGraphics) {
-        var sliceSpan: Float = Pie.tau / 8.0f
-        var i = 0
-        while (i < 8) {
-            var absoluteIdx: Int = i + page() * 8
-            if (absoluteIdx >= currentProperties.size()) {
+
+    private fun collectAndFlushBlur(g: GuiGraphics) {
+        val sliceSpan: Float = Pie.tau / 8.0f
+        for (i in 0 until 8) {
+            val absoluteIdx: Int = i + page() * 8
+            if (absoluteIdx >= currentProperties.size) {
                 continue
             }
-            var start: Float = sliceStartOffset() + i * sliceSpan + 0.02f
-            var end: Float = sliceStartOffset() + i + 1 * sliceSpan - 0.02f
-            BlurStack.pushBlurPie(centerX, centerY, 22.0f, 100.0f, start, end, 20.0f)
-            i++
+            val start: Float = sliceStartOffset() + i * sliceSpan + 0.02f
+            val end: Float = sliceStartOffset() + (i + 1) * sliceSpan - 0.02f
+            BlurStack.pushBlurPie(centerX.toFloat(), centerY.toFloat(), 22.0f, 100.0f, start, end, 20.0f)
         }
         if (pageCount() > 1) {
-            BlurStack.pushBlurPie(centerX - 128.0f, centerY, 0.0f, 16.0f, 0.0f, Pie.tau, 20.0f)
-            BlurStack.pushBlurPie(centerX + 128.0f, centerY, 0.0f, 16.0f, 0.0f, Pie.tau, 20.0f)
+            BlurStack.pushBlurPie(centerX - 128.0f, centerY.toFloat(), 0.0f, 16.0f, 0.0f, Pie.tau, 20.0f)
+            BlurStack.pushBlurPie(centerX + 128.0f, centerY.toFloat(), 0.0f, 16.0f, 0.0f, Pie.tau, 20.0f)
         }
         BlurStack.flush(g)
     }
-    open fun updateHover(mouseX: Int, mouseY: Int) {
-        var dx: Float = mouseX - centerX
-        var dy: Float = mouseY - centerY
-        var r: Float = (Math.sqrt(dx * dx + dy * dy) as Float)
-        var ang: Float = (Math.atan2(dy, dx) as Float)
+
+    private fun updateHover(mouseX: Int, mouseY: Int) {
+        val dx: Float = (mouseX - centerX).toFloat()
+        val dy: Float = (mouseY - centerY).toFloat()
+        val r: Float = sqrt(dx * dx + dy * dy)
+        var ang: Float = atan2(dy, dx)
         if (ang < 0.0f) {
             ang += Pie.tau
         }
-        ang = ang - sliceStartOffset() + Pie.tau % Pie.tau
-        var idx: Int = Mth.clamp((ang / Pie.tau / 8.0f as Int), 0, 7)
+        ang = (ang - sliceStartOffset() + Pie.tau) % Pie.tau
+        val idx: Int = Mth.clamp((ang / (Pie.tau / 8.0f)).toInt(), 0, 7)
         hoveredIndex = -1
         hoveredGearIndex = -1
-        var absoluteIdx: Int = idx + page() * 8
-        if (absoluteIdx < currentProperties.size() && r >= 22.0f && r <= 100.0f) {
-            var hasGear: Boolean = currentProperties.getValueAt(absoluteIdx).startsWith("#")
+        val absoluteIdx: Int = idx + page() * 8
+        if (absoluteIdx < currentProperties.size && r in 22.0f..100.0f) {
+            val hasGear: Boolean = currentProperties.getValueAt(absoluteIdx).startsWith("#")
             if (hasGear && r <= 46.0f) {
                 hoveredGearIndex = absoluteIdx
             } else {
                 hoveredIndex = absoluteIdx
             }
         }
-        var prevDx: Float = mouseX - centerX - 128.0f
-        var nextDx: Float = mouseX - centerX + 128.0f
-        var btnDy: Float = mouseY - centerY
-        hoveredPrev = page() > 0 && prevDx * prevDx + btnDy * btnDy <= 16.0f * 16.0f
-        hoveredNext = page() + 1 * 8 < currentProperties.size() && nextDx * nextDx + btnDy * btnDy <= 16.0f * 16.0f
+        val prevDx: Float = (mouseX - (centerX - 128)).toFloat()
+        val nextDx: Float = (mouseX - (centerX + 128)).toFloat()
+        val btnDy: Float = (mouseY - centerY).toFloat()
+        hoveredPrev = page() > 0 && (prevDx * prevDx + btnDy * btnDy <= 16.0f * 16.0f)
+        hoveredNext = (page() + 1) * 8 < currentProperties.size && (nextDx * nextDx + btnDy * btnDy <= 16.0f * 16.0f)
     }
-    open fun renderSlices(g: GuiGraphics) {
-        var sliceSpan: Float = Pie.tau / 8.0f
-        var i = 0
-        while (i < 8) {
-            var absoluteIdx: Int = i + page() * 8
-            if (absoluteIdx >= currentProperties.size()) {
+
+    private fun renderSlices(g: GuiGraphics) {
+        val sliceSpan: Float = Pie.tau / 8.0f
+        for (i in 0 until 8) {
+            val absoluteIdx: Int = i + page() * 8
+            if (absoluteIdx >= currentProperties.size) {
                 drawSlice(g, i, sliceSpan, 22.0f, 100.0f, 0x30000000)
                 continue
             }
-            var isHover: Boolean = absoluteIdx == hoveredIndex
-            var gearHover: Boolean = absoluteIdx == hoveredGearIndex
-            var isSubmenu: Boolean = currentProperties.getKeyAt(absoluteIdx).startsWith("#")
-            var hasGear: Boolean = currentProperties.getValueAt(absoluteIdx).startsWith("#")
-            var mainColor: Int = if (isHover) if (isSubmenu) (0xD0FFCC00).toInt() else (0xB0FFFFFF).toInt() else if (isSubmenu) 0x70552200 else 0x60000000
+            val isHover: Boolean = absoluteIdx == hoveredIndex
+            val gearHover: Boolean = absoluteIdx == hoveredGearIndex
+            val isSubmenu: Boolean = currentProperties.getKeyAt(absoluteIdx).startsWith("#")
+            val hasGear: Boolean = currentProperties.getValueAt(absoluteIdx).startsWith("#")
+            val mainColor: Int =
+                if (isHover) (if (isSubmenu) 0xD0FFCC00.toInt() else 0xB0FFFFFF.toInt()) else (if (isSubmenu) 0x70552200.toInt() else 0x60000000)
             if (hasGear) {
-                var gearColor: Int = if (gearHover) (0xD0FFCC00).toInt() else (0x80333333).toInt()
+                val gearColor: Int = if (gearHover) 0xD0FFCC00.toInt() else 0x80333333.toInt()
                 drawSlice(g, i, sliceSpan, 46.0f, 100.0f, mainColor)
                 drawSlice(g, i, sliceSpan, 22.0f, 46.0f, gearColor)
                 drawSettingsIcon(g, i, sliceSpan, gearHover)
             } else {
                 drawSlice(g, i, sliceSpan, 22.0f, 100.0f, mainColor)
             }
-            i++
         }
     }
-    open fun drawSlice(g: GuiGraphics, sliceIndex: Int, sliceSpan: Float, inner: Float, outer: Float, color: Int) {
-        var start: Float = sliceStartOffset() + sliceIndex * sliceSpan + 0.02f
-        var end: Float = sliceStartOffset() + sliceIndex + 1 * sliceSpan - 0.02f
-        Pie.draw(g, centerX, centerY, inner, outer, start, end, color, 1.0f)
+
+    private fun drawSlice(g: GuiGraphics, sliceIndex: Int, sliceSpan: Float, inner: Float, outer: Float, color: Int) {
+        val start: Float = sliceStartOffset() + sliceIndex * sliceSpan + 0.02f
+        val end: Float = sliceStartOffset() + (sliceIndex + 1) * sliceSpan - 0.02f
+        Pie.draw(g, centerX.toFloat(), centerY.toFloat(), inner, outer, start, end, color, 1.0f)
     }
-    open fun drawSettingsIcon(g: GuiGraphics, sliceIndex: Int, sliceSpan: Float, hover: Boolean) {
-        var mid: Float = sliceStartOffset() + sliceIndex + 0.5f * sliceSpan
-        var r: Float = 34.0f
-        var ix: Int = centerX + (r * Math.cos(mid) as Int) - 8
-        var iy: Int = centerY + (r * Math.sin(mid) as Int) - 8
+
+    private fun drawSettingsIcon(g: GuiGraphics, sliceIndex: Int, sliceSpan: Float, hover: Boolean) {
+        val mid: Float = sliceStartOffset() + (sliceIndex + 0.5f) * sliceSpan
+        val r = 34.0f
+        val ix: Int = centerX + (r * cos(mid)).toInt() - 8
+        val iy: Int = centerY + (r * sin(mid)).toInt() - 8
         GlStateManager._enableBlend()
         GlStateManager._blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA)
         g.blit(RenderPipelines.GUI_TEXTURED, settingsIcon, ix, iy, 0.0f, 0.0f, 16, 16, 32, 32, 32, 32)
         GlStateManager._disableBlend()
     }
-    open fun renderLabels(g: GuiGraphics) {
-        var sliceSpan: Float = Pie.tau / 8.0f
-        var i = 0
-        while (i < 8) {
-            var absoluteIdx: Int = i + page() * 8
-            if (absoluteIdx >= currentProperties.size()) {
+
+    private fun renderLabels(g: GuiGraphics) {
+        val sliceSpan: Float = Pie.tau / 8.0f
+        for (i in 0 until 8) {
+            val absoluteIdx: Int = i + page() * 8
+            if (absoluteIdx >= currentProperties.size) {
                 continue
             }
-            var midAngle: Float = sliceStartOffset() + i + 0.5f * sliceSpan
-            var hasGear: Boolean = currentProperties.getValueAt(absoluteIdx).startsWith("#")
-            var isSubmenuLink: Boolean = currentProperties.getKeyAt(absoluteIdx).startsWith("#")
-            var labelR: Float = if (hasGear) 46.0f else 22.0f * 0.5f + 50.0f
-            var lx: Int = centerX + (labelR * Math.cos(midAngle) as Int)
-            var ly: Int = centerY + (labelR * Math.sin(midAngle) as Int)
-            var text: String = displayLabel(absoluteIdx)
-            if (StringUtils.isBlank(text)) {
+            val midAngle: Float = sliceStartOffset() + (i + 0.5f) * sliceSpan
+            val hasGear: Boolean = currentProperties.getValueAt(absoluteIdx).startsWith("#")
+            val isSubmenuLink: Boolean = currentProperties.getKeyAt(absoluteIdx).startsWith("#")
+            val labelR: Float = (if (hasGear) 46.0f else 22.0f) * 0.5f + 50.0f
+            val lx: Int = centerX + (labelR * cos(midAngle)).toInt()
+            val ly: Int = centerY + (labelR * sin(midAngle)).toInt()
+            val text: String = displayLabel(absoluteIdx)
+            if (text.isBlank()) {
                 continue
             }
             var comp: MutableComponent = Component.literal(text)
             if (isSubmenuLink) {
                 comp = comp.withStyle(ChatFormatting.GOLD)
             }
-            var showKey: Boolean = page() == 0 && navigationStack.size() == 1 && absoluteIdx < ExtraAnimationKey.KEY_MAPPINGS.size()
-            var wrapWidth: Int = (100.0f - if (hasGear) 46.0f else 22.0f * 0.9f as Int)
-            var lines: MutableList<FormattedCharSequence> = this.font.split(comp, wrapWidth)
-            var totalH: Int = lines.size() * 9 + if (showKey) 10 else 0
+            val showKey: Boolean =
+                page() == 0 && navigationStack.size == 1 && absoluteIdx < ExtraAnimationKey.KEY_MAPPINGS.size
+            val wrapWidth: Int = ((100.0f - (if (hasGear) 46.0f else 22.0f)) * 0.9f).toInt()
+            val lines: List<FormattedCharSequence> = font.split(comp, wrapWidth)
+            val totalH: Int = lines.size * 9 + if (showKey) 10 else 0
             var lineY: Int = ly - totalH / 2
             for (line in lines) {
-                g.drawCenteredString(this.font, line, lx, lineY, (0xFFFFFFFF).toInt())
+                g.drawCenteredString(font, line, lx, lineY, 0xFFFFFFFF.toInt())
                 lineY += 9
             }
             if (showKey) {
                 renderKeyBinding(g, absoluteIdx, lx, lineY + 1)
             }
-            i++
         }
     }
-    open fun renderKeyBinding(g: GuiGraphics, slot: Int, x: Int, y: Int) {
-        if (slot >= ExtraAnimationKey.KEY_MAPPINGS.size()) {
+
+    private fun renderKeyBinding(g: GuiGraphics, slot: Int, x: Int, y: Int) {
+        if (slot >= ExtraAnimationKey.KEY_MAPPINGS.size) {
             return
         }
-        var km: KeyMapping = ExtraAnimationKey.KEY_MAPPINGS.get(slot)
-        var label: MutableComponent = Component.literal("[ ").withStyle(ChatFormatting.YELLOW)
-        if (km.isUnbound()) {
+        val km: KeyMapping = ExtraAnimationKey.KEY_MAPPINGS[slot]
+        val label: MutableComponent = Component.literal("[ ").withStyle(ChatFormatting.YELLOW)
+        if (km.isUnbound) {
             label.append(Component.translatable("key.yes_steve_model.extra_animation.none"))
         } else {
-            label.append(km.getTranslatedKeyMessage())
+            label.append(km.translatedKeyMessage)
         }
         label.append(" ]")
-        g.drawCenteredString(this.font, label, x, y, (0xFFCFB058).toInt())
+        g.drawCenteredString(font, label, x, y, 0xFFCFB058.toInt())
     }
-    open fun displayLabel(absoluteIdx: Int): String {
-        var key: String = currentProperties.getKeyAt(absoluteIdx)
-        var value: String = currentProperties.getValueAt(absoluteIdx)
+
+    private fun displayLabel(absoluteIdx: Int): String {
+        val key: String = currentProperties.getKeyAt(absoluteIdx)
+        val value: String = currentProperties.getValueAt(absoluteIdx)
         var display: String = value
         if (value.startsWith("#")) {
-            var sub: String = value.substring(1)
+            val sub: String = value.substring(1)
             if (renderGroups.containsKey(sub)) {
-                display = renderGroups.get(sub).getName()
+                display = renderGroups[sub]?.name ?: sub
             }
         }
-        if (StringUtils.isBlank(display)) {
+        if (display.isBlank()) {
             display = key
         }
-        return ModelMetadataPresenter.getLocalizedModelString(renderContext, "properties.extra_animation.%s".formatted(key), display)
+        return ModelMetadataPresenter.getLocalizedModelString(renderContext, "properties.extra_animation.$key", display)
     }
-    open fun renderCenter(g: GuiGraphics) {
-        if (animatableModel.getEntity() is Player) {
-            var tex: Identifier = if (AnimationLockEvent.isLocked()) lockIcon else unlockIcon
+
+    private fun renderCenter(g: GuiGraphics) {
+        if (animatableModel.entity is Player) {
+            val tex: Identifier = if (AnimationLockEvent.isLocked()) lockIcon else unlockIcon
             GlStateManager._enableBlend()
             GlStateManager._blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA)
             g.blit(RenderPipelines.GUI_TEXTURED, tex, centerX - 16, centerY - 16, 0.0f, 0.0f, 32, 32, 64, 64, 64, 64)
             GlStateManager._disableBlend()
         } else {
-            g.drawCenteredString(this.font, Component.translatable("gui.yes_steve_model.roulette.stop"), centerX, centerY - 4, (0xFFFFFFFF).toInt())
+            g.drawCenteredString(
+                font,
+                Component.translatable("gui.yes_steve_model.roulette.stop"),
+                centerX,
+                centerY - 4,
+                0xFFFFFFFF.toInt()
+            )
         }
     }
-    open fun renderPageButtons(g: GuiGraphics) {
+
+    private fun renderPageButtons(g: GuiGraphics) {
         if (pageCount() <= 1) {
             return
         }
-        drawPageButton(g, centerX - 128.0f, centerY, page() > 0, hoveredPrev, "<")
-        drawPageButton(g, centerX + 128.0f, centerY, page() + 1 * 8 < currentProperties.size(), hoveredNext, ">")
+        drawPageButton(g, centerX - 128.0f, centerY.toFloat(), page() > 0, hoveredPrev, "<")
+        drawPageButton(
+            g,
+            centerX + 128.0f,
+            centerY.toFloat(),
+            (page() + 1) * 8 < currentProperties.size,
+            hoveredNext,
+            ">"
+        )
     }
-    open fun drawPageButton(g: GuiGraphics, cx: Float, cy: Float, enabled: Boolean, hover: Boolean, arrow: String) {
-        var color: Int = if (!enabled) 0x40000000 else if (hover) (0xD0FFFFFF).toInt() else (0x90000000).toInt()
+
+    private fun drawPageButton(g: GuiGraphics, cx: Float, cy: Float, enabled: Boolean, hover: Boolean, arrow: String) {
+        val color: Int = if (!enabled) 0x40000000 else if (hover) 0xD0FFFFFF.toInt() else 0x90000000.toInt()
         Pie.draw(g, cx, cy, 0.0f, 16.0f, 0.0f, Pie.tau, color, 1.0f)
-        var textColor: Int = if (enabled) if (hover) (0xFF000000).toInt() else (0xFFFFFFFF).toInt() else 0x60FFFFFF
-        g.drawCenteredString(this.font, arrow, (cx as Int), (cy as Int) - 4, textColor)
+        val textColor: Int = if (enabled) (if (hover) 0xFF000000.toInt() else 0xFFFFFFFF.toInt()) else 0x60FFFFFF
+        g.drawCenteredString(font, arrow, cx.toInt(), cy.toInt() - 4, textColor)
     }
-    open fun renderPathAndPage(g: GuiGraphics, mouseX: Int, mouseY: Int) {
+
+    private fun renderPathAndPage(g: GuiGraphics, mouseX: Int, mouseY: Int) {
         layoutAndDrawPath(g, mouseX, mouseY)
-        var pageStr: String = String.format("%d/%d", page() + 1, pageCount())
-        g.drawCenteredString(this.font, Component.literal(pageStr).withStyle(ChatFormatting.AQUA), centerX, centerY + 108, (0xFFFFFFFF).toInt())
+        val pageStr: String = "%d/%d".format(page() + 1, pageCount())
+        g.drawCenteredString(
+            font,
+            Component.literal(pageStr).withStyle(ChatFormatting.AQUA),
+            centerX,
+            centerY + 108,
+            0xFFFFFFFF.toInt()
+        )
     }
-    open fun layoutAndDrawPath(g: GuiGraphics, mouseX: Int, mouseY: Int) {
-        var pathY: Int = centerY - 118
-        var prefix: String = Component.translatable("gui.yes_steve_model.roulette.path.prefix").getString()
-        var rootLabel: String = Component.translatable("gui.yes_steve_model.roulette.path.root").getString()
-        var prefixW: Int = this.font.width(prefix)
-        var sep: Int = this.font.width(" > ")
-        var total: Int = prefixW
-        var i = 0
-        while (i < navigationStack.size()) {
-            var s: String = navigationStack.get(i).getLeft()
-            total += this.font.width(if (StringUtils.isBlank(s)) rootLabel else s)
-            if (i < navigationStack.size() - 1) {
+
+    private fun layoutAndDrawPath(g: GuiGraphics, mouseX: Int, mouseY: Int) {
+        val pathY = centerY - 118
+        val prefix = Component.translatable("gui.yes_steve_model.roulette.path.prefix").string
+        val rootLabel = Component.translatable("gui.yes_steve_model.roulette.path.root").string
+        val prefixW = font.width(prefix)
+        val sep = font.width(" > ")
+        var total = prefixW
+        for (i in 0 until navigationStack.size) {
+            val s = navigationStack[i].left
+            total += font.width(if (s.isNullOrBlank()) rootLabel else s)
+            if (i < navigationStack.size - 1) {
                 total += sep
             }
-            i++
         }
-        var x: Int = centerX - total / 2
-        g.drawString(this.font, prefix, x, pathY, (0xFFFFFFFF).toInt(), true)
+        var x = centerX - total / 2
+        g.drawString(font, prefix, x, pathY, 0xFFFFFFFF.toInt(), true)
         x += prefixW
         hoveredPathSegment = -1
-        var i = 0
-        while (i < navigationStack.size()) {
-            var raw: String = navigationStack.get(i).getLeft()
-            var s: String = if (StringUtils.isBlank(raw)) rootLabel else raw
-            var w: Int = this.font.width(s)
-            var isLast: Boolean = i == navigationStack.size() - 1
-            var hover: Boolean = mouseX >= x && mouseX < x + w && mouseY >= pathY - 2 && mouseY < pathY + 10
-            var color: Int = if (isLast) (0xFFFFCC00).toInt() else if (hover) (0xFFFFFFFF).toInt() else (0xFFAAAAAA).toInt()
-            g.drawString(this.font, s, x, pathY, color, true)
+        for (i in 0 until navigationStack.size) {
+            val raw = navigationStack[i].left
+            val s = if (raw.isNullOrBlank()) rootLabel else raw
+            val w = font.width(s)
+            val isLast = i == navigationStack.size - 1
+            val hover = mouseX in x until (x + w) && mouseY in (pathY - 2) until (pathY + 10)
+            val color = if (isLast) 0xFFFFCC00.toInt() else (if (hover) 0xFFFFFFFF.toInt() else 0xFFAAAAAA.toInt())
+            g.drawString(font, s, x, pathY, color, true)
             if (hover && !isLast) {
                 g.fill(x, pathY + 9, x + w, pathY + 10, color)
                 hoveredPathSegment = i
             }
             x += w
-            if (i < navigationStack.size() - 1) {
-                g.drawString(this.font, " > ", x, pathY, (0xFF888888).toInt(), true)
+            if (i < navigationStack.size - 1) {
+                g.drawString(font, " > ", x, pathY, 0xFF888888.toInt(), true)
                 x += sep
             }
-            i++
         }
     }
-    open fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
-        var mouseX: Double = event.x()
-        var mouseY: Double = event.y()
+
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
         if (hoveredPrev) {
             playClick()
             previousPage()
@@ -345,16 +369,16 @@ open class ModernAnimationRouletteScreen : Screen() {
             nextPage()
             return true
         }
-        if (hoveredPathSegment >= 0 && hoveredPathSegment < navigationStack.size() - 1) {
+        if (hoveredPathSegment in 0 until (navigationStack.size - 1)) {
             playClick()
             navigateTo(hoveredPathSegment)
             return true
         }
         if (hoveredGearIndex >= 0) {
             playClick()
-            var value: String = currentProperties.getValueAt(hoveredGearIndex)
+            val value = currentProperties.getValueAt(hoveredGearIndex)
             if (value.startsWith("#")) {
-                var sub: String = value.substring(1)
+                val sub = value.substring(1)
                 if (renderGroups.containsKey(sub)) {
                     Minecraft.getInstance().setScreen(ModelSettingsScreen(renderContext, animatableModel, this, sub))
                     return true
@@ -363,38 +387,38 @@ open class ModernAnimationRouletteScreen : Screen() {
         }
         if (hoveredIndex >= 0) {
             playClick()
-            var key: String = currentProperties.getKeyAt(hoveredIndex)
-            if ("#return".equals(key)) {
+            val key = currentProperties.getKeyAt(hoveredIndex)
+            if ("#return" == key) {
                 navigateBack()
+            } else if (key.startsWith("#")) {
+                navigateToSubmenu(key)
             } else {
-                if (key.startsWith("#")) {
-                    navigateToSubmenu(key)
-                } else {
-                    playAnimation(key)
-                }
+                playAnimation(key)
             }
             return true
         }
-        var cdx: Double = mouseX - centerX
-        var cdy: Double = mouseY - centerY
+        val cdx = mouseX - centerX
+        val cdy = mouseY - centerY
         if (cdx * cdx + cdy * cdy <= 22.0 * 22.0) {
-            if (animatableModel.getEntity() is Player) {
+            if (animatableModel.entity is Player) {
                 AnimationLockEvent.toggleLock()
             } else {
-                NetworkHandler.sendToServer(C2SPlayAnimationPacket.createWithIndex(animatableModel.getEntity().getId()))
+                NetworkHandler.sendToServer(C2SPlayAnimationPacket.createWithIndex(animatableModel.entity.id))
                 onClose()
             }
             return true
         }
         return super.mouseClicked(event, doubleClick)
     }
-    open fun navigateTo(targetIndex: Int) {
-        while (navigationStack.size() > targetIndex + 1) {
+
+    private fun navigateTo(targetIndex: Int) {
+        while (navigationStack.size > targetIndex + 1) {
             navigationStack.removeLast()
         }
         Minecraft.getInstance().setScreen(ModernAnimationRouletteScreen(lastModelId, renderContext, animatableModel))
     }
-    open fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
+
+    override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
         if (scrollY < 0.0) {
             nextPage()
         } else {
@@ -402,75 +426,78 @@ open class ModernAnimationRouletteScreen : Screen() {
         }
         return true
     }
-    open fun previousPage() {
-        currentNavEntry.setValue(Math.max(0, page() - 1))
+
+    private fun previousPage() {
+        currentNavEntry.setValue(max(0, page() - 1))
     }
-    open fun nextPage() {
-        if (page() + 1 * 8 < currentProperties.size()) {
+
+    private fun nextPage() {
+        if ((page() + 1) * 8 < currentProperties.size) {
             currentNavEntry.setValue(page() + 1)
         }
     }
-    open fun keyPressed(event: KeyEvent): Boolean {
+
+    override fun keyPressed(event: KeyEvent): Boolean {
         if (KeyMappingFactory.isActiveAndMatches(AnimationRouletteKey.KEY_ROULETTE, event)) {
             onClose()
             return true
         }
         return super.keyPressed(event)
     }
-    open fun navigateToSubmenu(value: String) {
-        if (navigationStack.size() > 5) {
-            var p: LocalPlayer = Minecraft.getInstance().player
-            if (p != null) {
-                p.displayClientMessage(Component.translatable("gui.yes_steve_model.roulette.too_long"), false)
-            }
+
+    private fun navigateToSubmenu(value: String) {
+        if (navigationStack.size > 5) {
+            val p = Minecraft.getInstance().player
+            p?.displayClientMessage(Component.translatable("gui.yes_steve_model.roulette.too_long"), false)
             return
         }
-        var sub: String = value.substring(1)
-        if (textProperties.get(sub) != null) {
+        val sub = value.substring(1)
+        if (textProperties[sub] != null) {
             navigationStack.addLast(MutablePair.of(sub, 0))
             Minecraft.getInstance().setScreen(ModernAnimationRouletteScreen(lastModelId, renderContext, animatableModel))
         }
     }
-    open fun navigateBack() {
-        if (navigationStack.size() > 1) {
+
+    private fun navigateBack() {
+        if (navigationStack.size > 1) {
             navigationStack.removeLast()
             Minecraft.getInstance().setScreen(ModernAnimationRouletteScreen(lastModelId, renderContext, animatableModel))
             return
         }
         Minecraft.getInstance().setScreen(null)
     }
-    open fun playAnimation(key: String) {
-        var player: LocalPlayer = Minecraft.getInstance().player
+
+    private fun playAnimation(key: String) {
+        val player: LocalPlayer? = Minecraft.getInstance().player
         if (NetworkHandler.isClientConnected()) {
-            var last: Pair<String, Integer> = navigationStack.peekLast()
-            var submenu: String = if (last != null && StringUtils.isNotBlank(last.getLeft())) last.getLeft() else StringPool.EMPTY
-            var entity: Entity = animatableModel.getEntity()
+            val last = navigationStack.peekLast()
+            val submenu = if (last != null && !last.left.isNullOrBlank()) last.left else StringPool.EMPTY
+            val entity: Entity = animatableModel.entity
             if (entity is Player) {
                 NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, submenu))
             } else {
-                NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, submenu, entity.getId()))
+                NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, submenu, entity.id))
             }
-        } else {
-            if (player != null) {
-                PlayerCapability.get(player).ifPresent({ cap -> cap.requestModelSwitch(key) })
-            }
+        } else if (player != null) {
+            PlayerCapability[player]?.requestModelSwitch(key)
         }
-        if (player != null && GeneralConfig.PRINT_ANIMATION_ROULETTE_MSG.get()) {
+        if (player != null && GeneralConfig.PRINT_ANIMATION_ROULETTE_MSG.get() == true) {
             player.displayClientMessage(Component.translatable("message.yes_steve_model.model.animation_roulette.play", key), false)
         }
         Minecraft.getInstance().setScreen(null)
     }
-    open fun playClick() {
-        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
+
+    private fun playClick() {
+        Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
     }
-    open fun isPauseScreen(): Boolean {
-        return false
-    }
+
+    override fun isPauseScreen(): Boolean = false
+
     companion object {
-        @JvmField var settingsIcon: Identifier = NameSpaces.MOD.path("texture/settings.png")
-        @JvmField var lockIcon: Identifier = NameSpaces.MOD.path("texture/lock.png")
-        @JvmField var unlockIcon: Identifier = NameSpaces.MOD.path("texture/unlock.png")
-        @JvmField var navigationStack: LinkedList<Pair<String, Integer>> = Lists.newLinkedList()
-        @JvmField var lastModelId: String = StringPool.EMPTY
+        val settingsIcon: Identifier = NameSpaces.MOD.path("texture/settings.png")
+        val lockIcon: Identifier = NameSpaces.MOD.path("texture/lock.png")
+        val unlockIcon: Identifier = NameSpaces.MOD.path("texture/unlock.png")
+        val navigationStack: LinkedList<MutablePair<String, Int>> = Lists.newLinkedList()
+        var lastModelId: String = StringPool.EMPTY
     }
 }

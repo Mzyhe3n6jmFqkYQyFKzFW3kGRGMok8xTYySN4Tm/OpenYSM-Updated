@@ -6,16 +6,11 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
-import net.minecraft.util.FormattedCharSequence
 import net.minecraft.util.Mth
-import org.jetbrains.annotations.Nullable
 import rip.ysm.gpu.BlurStack
 import rip.ysm.gui.components.buttons.FooterButton
 import rip.ysm.gui.components.buttons.TabButton
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.List
-import java.util.Map
+import kotlin.math.*
 
 abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) : Screen(title) {
     val groups: MutableList<OptionGroup> = ArrayList()
@@ -23,125 +18,167 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
     val activeRows: MutableList<OptionRow<*>> = ArrayList()
     var activeGroup: OptionGroup? = null
     var hoveredRow: OptionRow<*>? = null
+
     var panelLeft: Int = 0
     var panelTop: Int = 0
     var panelRight: Int = 0
     var panelBottom: Int = 0
+
     var tabAreaLeft: Int = 0
     var tabAreaTop: Int = 0
     var tabAreaRight: Int = 0
     var tabAreaBottom: Int = 0
+
     var rowAreaLeft: Int = 0
     var rowAreaTop: Int = 0
     var rowAreaRight: Int = 0
     var rowAreaBottom: Int = 0
+
     var rowScrollOffset: Int = 0
     var rowScrollDisplay: Float = 0.0f
     var maxRowScroll: Int = 0
     var rowContentHeight: Int = 0
+
     var tabScrollOffset: Int = 0
     var tabScrollDisplay: Float = 0.0f
     var maxTabScroll: Int = 0
     var tabContentHeight: Int = 0
     var tabContentWidth: Int = 0
+
     var compactTabs: Boolean = false
-    var lastFrameNanos: Long = 0L
-    var draggingRowScrollbar: Boolean = false
-    var draggingTabScrollbar: Boolean = false
+    private var lastFrameNanos: Long = 0L
+    private var draggingRowScrollbar: Boolean = false
+    private var draggingTabScrollbar: Boolean = false
+
     var applyBtn: FooterButton? = null
     var undoBtn: FooterButton? = null
     var saveBtn: FooterButton? = null
     var cancelBtn: FooterButton? = null
-    abstract fun registerGroups()
-    open fun init() {
+
+    protected abstract fun registerGroups()
+
+    override fun init() {
         groups.clear()
         tabButtons.clear()
         activeRows.clear()
         registerGroups()
-        var totalWidth: Int = computePanelWidth()
-        var totalHeight: Int = computePanelHeight()
-        panelLeft = this.width - totalWidth / 2
-        panelTop = this.height - totalHeight / 2
+
+        val totalWidth = computePanelWidth()
+        val totalHeight = computePanelHeight()
+        panelLeft = (width - totalWidth) / 2
+        panelTop = (height - totalHeight) / 2
         panelRight = panelLeft + totalWidth
         panelBottom = panelTop + totalHeight
+
         compactTabs = shouldUseCompactTabs()
-        var tabs: Boolean = showTabs()
+        val tabs = showTabs()
+
         if (!tabs) {
             tabAreaLeft = panelLeft
             tabAreaRight = panelLeft
             tabAreaTop = panelTop + 6 + 18
             tabAreaBottom = tabAreaTop
+
             rowAreaLeft = panelLeft
             rowAreaTop = panelTop + 6 + 18
             rowAreaRight = computeRowAreaRight()
             rowAreaBottom = panelBottom - 60
+        } else if (compactTabs) {
+            tabAreaLeft = panelLeft
+            tabAreaRight = panelRight
+            tabAreaTop = panelTop + 6 + 18
+            tabAreaBottom = tabAreaTop + 22
+
+            rowAreaLeft = panelLeft
+            rowAreaTop = tabAreaBottom + 4
+            rowAreaRight = computeRowAreaRight()
+            rowAreaBottom = panelBottom - 60
         } else {
-            if (compactTabs) {
-                tabAreaLeft = panelLeft
-                tabAreaRight = panelRight
-                tabAreaTop = panelTop + 6 + 18
-                tabAreaBottom = tabAreaTop + 22
-                rowAreaLeft = panelLeft
-                rowAreaTop = tabAreaBottom + 4
-                rowAreaRight = computeRowAreaRight()
-                rowAreaBottom = panelBottom - 60
-            } else {
-                tabAreaLeft = panelLeft
-                tabAreaTop = panelTop + 6 + 18
-                tabAreaRight = panelLeft + 110
-                tabAreaBottom = panelBottom - 60
-                rowAreaLeft = panelLeft + 110 + 6
-                rowAreaTop = panelTop + 6 + 18
-                rowAreaRight = computeRowAreaRight()
-                rowAreaBottom = panelBottom - 60
-            }
+            tabAreaLeft = panelLeft
+            tabAreaTop = panelTop + 6 + 18
+            tabAreaRight = panelLeft + 110
+            tabAreaBottom = panelBottom - 60
+
+            rowAreaLeft = panelLeft + 110 + 6
+            rowAreaTop = panelTop + 6 + 18
+            rowAreaRight = computeRowAreaRight()
+            rowAreaBottom = panelBottom - 60
         }
+
         tabContentHeight = 0
         tabContentWidth = 0
         if (tabs && compactTabs) {
-            var tabX: Int = tabAreaLeft
+            var tabX = tabAreaLeft
             for (g in groups) {
-                var textW: Int = this.font.width(g.getTitle())
-                var w: Int = Mth.clamp(textW + 16, 60, 140)
-                var tb: TabButton = TabButton(tabX, tabAreaTop, w, 22, g, this::selectGroup)
-                tb.setHorizontal(true)
+                val textW = font.width(g.getTitle())
+                val w = Mth.clamp(textW + 16, 60, 140)
+                val tb = TabButton(tabX, tabAreaTop, w, 22, g, ::selectGroup)
+                tb.horizontal = true
                 tabButtons.add(tb)
                 tabX += w + 2
             }
             tabContentWidth = tabX - tabAreaLeft
-            maxTabScroll = Math.max(0, tabContentWidth - tabAreaRight - tabAreaLeft)
-        } else {
-            if (tabs) {
-                var tabY: Int = tabAreaTop
-                for (g in groups) {
-                    var tb: TabButton = TabButton(tabAreaLeft, tabY, 110, 22, g, this::selectGroup)
-                    tabButtons.add(tb)
-                    tabY += 22
-                }
-                tabContentHeight = tabY - tabAreaTop
-                maxTabScroll = Math.max(0, tabContentHeight - tabAreaBottom - tabAreaTop)
+            maxTabScroll = max(0, tabContentWidth - (tabAreaRight - tabAreaLeft))
+        } else if (tabs) {
+            var tabY = tabAreaTop
+            for (g in groups) {
+                val tb = TabButton(tabAreaLeft, tabY, 110, 22, g, ::selectGroup)
+                tabButtons.add(tb)
+                tabY += 22
             }
+            tabContentHeight = tabY - tabAreaTop
+            maxTabScroll = max(0, tabContentHeight - (tabAreaBottom - tabAreaTop))
         }
         tabScrollOffset = 0
-        tabScrollDisplay = 0
-        var footerY: Int = panelBottom - 56
-        var btnW: Int = 70
-        var btnH: Int = 20
-        var gap: Int = 4
-        cancelBtn = FooterButton(panelRight - btnW, footerY, btnW, btnH, Component.translatable("gui.yes_steve_model.config.cancel"), this::onCancel)
-        saveBtn = FooterButton(cancelBtn.getX() - btnW - gap, footerY, btnW, btnH, Component.translatable("gui.yes_steve_model.config.save"), this::onSave)
-        applyBtn = FooterButton(saveBtn.getX() - btnW - gap, footerY, btnW, btnH, Component.translatable("gui.yes_steve_model.config.apply"), this::onApply)
-        undoBtn = FooterButton(panelLeft, footerY, btnW, btnH, Component.translatable("gui.yes_steve_model.config.undo"), this::onUndo)
-        addRenderableWidget(undoBtn)
-        addRenderableWidget(applyBtn)
-        addRenderableWidget(saveBtn)
-        addRenderableWidget(cancelBtn)
-        if (!groups.isEmpty()) {
-            var toSelect: OptionGroup = groups.get(0)
-            var stored: String = lastSelectedGroup.get(getClass())
+        tabScrollDisplay = 0f
+
+        val footerY = panelBottom - 56
+        val btnW = 70
+        val btnH = 20
+        val gap = 4
+        cancelBtn = FooterButton(
+            panelRight - btnW,
+            footerY,
+            btnW,
+            btnH,
+            Component.translatable("gui.yes_steve_model.config.cancel"),
+            ::onCancel
+        )
+        saveBtn = FooterButton(
+            cancelBtn!!.x - btnW - gap,
+            footerY,
+            btnW,
+            btnH,
+            Component.translatable("gui.yes_steve_model.config.save"),
+            ::onSave
+        )
+        applyBtn = FooterButton(
+            saveBtn!!.x - btnW - gap,
+            footerY,
+            btnW,
+            btnH,
+            Component.translatable("gui.yes_steve_model.config.apply"),
+            ::onApply
+        )
+        undoBtn = FooterButton(
+            panelLeft,
+            footerY,
+            btnW,
+            btnH,
+            Component.translatable("gui.yes_steve_model.config.undo"),
+            ::onUndo
+        )
+        addRenderableWidget(undoBtn!!)
+        addRenderableWidget(applyBtn!!)
+        addRenderableWidget(saveBtn!!)
+        addRenderableWidget(cancelBtn!!)
+
+        if (groups.isNotEmpty()) {
+            var toSelect = groups[0]
+            val stored = lastSelectedGroup[javaClass]
             if (stored != null) {
                 for (candidate in groups) {
-                    if (stored.equals(candidate.getTranslationKey())) {
+                    if (stored == candidate.translationKey) {
                         toSelect = candidate
                         break
                     }
@@ -150,23 +187,19 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
             selectGroup(toSelect)
         }
     }
-    open fun computePanelWidth(): Int {
-        return Math.min(this.width - 40, 540)
-    }
-    open fun computePanelHeight(): Int {
-        return Math.min(this.height - 40, 320)
-    }
-    open fun computeRowAreaRight(): Int {
-        return panelRight
-    }
-    open fun shouldUseCompactTabs(): Boolean {
-        return this.width < 500
-    }
-    open fun showTabs(): Boolean {
-        return true
-    }
+
+    open fun computePanelWidth(): Int = min(width - 40, 540)
+
+    open fun computePanelHeight(): Int = min(height - 40, 320)
+
+    open fun computeRowAreaRight(): Int = panelRight
+
+    open fun shouldUseCompactTabs(): Boolean = width < 500
+
+    open fun showTabs(): Boolean = true
+
     open fun selectGroup(group: OptionGroup) {
-        if (activeGroup == group && !activeRows.isEmpty()) {
+        if (activeGroup == group && activeRows.isNotEmpty()) {
             return
         }
         for (r in activeRows) {
@@ -174,136 +207,125 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
         }
         activeRows.clear()
         activeGroup = group
-        lastSelectedGroup.put(getClass(), group.getTranslationKey())
-        var selectedIndex: Int = -1
-        var i = 0
-        while (i < tabButtons.size()) {
-            var tb: TabButton = tabButtons.get(i)
-            tb.setSelected(tb.getGroup() == group)
-            if (tb.getGroup() == group) {
+        lastSelectedGroup[javaClass] = group.translationKey
+        var selectedIndex = -1
+        for (i in tabButtons.indices) {
+            val tb = tabButtons[i]
+            val isSelected = tb.group == group
+            tb.selected = isSelected
+            if (isSelected) {
                 selectedIndex = i
             }
-            i++
         }
         if (selectedIndex >= 0 && maxTabScroll > 0) {
-            var sel: TabButton = tabButtons.get(selectedIndex)
+            val sel = tabButtons[selectedIndex]
             if (compactTabs) {
-                var btnLeft: Int = sel.getX() - tabAreaLeft
-                var btnRight: Int = btnLeft + sel.getWidth()
-                var viewW: Int = tabAreaRight - tabAreaLeft
+                val btnLeft = sel.x - tabAreaLeft
+                val btnRight = btnLeft + sel.width
+                val viewW = tabAreaRight - tabAreaLeft
                 if (btnLeft < tabScrollOffset) {
                     tabScrollOffset = btnLeft
-                } else {
-                    if (btnRight > tabScrollOffset + viewW) {
-                        tabScrollOffset = btnRight - viewW
-                    }
+                } else if (btnRight > tabScrollOffset + viewW) {
+                    tabScrollOffset = btnRight - viewW
                 }
             } else {
-                var btnTop: Int = selectedIndex * 22
-                var btnBot: Int = btnTop + 22
-                var viewH: Int = tabAreaBottom - tabAreaTop
+                val btnTop = selectedIndex * 22
+                val btnBot = btnTop + 22
+                val viewH = tabAreaBottom - tabAreaTop
                 if (btnTop < tabScrollOffset) {
                     tabScrollOffset = btnTop
-                } else {
-                    if (btnBot > tabScrollOffset + viewH) {
-                        tabScrollOffset = btnBot - viewH
-                    }
+                } else if (btnBot > tabScrollOffset + viewH) {
+                    tabScrollOffset = btnBot - viewH
                 }
             }
             tabScrollOffset = Mth.clamp(tabScrollOffset, 0, maxTabScroll)
         }
-        var rowY: Int = rowAreaTop
-        var rowW: Int = rowAreaRight - rowAreaLeft
-        for (template in group.getRows()) {
-            template.setX(rowAreaLeft)
-            template.setY(rowY)
-            template.setWidth(rowW)
+        var rowY = rowAreaTop
+        val rowW = rowAreaRight - rowAreaLeft
+        for (template in group.rows) {
+            template.x = rowAreaLeft
+            template.y = rowY
+            template.width = rowW
             activeRows.add(template)
-            rowY += template.getHeight() + 2
+            rowY += template.height + 2
         }
         rowContentHeight = rowY - rowAreaTop
-        maxRowScroll = Math.max(0, rowContentHeight - rowAreaBottom - rowAreaTop)
-        rowScrollOffset = Math.min(rowScrollOffset, maxRowScroll)
-        rowScrollDisplay = Math.min(rowScrollDisplay, maxRowScroll)
+        maxRowScroll = max(0, rowContentHeight - (rowAreaBottom - rowAreaTop))
+        rowScrollOffset = min(rowScrollOffset, maxRowScroll)
+        rowScrollDisplay = min(rowScrollDisplay, maxRowScroll.toFloat())
     }
-    open fun anyDirty(): Boolean {
-        for (g in groups) {
-            if (g.isDirty()) {
-                return true
-            }
-        }
-        return false
-    }
+
+    open fun anyDirty(): Boolean = groups.any { it.isDirty() }
+
     open fun onApply() {
         for (g in groups) {
             g.apply()
         }
     }
+
     open fun onSave() {
         onApply()
         Minecraft.getInstance().setScreen(parentScreen)
     }
+
     open fun onCancel() {
         for (g in groups) {
             g.undo()
         }
         Minecraft.getInstance().setScreen(parentScreen)
     }
+
     open fun onUndo() {
-        if (activeGroup != null) {
-            activeGroup.undo()
-        }
+        activeGroup?.undo()
     }
-    open fun render(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+
+    override fun render(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         renderPanelBackdrop(g)
-        g.fill(panelLeft, panelTop, panelRight, panelTop + 18, (0x90000000).toInt())
-        g.drawString(this.font, this.title, panelLeft + 6, panelTop + 5, (0xFFFFFFFF).toInt(), false)
-        var now: Long = System.nanoTime()
+        g.fill(panelLeft, panelTop, panelRight, panelTop + 18, 0x90000000.toInt())
+        g.drawString(font, title, panelLeft + 6, panelTop + 5, 0xFFFFFFFF.toInt(), false)
+        val now = System.nanoTime()
         if (lastFrameNanos == 0L) {
             lastFrameNanos = now
         }
-        var dt: Float = Math.min(0.1f, now - lastFrameNanos / 1.0e9f)
+        val dt = min(0.1f, (now - lastFrameNanos) / 1.0e9f.toFloat())
         lastFrameNanos = now
-        var lerp: Float = 1.0f - (Math.exp(-dt * 18.0f) as Float)
-        rowScrollDisplay += rowScrollOffset - rowScrollDisplay * lerp
-        if (Math.abs(rowScrollOffset - rowScrollDisplay) < 0.5f) {
-            rowScrollDisplay = rowScrollOffset
+        val lerp = 1.0f - exp(-dt * 18.0f)
+        rowScrollDisplay += (rowScrollOffset - rowScrollDisplay) * lerp
+        if (abs(rowScrollOffset - rowScrollDisplay) < 0.5f) {
+            rowScrollDisplay = rowScrollOffset.toFloat()
         }
-        tabScrollDisplay += tabScrollOffset - tabScrollDisplay * lerp
-        if (Math.abs(tabScrollOffset - tabScrollDisplay) < 0.5f) {
-            tabScrollDisplay = tabScrollOffset
+        tabScrollDisplay += (tabScrollOffset - tabScrollDisplay) * lerp
+        if (abs(tabScrollOffset - tabScrollDisplay) < 0.5f) {
+            tabScrollDisplay = tabScrollOffset.toFloat()
         }
-        var descY: Int = panelBottom - 32
-        var inRowArea: Boolean = mouseX >= rowAreaLeft && mouseX < rowAreaRight && mouseY >= rowAreaTop && mouseY < rowAreaBottom
-        var adjMouseY: Int = if (inRowArea) mouseY + Math.round(rowScrollDisplay) else Integer.MIN_VALUE
+        val descY = panelBottom - 32
+        val inRowArea = mouseX in rowAreaLeft until rowAreaRight && mouseY in rowAreaTop until rowAreaBottom
+        val adjMouseY = if (inRowArea) mouseY + rowScrollDisplay.roundToInt() else Int.MIN_VALUE
         hoveredRow = null
         if (inRowArea) {
             for (row in activeRows) {
-                if (mouseX >= row.getX() && mouseX < row.getX() + row.getWidth() && adjMouseY >= row.getY() && adjMouseY < row.getY() + row.getHeight()) {
+                if (mouseX in row.x until (row.x + row.width) && adjMouseY in row.y until (row.y + row.height)) {
                     hoveredRow = row
                     break
                 }
             }
         }
-        var dirty: Boolean = anyDirty()
-        applyBtn.active = dirty
-        undoBtn.active = activeGroup != null && activeGroup.isDirty()
+        val dirty = anyDirty()
+        applyBtn?.active = dirty
+        undoBtn?.active = activeGroup?.isDirty() == true
         super.render(g, mouseX, mouseY, partialTick)
-        if (!tabButtons.isEmpty()) {
-            var inTabArea: Boolean = mouseX >= tabAreaLeft && mouseX < tabAreaRight && mouseY >= tabAreaTop && mouseY < tabAreaBottom
-            var adjTabMouseX: Int = mouseX
-            var adjTabMouseY: Int = mouseY
-            if (compactTabs) {
-                adjTabMouseX = if (inTabArea) mouseX + Math.round(tabScrollDisplay) else Integer.MIN_VALUE
-            } else {
-                adjTabMouseY = if (inTabArea) mouseY + Math.round(tabScrollDisplay) else Integer.MIN_VALUE
-            }
+        if (tabButtons.isNotEmpty()) {
+            val inTabArea = mouseX in tabAreaLeft until tabAreaRight && mouseY in tabAreaTop until tabAreaBottom
+            val adjTabMouseX =
+                if (compactTabs) (if (inTabArea) mouseX + tabScrollDisplay.roundToInt() else Int.MIN_VALUE) else mouseX
+            val adjTabMouseY =
+                if (!compactTabs) (if (inTabArea) mouseY + tabScrollDisplay.roundToInt() else Int.MIN_VALUE) else mouseY
             g.enableScissor(tabAreaLeft, tabAreaTop, tabAreaRight, tabAreaBottom)
             g.pose().pushMatrix()
             if (compactTabs) {
-                g.pose().translate(-tabScrollDisplay, 0)
+                g.pose().translate(-tabScrollDisplay, 0f)
             } else {
-                g.pose().translate(0, -tabScrollDisplay)
+                g.pose().translate(0f, -tabScrollDisplay)
             }
             for (tb in tabButtons) {
                 tb.render(g, adjTabMouseX, adjTabMouseY, partialTick)
@@ -316,7 +338,7 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
         }
         g.enableScissor(rowAreaLeft, rowAreaTop, rowAreaRight, rowAreaBottom)
         g.pose().pushMatrix()
-        g.pose().translate(0, -rowScrollDisplay)
+        g.pose().translate(0f, -rowScrollDisplay)
         for (row in activeRows) {
             row.render(g, mouseX, adjMouseY, partialTick)
         }
@@ -333,37 +355,40 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
             }
         }
     }
-    open fun renderExtras(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float)
+
+    open fun renderExtras(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    }
+
     open fun collectBlurRegions(out: MutableList<IntArray>) {
         out.add(intArrayOf(panelLeft, panelTop, panelRight - panelLeft, 18))
-        var tabScroll: Int = Math.round(tabScrollDisplay)
+        val tabScroll = tabScrollDisplay.roundToInt()
         for (tb in tabButtons) {
             if (compactTabs) {
-                var x: Int = tb.getX() - tabScroll
-                var xRight: Int = x + tb.getWidth()
-                var left: Int = Math.max(x, tabAreaLeft)
-                var right: Int = Math.min(xRight, tabAreaRight)
+                val x = tb.x - tabScroll
+                val xRight = x + tb.width
+                val left = max(x, tabAreaLeft)
+                val right = min(xRight, tabAreaRight)
                 if (right > left) {
-                    out.add(intArrayOf(left, tb.getY(), right - left, tb.getHeight()))
+                    out.add(intArrayOf(left, tb.y, right - left, tb.height))
                 }
             } else {
-                var y: Int = tb.getY() - tabScroll
-                var yBot: Int = y + tb.getHeight()
-                var top: Int = Math.max(y, tabAreaTop)
-                var bot: Int = Math.min(yBot, tabAreaBottom)
+                val y = tb.y - tabScroll
+                val yBot = y + tb.height
+                val top = max(y, tabAreaTop)
+                val bot = min(yBot, tabAreaBottom)
                 if (bot > top) {
-                    out.add(intArrayOf(tb.getX(), top, tb.getWidth(), bot - top))
+                    out.add(intArrayOf(tb.x, top, tb.width, bot - top))
                 }
             }
         }
-        var rowScroll: Int = Math.round(rowScrollDisplay)
+        val rowScroll = rowScrollDisplay.roundToInt()
         for (row in activeRows) {
-            var y: Int = row.getY() - rowScroll
-            var yBot: Int = y + row.getHeight()
-            var top: Int = Math.max(y, rowAreaTop)
-            var bot: Int = Math.min(yBot, rowAreaBottom)
+            val y = row.y - rowScroll
+            val yBot = y + row.height
+            val top = max(y, rowAreaTop)
+            val bot = min(yBot, rowAreaBottom)
             if (bot > top) {
-                out.add(intArrayOf(row.getX(), top, row.getWidth(), bot - top))
+                out.add(intArrayOf(row.x, top, row.width, bot - top))
             }
         }
         addFooterRect(out, applyBtn)
@@ -371,85 +396,105 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
         addFooterRect(out, saveBtn)
         addFooterRect(out, cancelBtn)
         if (hoveredRow != null) {
-            var descY: Int = panelBottom - 32
+            val descY = panelBottom - 32
             out.add(intArrayOf(panelLeft, descY, panelRight - panelLeft, 28))
         }
     }
-    open fun addFooterRect(out: MutableList<IntArray>, btn: FooterButton) {
+
+    open fun addFooterRect(out: MutableList<IntArray>, btn: FooterButton?) {
         if (btn == null || !btn.visible) {
             return
         }
-        out.add(intArrayOf(btn.getX(), btn.getY(), btn.getWidth(), btn.getHeight()))
+        out.add(intArrayOf(btn.x, btn.y, btn.width, btn.height))
     }
+
     open fun renderPanelBackdrop(g: GuiGraphics) {
-        if (GeneralConfig.BLUR_GUI == null || !GeneralConfig.BLUR_GUI.get()) {
+        if (GeneralConfig.BLUR_GUI.get() != true) {
             return
         }
-        var regions: MutableList<IntArray> = ArrayList()
+        val regions: MutableList<IntArray> = ArrayList()
         collectBlurRegions(regions)
         for (r in regions) {
             if (r[2] <= 0 || r[3] <= 0) {
                 continue
             }
-            BlurStack.pushBlur(r[0], r[1], r[2], r[3], 0.0f, 24.0f)
+            BlurStack.pushBlur(r[0].toFloat(), r[1].toFloat(), r[2].toFloat(), r[3].toFloat(), 0.0f, 24.0f)
         }
         BlurStack.flush(g)
     }
+
     open fun renderRowScrollbar(g: GuiGraphics) {
-        var trackX: Int = rowAreaRight - 1
-        var trackTop: Int = rowAreaTop + 1
-        var trackBot: Int = rowAreaBottom - 1
-        var trackH: Int = trackBot - trackTop
-        var areaH: Int = rowAreaBottom - rowAreaTop
-        var thumbH: Int = Math.max(16, trackH * areaH / Math.max(1, rowContentHeight))
-        var thumbY: Int = trackTop + (trackH - thumbH * rowScrollDisplay / Math.max(1, maxRowScroll) as Int)
-        g.fill(trackX, thumbY, trackX + 1, thumbY + thumbH, if (draggingRowScrollbar) (0xFFFFFFFF).toInt() else (0xFFAAAAAA).toInt())
+        val trackX = rowAreaRight - 1
+        val trackTop = rowAreaTop + 1
+        val trackBot = rowAreaBottom - 1
+        val trackH = trackBot - trackTop
+        val areaH = rowAreaBottom - rowAreaTop
+        val thumbH = max(16, trackH * areaH / max(1, rowContentHeight))
+        val thumbY = trackTop + ((trackH - thumbH) * rowScrollDisplay / max(1, maxRowScroll)).toInt()
+        g.fill(
+            trackX,
+            thumbY,
+            trackX + 1,
+            thumbY + thumbH,
+            if (draggingRowScrollbar) 0xFFFFFFFF.toInt() else 0xFFAAAAAA.toInt()
+        )
     }
+
     open fun renderTabScrollbar(g: GuiGraphics) {
         if (compactTabs) {
-            var trackY: Int = tabAreaBottom - 1
-            var trackLeft: Int = tabAreaLeft + 1
-            var trackRight: Int = tabAreaRight - 1
-            var trackW: Int = trackRight - trackLeft
-            var areaW: Int = tabAreaRight - tabAreaLeft
-            var thumbW: Int = Math.max(16, trackW * areaW / Math.max(1, tabContentWidth))
-            var thumbX: Int = trackLeft + (trackW - thumbW * tabScrollDisplay / Math.max(1, maxTabScroll) as Int)
-            g.fill(thumbX, trackY, thumbX + thumbW, trackY + 1, if (draggingTabScrollbar) (0xFFFFFFFF).toInt() else (0xFFAAAAAA).toInt())
+            val trackY = tabAreaBottom - 1
+            val trackLeft = tabAreaLeft + 1
+            val trackRight = tabAreaRight - 1
+            val trackW = trackRight - trackLeft
+            val areaW = tabAreaRight - tabAreaLeft
+            val thumbW = max(16, trackW * areaW / max(1, tabContentWidth))
+            val thumbX = trackLeft + ((trackW - thumbW) * tabScrollDisplay / max(1, maxTabScroll)).toInt()
+            g.fill(
+                thumbX,
+                trackY,
+                thumbX + thumbW,
+                trackY + 1,
+                if (draggingTabScrollbar) 0xFFFFFFFF.toInt() else 0xFFAAAAAA.toInt()
+            )
             return
         }
-        var trackX: Int = tabAreaRight - 1
-        var trackTop: Int = tabAreaTop + 1
-        var trackBot: Int = tabAreaBottom - 1
-        var trackH: Int = trackBot - trackTop
-        var areaH: Int = tabAreaBottom - tabAreaTop
-        var thumbH: Int = Math.max(16, trackH * areaH / Math.max(1, tabContentHeight))
-        var thumbY: Int = trackTop + (trackH - thumbH * tabScrollDisplay / Math.max(1, maxTabScroll) as Int)
-        g.fill(trackX, thumbY, trackX + 1, thumbY + thumbH, if (draggingTabScrollbar) (0xFFFFFFFF).toInt() else (0xFFAAAAAA).toInt())
+        val trackX = tabAreaRight - 1
+        val trackTop = tabAreaTop + 1
+        val trackBot = tabAreaBottom - 1
+        val trackH = trackBot - trackTop
+        val areaH = tabAreaBottom - tabAreaTop
+        val thumbH = max(16, trackH * areaH / max(1, tabContentHeight))
+        val thumbY = trackTop + ((trackH - thumbH) * tabScrollDisplay / max(1, maxTabScroll)).toInt()
+        g.fill(
+            trackX,
+            thumbY,
+            trackX + 1,
+            thumbY + thumbH,
+            if (draggingTabScrollbar) 0xFFFFFFFF.toInt() else 0xFFAAAAAA.toInt()
+        )
     }
+
     open fun renderDescription(g: GuiGraphics, descY: Int) {
-        if (hoveredRow == null || hoveredRow.getOption() == null) {
-            return
-        }
-        g.fill(panelLeft, descY, panelRight, descY + 28, (0x80000000).toInt())
-        var opt: Option<*> = hoveredRow.getOption()
-        var title: Component = opt.getLabel()
-        g.drawString(this.font, title, panelLeft + 6, descY + 4, -1, false)
-        var desc: Component = opt.getDescription()
-        var maxWidth: Int = panelRight - panelLeft - 6 * 2
-        var lines: MutableList<FormattedCharSequence> = this.font.split(desc, maxWidth)
-        var lineY: Int = descY + 16
-        var max: Int = Math.min(lines.size(), 28 - 16 / 10)
-        var i = 0
-        while (i < max) {
-            g.drawString(this.font, lines.get(i), panelLeft + 6, lineY, (0xFFCCCCCC).toInt(), false)
+        val row = hoveredRow ?: return
+        val opt = row.option ?: return
+        g.fill(panelLeft, descY, panelRight, descY + 28, 0x80000000.toInt())
+        val title = opt.getLabel()
+        g.drawString(font, title, panelLeft + 6, descY + 4, -1, false)
+        val desc = opt.getDescription()
+        val maxWidth = panelRight - panelLeft - 6 * 2
+        val lines = font.split(desc, maxWidth)
+        var lineY = descY + 16
+        val max = min(lines.size, (28 - 16) / 10)
+        for (i in 0 until max) {
+            g.drawString(font, lines[i], panelLeft + 6, lineY, 0xFFCCCCCC.toInt(), false)
             lineY += 10
-            i++
         }
     }
-    open fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
-        var mouseX: Double = event.x()
-        var mouseY: Double = event.y()
-        var button: Int = event.button()
+
+    override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val mouseX = event.x()
+        val mouseY = event.y()
+        val button = event.button()
         for (row in activeRows) {
             if (row.isOverlayOpen() && row.overlayMouseClicked(mouseX, mouseY, button, rowScrollDisplay)) {
                 return true
@@ -471,9 +516,9 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
             return true
         }
         if (mouseX >= tabAreaLeft && mouseX < tabAreaRight && mouseY >= tabAreaTop && mouseY < tabAreaBottom) {
-            var adjX: Double = if (compactTabs) mouseX + tabScrollDisplay else mouseX
-            var adjY: Double = if (compactTabs) mouseY else mouseY + tabScrollDisplay
-            var adjEvent: MouseButtonEvent = MouseButtonEvent(adjX, adjY, event.buttonInfo())
+            val adjX = if (compactTabs) mouseX + tabScrollDisplay else mouseX
+            val adjY = if (compactTabs) mouseY else mouseY + tabScrollDisplay
+            val adjEvent = MouseButtonEvent(adjX, adjY, event.buttonInfo())
             for (tb in tabButtons) {
                 if (tb.mouseClicked(adjEvent, doubleClick)) {
                     return true
@@ -482,13 +527,13 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
             return true
         }
         if (mouseX >= rowAreaLeft && mouseX < rowAreaRight && mouseY >= rowAreaTop && mouseY < rowAreaBottom) {
-            var adjY: Double = mouseY + rowScrollDisplay
-            var adjEvent: MouseButtonEvent = MouseButtonEvent(mouseX, adjY, event.buttonInfo())
+            val adjY = mouseY + rowScrollDisplay
+            val adjEvent = MouseButtonEvent(mouseX, adjY, event.buttonInfo())
             for (row in activeRows) {
                 if (row.mouseClicked(adjEvent, doubleClick)) {
-                    setFocused(row)
+                    focused = row
                     if (button == 0) {
-                        setDragging(true)
+                        isDragging = true
                     }
                     return true
                 }
@@ -497,7 +542,8 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
         }
         return super.mouseClicked(event, doubleClick)
     }
-    open fun mouseDragged(event: MouseButtonEvent, dx: Double, dy: Double): Boolean {
+
+    override fun mouseDragged(event: MouseButtonEvent, dx: Double, dy: Double): Boolean {
         if (draggingRowScrollbar) {
             updateRowScrollFromMouse(event.y())
             return true
@@ -508,7 +554,8 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
         }
         return super.mouseDragged(event, dx, dy)
     }
-    open fun mouseReleased(event: MouseButtonEvent): Boolean {
+
+    override fun mouseReleased(event: MouseButtonEvent): Boolean {
         if (draggingRowScrollbar) {
             draggingRowScrollbar = false
             return true
@@ -519,64 +566,70 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
         }
         return super.mouseReleased(event)
     }
-    open fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
-        var delta: Double = scrollY
+
+    override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
+        val delta = scrollY
         for (row in activeRows) {
             if (row.isOverlayOpen() && row.overlayMouseScrolled(mouseX, mouseY, delta, rowScrollDisplay)) {
                 return true
             }
         }
         if (mouseX >= tabAreaLeft && mouseX < tabAreaRight && mouseY >= tabAreaTop && mouseY < tabAreaBottom) {
-            tabScrollOffset = Mth.clamp((tabScrollOffset - delta * 20 as Int), 0, maxTabScroll)
+            tabScrollOffset = Mth.clamp((tabScrollOffset - delta * 20).toInt(), 0, maxTabScroll)
             return true
         }
         if (mouseX >= rowAreaLeft && mouseX < rowAreaRight && mouseY >= rowAreaTop && mouseY < rowAreaBottom) {
-            rowScrollOffset = Mth.clamp((rowScrollOffset - delta * 20 as Int), 0, maxRowScroll)
+            rowScrollOffset = Mth.clamp((rowScrollOffset - delta * 20).toInt(), 0, maxRowScroll)
             return true
         }
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
     }
-    open fun isOnRowScrollbar(mouseX: Double, mouseY: Double): Boolean {
-        var trackX: Int = rowAreaRight - 4
+
+    private fun isOnRowScrollbar(mouseX: Double, mouseY: Double): Boolean {
+        val trackX = rowAreaRight - 4
         return mouseX >= trackX && mouseX < trackX + 3 && mouseY >= rowAreaTop && mouseY < rowAreaBottom
     }
-    open fun isOnTabScrollbar(mouseX: Double, mouseY: Double): Boolean {
+
+    private fun isOnTabScrollbar(mouseX: Double, mouseY: Double): Boolean {
         if (compactTabs) {
-            var trackY: Int = tabAreaBottom - 4
+            val trackY = tabAreaBottom - 4
             return mouseY >= trackY && mouseY < trackY + 3 && mouseX >= tabAreaLeft && mouseX < tabAreaRight
         }
-        var trackX: Int = tabAreaRight - 4
+        val trackX = tabAreaRight - 4
         return mouseX >= trackX && mouseX < trackX + 3 && mouseY >= tabAreaTop && mouseY < tabAreaBottom
     }
-    open fun updateRowScrollFromMouse(mouseY: Double) {
-        var trackTop: Int = rowAreaTop + 1
-        var trackBot: Int = rowAreaBottom - 1
-        var t: Double = Mth.clamp(mouseY - trackTop / Math.max(1, trackBot - trackTop), 0.0, 1.0)
-        rowScrollOffset = (t * maxRowScroll as Int)
+
+    private fun updateRowScrollFromMouse(mouseY: Double) {
+        val trackTop = rowAreaTop + 1
+        val trackBot = rowAreaBottom - 1
+        val t = Mth.clamp((mouseY - trackTop) / max(1, trackBot - trackTop), 0.0, 1.0)
+        rowScrollOffset = (t * maxRowScroll).toInt()
     }
-    open fun updateTabScrollFromMouse(mouseX: Double, mouseY: Double) {
+
+    private fun updateTabScrollFromMouse(mouseX: Double, mouseY: Double) {
         if (compactTabs) {
-            var trackLeft: Int = tabAreaLeft + 1
-            var trackRight: Int = tabAreaRight - 1
-            var t: Double = Mth.clamp(mouseX - trackLeft / Math.max(1, trackRight - trackLeft), 0.0, 1.0)
-            tabScrollOffset = (t * maxTabScroll as Int)
+            val trackLeft = tabAreaLeft + 1
+            val trackRight = tabAreaRight - 1
+            val t = Mth.clamp((mouseX - trackLeft) / max(1, trackRight - trackLeft), 0.0, 1.0)
+            tabScrollOffset = (t * maxTabScroll).toInt()
             return
         }
-        var trackTop: Int = tabAreaTop + 1
-        var trackBot: Int = tabAreaBottom - 1
-        var t: Double = Mth.clamp(mouseY - trackTop / Math.max(1, trackBot - trackTop), 0.0, 1.0)
-        tabScrollOffset = (t * maxTabScroll as Int)
+        val trackTop = tabAreaTop + 1
+        val trackBot = tabAreaBottom - 1
+        val t = Mth.clamp((mouseY - trackTop) / max(1, trackBot - trackTop), 0.0, 1.0)
+        tabScrollOffset = (t * maxTabScroll).toInt()
     }
-    open fun shouldCloseOnEsc(): Boolean {
-        return true
-    }
-    open fun onClose() {
+
+    override fun shouldCloseOnEsc(): Boolean = true
+
+    override fun onClose() {
         onCancel()
     }
-    open fun isPauseScreen(): Boolean {
-        return false
-    }
+
+    override fun isPauseScreen(): Boolean = false
+
     companion object {
-        @JvmField var lastSelectedGroup: MutableMap<Class<OptionScreen>? = null, String> = HashMap()
+        @JvmField
+        val lastSelectedGroup: MutableMap<Class<out OptionScreen>, String> = HashMap()
     }
 }
