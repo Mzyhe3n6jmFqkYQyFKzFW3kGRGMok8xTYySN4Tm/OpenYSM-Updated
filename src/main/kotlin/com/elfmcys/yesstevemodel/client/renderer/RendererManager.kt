@@ -2,6 +2,8 @@ package com.elfmcys.yesstevemodel.client.renderer
 
 import com.elfmcys.yesstevemodel.NameSpaces
 import com.elfmcys.yesstevemodel.YesSteveModel
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener
 import net.minecraft.client.Minecraft
@@ -9,9 +11,9 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.resources.Identifier
 import net.minecraft.server.packs.PackType
 import net.minecraft.server.packs.resources.ResourceManager
-import rip.ysm.api.PlatformAPI
 import rip.ysm.compat.sbackpack.SBackpackCompat
 
+@Environment(EnvType.CLIENT)
 object RendererManager {
     @JvmField
     var playerRenderer: CustomPlayerRenderer? = null
@@ -25,9 +27,7 @@ object RendererManager {
     @JvmField
     var vehicleRenderer: VehicleRenderer? = null
 
-    @JvmStatic
-    fun register() {
-        if (PlatformAPI.isServer()) return
+    init {
         // TODO: interface ResourceManagerHelper : Any' is deprecated. Deprecated in Java.
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES)
             .registerReloadListener(object : SimpleSynchronousResourceReloadListener {
@@ -40,19 +40,15 @@ object RendererManager {
             })
     }
 
-    @JvmStatic
-    fun resetRenderers() {
+    private fun resetRenderers() {
         playerRenderer = null
         projectileRenderer = null
         handRenderer = null
         vehicleRenderer = null
     }
 
-    @JvmStatic
-    fun initRenderers(resourceManager: ResourceManager) {
-        if (!YesSteveModel.isAvailable()) {
-            return
-        }
+    private fun initRenderers(resourceManager: ResourceManager) {
+        if (!YesSteveModel.isAvailable()) return
         val minecraft = Minecraft.getInstance()
         val entityRenderDispatcher = minecraft.entityRenderDispatcher
         val context = EntityRendererProvider.Context(

@@ -6,9 +6,8 @@ import com.elfmcys.yesstevemodel.client.input.*
 import com.elfmcys.yesstevemodel.client.renderer.RendererManager
 import rip.ysm.api.PlatformAPI
 
-// TODO
 object YsmEventBootstrap {
-    init {
+    private fun init() {
         Constants.doNothing(
             ServerStartupEvent,
             EnterServerEvent,
@@ -18,24 +17,27 @@ object YsmEventBootstrap {
             CapabilityEvent
         )
 
-        if (!PlatformAPI.isServer()) {
-            Constants.doNothing(
-                EntityJoinCallbackEvent,
-                ClientSetupEvent
-            )
+        if (PlatformAPI.isServer()) return
 
-            ClientTickEvent.register()
-            ClientPlayerJoinNotification.register()
-            ClientPlayerCloneEvent.register()
-            AnimationLockEvent.register()
-            PlayerSkinTextureManager.register()
-            RendererManager.register()
-            PlayerModelToggleKey.register()
-            AnimationRouletteKey.register()
-            DebugAnimationKey.register()
-            ExtraPlayerRenderKey.register()
-            ExtraAnimationKey.register()
-            InputStateKey.register()
-        }
+        Constants.doNothing(
+            EntityJoinCallbackEvent,
+            ClientSetupEvent,
+            ClientTickEvent,
+            ClientPlayerJoinNotification,
+            ClientPlayerCloneEvent,
+            AnimationLockEvent,
+            PlayerSkinTextureManager,
+            RendererManager,
+            PlayerModelToggleKey,
+            AnimationRouletteKey,
+            DebugAnimationKey,
+            ExtraPlayerRenderKey,
+            ExtraAnimationKey,
+            InputStateKey
+        )
+    }
+
+    init {
+        init()
     }
 }

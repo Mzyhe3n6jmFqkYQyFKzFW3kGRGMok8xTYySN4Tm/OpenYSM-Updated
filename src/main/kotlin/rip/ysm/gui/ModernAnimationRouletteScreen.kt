@@ -193,7 +193,12 @@ open class ModernAnimationRouletteScreen(
         val ix: Int = centerX + (r * cos(mid)).toInt() - 8
         val iy: Int = centerY + (r * sin(mid)).toInt() - 8
         GlStateManager._enableBlend()
-        GlStateManager._blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GlStateManager._blendFuncSeparate(
+            GL11.GL_SRC_ALPHA,
+            GL11.GL_ONE_MINUS_SRC_ALPHA,
+            GL11.GL_ONE,
+            GL11.GL_ONE_MINUS_SRC_ALPHA
+        )
         g.blit(RenderPipelines.GUI_TEXTURED, settingsIcon, ix, iy, 0.0f, 0.0f, 16, 16, 32, 32, 32, 32)
         GlStateManager._disableBlend()
     }
@@ -270,7 +275,12 @@ open class ModernAnimationRouletteScreen(
         if (animatableModel.entity is Player) {
             val tex: Identifier = if (AnimationLockEvent.isLocked()) lockIcon else unlockIcon
             GlStateManager._enableBlend()
-            GlStateManager._blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA)
+            GlStateManager._blendFuncSeparate(
+                GL11.GL_SRC_ALPHA,
+                GL11.GL_ONE_MINUS_SRC_ALPHA,
+                GL11.GL_ONE,
+                GL11.GL_ONE_MINUS_SRC_ALPHA
+            )
             g.blit(RenderPipelines.GUI_TEXTURED, tex, centerX - 16, centerY - 16, 0.0f, 0.0f, 32, 32, 64, 64, 64, 64)
             GlStateManager._disableBlend()
         } else {
@@ -325,8 +335,8 @@ open class ModernAnimationRouletteScreen(
         val prefixW = font.width(prefix)
         val sep = font.width(" > ")
         var total = prefixW
-        for (i in 0 until navigationStack.size) {
-            val s = navigationStack[i].left
+        for ((i, element) in navigationStack.withIndex()) {
+            val s = element.left
             total += font.width(if (s.isNullOrBlank()) rootLabel else s)
             if (i < navigationStack.size - 1) {
                 total += sep
@@ -336,8 +346,8 @@ open class ModernAnimationRouletteScreen(
         g.drawString(font, prefix, x, pathY, 0xFFFFFFFF.toInt(), true)
         x += prefixW
         hoveredPathSegment = -1
-        for (i in 0 until navigationStack.size) {
-            val raw = navigationStack[i].left
+        for ((i, element) in navigationStack.withIndex()) {
+            val raw = element.left
             val s = if (raw.isNullOrBlank()) rootLabel else raw
             val w = font.width(s)
             val isLast = i == navigationStack.size - 1
@@ -454,14 +464,16 @@ open class ModernAnimationRouletteScreen(
         val sub = value.substring(1)
         if (textProperties[sub] != null) {
             navigationStack.addLast(MutablePair.of(sub, 0))
-            Minecraft.getInstance().setScreen(ModernAnimationRouletteScreen(lastModelId, renderContext, animatableModel))
+            Minecraft.getInstance()
+                .setScreen(ModernAnimationRouletteScreen(lastModelId, renderContext, animatableModel))
         }
     }
 
     private fun navigateBack() {
         if (navigationStack.size > 1) {
             navigationStack.removeLast()
-            Minecraft.getInstance().setScreen(ModernAnimationRouletteScreen(lastModelId, renderContext, animatableModel))
+            Minecraft.getInstance()
+                .setScreen(ModernAnimationRouletteScreen(lastModelId, renderContext, animatableModel))
             return
         }
         Minecraft.getInstance().setScreen(null)
@@ -482,7 +494,12 @@ open class ModernAnimationRouletteScreen(
             PlayerCapability[player]?.requestModelSwitch(key)
         }
         if (player != null && GeneralConfig.PRINT_ANIMATION_ROULETTE_MSG.get() == true) {
-            player.displayClientMessage(Component.translatable("message.yes_steve_model.model.animation_roulette.play", key), false)
+            player.displayClientMessage(
+                Component.translatable(
+                    "message.yes_steve_model.model.animation_roulette.play",
+                    key
+                ), false
+            )
         }
         Minecraft.getInstance().setScreen(null)
     }

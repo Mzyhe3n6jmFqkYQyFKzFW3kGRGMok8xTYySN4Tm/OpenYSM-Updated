@@ -3,18 +3,20 @@ package com.elfmcys.yesstevemodel.client.event
 import com.elfmcys.yesstevemodel.YesSteveModel
 import com.elfmcys.yesstevemodel.client.ClientModelManager
 import com.elfmcys.yesstevemodel.network.NetworkHandler
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.network.chat.Component
 import kotlin.concurrent.thread
 
+@Environment(EnvType.CLIENT)
 object ClientPlayerJoinNotification {
     @JvmField
     var notified: Boolean = false
 
-    @JvmStatic
-    fun register() {
+    init {
         ClientPlayConnectionEvents.JOIN.register { _, _, client ->
             client.player?.let(::onPlayerJoin)
         }
@@ -24,10 +26,8 @@ object ClientPlayerJoinNotification {
     }
 
     @JvmStatic
-    fun onPlayerJoin(player: LocalPlayer) {
-        if (notified) {
-            return
-        }
+    private fun onPlayerJoin(player: LocalPlayer) {
+        if (notified) return
         ClientModelManager.runPendingModelCallback()
         notified = true
         if (!YesSteveModel.isAvailable()) {
@@ -57,7 +57,7 @@ object ClientPlayerJoinNotification {
     }
 
     @JvmStatic
-    fun onPlayerQuit(player: LocalPlayer) {
+    private fun onPlayerQuit(player: LocalPlayer) {
         if (notified) {
             notified = false
             if (!YesSteveModel.isAvailable()) {

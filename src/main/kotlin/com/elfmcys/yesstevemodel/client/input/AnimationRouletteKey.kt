@@ -8,15 +8,17 @@ import com.elfmcys.yesstevemodel.config.ServerConfig
 import com.elfmcys.yesstevemodel.network.NetworkHandler
 import com.elfmcys.yesstevemodel.util.InputUtil
 import com.mojang.blaze3d.platform.InputConstants
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 import net.minecraft.client.KeyMapping
 import net.minecraft.client.Minecraft
-import rip.ysm.api.PlatformAPI
 import rip.ysm.api.client.KeyMappingFactory
 import rip.ysm.api.client.event.ClientRawInputEvent
 import rip.ysm.api.event.EventResult
 import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat
 import rip.ysm.gui.ModernAnimationRouletteScreen
 
+@Environment(EnvType.CLIENT)
 object AnimationRouletteKey {
     @JvmField
     val KEY_ROULETTE: KeyMapping = KeyMappingFactory.createInGameNone(
@@ -34,11 +36,7 @@ object AnimationRouletteKey {
         KeyMappingFactory.YSM_CATEGORY
     )
 
-    @JvmStatic
-    fun register() {
-        if (PlatformAPI.isServer()) {
-            return
-        }
+    init {
         ClientRawInputEvent.KEY_PRESSED.register { _, action, event ->
             if (YesSteveModel.isAvailable() && InputUtil.isPlayerReady() && action == 1 && InputUtil.isKeyPressed(
                     event,

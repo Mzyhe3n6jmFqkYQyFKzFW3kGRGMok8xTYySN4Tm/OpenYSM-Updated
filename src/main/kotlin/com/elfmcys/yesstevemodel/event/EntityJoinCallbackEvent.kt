@@ -3,6 +3,8 @@ package com.elfmcys.yesstevemodel.event
 import com.elfmcys.yesstevemodel.YesSteveModel
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import net.fabricmc.api.EnvType
+import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents
 import net.minecraft.client.Minecraft
 import net.minecraft.world.entity.Entity
@@ -14,9 +16,11 @@ object EntityJoinCallbackEvent {
         CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.SECONDS).build()
 
     init {
+        @Environment(EnvType.CLIENT)
         register()
     }
 
+    @Environment(EnvType.CLIENT)
     private fun register() {
         if (PlatformAPI.isServer()) {
             return
