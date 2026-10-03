@@ -21,7 +21,7 @@ open class GeckoVehicleEntity(
 
     override fun registerAnimationControllers() {
         vehicleModel?.let {
-            it.getAnimatableConsumer().accept(this)
+            it.controllerInitializer(this)
             expressionBuilder =
                 getAnimationData().getAnimationControllerByName(VehicleAnimationController.ORIGIN_CONTROLLER_KEY) as? VehicleRotationController
         }

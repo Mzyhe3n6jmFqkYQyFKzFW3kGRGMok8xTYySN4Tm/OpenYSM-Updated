@@ -104,10 +104,11 @@ object TouhouLittleMaidCompatImpl {
     }
 
     @JvmStatic
-    fun buildControllers(modelBundle: PlayerModelBundle, resourceBundle: ModelResourceBundle): java.util.function.Consumer<MaidAnimatable>? {
-        if (!isLoaded()) {
-            return null
-        }
+    fun buildControllers(
+        modelBundle: PlayerModelBundle,
+        resourceBundle: ModelResourceBundle
+    ): ((MaidAnimatable) -> Unit)? {
+        if (!isLoaded()) return null
         return MaidAnimationController.buildControllers(modelBundle, resourceBundle)
     }
 }
