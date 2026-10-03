@@ -23,7 +23,7 @@ import net.minecraft.network.chat.MutableComponent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.util.Mth
 
-class PlayerTextureScreen(
+open class PlayerTextureScreen(
     private val parentScreen: PlayerModelScreen,
     private val modelId: String,
     val renderContext: ModelAssembly
@@ -58,7 +58,7 @@ class PlayerTextureScreen(
         }
     }
 
-    fun createTextureButton(x: Int, y: Int, previewEntity: PlayerPreviewEntity, textureIndex: Int): TextureButton {
+    open fun createTextureButton(x: Int, y: Int, previewEntity: PlayerPreviewEntity, textureIndex: Int): TextureButton {
         return TextureButton(x, y, previewEntity, renderContext)
     }
 
@@ -77,7 +77,7 @@ class PlayerTextureScreen(
 
         addRenderableWidget(
             FlatColorButton(guiLeft + 5, guiTop, 80, 18, Component.translatable("gui.yes_steve_model.model.return")) {
-                minecraft?.setScreen(parentScreen)
+                minecraft.setScreen(parentScreen)
             }
         )
 
@@ -177,7 +177,7 @@ class PlayerTextureScreen(
     }
 
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        if (minecraft?.player == null) return
+        if (minecraft.player == null) return
         renderBackground(guiGraphics, mouseX, mouseY, partialTick)
         guiGraphics.fillGradient(guiLeft, guiTop + 22, guiLeft + 90, guiTop + 235, -14540254, -14540254)
         guiGraphics.fillGradient(guiLeft + 93, guiTop, guiLeft + 299, guiTop + 235, -14540254, -14540254)
@@ -186,7 +186,7 @@ class PlayerTextureScreen(
         if (!modelHolder.getAnimationStateMachine().isCurrentAnimation(currentAnimation)) {
             modelHolder.getAnimationStateMachine().setCurrentAnimation(currentAnimation)
         }
-        renderTexturePreview(guiGraphics, minecraft?.deltaTracker?.getGameTimeDeltaPartialTick(false) ?: partialTick)
+        renderTexturePreview(guiGraphics, minecraft.deltaTracker?.getGameTimeDeltaPartialTick(false) ?: partialTick)
 
         val texPageStr = "${textureCurrentPage + 1}/${textureMaxPage + 1}"
         val texPageX = guiLeft + 302 + ((118 - font.width(texPageStr)) / 2)
@@ -211,8 +211,8 @@ class PlayerTextureScreen(
     override fun renderBlurredBackground(guiGraphics: GuiGraphics) {
     }
 
-    fun renderTexturePreview(guiGraphics: GuiGraphics, partialTick: Float) {
-        val player = minecraft?.player ?: return
+    open fun renderTexturePreview(guiGraphics: GuiGraphics, partialTick: Float) {
+        val player = minecraft.player ?: return
         val cap = PlayerCapability[player] ?: return
         modelHolder.initModelWithTexture(modelId, cap.getCurrentTextureName())
         val x0 = guiLeft + 93

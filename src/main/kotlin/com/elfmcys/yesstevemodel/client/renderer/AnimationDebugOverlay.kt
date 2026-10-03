@@ -22,8 +22,6 @@ import rip.ysm.api.client.HudOverlay
 import rip.ysm.compat.touhoulittlemaid.MaidCapabilityBridge
 import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat
 import java.lang.ref.WeakReference
-import java.util.Objects
-import kotlin.jvm.optionals.getOrNull
 
 object AnimationDebugOverlay {
     @JvmField
@@ -79,7 +77,7 @@ object AnimationDebugOverlay {
     fun tryUpdateFromEntity(entity: Entity): Boolean {
         val capability: Any? = when {
             entity is Player -> PlayerCapability[entity]
-            TouhouLittleMaidCompat.isMaidEntity(entity) -> MaidCapabilityBridge[entity].getOrNull()
+            TouhouLittleMaidCompat.isMaidEntity(entity) -> MaidCapabilityBridge[entity]
             entity is Projectile -> ProjectileCapability[entity]
             else -> VehicleCapability[entity]
         }

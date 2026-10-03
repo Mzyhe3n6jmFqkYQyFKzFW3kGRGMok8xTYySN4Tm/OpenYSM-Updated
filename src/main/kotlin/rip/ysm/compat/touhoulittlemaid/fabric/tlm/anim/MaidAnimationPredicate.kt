@@ -10,43 +10,48 @@ import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import com.github.tartaricacid.touhoulittlemaid.api.client.render.MaidRenderState
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
-import net.minecraft.world.entity.LivingEntity
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 
+@Environment(EnvType.CLIENT)
 open class MaidAnimationPredicate : IAnimationPredicate<MaidAnimatable> {
-    open fun predicate(event: AnimationEvent<MaidAnimatable>, evaluator: ExpressionEvaluator<*>): PlayState {
-        var entity: EntityMaid = event.getAnimatable().getEntity()
+
+    override fun predicate(event: AnimationEvent<MaidAnimatable>, evaluator: ExpressionEvaluator<*>?): PlayState {
+        val entity: EntityMaid = event.getAnimatable().entity
         if (entity == null || event.getAnimatable() is IPreviewAnimatable) {
-            PlayState.STOP
+            return PlayState.STOP
         }
         if (entity.renderState != MaidRenderState.ENTITY) {
-            PlayState.STOP
+            return PlayState.STOP
         }
-        var vehicle: Entity = (entity as LivingEntity).getVehicle()
-        if (vehicle != null && vehicle.isAlive()) {
-            PlayState.STOP
+        val vehicle = (entity as LivingEntity).vehicle
+        if (vehicle != null && vehicle.isAlive) {
+            return PlayState.STOP
         }
-        var priority = 0
-        while (priority < PRIORITY_BUCKETS) {
+        for (priority in 0 until PRIORITY_BUCKETS) {
             for (animationState in PRIORITY_HANDLERS[priority]) {
-                if (animationState.getPredicate().test(entity, event)) {
-                    var name: String = animationState.getAnimationName()
-                    var loopType: ILoopType = animationState.getLoopType()
+                if (animationState.predicate.test(entity, event)) {
+                    val name: String = animationState.animationName
+                    val loopType: ILoopType = animationState.loopType
                     return IAnimationPredicate.playAnimationWithLoop(event, name, loopType)
                 }
             }
-            priority++
         }
         return PlayState.STOP
     }
+
     companion object {
-        @JvmField var PRIORITY_BUCKETS: Int = 5
-        @JvmField var PRIORITY_HANDLERS: Array<ReferenceArrayList<AnimationState<EntityMaid, MaidAnimatable>>> = arrayOfNulls<ReferenceArrayList>(PRIORITY_BUCKETS)
-        @JvmStatic fun registerHandler(animationState: AnimationState<EntityMaid, MaidAnimatable>) {
-            PRIORITY_HANDLERS[animationState.getPriority()].add(animationState)
+        private const val PRIORITY_BUCKETS: Int = 5
+
+        @Suppress("UNCHECKED_CAST")
+        private val PRIORITY_HANDLERS: Array<ReferenceArrayList<AnimationState<EntityMaid, MaidAnimatable>>> =
+            Array(PRIORITY_BUCKETS) { ReferenceArrayList(6) }
+
+        @JvmStatic
+        fun registerHandler(animationState: AnimationState<EntityMaid, MaidAnimatable>) {
+            PRIORITY_HANDLERS[animationState.priority].add(animationState)
         }
     }
 }

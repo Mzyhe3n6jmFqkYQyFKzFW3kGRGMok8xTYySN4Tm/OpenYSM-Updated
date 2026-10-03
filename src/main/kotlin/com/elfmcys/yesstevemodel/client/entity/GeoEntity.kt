@@ -1,6 +1,9 @@
 package com.elfmcys.yesstevemodel.client.entity
 
-import com.elfmcys.yesstevemodel.audio.*
+import com.elfmcys.yesstevemodel.audio.AudioCodec
+import com.elfmcys.yesstevemodel.audio.AudioStreamCache
+import com.elfmcys.yesstevemodel.audio.IAudioStreamFactory
+import com.elfmcys.yesstevemodel.audio.IAudioStreamProvider
 import com.elfmcys.yesstevemodel.client.ClientModelManager
 import com.elfmcys.yesstevemodel.client.animation.molang.MolangEventDispatcher
 import com.elfmcys.yesstevemodel.client.animation.molang.MolangWatchRegistry
@@ -20,7 +23,7 @@ import com.elfmcys.yesstevemodel.util.log.ILogger
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.world.entity.Entity
 import rip.ysm.compat.oculus.OculusCompat
-import java.util.Optional
+import java.util.*
 import java.util.concurrent.Future
 
 abstract class GeoEntity<T : Entity>(
@@ -119,7 +122,7 @@ abstract class GeoEntity<T : Entity>(
                 modelAssembly = shape.context
                 loaded = shape.isDefault
                 modelAssembly?.let { onModelLoaded(it) }
-                initAnimationControllers(getAnimationProcessor(), shape.context.getExpressionCache().getEvents())
+                initAnimationControllers(getAnimationProcessor(), shape.context.expressionCache.events)
                 return
             }
             return
@@ -135,7 +138,7 @@ abstract class GeoEntity<T : Entity>(
 
     open fun onModelLoaded(modelAssembly: ModelAssembly) {
         renderShape?.audioProvider = AudioStreamCache.getOrCreateProvider(modelAssembly)
-        renderLayers = modelAssembly.getExpressionCache().getEvents().get(MolangEventDispatcher.DEFER)
+        renderLayers = modelAssembly.expressionCache.events[MolangEventDispatcher.DEFER]
     }
 
     open fun clearModel() {
@@ -172,14 +175,14 @@ abstract class GeoEntity<T : Entity>(
     }
 
     override fun resolveExpression(str: String): IValue? {
-        return getModelAssembly()?.getExpressionCache()?.getFunctions()?.get(str)
+        return getModelAssembly()?.expressionCache?.functions?.get(str)
     }
 
     override fun getAudioStreamFactory(str: String): Optional<IAudioStreamFactory> {
         val shape = renderShape ?: return Optional.empty()
         val provider = shape.audioProvider ?: return Optional.empty()
-        val trackData = getModelAssembly()?.getExpressionCache()?.getSoundEffects()?.get(str)
-        if (trackData != null && trackData.data != null && trackData.codec != AudioCodec.UNDEFINED) {
+        val trackData = getModelAssembly()?.expressionCache?.soundEffects?.get(str)
+        if (trackData?.data != null && trackData.codec != AudioCodec.UNDEFINED) {
             return Optional.of(IAudioStreamFactory { provider.createAudioStream(trackData) })
         }
         return Optional.empty()

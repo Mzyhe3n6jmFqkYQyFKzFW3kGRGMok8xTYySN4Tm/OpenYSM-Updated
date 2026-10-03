@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate", "unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.core
 
 import com.elfmcys.yesstevemodel.audio.IAudioStreamFactory
@@ -28,9 +30,8 @@ import net.minecraft.resources.Identifier
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.phys.Vec3
 import rip.ysm.api.entity.EntityDataBridge
-import java.util.Optional
+import java.util.*
 import java.util.function.Consumer
 
 abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
@@ -78,9 +79,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
         animationStates.clear()
     }
 
-    open fun createPositionTracker(tentity: TEntity): EntityFrameStateTracker<TEntity> {
-        return EntityFrameStateTracker(tentity)
-    }
+    open fun createPositionTracker(entity: TEntity): EntityFrameStateTracker<TEntity> = EntityFrameStateTracker(entity)
 
     open fun getPositionTracker(): EntityFrameStateTracker<TEntity> = positionTracker
 
@@ -106,8 +105,8 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
 
     open fun getScale(): Float = 0.15f
 
-    open fun setupAnim(seekTime: Float, z: Boolean) {}
-    open fun afterSetupAnim(seekTime: Float, z: Boolean) {}
+    open fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {}
+    open fun afterSetupAnim(seekTime: Float, isFirstPerson: Boolean) {}
 
     fun getEntity(): TEntity = entity
 
@@ -118,19 +117,15 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
     open fun shouldRenderOverlay(): Boolean = true
 
     open fun getRefreshRate(): Int {
-        val player = Minecraft.getInstance().player as? TEntity
+        val player = Minecraft.getInstance().player
         if (player != null && player != entity) {
-            val vec3Position: Vec3 = player.position()
+            val vec3Position = player.position()
             if (vec3Position.x != 0.0 || vec3Position.y != 0.0 || vec3Position.z != 0.0) {
-                if (!isFirstFrameAfterReset) {
-                    return 10
-                }
-                val fDistanceTo: Float = player.distanceTo(entity)
-                if (fDistanceTo > 64.0f) {
-                    return 30
-                }
-                if (fDistanceTo > 40.0f) {
-                    return 60
+                if (!isFirstFrameAfterReset) return 10
+                val fDistanceTo = player.distanceTo(entity)
+                when {
+                    fDistanceTo > 64.0f -> return 30
+                    fDistanceTo > 40.0f -> return 60
                 }
             }
         }
@@ -142,22 +137,21 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
     }
 
     open fun processAnimationImpl(partialTick: Float, z: Boolean): AnimationEvent<*>? {
-        if (currentModel == null) {
-            return null
-        }
-        val entity: Entity = this.entity
-        val livingEntity: LivingEntity? = entity as? LivingEntity
-        val tickCount: Int = if (this is IPreviewAnimatable) ClientTickEvent.getTickCount() else entity.tickCount
-        val frameTime: Float = if (partialTick != 1.0f) partialTick else Minecraft.getInstance().deltaTracker.getGameTimeDeltaPartialTick(false)
-        val shouldSit: Boolean = entity.isPassenger && entity.vehicle != null && EntityDataBridge.shouldRiderSit(entity.vehicle)
+        if (currentModel == null) return null
+        val livingEntity = entity as? LivingEntity
+        val tickCount = if (this is IPreviewAnimatable) ClientTickEvent.getTickCount() else entity.tickCount
+        val frameTime =
+            if (partialTick != 1.0f) partialTick else Minecraft.getInstance().deltaTracker.getGameTimeDeltaPartialTick(
+                false
+            )
+        val shouldSit =
+            entity.isPassenger && entity.vehicle != null && entity.vehicle?.let { EntityDataBridge.shouldRiderSit(it) } == true
         var limbSwingAmount = 0.0f
         var limbSwing = 0.0f
         if (!shouldSit && entity.isAlive && livingEntity != null) {
             limbSwingAmount = livingEntity.walkAnimation.speed(partialTick)
             limbSwing = livingEntity.walkAnimation.position(partialTick)
-            if (livingEntity.isBaby) {
-                limbSwing *= 3.0f
-            }
+            if (livingEntity.isBaby) limbSwing *= 3.0f
         }
         val modelData = EntityModelData()
         modelData.isSitting = shouldSit
@@ -173,8 +167,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
         val vehicle = entity.vehicle
         if (shouldSit && vehicle is LivingEntity) {
             lerpBodyRot = Mth.rotLerp(partialTick, vehicle.yBodyRotO, vehicle.yBodyRot)
-            netHeadYaw = lerpHeadRot - lerpBodyRot
-            val clampedHeadYaw: Float = Mth.clamp(Mth.wrapDegrees(lerpHeadRot - lerpBodyRot), -85.0f, 85.0f)
+            val clampedHeadYaw = Mth.clamp(Mth.wrapDegrees(lerpHeadRot - lerpBodyRot), -85.0f, 85.0f)
             lerpBodyRot = lerpHeadRot - clampedHeadYaw
             if (clampedHeadYaw * clampedHeadYaw > 2500f) {
                 lerpBodyRot += clampedHeadYaw * 0.2f
@@ -187,16 +180,26 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
         modelData.netHeadYaw = -Mth.clamp(Mth.wrapDegrees(netHeadYaw), -85.0f, 85.0f)
         modelData.lerpBodyRot = lerpBodyRot
         modelData.lerpedAge = tickCount + partialTick
-        val event: AnimationEvent<AnimatableEntity<TEntity>> = AnimationEvent(this, limbSwing, limbSwingAmount, tickCount, partialTick, frameTime, limbSwingAmount <= (-getScale()) || limbSwingAmount <= getScale(), z, modelData)
-        val context: AnimationContext<TEntity> = AnimationContext(entity, this, event, modelData)
+        val event = AnimationEvent(
+            this,
+            limbSwing,
+            limbSwingAmount,
+            tickCount,
+            partialTick,
+            frameTime,
+            limbSwingAmount <= (-getScale()) || limbSwingAmount <= getScale(),
+            z,
+            modelData
+        )
+        val context = AnimationContext(entity, this, event, modelData)
         getLogger()?.let { context.setLogger(it) }
         setCustomAnimations(context, event)
         return event
     }
 
     open fun setCustomAnimations(ctx: AnimationContext<*>, event: AnimationEvent<AnimatableEntity<TEntity>>) {
-        var currentTick: Float = event.currentTick
-        val z: Boolean = !shouldSkipAnimation(event)
+        var currentTick = event.currentTick
+        val z = !shouldSkipAnimation(event)
         if (currentTick > lastTick) {
             hasUpdatedThisTick = false
             isTickTriggered = false
@@ -210,8 +213,8 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
         if (manager.startTick == -1.0f) {
             manager.startTick = currentTick
         } else {
-            val f2: Float = currentTick - manager.startTick
-            val f3: Float = f2 - manager.limbSwing
+            val f2 = currentTick - manager.startTick
+            val f3 = f2 - manager.limbSwing
             if (f3 > 0.0f) {
                 manager.limbSwing = f2
                 seekTime += f3
@@ -220,8 +223,9 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
         event.currentTick = seekTime
         if (!animationProcessor.isDisabled()) {
             isTickTriggered = isTickTriggered or rateLimiter.request(seekTime / 20.0f)
-            val z2: Boolean = (isTickTriggered && !hasUpdatedThisTick) || wasAnimationActiveLastTick || z
-            val z3: Boolean = (!z || (seekTime == 0.0f && !hasUpdatedThisTick)) && isTickTriggered && !hasUpdatedThisTick
+            val z2 = (isTickTriggered && !hasUpdatedThisTick) || wasAnimationActiveLastTick || z
+            val z3 =
+                (!z || (seekTime == 0.0f && !hasUpdatedThisTick)) && isTickTriggered && !hasUpdatedThisTick
             resetHeadTracking(wasEvaluatedLastFrame)
             if (z2) {
                 if (z3) {
@@ -244,7 +248,10 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
 
     open fun getEvaluationContext(): AnimationProcessor<TEntity> = animationProcessor
 
-    open fun initAnimationControllers(model: GeoModel, object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>) {
+    open fun initAnimationControllers(
+        model: GeoModel,
+        object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>
+    ) {
         reset()
         val animModel = AnimatedGeoModel(model)
         currentModel = animModel
@@ -256,7 +263,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
 
     open fun clearAnimationControllers() {
         currentModel?.let {
-            val model: GeoModel = it.getGeoModel()
+            val model = it.getGeoModel()
             val object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>? = animationMap
             reset()
             initAnimationControllers(model, object2ReferenceMap ?: return)
@@ -273,7 +280,12 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
         needsReset = true
     }
 
-    open fun executeExpression(value: IValue, isClientPlayer: Boolean, executeBeforeAnimation: Boolean, consumer: Consumer<String>?) {
+    open fun executeExpression(
+        value: IValue,
+        isClientPlayer: Boolean,
+        executeBeforeAnimation: Boolean,
+        consumer: Consumer<String>?
+    ) {
         consumer?.let {
             animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, it)
         } ?: animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, null)

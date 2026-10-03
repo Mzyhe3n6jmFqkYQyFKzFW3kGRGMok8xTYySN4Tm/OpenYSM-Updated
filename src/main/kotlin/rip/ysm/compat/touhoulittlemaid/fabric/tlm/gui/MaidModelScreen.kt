@@ -21,37 +21,81 @@ import net.minecraft.util.FormattedCharSequence
 import org.apache.commons.lang3.StringUtils
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidRenderStore
-import java.util.List
-import java.util.Objects
 
-open class MaidModelScreen : PlayerModelScreen {
-    var maid: EntityMaid = null
-    constructor(maid: EntityMaid) {
-        this.maid = maid
+@Environment(EnvType.CLIENT)
+open class MaidModelScreen(private val maid: EntityMaid) : PlayerModelScreen() {
+
+    override fun createModelButton(
+        x: Int,
+        y: Int,
+        isAuthLocked: Boolean,
+        previewEntity: PlayerPreviewEntity,
+        modelAssembly: ModelAssembly
+    ): ModelButton {
+        return MaidModelButton(x, y, isAuthLocked, previewEntity, modelAssembly, maid)
     }
-    open fun createModelButton(x: Int, y: Int, isAuthLocked: Boolean, previewEntity: PlayerPreviewEntity, modelAssembly: ModelAssembly): ModelButton {
-        MaidModelButton(x, y, isAuthLocked, previewEntity, modelAssembly, this.maid)
+
+    override fun createTextureScreen(
+        other: PlayerModelScreen,
+        str: String,
+        modelAssembly: ModelAssembly
+    ): Screen {
+        return MaidTextureScreen(other, str, resolveAssembly(modelAssembly), maid)
     }
-    open fun createTextureScreen(other: PlayerModelScreen, modelId: String, modelAssembly: ModelAssembly): Screen {
-        MaidTextureScreen(other, modelId, resolveAssembly(modelAssembly), this.maid)
+
+    override fun createModelInfoScreen(
+        other: PlayerModelScreen,
+        modelAssembly: ModelAssembly
+    ): Screen {
+        return ModelInfoScreen(other, resolveAssembly(modelAssembly))
     }
-    open fun createModelInfoScreen(other: PlayerModelScreen, modelAssembly: ModelAssembly): Screen {
-        ModelInfoScreen(other, resolveAssembly(modelAssembly))
+
+    private fun resolveAssembly(fallback: ModelAssembly): ModelAssembly {
+        val current: ModelAssembly? = MaidRenderStore.getOrCreate(maid).getModelAssembly()
+        return current ?: fallback
     }
-    open fun resolveAssembly(fallback: ModelAssembly): ModelAssembly {
-        var current: ModelAssembly = MaidRenderStore.getOrCreate(this.maid).getModelAssembly()
-        return Objects.requireNonNullElse(current, fallback)
-    }
-    open fun renderModelPreview(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        InventoryScreen.renderEntityInInventoryFollowsMouse(guiGraphics, this.guiLeft + 5, this.guiTop + 29, this.guiLeft + 130, this.guiTop + 200, 70, 0.0625F, mouseX, mouseY, this.maid)
-        var animatable: MaidAnimatable = MaidRenderStore.getOrCreate(this.maid)
-        var lines: MutableList<FormattedCharSequence> = this.font.split(FormattedText.of(ClientModelManager.getModelContext(animatable.getModelId()).map({ context -> 
-if (metadata != null) { ModelMetadataPresenter.getLocalizedModelString(context, "metadata.name", metadata.getName()) }
-return StringPool.EMPTY
- }).filter(StringUtils::isNoneBlank).orElse(FileTypeUtil.getNameWithoutArchiveExtension(animatable.getModelId()))), 125)
-        var lineY: Int = this.guiTop + 205
+
+    override fun renderModelPreview(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+        InventoryScreen.renderEntityInInventoryFollowsMouse(
+            guiGraphics,
+            guiLeft + 5,
+            guiTop + 29,
+            guiLeft + 130,
+            guiTop + 200,
+            70,
+            0.0625F,
+            mouseX.toFloat(),
+            mouseY.toFloat(),
+            maid
+        )
+
+        val animatable: MaidAnimatable = MaidRenderStore.getOrCreate(maid)
+        val lines: List<FormattedCharSequence> = font.split(
+            FormattedText.of(
+                ClientModelManager.getModelContext(animatable.getModelId()).map { context ->
+                    val metadata: Metadata? = context.modelData.metadata
+                    if (metadata != null) {
+                        return@map ModelMetadataPresenter.getLocalizedModelString(
+                            context,
+                            "metadata.name",
+                            metadata.name
+                        )
+                    }
+                    StringPool.EMPTY
+                }.filter(StringUtils::isNoneBlank)
+                    .orElse(FileTypeUtil.getNameWithoutArchiveExtension(animatable.getModelId()))
+            ), 125
+        )
+
+        var lineY = guiTop + 205
         for (line in lines) {
-            guiGraphics.drawString(this.font, line, this.guiLeft + 135 - this.font.width(line) / 2, lineY, 15986656)
+            guiGraphics.drawString(
+                font,
+                line,
+                guiLeft + ((135 - font.width(line)) / 2),
+                lineY,
+                15986656
+            )
             lineY += 10
         }
     }

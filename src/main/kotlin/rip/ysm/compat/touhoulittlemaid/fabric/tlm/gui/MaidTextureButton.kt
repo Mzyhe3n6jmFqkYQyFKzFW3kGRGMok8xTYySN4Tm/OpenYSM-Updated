@@ -6,32 +6,48 @@ import com.elfmcys.yesstevemodel.client.model.ModelAssembly
 import com.elfmcys.yesstevemodel.util.ComponentUtil
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid
 import com.github.tartaricacid.touhoulittlemaid.network.message.YsmMaidModelPackage
-import net.minecraft.world.entity.Entity
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking
 import net.minecraft.client.input.InputWithModifiers
 import net.minecraft.network.chat.Component
-import org.jetbrains.annotations.Nullable
+import net.minecraft.world.entity.Entity
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidRenderStore
 
-open class MaidTextureButton : TextureButton {
-    var maidId: Int = 0
-    var modelId: String? = null
-    var textureName: String? = null
-    var displayName: Component? = null
-    constructor(x: Int, y: Int, previewEntity: PlayerPreviewEntity, maid: EntityMaid, textureIndex: Int, modelAssembly: ModelAssembly) {
-        this.maidId = (maid as Entity).getId()
-        var animatable: Any = MaidRenderStore.getOrCreate(maid)
-        var assembly: ModelAssembly = animatable.getModelAssembly()
+@Environment(EnvType.CLIENT)
+open class MaidTextureButton(
+    x: Int,
+    y: Int,
+    previewEntity: PlayerPreviewEntity,
+    maid: EntityMaid,
+    textureIndex: Int,
+    modelAssembly: ModelAssembly
+) : TextureButton(x, y, previewEntity, modelAssembly) {
+
+    private val maidId: Int = (maid as Entity).id
+    private val modelId: String?
+    private val textureName: String?
+    private val displayName: Component?
+
+    init {
+        val animatable = MaidRenderStore.getOrCreate(maid)
+        val assembly: ModelAssembly? = animatable.getModelAssembly()
         this.modelId = animatable.getModelId()
-        this.displayName = ComponentUtil.getDisplayName(assembly, this.modelId)
-        this.textureName = assembly.getAnimationBundle().getTextures().getKeyAt(textureIndex)
-        previewEntity.initModelWithTexture(this.modelId, this.textureName)
+        this.displayName = if (assembly != null && this.modelId != null) {
+            ComponentUtil.getDisplayName(assembly, this.modelId)
+        } else {
+            Component.literal(this.modelId)
+        }
+        this.textureName = assembly?.animationBundle?.textures?.getKeyAt(textureIndex)
+        if (this.modelId != null && this.textureName != null) {
+            previewEntity.initModelWithTexture(this.modelId, this.textureName)
+        }
     }
-    open fun onPress(input: InputWithModifiers) {
-        if (this.modelId == null || this.textureName == null || this.displayName == null) {
-             }
-        ClientPlayNetworking.send(YsmMaidModelPackage(this.maidId, this.modelId, this.textureName, this.displayName))
+
+    override fun onPress(input: InputWithModifiers) {
+        if (modelId == null || textureName == null || displayName == null) {
+            return
+        }
+        ClientPlayNetworking.send(YsmMaidModelPackage(maidId, modelId, textureName, displayName))
     }
 }
