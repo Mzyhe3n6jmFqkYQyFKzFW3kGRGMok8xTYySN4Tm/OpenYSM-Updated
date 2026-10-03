@@ -15,8 +15,8 @@ import rip.ysm.compat.touhoulittlemaid.fabric.tlm.*
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.anim.MaidAnimationController
 
 object TouhouLittleMaidCompatImpl {
-    const val MOD_ID: String = "touhou_little_maid"
-    val IS_LOADED: Boolean = FabricLoader.getInstance().isModLoaded(MOD_ID)
+    private const val MOD_ID: String = "touhou_little_maid"
+    private val IS_LOADED: Boolean = FabricLoader.getInstance().isModLoaded(MOD_ID)
 
     @JvmStatic
     fun isLoaded(): Boolean = IS_LOADED
