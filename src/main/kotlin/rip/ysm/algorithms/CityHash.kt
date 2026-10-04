@@ -1,10 +1,10 @@
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+
 package rip.ysm.algorithms
 
 import java.nio.charset.StandardCharsets
-import java.util.Arrays
 
 open class CityHash {
-
     fun hash32(raw: String): Int {
         val byteArray = convertString2UTF8(raw)
         val len = byteArray.size
@@ -62,9 +62,9 @@ open class CityHash {
             h = rotate32(h, 19)
             h = h * 5 + 0xe6546b64.toInt()
             g = g xor a4
-            g = java.lang.Integer.reverseBytes(g) * 5
+            g = Integer.reverseBytes(g) * 5
             h += a4 * 5
-            h = java.lang.Integer.reverseBytes(h)
+            h = Integer.reverseBytes(h)
             f += a0
             val swapValue = f
             f = g
@@ -218,11 +218,11 @@ open class CityHash {
     fun hash128WithSeed(byteArray: ByteArray, start: Int, seed: Number128): Number128 {
         var len = byteArray.size - start
         if (len < 128) {
-            return cityMurmur(Arrays.copyOfRange(byteArray, start, byteArray.size), seed)
+            return cityMurmur(byteArray.copyOfRange(start, byteArray.size), seed)
         }
 
-        var v = Number128(0L, 0L)
-        var w = Number128(0L, 0L)
+        var v = Number128()
+        var w = Number128()
         var x = seed.lowValue
         var y = seed.hiValue
         var z = len.toLong() * K1
@@ -316,8 +316,7 @@ open class CityHash {
         val d = fetch32(byteArray, len ushr 1)
         val e = fetch32(byteArray, 0)
         val f = fetch32(byteArray, len - 4)
-        val h = len
-        return fmix(mur(f, mur(e, mur(d, mur(c, mur(b, mur(a, h)))))))
+        return fmix(mur(f, mur(e, mur(d, mur(c, mur(b, mur(a, len)))))))
     }
 
     private fun hashLen0to16(byteArray: ByteArray): Long {
@@ -478,8 +477,8 @@ open class CityHash {
         val len = byteArray.size
         var a = seed.lowValue
         var b = seed.hiValue
-        var c = 0L
-        var d = 0L
+        var c: Long
+        var d: Long
         var l = len - 16
         if (l <= 0) {
             a = shiftMix(a * K1) * K1
@@ -528,6 +527,7 @@ open class CityHash {
 
     data class Number128(var lowValue: Long = 0L, var hiValue: Long = 0L)
 
+    @Suppress("ConstPropertyName")
     companion object {
         @JvmField
         val IS_BIG_EDIAN: Boolean = System.getProperty("sun.cpu.endian") != "little"
@@ -540,12 +540,12 @@ open class CityHash {
         const val C2: Int = 0x1b873593
 
         // Java compatibility fields
-        @JvmField val k0: Long = K0
-        @JvmField val k1: Long = K1
-        @JvmField val k2: Long = K2
-        @JvmField val kMul: Long = KMUL
-        @JvmField val c1: Int = C1
-        @JvmField val c2: Int = C2
+        const val k0: Long = K0
+        const val k1: Long = K1
+        const val k2: Long = K2
+        const val kMul: Long = KMUL
+        const val c1: Int = C1
+        const val c2: Int = C2
 
         @JvmStatic
         fun rotate32(v: Int, shift: Int): Int {

@@ -1,10 +1,11 @@
+@file:Suppress("unused")
+
 package rip.ysm.algorithms
 
 import java.nio.ByteBuffer
 import java.security.InvalidKeyException
 
 open class XChaCha20(key: ByteArray, nonce: ByteArray, rounds: Int) : ChaCha20Base() {
-
     init {
         if (key.size != 32) {
             throw InvalidKeyException("Key must be 32 bytes")

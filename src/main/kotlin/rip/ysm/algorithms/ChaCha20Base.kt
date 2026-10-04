@@ -1,3 +1,5 @@
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+
 package rip.ysm.algorithms
 
 import java.nio.ByteBuffer
@@ -29,9 +31,9 @@ abstract class ChaCha20Base {
             val v = ws[i]
             val p = i shl 2
             out[p] = (v and 0xFF).toByte()
-            out[p + 1] = ((v ushr 8) and 0xFF).toByte()
-            out[p + 2] = ((v ushr 16) and 0xFF).toByte()
-            out[p + 3] = ((v ushr 24) and 0xFF).toByte()
+            out[p + 1] = (v ushr 8 and 0xFF).toByte()
+            out[p + 2] = (v ushr 16 and 0xFF).toByte()
+            out[p + 3] = (v ushr 24 and 0xFF).toByte()
         }
     }
 
