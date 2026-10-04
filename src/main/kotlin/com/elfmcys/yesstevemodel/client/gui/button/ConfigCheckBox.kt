@@ -12,7 +12,6 @@ import net.minecraft.client.input.InputWithModifiers
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
-import java.util.function.Consumer
 
 @Environment(EnvType.CLIENT)
 open class ConfigCheckBox(
@@ -20,10 +19,9 @@ open class ConfigCheckBox(
     y: Int,
     width: Int = 115,
     private val component2: Component,
-    private val consumer2: Consumer<Boolean>
+    private val consumer2: (Boolean) -> Unit
 ) : AbstractButton(x, y, width, 12, component2), ISpecialWidget {
-
-    constructor(x: Int, y: Int, component: Component, consumer: Consumer<Boolean>) : this(
+    constructor(x: Int, y: Int, component: Component, consumer: (Boolean) -> Unit) : this(
         x,
         y,
         component2 = component,
@@ -41,7 +39,7 @@ open class ConfigCheckBox(
 
     override fun onPress(input: InputWithModifiers) {
         isStateTriggered = !isStateTriggered
-        consumer2.accept(isStateTriggered)
+        consumer2(isStateTriggered)
     }
 
     override fun updateWidgetNarration(output: NarrationElementOutput) {
