@@ -1,6 +1,7 @@
 package com.elfmcys.yesstevemodel.client.gui
 
 import com.elfmcys.yesstevemodel.config.GeneralConfig
+import com.elfmcys.yesstevemodel.extensions.setAndSave
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.Checkbox
@@ -30,8 +31,7 @@ class DisclaimerScreen : Screen(Component.literal("Disclaimer GUI")) {
 
         val closeButton = Button.builder(Component.translatable("gui.yes_steve_model.disclaimer.close")) {
             if (cb.selected()) {
-                GeneralConfig.DISCLAIMER_SHOW.set(false)
-                GeneralConfig.save()
+                GeneralConfig.DISCLAIMER_SHOW.setAndSave(false)
                 minecraft.setScreen(PlayerModelScreen())
             } else {
                 minecraft.setScreen(null)

@@ -1,6 +1,7 @@
 package com.elfmcys.yesstevemodel.client.gui.button
 
 import com.elfmcys.yesstevemodel.config.LoadingStateConfig
+import com.elfmcys.yesstevemodel.extensions.setAndSave
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -8,10 +9,16 @@ import net.minecraft.client.input.InputWithModifiers
 import net.minecraft.network.chat.Component
 
 class LoadingStateButton(x: Int, y: Int) : Button.Plain(x, y, 100, 20, Component.empty(), {}, DEFAULT_NARRATION) {
-
     override fun renderContents(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         super.renderContents(guiGraphics, mouseX, mouseY, partialTick)
-        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("gui.yes_steve_model.config.loading_state_position"), x + 105, y + 6, -1, false)
+        guiGraphics.drawString(
+            Minecraft.getInstance().font,
+            Component.translatable("gui.yes_steve_model.config.loading_state_position"),
+            x + 105,
+            y + 6,
+            -1,
+            false
+        )
     }
 
     override fun getMessage(): Component {
@@ -28,7 +35,6 @@ class LoadingStateButton(x: Int, y: Int) : Button.Plain(x, y, 100, 20, Component
             LoadingStateConfig.Position.BOTTOM_LEFT -> LoadingStateConfig.Position.TOP_LEFT
             else -> LoadingStateConfig.Position.TOP_LEFT
         }
-        LoadingStateConfig.LOADING_STATE_POSITION.set(nextPosition)
-        LoadingStateConfig.save()
+        LoadingStateConfig.LOADING_STATE_POSITION.setAndSave(nextPosition)
     }
 }

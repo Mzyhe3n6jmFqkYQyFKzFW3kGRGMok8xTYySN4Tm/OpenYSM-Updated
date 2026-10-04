@@ -3,6 +3,7 @@ package com.elfmcys.yesstevemodel.geckolib3.geo
 import com.elfmcys.yesstevemodel.NativeLibLoader
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
 import com.elfmcys.yesstevemodel.config.GeneralConfig
+import com.elfmcys.yesstevemodel.extensions.setAndSave
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
 import com.elfmcys.yesstevemodel.util.log.ChatLogger
 import com.mojang.blaze3d.systems.RenderSystem
@@ -59,8 +60,7 @@ object NativeModelRenderer {
         if (textureLocation != null && NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && GeneralConfig.USE_GPU_RENDERER.get()) {
             if (!GpuCapability.isAvailable()) {
                 ChatLogger.logFormatted("Disabled GPU renderer for: " + GpuCapability.getReason())
-                GeneralConfig.USE_GPU_RENDERER.set(false)
-                GeneralConfig.save()
+                GeneralConfig.USE_GPU_RENDERER.setAndSave(false)
                 return
             }
             if (OculusCompat.isShaderPackInUse() && !isPreview) {
