@@ -2,6 +2,7 @@ package com.elfmcys.yesstevemodel.client.gui
 
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
 import com.elfmcys.yesstevemodel.config.ExtraPlayerRenderConfig
+import com.elfmcys.yesstevemodel.extensions.setAndSave
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
@@ -40,8 +41,7 @@ class ExtraPlayerRenderScreen : Screen(Component.literal("YSM Extra Player Rende
                 .pos((width - labelWidth) / 2, height + i)
                 .selected(ExtraPlayerRenderConfig.DISABLE_PLAYER_RENDER.get())
                 .onValueChange { _, value ->
-                    ExtraPlayerRenderConfig.DISABLE_PLAYER_RENDER.set(value)
-                    ExtraPlayerRenderConfig.save()
+                    ExtraPlayerRenderConfig.DISABLE_PLAYER_RENDER.setAndSave(value)
                 }
                 .build()
         )
