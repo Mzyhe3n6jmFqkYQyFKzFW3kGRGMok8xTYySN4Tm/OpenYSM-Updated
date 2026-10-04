@@ -9,6 +9,7 @@
   "client": [
     "client.ClientPacketListenerMixin",
     "client.ItemInHandRendererMixin",
+    "client.MinecraftMixin",
     "client.PlayerRendererMixin"
   ],
   "mixins": [
