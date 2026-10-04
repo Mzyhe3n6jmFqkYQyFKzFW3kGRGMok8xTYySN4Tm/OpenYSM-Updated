@@ -2,6 +2,7 @@ package com.elfmcys.yesstevemodel.config
 
 import net.minecraftforge.common.ForgeConfigSpec
 
+// TODO: Transparency support
 object ExtraPlayerRenderConfig {
     lateinit var DISABLE_PLAYER_RENDER: ForgeConfigSpec.BooleanValue
     lateinit var PLAYER_POS_X: ForgeConfigSpec.IntValue
