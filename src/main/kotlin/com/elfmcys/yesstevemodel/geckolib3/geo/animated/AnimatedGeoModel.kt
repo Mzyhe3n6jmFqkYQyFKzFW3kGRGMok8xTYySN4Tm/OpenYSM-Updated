@@ -33,6 +33,7 @@ class AnimatedGeoModel(@JvmField val geoModel: GeoModel) {
     private val leftHandGroupChains: MutableList<List<IBone>> = ReferenceArrayList()
     private val rightHandGroupChains: MutableList<List<IBone>> = ReferenceArrayList()
     private val passengerGroupChains: MutableList<List<IBone>> = ReferenceArrayList()
+
     @JvmField
     @PublishedApi
     internal var rawTouhouMaidData: Any? = null
