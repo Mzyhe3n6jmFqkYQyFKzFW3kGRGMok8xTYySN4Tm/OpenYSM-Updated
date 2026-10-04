@@ -184,10 +184,8 @@ class S2CSyncPlayerStatePacket(
             buffer.writeVarInt(message.entityId)
             buffer.writeShort(message.flags.toInt())
             val flags = message.flags.toInt()
-            if ((flags and 2) != 0) {
-                buffer.writeBoolean(message.isFlying)
-            }
-            if ((flags and 4) != 0) {
+            if (flags and 2 != 0) buffer.writeBoolean(message.isFlying)
+            if (flags and 4 != 0) {
                 val effects = message.effectAmplifiers ?: Object2ByteMaps.emptyMap()
                 buffer.writeVarInt(effects.size)
                 Object2ByteMaps.fastForEach(effects) { entry ->
@@ -195,33 +193,15 @@ class S2CSyncPlayerStatePacket(
                     buffer.writeByte(entry.byteValue.toInt())
                 }
             }
-            if (flags and 8 != 0) {
-                buffer.writeVarInt(message.experienceLevel)
-            }
-            if (flags and 16 != 0) {
-                buffer.writeVarInt(message.foodLevel)
-            }
-            if (flags and 32 != 0) {
-                buffer.writeVarInt(message.health)
-            }
-            if (flags and 64 != 0) {
-                buffer.writeVarInt(message.maxHealth)
-            }
-            if (flags and 128 != 0) {
-                buffer.writeByte(message.strafeInput.toInt())
-            }
-            if (flags and 256 != 0) {
-                buffer.writeByte(message.verticalInput.toInt())
-            }
-            if (flags and 512 != 0) {
-                buffer.writeByte(message.forwardInput.toInt())
-            }
-            if (flags and 1024 != 0) {
-                buffer.writeBoolean(message.shieldBlockCooldown)
-            }
-            if (flags and 2048 != 0) {
-                buffer.writeUtf(message.modelSwitchId ?: "")
-            }
+            if (flags and 8 != 0) buffer.writeVarInt(message.experienceLevel)
+            if (flags and 16 != 0) buffer.writeVarInt(message.foodLevel)
+            if (flags and 32 != 0) buffer.writeVarInt(message.health)
+            if (flags and 64 != 0) buffer.writeVarInt(message.maxHealth)
+            if (flags and 128 != 0) buffer.writeByte(message.strafeInput.toInt())
+            if (flags and 256 != 0) buffer.writeByte(message.verticalInput.toInt())
+            if (flags and 512 != 0) buffer.writeByte(message.forwardInput.toInt())
+            if (flags and 1024 != 0) buffer.writeBoolean(message.shieldBlockCooldown)
+            if (flags and 2048 != 0) buffer.writeUtf(message.modelSwitchId ?: "")
             if (flags and 4096 != 0) {
                 buffer.writeInt(message.molangHashId)
                 val vars = message.molangVars ?: Object2FloatMaps.emptyMap()
@@ -240,88 +220,77 @@ class S2CSyncPlayerStatePacket(
             val message = S2CSyncPlayerStatePacket(entityId)
             message.flags = flags
             val flagsInt = flags.toInt()
-            if ((flagsInt and 2) != 0) {
-                message.isFlying = buffer.readBoolean()
-            }
-            if ((flagsInt and 4) != 0) {
-                val effectCount = buffer.readVarInt()
-                if (effectCount == 0) {
-                    message.effectAmplifiers = Object2ByteMaps.emptyMap()
-                } else if (effectCount == 1) {
-                    val holder = BuiltInRegistries.MOB_EFFECT.asHolderIdMap().byId(buffer.readVarInt())
-                    if (holder != null) {
-                        message.effectAmplifiers = Object2ByteMaps.singleton(holder, buffer.readByte())
+            if (flagsInt and 2 != 0) message.isFlying = buffer.readBoolean()
+            if (flagsInt and 4 != 0) {
+                when (val effectCount = buffer.readVarInt()) {
+                    0 -> {
+                        message.effectAmplifiers = Object2ByteMaps.emptyMap()
                     }
-                } else {
-                    val map = Object2ByteArrayMap<Holder<MobEffect>>(effectCount)
-                    for (i in 0 until effectCount) {
+
+                    1 -> {
                         val holder = BuiltInRegistries.MOB_EFFECT.asHolderIdMap().byId(buffer.readVarInt())
-                        val amplifier = buffer.readByte()
                         if (holder != null) {
-                            map.put(holder, amplifier)
+                            message.effectAmplifiers = Object2ByteMaps.singleton(holder, buffer.readByte())
                         }
                     }
-                    message.effectAmplifiers = map
+
+                    else -> {
+                        val map = Object2ByteArrayMap<Holder<MobEffect>>(effectCount)
+                        for (i in 0 until effectCount) {
+                            val holder = BuiltInRegistries.MOB_EFFECT.asHolderIdMap().byId(buffer.readVarInt())
+                            val amplifier = buffer.readByte()
+                            if (holder != null) {
+                                map.put(holder, amplifier)
+                            }
+                        }
+                        message.effectAmplifiers = map
+                    }
                 }
             }
-            if (flagsInt and 8 != 0) {
-                message.experienceLevel = buffer.readVarInt()
-            }
-            if (flagsInt and 16 != 0) {
-                message.foodLevel = buffer.readVarInt()
-            }
-            if (flagsInt and 32 != 0) {
-                message.health = buffer.readVarInt()
-            }
-            if (flagsInt and 64 != 0) {
-                message.maxHealth = buffer.readVarInt()
-            }
-            if (flagsInt and 128 != 0) {
-                message.strafeInput = buffer.readByte()
-            }
-            if (flagsInt and 256 != 0) {
-                message.verticalInput = buffer.readByte()
-            }
-            if (flagsInt and 512 != 0) {
-                message.forwardInput = buffer.readByte()
-            }
-            if (flagsInt and 1024 != 0) {
-                message.shieldBlockCooldown = buffer.readBoolean()
-            }
-            if (flagsInt and 2048 != 0) {
-                message.modelSwitchId = buffer.readUtf()
-            }
+            if (flagsInt and 8 != 0) message.experienceLevel = buffer.readVarInt()
+            if (flagsInt and 16 != 0) message.foodLevel = buffer.readVarInt()
+            if (flagsInt and 32 != 0) message.health = buffer.readVarInt()
+            if (flagsInt and 64 != 0) message.maxHealth = buffer.readVarInt()
+            if (flagsInt and 128 != 0) message.strafeInput = buffer.readByte()
+            if (flagsInt and 256 != 0) message.verticalInput = buffer.readByte()
+            if (flagsInt and 512 != 0) message.forwardInput = buffer.readByte()
+            if (flagsInt and 1024 != 0) message.shieldBlockCooldown = buffer.readBoolean()
+            if (flagsInt and 2048 != 0) message.modelSwitchId = buffer.readUtf()
             if (flagsInt and 4096 != 0) {
                 message.molangHashId = buffer.readInt()
                 val varCount = buffer.readVarInt()
-                if (message.isFullSync()) {
-                    val roamingVars = Int2FloatOpenHashMap(varCount)
-                    message.molangVarData = roamingVars
-                    repeat(varCount) {
-                        roamingVars.put(StringPool.computeIfAbsent(buffer.readUtf()), buffer.readFloat())
+                when {
+                    message.isFullSync() -> {
+                        val roamingVars = Int2FloatOpenHashMap(varCount)
+                        message.molangVarData = roamingVars
+                        repeat(varCount) {
+                            roamingVars.put(StringPool.computeIfAbsent(buffer.readUtf()), buffer.readFloat())
+                        }
                     }
-                } else {
-                    when (varCount) {
-                        0 -> {
-                            message.molangVarData = Int2FloatMaps.EMPTY_MAP
-                        }
 
-                        1 -> {
-                            message.molangVarData =
-                                Int2FloatMaps.singleton(
-                                    StringPool.computeIfAbsent(buffer.readUtf()),
-                                    buffer.readFloat()
-                                )
-                        }
-
-                        else -> {
-                            val keys = IntArray(varCount)
-                            val values = FloatArray(varCount)
-                            for (i in 0 until varCount) {
-                                keys[i] = StringPool.computeIfAbsent(buffer.readUtf())
-                                values[i] = buffer.readFloat()
+                    else -> {
+                        when (varCount) {
+                            0 -> {
+                                message.molangVarData = Int2FloatMaps.EMPTY_MAP
                             }
-                            message.molangVarData = Int2FloatArrayMap(keys, values)
+
+                            1 -> {
+                                message.molangVarData =
+                                    Int2FloatMaps.singleton(
+                                        StringPool.computeIfAbsent(buffer.readUtf()),
+                                        buffer.readFloat()
+                                    )
+                            }
+
+                            else -> {
+                                val keys = IntArray(varCount)
+                                val values = FloatArray(varCount)
+                                for (i in 0 until varCount) {
+                                    keys[i] = StringPool.computeIfAbsent(buffer.readUtf())
+                                    values[i] = buffer.readFloat()
+                                }
+                                message.molangVarData = Int2FloatArrayMap(keys, values)
+                            }
                         }
                     }
                 }
@@ -343,22 +312,25 @@ class S2CSyncPlayerStatePacket(
             if (entity is Player) {
                 PlayerCapability[entity]?.let { cap ->
                     val flags = message.flags.toInt()
-                    if ((flags and 2048) != 0) {
+                    if (flags and 2048 != 0) {
                         val switchId = message.modelSwitchId
-                        if (!switchId.isNullOrEmpty()) {
-                            cap.requestModelSwitch(switchId)
-                        } else {
-                            cap.clearModelSwitch()
+                        when {
+                            !switchId.isNullOrEmpty() -> cap.requestModelSwitch(switchId)
+                            else -> cap.clearModelSwitch()
                         }
                     }
-                    if ((flags and 4096) != 0) {
+                    if (flags and 4096 != 0) {
                         val varData = message.molangVarData
-                        if (message.isFullSync()) {
-                            if (varData is Int2FloatOpenHashMap) {
-                                cap.updateMolangVars(message.molangHashId, varData)
+                        when {
+                            message.isFullSync() -> {
+                                if (varData is Int2FloatOpenHashMap) {
+                                    cap.updateMolangVars(message.molangHashId, varData)
+                                }
                             }
-                        } else if (varData != null) {
-                            cap.enqueueMolangDelta(message.molangHashId, varData)
+
+                            varData != null -> {
+                                cap.enqueueMolangDelta(message.molangHashId, varData)
+                            }
                         }
                     }
                     cap.getPositionTracker().applySyncMessage(message)
