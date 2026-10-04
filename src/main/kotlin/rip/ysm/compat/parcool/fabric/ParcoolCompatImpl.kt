@@ -6,15 +6,13 @@ import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import net.minecraft.world.entity.player.Player
 import org.apache.commons.lang3.tuple.Pair
 import rip.ysm.compat.ModCompat
-import java.util.*
 
 object ParcoolCompatImpl : ModCompat("parcool") {
     @JvmStatic
-    fun getInCompatibleInfo(): Optional<Pair<String, String>> = Optional.empty()
+    fun getInCompatibleInfo(): Pair<String, String>? = null
 
     @JvmStatic
-    fun getControllerFactory(): Optional<(String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>> =
-        Optional.empty()
+    fun getControllerFactory(): ((String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>)? = null
 
     @JvmStatic
     fun isPlayerParcooling(player: Player): Boolean = false

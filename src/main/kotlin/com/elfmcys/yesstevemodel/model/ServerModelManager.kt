@@ -929,24 +929,16 @@ object ServerModelManager {
     }
 
     @JvmStatic
-    fun getModelDefinition(str: String): Optional<ServerModelData> {
-        return Optional.ofNullable(CACHE_NAME_INFO[str])
-    }
+    fun getModelDefinition(str: String): Optional<ServerModelData> = Optional.ofNullable(CACHE_NAME_INFO[str])
 
     @JvmStatic
-    operator fun get(str: String): ServerModelData? {
-        return CACHE_NAME_INFO[str]
-    }
+    operator fun get(str: String): ServerModelData? = CACHE_NAME_INFO[str]
 
     @JvmStatic
-    fun getServerModelInfo(): Map<String, ServerModelData> {
-        return CACHE_NAME_INFO
-    }
+    fun getServerModelInfo(): Map<String, ServerModelData> = CACHE_NAME_INFO
 
     @JvmStatic
-    fun getAuthModels(): Set<String> {
-        return AUTH_MODELS
-    }
+    fun getAuthModels(): Set<String> = AUTH_MODELS
 
     @JvmStatic
     fun requestPlayerAuth(serverPlayer: ServerPlayer, consumer: ((UUIDComponentData) -> Unit)? = null) {
