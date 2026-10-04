@@ -15,27 +15,23 @@ object PlayerCapabilityClientStore {
     @JvmStatic
     operator fun get(player: Player): PlayerCapability? {
         if (player !is AbstractClientPlayer) return null
-        synchronized(STORE_BY_PLAYER) {
-            val existing = STORE_BY_PLAYER[player]
-            if (existing != null) return existing
-            val fresh = PlayerCapability(player)
-            val previous = LAST_BY_UUID[player.uuid]
-            if (previous != null && previous.entity != player) {
-                CapabilityLifecycle.revive(previous.entity)
-                fresh.copyFrom(previous)
-                CapabilityLifecycle.invalidate(previous.entity)
-            }
-            STORE_BY_PLAYER[player] = fresh
-            LAST_BY_UUID[player.uuid] = fresh
-            return fresh
+        val existing = STORE_BY_PLAYER[player]
+        if (existing != null) return existing
+        val fresh = PlayerCapability(player)
+        val previous = LAST_BY_UUID[player.uuid]
+        if (previous != null && previous.entity != player) {
+            CapabilityLifecycle.revive(previous.entity)
+            fresh.copyFrom(previous)
+            CapabilityLifecycle.invalidate(previous.entity)
         }
+        STORE_BY_PLAYER[player] = fresh
+        LAST_BY_UUID[player.uuid] = fresh
+        return fresh
     }
 
     @JvmStatic
     fun clear() {
-        synchronized(STORE_BY_PLAYER) {
-            STORE_BY_PLAYER.clear()
-            LAST_BY_UUID.clear()
-        }
+        STORE_BY_PLAYER.clear()
+        LAST_BY_UUID.clear()
     }
 }
