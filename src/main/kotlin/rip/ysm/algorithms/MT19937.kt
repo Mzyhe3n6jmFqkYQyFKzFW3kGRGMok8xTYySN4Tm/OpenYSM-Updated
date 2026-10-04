@@ -1,3 +1,5 @@
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+
 package rip.ysm.algorithms
 
 /* Luis Bodart A01635000 */
@@ -77,6 +79,7 @@ class MT19937(seed: Long = System.currentTimeMillis()) {
         return mt[0]
     }
 
+    @Suppress("ConstPropertyName")
     companion object {
         const val W: Int = 64
         const val N: Int = 312
@@ -96,21 +99,37 @@ class MT19937(seed: Long = System.currentTimeMillis()) {
         const val DEFAULT_SEED: Int = 5489
 
         // Keep lowercase alias if needed for java compat
-        @JvmField val w: Int = W
-        @JvmField val n: Int = N
-        @JvmField val m: Int = M
-        @JvmField val r: Int = R
-        @JvmField val a: Long = A
-        @JvmField val u: Int = U
-        @JvmField val s: Int = S
-        @JvmField val t: Int = T
-        @JvmField val d: Long = D
-        @JvmField val b: Long = B
-        @JvmField val c: Long = C
-        @JvmField val l: Int = L
-        @JvmField val f: Long = F
-        @JvmField val lower_mask: Long = LOWER_MASK
-        @JvmField val upper_mask: Long = UPPER_MASK
-        @JvmField val default_seed: Int = DEFAULT_SEED
+        const val w: Int = W
+
+        const val n: Int = N
+
+        const val m: Int = M
+
+        const val r: Int = R
+
+        @JvmField
+        val a: Long = A
+
+        const val u: Int = U
+
+        const val s: Int = S
+
+        const val t: Int = T
+
+        const val d: Long = D
+
+        const val b: Long = B
+
+        const val c: Long = C
+
+        const val l: Int = L
+
+        const val f: Long = F
+
+        const val lower_mask: Long = LOWER_MASK
+
+        const val upper_mask: Long = UPPER_MASK
+
+        const val default_seed: Int = DEFAULT_SEED
     }
 }
