@@ -835,7 +835,12 @@ class YSMBinaryDeserializer : AutoCloseable {
             for (j in 0 until nodesCount) {
                 langMap[reader.readString()] = reader.readString()
             }
-            model.languageFiles[languageName] = RawYsmModel.RawLanguageFile(hash, langMap)
+            val rawLangFile = RawYsmModel.RawLanguageFile(hash, langMap)
+            model.languageFiles[languageName] = rawLangFile
+            val normalized = languageName.lowercase(java.util.Locale.ROOT).replace('-', '_')
+            if (normalized != languageName) {
+                model.languageFiles[normalized] = rawLangFile
+            }
         }
     }
 

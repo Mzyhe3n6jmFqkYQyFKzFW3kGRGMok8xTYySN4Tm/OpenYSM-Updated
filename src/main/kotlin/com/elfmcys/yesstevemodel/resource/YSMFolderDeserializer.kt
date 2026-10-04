@@ -1162,7 +1162,8 @@ class YSMFolderDeserializer : AutoCloseable {
             val hash = DigestUtil.sha256Hex(data)
             model.soundFiles[soundName] = RawYsmModel.RawDataFile(hash, data)
         } else if (relativePath.startsWith("lang/") && relativePath.endsWith(".json")) {
-            val locale = relativePath.substring("lang/".length, relativePath.length - 5)
+            val rawLocale = relativePath.substring("lang/".length, relativePath.length - 5)
+            val normalizedLocale = rawLocale.lowercase(Locale.ROOT).replace('-', '_')
             try {
                 val hash = DigestUtil.sha256Hex(data)
                 val langJsonStr = String(data, StandardCharsets.UTF_8)
@@ -1173,7 +1174,11 @@ class YSMFolderDeserializer : AutoCloseable {
                         langMap[key] = value.asString
                     }
                 }
-                model.languageFiles[locale] = RawYsmModel.RawLanguageFile(hash, langMap)
+                val rawLangFile = RawYsmModel.RawLanguageFile(hash, langMap)
+                model.languageFiles[rawLocale] = rawLangFile
+                if (normalizedLocale != rawLocale) {
+                    model.languageFiles[normalizedLocale] = rawLangFile
+                }
             } catch (ignored: Exception) {
             }
         } else if (relativePath.startsWith("functions/") && relativePath.endsWith(".molang")) {

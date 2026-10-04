@@ -363,6 +363,10 @@ object ClientModelManager {
                     translationMap[buf.readString()] = buf.readString()
                 }
                 languageData[languageType] = translationMap
+                val normalized = languageType.lowercase(Locale.ROOT).replace('-', '_')
+                if (normalized != languageType) {
+                    languageData[normalized] = translationMap
+                }
             }
             parsedPacks.add(ModelPackData(folderPath, folderName, folderDesc, iconTexture, languageData))
         }

@@ -522,6 +522,10 @@ object ServerModelManager {
                                             translations[transKey] = transVal.asString
                                         }
                                         langMap[langKey] = translations
+                                        val normalized = langKey.lowercase(Locale.ROOT).replace('-', '_')
+                                        if (normalized != langKey) {
+                                            langMap[normalized] = translations
+                                        }
                                     }
                                 }
                                 packData.lang = langMap
