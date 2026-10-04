@@ -3,7 +3,6 @@ package com.elfmcys.yesstevemodel.network.message
 import net.minecraft.network.FriendlyByteBuf
 import rip.ysm.api.network.PacketContext
 
-@JvmRecord
 data class C2SModelUploadFinishPacket(val uploadId: Long) {
     companion object {
         @JvmStatic

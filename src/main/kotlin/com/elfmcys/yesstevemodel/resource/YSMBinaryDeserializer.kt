@@ -899,7 +899,6 @@ class YSMBinaryDeserializer : AutoCloseable {
         reader.close()
     }
 
-    @JvmRecord
     private data class SpecialImageResult(val hash: String, val data: ByteArray) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

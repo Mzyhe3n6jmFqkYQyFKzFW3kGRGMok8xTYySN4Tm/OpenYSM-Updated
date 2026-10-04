@@ -5,7 +5,6 @@ import net.minecraft.network.FriendlyByteBuf
 import rip.ysm.api.network.PacketContext
 import java.nio.ByteBuffer
 
-@JvmRecord
 data class S2CModelSyncPayload(val data: ByteBuffer) {
     companion object {
         @JvmStatic

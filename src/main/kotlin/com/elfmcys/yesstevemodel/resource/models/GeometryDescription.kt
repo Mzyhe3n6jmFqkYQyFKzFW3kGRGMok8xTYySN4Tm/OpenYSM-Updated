@@ -2,7 +2,6 @@
 
 package com.elfmcys.yesstevemodel.resource.models
 
-@JvmRecord
 data class GeometryDescription(
     val identifier: String,
     val textureWidth: Double,

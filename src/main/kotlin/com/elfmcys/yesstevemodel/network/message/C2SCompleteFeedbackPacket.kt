@@ -8,7 +8,6 @@ import net.minecraft.server.level.ServerPlayer
 import rip.ysm.api.network.PacketContext
 import rip.ysm.compat.touhoulittlemaid.TouhouMaidCompat
 
-@JvmRecord
 data class C2SCompleteFeedbackPacket(val feedbackData: FeedbackData) {
     companion object {
         @JvmStatic
