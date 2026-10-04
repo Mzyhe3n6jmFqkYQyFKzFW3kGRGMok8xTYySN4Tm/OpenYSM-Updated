@@ -45,13 +45,11 @@ open class CustomPlayerCarryOnLayer : GeoLayerRenderer<CustomPlayerEntity>() {
             else -> null
         }
 
-        if (locatorBones != null && !RenderUtils.prepMatrixForLocator(poseStack, locatorBones)) {
-            CarryOnRenderer.render(entity, poseStack, packedLightIn, partialTick, collector)
-        } else {
-            poseStack.scale(-1.0f, -1.0f, 1.0f)
-            poseStack.translate(0.0, -1.501, 0.0)
-            CarryOnRenderer.render(entity, poseStack, packedLightIn, partialTick, collector)
-        }
+        if (locatorBones != null) RenderUtils.prepMatrixForLocator(poseStack, locatorBones)
+        poseStack.scale(-1.0f, -1.0f, 1.0f)
+        if (locatorBones == null) poseStack.translate(0.0, -1.501, 0.0)
+        CarryOnRenderer.render(entity, poseStack, packedLightIn, partialTick, collector)
+
         poseStack.popPose()
     }
 }
