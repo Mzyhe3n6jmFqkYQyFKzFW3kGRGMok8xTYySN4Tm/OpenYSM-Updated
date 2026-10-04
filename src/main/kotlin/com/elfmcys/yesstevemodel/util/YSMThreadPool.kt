@@ -58,15 +58,4 @@ object YSMThreadPool {
     fun launchIO(block: suspend CoroutineScope.() -> Unit): Job = ioScope.launch(block = block)
 
     fun launchSync(block: suspend CoroutineScope.() -> Unit): Job = syncScope.launch(block = block)
-
-    @JvmStatic
-    fun awaitTermination(i: Long): Boolean {
-        return runCatching {
-            Thread.sleep(i)
-            true
-        }.getOrDefault(false)
-    }
-
-    @JvmStatic
-    fun awaitTermination(i: Int): Boolean = awaitTermination(i.toLong())
 }

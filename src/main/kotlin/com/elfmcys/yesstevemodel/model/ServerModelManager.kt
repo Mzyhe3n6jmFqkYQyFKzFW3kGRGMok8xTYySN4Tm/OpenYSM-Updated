@@ -27,6 +27,7 @@ import com.google.gson.JsonParser
 import io.netty.buffer.Unpooled
 import it.unimi.dsi.fastutil.floats.FloatReferencePair
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
+import kotlinx.coroutines.yield
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.network.Connection
 import net.minecraft.network.chat.Component
@@ -143,21 +144,19 @@ object ServerModelManager {
 
         extractBuiltinModels()
 
-        val noticeContent = readResourceString("assets/yes_steve_model/notice.txt")
-            ?: "This directory is cleared every time the game starts!\n该目录会在每次游戏启动时清空！"
+        val noticeContent = readResourceString("assets/yes_steve_model/notice.txt") ?: ""
         Files.writeString(BUILT.resolve("notice.txt"), noticeContent, StandardCharsets.UTF_8)
 
         val blacklistFile = Constants.ConfigDir.resolve("blacklist.txt")
         if (!Files.exists(blacklistFile)) {
             val blacklistContent = readResourceString("assets/yes_steve_model/blacklist.txt") ?: ""
-            if (blacklistContent.isNotEmpty()) {
+            if (blacklistContent.isNotEmpty())
                 Files.writeString(blacklistFile, blacklistContent, StandardCharsets.UTF_8)
-            }
         }
         processBlacklist(blacklistFile)
 
         val serverIndex = CACHE_SERVER_INDEX_FILE
-        val serverKeyBytes: ByteArray = if (Files.exists(serverIndex)) {
+        val serverKeyBytes = if (Files.exists(serverIndex))
             runCatching {
                 val jsonStr = Files.readString(serverIndex, StandardCharsets.UTF_8)
                 val jsonElement = JsonParser.parseString(jsonStr).asJsonObject
@@ -173,10 +172,7 @@ object ServerModelManager {
                 }
             }.getOrElse {
                 generateAndSaveServerKey(serverIndex, JsonObject())
-            }
-        } else {
-            generateAndSaveServerKey(serverIndex, JsonObject())
-        }
+            } else generateAndSaveServerKey(serverIndex, JsonObject())
 
         serverKey = serverKeyBytes
         nativeLoadModels(null)
@@ -710,38 +706,50 @@ object ServerModelManager {
                 for (pack in packs.values) {
                     outBuf.writeString(pack.folderPath)
 
-                    if (pack.iconData != null) {
-                        outBuf.writeVarInt(1)
-                        outBuf.writeByteArray(pack.iconData)
-                        outBuf.writeVarInt(pack.iconWidth)
-                        outBuf.writeVarInt(pack.iconHeight)
-                        outBuf.writeVarInt(pack.iconFormat)
-                        outBuf.writeVarInt(1)
-                    } else {
-                        outBuf.writeVarInt(0)
+                    when {
+                        pack.iconData != null -> {
+                            outBuf.writeVarInt(1)
+                            outBuf.writeByteArray(pack.iconData)
+                            outBuf.writeVarInt(pack.iconWidth)
+                            outBuf.writeVarInt(pack.iconHeight)
+                            outBuf.writeVarInt(pack.iconFormat)
+                            outBuf.writeVarInt(1)
+                        }
+
+                        else -> {
+                            outBuf.writeVarInt(0)
+                        }
                     }
 
-                    if (pack.name != null || pack.description != null) {
-                        outBuf.writeVarInt(1)
-                        outBuf.writeString(pack.name ?: "")
-                        outBuf.writeString(pack.description ?: "")
-                    } else {
-                        outBuf.writeVarInt(0)
+                    when {
+                        pack.name != null || pack.description != null -> {
+                            outBuf.writeVarInt(1)
+                            outBuf.writeString(pack.name ?: "")
+                            outBuf.writeString(pack.description ?: "")
+                        }
+
+                        else -> {
+                            outBuf.writeVarInt(0)
+                        }
                     }
 
                     val packLang = pack.lang
-                    if (!packLang.isNullOrEmpty()) {
-                        outBuf.writeVarInt(packLang.size)
-                        for ((langKey, langVal) in packLang) {
-                            outBuf.writeString(langKey)
-                            outBuf.writeVarInt(langVal.size)
-                            for ((k, v) in langVal) {
-                                outBuf.writeString(k)
-                                outBuf.writeString(v)
+                    when {
+                        !packLang.isNullOrEmpty() -> {
+                            outBuf.writeVarInt(packLang.size)
+                            for ((langKey, langVal) in packLang) {
+                                outBuf.writeString(langKey)
+                                outBuf.writeVarInt(langVal.size)
+                                for ((k, v) in langVal) {
+                                    outBuf.writeString(k)
+                                    outBuf.writeString(v)
+                                }
                             }
                         }
-                    } else {
-                        outBuf.writeVarInt(0)
+
+                        else -> {
+                            outBuf.writeVarInt(0)
+                        }
                     }
                 }
 
@@ -757,7 +765,7 @@ object ServerModelManager {
 
     private fun sendPacket05(uuid: UUID, state: PlayerSyncState, requestedHashes: List<LongArray>) {
         YSMThreadPool.launchSync {
-            try {
+            runCatching {
                 threadLimiter?.acquire()
 
                 val transfer = PendingTransfer()
@@ -795,26 +803,18 @@ object ServerModelManager {
                             outBuf.writeVarInt(length)
                             outBuf.getRawBuf().writeBytes(fileData, offset, length)
                             val key1 = state.key1
-                            val result = if (key1 != null) {
-                                YsmCrypt.encrypt(outBuf.toArray(), key1, false)
-                            } else null
+                            val result = if (key1 != null) YsmCrypt.encrypt(outBuf.toArray(), key1, false) else null
 
                             if (result != null) {
                                 val success = sendModelData(uuid, ByteBuffer.wrap(result.data()), transfer)
-                                if (success) {
-                                    offset += length
-                                } else {
-                                    Thread.yield()
-                                }
-                            } else {
-                                break
-                            }
+                                if (success) offset += length else yield()
+                            } else break
                         }
                     }
                 }
-            } catch (e: Exception) {
-                Constants.LOGGER.error("Failed to send model chunks to $uuid", e)
-            } finally {
+            }.onFailure {
+                Constants.LOGGER.error("Failed to send model chunks to $uuid", it)
+            }.also {
                 threadLimiter?.release()
             }
         }

@@ -40,8 +40,6 @@ import rip.ysm.security.YSMClientCache
 import rip.ysm.security.YsmCrypt
 import java.io.File
 import java.io.FileOutputStream
-import java.net.URI
-import java.net.URL
 import java.nio.ByteBuffer
 import java.nio.file.*
 import java.security.SecureRandom
@@ -149,13 +147,12 @@ object ClientModelManager {
         Constants.LOGGER.info("Loading builtin default model...")
         runCatching {
             val resourcePath = "/assets/yes_steve_model/builtin/default"
-            val resourceUrl: URL = YesSteveModel::class.java.getResource(resourcePath)
-                ?: run {
-                    Constants.LOGGER.error("Builtin default model not found in classpath: {}", resourcePath)
-                    return
-                }
+            val resourceUrl = YesSteveModel::class.java.getResource(resourcePath) ?: run {
+                Constants.LOGGER.error("Builtin default model not found in classpath: {}", resourcePath)
+                return
+            }
 
-            val uri: URI = resourceUrl.toURI()
+            val uri = resourceUrl.toURI()
             var jarFs: FileSystem?
             val defaultPath: Path = if ("jar" == uri.scheme) {
                 jarFs = runCatching {
@@ -529,9 +526,7 @@ object ClientModelManager {
     }
 
     private fun toOrderedTextureMap(textures: Map<String, OuterFileTexture>?): OrderedStringMap<String, OuterFileTexture> {
-        if (textures.isNullOrEmpty()) {
-            return OrderedStringMap(emptyArray(), emptyArray())
-        }
+        if (textures.isNullOrEmpty()) return OrderedStringMap(emptyArray(), emptyArray())
         return OrderedStringMap(
             textures.keys.toTypedArray(),
             textures.values.toTypedArray()
@@ -575,8 +570,8 @@ object ClientModelManager {
         forEachGuiWidget { widget ->
             runCatching {
                 widget.onSyncBegin()
-            }.onFailure { t ->
-                t.printStackTrace()
+            }.onFailure {
+                Constants.LOGGER.warn("Failed to sync widget", it)
             }
         }
     }
@@ -775,9 +770,7 @@ object ClientModelManager {
                 }
                 Minecraft.getInstance().execute {
                     for (assembly in removed) {
-                        for (tex in assembly.textures) {
-                            UploadManager.removeTexture(tex)
-                        }
+                        for (tex in assembly.textures) UploadManager.removeTexture(tex)
                         if (NativeLibLoader.isLoaded()) {
                             for ((_, value) in assembly.projectileModels) value.model.freeNativeCache()
                             for ((_, value) in assembly.vehicleModels) value.model.freeNativeCache()
@@ -840,7 +833,7 @@ object ClientModelManager {
     @JvmStatic
     fun processModelData(parsedBundle: ClientModelInfo?, modelId: String, isPrimary: Boolean, isAuth: Boolean) {
         if (parsedBundle != null) {
-            try {
+            runCatching {
                 val runtimeModel = ModelAssemblyFactory.buildAssembly(parsedBundle, isPrimary, isAuth)
                 pendingModelQueue.add(Pair.of(runtimeModel, modelId))
                 if (isPrimary) {
@@ -854,9 +847,9 @@ object ClientModelManager {
                     }
                     return
                 }
-            } catch (e: Exception) {
-                if (isPrimary) throw e
-                Constants.LOGGER.error(StringFormattedMessage("Failed to process {}", modelId).formattedMessage, e)
+            }.onFailure {
+                if (isPrimary) throw it
+                Constants.LOGGER.error(StringFormattedMessage("Failed to process {}", modelId).formattedMessage, it)
                 return
             }
         }
@@ -864,9 +857,7 @@ object ClientModelManager {
             if (syncState.currentState == SyncState.SYNCING) {
                 syncState.syncedModels++
                 val loaded = syncState.syncedModels
-                if (loaded == syncState.totalModels) {
-                    syncState.setState(SyncState.IDLE)
-                }
+                if (loaded == syncState.totalModels) syncState.setState(SyncState.IDLE)
                 forEachGuiWidget { guiWidget ->
                     guiWidget.onSyncProgress(syncState.totalModels, loaded)
                 }
