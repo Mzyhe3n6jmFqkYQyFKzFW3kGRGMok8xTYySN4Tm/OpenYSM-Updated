@@ -23,7 +23,12 @@ open class ConfigCheckBox(
     private val consumer2: Consumer<Boolean>
 ) : AbstractButton(x, y, width, 12, component2), ISpecialWidget {
 
-    constructor(x: Int, y: Int, component: Component, consumer: Consumer<Boolean>) : this(x, y, 115, component, consumer)
+    constructor(x: Int, y: Int, component: Component, consumer: Consumer<Boolean>) : this(
+        x,
+        y,
+        component2 = component,
+        consumer2 = consumer
+    )
 
     var isStateTriggered: Boolean = false
 
