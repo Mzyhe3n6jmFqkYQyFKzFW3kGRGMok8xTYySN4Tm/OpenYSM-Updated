@@ -32,15 +32,13 @@ open class CustomPlayerCarryOnLayer : GeoLayerRenderer<CustomPlayerEntity>() {
         if (entity !is Player) return
         if (!CarryOnDataHelper.isPlayerCarrying(entity)) return
         val collector = RenderContext.collector() ?: return
-        val animatedGeoModel = entityLivingBaseIn.getCurrentModel()
+        val model = entityLivingBaseIn.getCurrentModel()
 
         poseStack.pushPose()
-        val locatorBones = when {
-            animatedGeoModel != null && animatedGeoModel.rightHandBones()
-                .isNotEmpty() -> animatedGeoModel.rightHandBones()
 
-            animatedGeoModel != null && animatedGeoModel.leftHandBones()
-                .isNotEmpty() -> animatedGeoModel.leftHandBones()
+        // ??????????????????????????
+        val locatorBones = when {
+            model != null && model.backpackBones().isNotEmpty() -> model.backpackBones()
 
             else -> null
         }
