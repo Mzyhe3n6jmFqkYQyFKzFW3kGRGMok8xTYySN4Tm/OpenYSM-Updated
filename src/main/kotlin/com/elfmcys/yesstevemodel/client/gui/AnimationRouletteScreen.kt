@@ -46,7 +46,6 @@ import org.apache.commons.lang3.tuple.Pair
 import rip.ysm.api.client.KeyMappingFactory
 import rip.ysm.gui.ModelSettingsScreen
 import java.util.*
-import java.util.function.Consumer
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -457,7 +456,7 @@ class AnimationRouletteScreen : Screen {
         }
     }
 
-    private fun executeExpression(expr: String, consumer: Consumer<String>?) {
+    private fun executeExpression(expr: String, consumer: ((String) -> Unit)?) {
         runCatching {
             animatableModel.executeExpression(GeckoLibCache.parseSimpleExpression(expr), true, false, consumer)
         }.onFailure { e ->
