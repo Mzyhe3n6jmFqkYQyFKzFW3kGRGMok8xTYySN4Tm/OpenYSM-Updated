@@ -573,8 +573,7 @@ object ServerModelManager {
     ): ServerModelData? {
         val sha256 = model.properties.sha256
         if (sha256.isEmpty()) return null
-
-        return try {
+        return runCatching {
             val currentServerKey = serverKey ?: return null
             val hashes = YsmCrypt.calculateModelHashes(sha256, currentServerKey)
             val cacheFileName = String.format("%016x%016x", hashes[0], hashes[1])
@@ -605,8 +604,8 @@ object ServerModelManager {
             val isCustomSkinModel = "misc/2_steve" == modelId || "misc/1_alex" == modelId
 
             mapToDataClass(modelId, model, isAuth, isCustomSkinModel)
-        } catch (e: Exception) {
-            Constants.LOGGER.error("Failed to process and cache model: $modelId", e)
+        }.getOrElse {
+            Constants.LOGGER.error("Failed to process and cache model: $modelId", it)
             null
         }
     }
