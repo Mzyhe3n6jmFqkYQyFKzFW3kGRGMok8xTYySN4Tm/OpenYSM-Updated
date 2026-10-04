@@ -378,7 +378,7 @@ class AnimationRouletteScreen : Screen {
             centerX + 125,
             centerY + yOffset[0],
             titleComponent,
-            Consumer { isChecked ->
+            { isChecked ->
                 val expr = "${checkboxConfig.value}=${if (isChecked) "1" else "0"}"
                 executeExpression(expr, null)
                 val entity = animatableModel.entity
