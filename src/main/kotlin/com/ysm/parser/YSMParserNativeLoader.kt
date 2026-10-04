@@ -101,37 +101,47 @@ object YSMParserNativeLoader {
         val os = System.getProperty("os.name", "").lowercase(Locale.ROOT)
         var arch = System.getProperty("os.arch", "").lowercase(Locale.ROOT)
 
-        if (arch == "amd64" || arch == "x86_64") {
-            arch = "x64"
-        } else if (arch == "aarch64" || arch == "arm64") {
-            arch = "arm64"
+        when (arch) {
+            "amd64", "x86_64" -> {
+                arch = "x64"
+            }
+
+            "aarch64", "arm64" -> {
+                arch = "arm64"
+            }
         }
 
         val info = PlatformInfo(osTag = os, archTag = arch)
 
-        if (os.contains("win")) {
-            if (arch == "x64" || arch.contains("amd64")) {
-                info.folder = "windows-x64"
-                info.libraryName = "YSMParserJNI.dll"
-            } else if (arch.contains("x86") || arch.contains("i386")) {
-                info.folder = "windows-x86"
-                info.libraryName = "YSMParserJNI.dll"
+        when {
+            os.contains("win") -> {
+                if (arch == "x64" || arch.contains("amd64")) {
+                    info.folder = "windows-x64"
+                    info.libraryName = "YSMParserJNI.dll"
+                } else if (arch.contains("x86") || arch.contains("i386")) {
+                    info.folder = "windows-x86"
+                    info.libraryName = "YSMParserJNI.dll"
+                }
             }
-        } else if (os.contains("mac") || os.contains("darwin")) {
-            if (arch == "arm64" || arch.contains("aarch64")) {
-                info.folder = "macos-arm64"
-                info.libraryName = "libYSMParserJNI.dylib"
+
+            os.contains("mac") || os.contains("darwin") -> {
+                if (arch == "arm64" || arch.contains("aarch64")) {
+                    info.folder = "macos-arm64"
+                    info.libraryName = "libYSMParserJNI.dylib"
+                }
+                // x64 macOS not bundled — no JNI
             }
-            // x64 macOS not bundled — no JNI
-        } else if (os.contains("linux")) {
-            if (arch == "x64" || arch.contains("amd64")) {
-                info.folder = "linux-x64"
-                info.libraryName = "libYSMParserJNI.so"
-            } else if (arch == "arm64" || arch.contains("aarch64")) {
-                info.folder = "linux-arm64"
-                info.libraryName = "libYSMParserJNI.so"
+
+            os.contains("linux") -> {
+                if (arch == "x64" || arch.contains("amd64")) {
+                    info.folder = "linux-x64"
+                    info.libraryName = "libYSMParserJNI.so"
+                } else if (arch == "arm64" || arch.contains("aarch64")) {
+                    info.folder = "linux-arm64"
+                    info.libraryName = "libYSMParserJNI.so"
+                }
+                // loongarch64, riscv64 — no JNI
             }
-            // loongarch64, riscv64 — no JNI
         }
 
         return info
