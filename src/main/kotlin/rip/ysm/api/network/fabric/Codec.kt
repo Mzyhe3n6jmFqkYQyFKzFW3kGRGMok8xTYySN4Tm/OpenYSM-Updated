@@ -2,20 +2,18 @@ package rip.ysm.api.network.fabric
 
 import net.minecraft.network.FriendlyByteBuf
 import rip.ysm.api.network.PacketContext
-import java.util.function.BiConsumer
-import java.util.function.Function
 
 data class Codec<T : Any>(
     val type: Class<T>,
-    val encoder: BiConsumer<T, FriendlyByteBuf>,
-    val decoder: Function<FriendlyByteBuf, T>,
-    val handler: BiConsumer<T, PacketContext>
+    val encoder: (T, FriendlyByteBuf) -> Unit,
+    val decoder: (FriendlyByteBuf) -> T,
+    val handler: (T, PacketContext) -> Unit
 ) {
     fun encode(packet: Any, buf: FriendlyByteBuf) {
-        encoder.accept(type.cast(packet), buf)
+        encoder(type.cast(packet), buf)
     }
 
     fun dispatch(buf: FriendlyByteBuf, ctx: PacketContext) {
-        handler.accept(decoder.apply(buf), ctx)
+        handler(decoder(buf), ctx)
     }
 }

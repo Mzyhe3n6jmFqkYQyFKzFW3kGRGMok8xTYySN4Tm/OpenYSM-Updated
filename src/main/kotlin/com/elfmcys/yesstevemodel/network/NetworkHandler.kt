@@ -58,9 +58,7 @@ object NetworkHandler {
     fun isConnectionValid(connection: Connection?): Boolean =
         connection?.channel != null && VERSION == connection.channel.attr(CHANNEL_VERSION_KEY).get()
 
-    // TODO: Replace init to kotlin init
-    @JvmStatic
-    fun init() {
+    init {
         YSMChannel.init(CHANNEL_ID, VERSION)
         YSMChannel.register(
             1,

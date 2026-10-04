@@ -28,7 +28,6 @@ import net.minecraft.world.level.levelgen.XoroshiroRandomSource
 import org.joml.Vector3f
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.function.Consumer
 
 class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEntity<TEntity>) {
     private val bones: ReferenceArrayList<BoneTopLevelSnapshot> = ReferenceArrayList()
@@ -41,7 +40,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
     private val pendingExpressions: ConcurrentLinkedQueue<PendingExpression> = ConcurrentLinkedQueue()
     private var lastAudioTickTime: Float = 0.0f
     private var needsInit: Boolean = false
-    private val transformConsumer: (BoneTransformProvider) -> Unit = ::applyTransform
+    private val transformFunc: (BoneTransformProvider) -> Unit = ::applyTransform
     private var currentEvaluator: ExpressionEvaluator<AnimationContext<*>>? = null
     private var currentSeekTime: Float = 0.0f
     private var currentDeprecatedMode: Boolean = false
@@ -77,7 +76,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
                 (controller as IAnimationController<AnimatableEntity<TEntity>>).process(event, evaluator, z2)
             }
             currentDeprecatedMode = controller.isDeprecatedMode()
-            controller.forEachTransform(transformConsumer)
+            controller.forEachTransform(transformFunc)
         }
         currentEvaluator = null
         needsInit = false
@@ -279,7 +278,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
                     "Error: ${th.message}"
                 }
             )
-            value.callback?.accept(result)
+            value.callback?.invoke(result)
         } finally {
             evaluator.entity().setIsClientSide(false)
         }
@@ -289,41 +288,22 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
         value: IValue,
         isClientPlayer: Boolean,
         executeBeforeAnimation: Boolean,
-        resultConsumer: Consumer<String>?
+        resultFunc: ((String) -> Unit)?
     ) {
-        pendingExpressions.add(PendingExpression(value, isClientPlayer, executeBeforeAnimation, resultConsumer))
-    }
-
-    fun execute(
-        value: IValue,
-        isClientPlayer: Boolean,
-        executeBeforeAnimation: Boolean,
-        resultCallback: ((String) -> Unit)? = null
-    ) {
-        pendingExpressions.add(
-            PendingExpression(
-                value,
-                isClientPlayer,
-                executeBeforeAnimation,
-                resultCallback?.let { Consumer(it) })
-        )
+        pendingExpressions.add(PendingExpression(value, isClientPlayer, executeBeforeAnimation, resultFunc))
     }
 
     fun getPublicVariableStorage(): IForeignVariableStorage = animationStorage
 
-    fun forEachPropertyName(consumer: Consumer<String>) {
-        animationStorage.forEachPropertyName(consumer::accept)
-    }
-
-    fun forEachPropertyName(action: (String) -> Unit) {
-        animationStorage.forEachPropertyName(action)
+    fun forEachPropertyName(func: (String) -> Unit) {
+        animationStorage.forEachPropertyName(func)
     }
 
     private data class PendingExpression(
         val value: IValue,
         val isClientPlayer: Boolean,
         val executeBeforeAnimation: Boolean,
-        val callback: Consumer<String>?
+        val callback: ((String) -> Unit)?
     )
 
     companion object {

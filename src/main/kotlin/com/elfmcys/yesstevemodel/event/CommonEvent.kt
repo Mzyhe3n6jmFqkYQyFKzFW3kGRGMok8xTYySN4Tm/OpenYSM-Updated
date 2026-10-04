@@ -16,8 +16,7 @@ object CommonEvent {
             Constants.LOGGER.error(YesSteveModel.getErrorMessage())
             return
         }
-        NetworkHandler.init()
-        Constants.doNothing(TouhouMaidCompat)
+        Constants.doNothing(NetworkHandler, TouhouMaidCompat)
         nativeInit()
     }
 

@@ -31,8 +31,8 @@ object EntityJoinCallbackEvent {
             }
             val list = callbackCache.getIfPresent(entity.id)
             if (list != null) {
-                for (entityConsumer in list) {
-                    entityConsumer(entity)
+                for (entityFunc in list) {
+                    entityFunc(entity)
                 }
             }
             callbackCache.invalidate(entity.id)
