@@ -32,7 +32,6 @@ object CapabilityEvent {
         val oldModelInfoCap = getModelInfoCap(oldPlayer)
         val oldAuthModelsCap = getAuthModelsCap(oldPlayer)
         val oldStarModelsCap = getStarModelsCap(oldPlayer)
-        CapabilityLifecycle.invalidate(oldPlayer)
         val modelInfoCap = getModelInfoCap(newPlayer)
         val authModelsCap = getAuthModelsCap(newPlayer)
         val starModelsCap = getStarModelsCap(newPlayer)
@@ -45,6 +44,7 @@ object CapabilityEvent {
         if (starModelsCap != null && oldStarModelsCap != null) {
             starModelsCap.setStarModels(oldStarModelsCap.getStarModels())
         }
+        CapabilityLifecycle.invalidate(oldPlayer)
     }
 
     private fun onEntityAdd(entity: Entity, level: ServerLevel) {

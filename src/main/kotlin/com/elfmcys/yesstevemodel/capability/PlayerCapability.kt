@@ -103,7 +103,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     fun updateMolangVars(i: Int, int2FloatOpenHashMap: Int2FloatOpenHashMap) {
         val varHolder = molangVarsMap.computeIfAbsent(i) { MolangVarHolder() }
         if (isLocalPlayerModel()) {
-            if (varHolder.currentVars == null) {
+            if (varHolder.currentVars == null || serverVarContainer == null) {
                 varHolder.currentVars = int2FloatOpenHashMap
                 varHolder.applyPendingDeltas()
                 if (i == currentModelHashId) {
@@ -185,6 +185,11 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         molangVarsMap.putAll(playerCapability.molangVarsMap)
         initModelWithTexture(playerCapability.getModelId(), playerCapability.currentTextureName)
         setForceDisabled(playerCapability.isForceDisabled())
+        val holder = molangVarsMap[currentModelHashId]
+        val vars = holder?.currentVars
+        if (vars != null) {
+            serverVarContainer = if (isLocalPlayerModel()) RoamingStruct(currentModelHashId, vars) else Int2FloatOpenHashMapStruct(vars)
+        }
         playerCapability.molangVarsMap.clear()
         playerCapability.serverVarContainer = null
     }
