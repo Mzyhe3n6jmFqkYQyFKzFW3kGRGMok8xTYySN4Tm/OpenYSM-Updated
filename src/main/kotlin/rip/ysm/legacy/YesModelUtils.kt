@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package rip.ysm.legacy
 
 import com.elfmcys.yesstevemodel.util.DigestUtil
@@ -6,17 +8,14 @@ import it.unimi.dsi.fastutil.bytes.ByteArrays
 import net.minecraft.resources.Identifier
 import org.apache.commons.io.FileUtils
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
 import java.security.GeneralSecurityException
-import java.util.Base64
-import java.util.Random
+import java.util.*
 import java.util.zip.DataFormatException
-import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 

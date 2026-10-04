@@ -1,5 +1,6 @@
 package com.elfmcys.yesstevemodel.resource
 
+import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.resource.pojo.RawYsmModel
 import com.elfmcys.yesstevemodel.util.DigestUtil
 import com.google.gson.JsonArray
@@ -37,34 +38,32 @@ class YSMFolderDeserializer : AutoCloseable {
     private val inMemoryFiles: Map<String, ByteArray>?
 
     constructor(sourcePath: Path) {
-        if (!Files.exists(sourcePath)) {
-            throw FileNotFoundException("Model source not found: $sourcePath")
-        }
+        if (!Files.exists(sourcePath)) throw FileNotFoundException("Model source not found: $sourcePath")
 
-        this.inMemoryFiles = null
+        inMemoryFiles = null
 
         if (Files.isDirectory(sourcePath)) {
-            this.rootPath = sourcePath
-            this.zipFileSystem = null
+            rootPath = sourcePath
+            zipFileSystem = null
         } else if (sourcePath.toString().endsWith(".zip") || sourcePath.toString().endsWith(".ysm")) {
             val uri = URI.create("jar:" + sourcePath.toUri())
             val fs = FileSystems.newFileSystem(uri, emptyMap<String, Any>())
-            this.zipFileSystem = fs
-            this.rootPath = fs.getPath("/")
+            zipFileSystem = fs
+            rootPath = fs.getPath("/")
         } else {
             throw IllegalArgumentException("Unsupported file type. Expected directory or .zip")
         }
 
-        this.model = RawYsmModel()
-        this.model.formatVersion = 65535
+        model = RawYsmModel()
+        model.formatVersion = 65535
     }
 
     constructor(memoryFiles: Map<String, ByteArray>?) {
-        this.inMemoryFiles = memoryFiles
-        this.rootPath = null
-        this.zipFileSystem = null
-        this.model = RawYsmModel()
-        this.model.formatVersion = 65535
+        inMemoryFiles = memoryFiles
+        rootPath = null
+        zipFileSystem = null
+        model = RawYsmModel()
+        model.formatVersion = 65535
     }
 
     private fun readResource(relativePath: String?): ByteArray? {
@@ -400,8 +399,7 @@ class YSMFolderDeserializer : AutoCloseable {
             }
         }
 
-        var index = 0
-        for (item in items) {
+        for ((index, item) in items.withIndex()) {
             val sub = RawYsmModel.RawSubEntity()
             sub.identifier =
                 if (item.has("__temp_identifier")) item.get("__temp_identifier").asString else "${defaultIdentifier}_$index"
@@ -465,7 +463,6 @@ class YSMFolderDeserializer : AutoCloseable {
             }
 
             targetMap[sub.identifier ?: ""] = sub
-            index++
         }
     }
 
@@ -993,12 +990,11 @@ class YSMFolderDeserializer : AutoCloseable {
         val sorted = ArrayList(kfsObj.entrySet())
         sorted.sortWith(Comparator.comparingDouble { it.key.toDouble() })
 
-        for (entry in sorted) {
+        for ((key, valElem) in sorted) {
             val kf = RawYsmModel.RawKeyframe()
-            kf.timestamp = entry.key.toFloat()
+            kf.timestamp = key.toFloat()
             kf.interpolationMode = 0
 
-            val valElem = entry.value
             if (valElem.isJsonObject) {
                 val obj = valElem.asJsonObject
                 if (obj.has("lerp_mode")) {
@@ -1164,7 +1160,7 @@ class YSMFolderDeserializer : AutoCloseable {
         } else if (relativePath.startsWith("lang/") && relativePath.endsWith(".json")) {
             val rawLocale = relativePath.substring("lang/".length, relativePath.length - 5)
             val normalizedLocale = rawLocale.lowercase(Locale.ROOT).replace('-', '_')
-            try {
+            runCatching {
                 val hash = DigestUtil.sha256Hex(data)
                 val langJsonStr = String(data, StandardCharsets.UTF_8)
                 val langJson = JsonParser.parseString(langJsonStr).asJsonObject
@@ -1179,7 +1175,6 @@ class YSMFolderDeserializer : AutoCloseable {
                 if (normalizedLocale != rawLocale) {
                     model.languageFiles[normalizedLocale] = rawLangFile
                 }
-            } catch (ignored: Exception) {
             }
         } else if (relativePath.startsWith("functions/") && relativePath.endsWith(".molang")) {
             val fnName = extractFileName(relativePath)
@@ -1219,9 +1214,7 @@ class YSMFolderDeserializer : AutoCloseable {
                 4 -> img = WebpDecoder().read(data)
                 5 -> img = AvifDecoder().read(data)
             }
-            if (img != null) {
-                return ImageMeta(img.width, img.height, format)
-            }
+            if (img != null) return ImageMeta(img.width, img.height, format)
             throw RuntimeException("Failed to decode image dimensions for: $path")
         } catch (e: Exception) {
             throw RuntimeException("Error processing image: $path", e)
@@ -1276,7 +1269,7 @@ class YSMFolderDeserializer : AutoCloseable {
                         }
                     }
                 } catch (e: IOException) {
-                    e.printStackTrace()
+                    Constants.LOGGER.error("Failed to read PNG files from YSM folder", e)
                 }
             }
         }
