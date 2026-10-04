@@ -37,7 +37,6 @@ object SWarfareCompat : ModCompat("superbwarfare") {
         SWarfareCompatImpl.applyGunTransform(stack, model, entity, poseStack, packedLightIn, partialTicks)
     }
 
-    // TODO: Fix Unchecked cast UNCHECKED_CAST
     @JvmStatic
     fun handleTaczAnim(
         entity: LivingEntity,
@@ -46,12 +45,7 @@ object SWarfareCompat : ModCompat("superbwarfare") {
         loopType: ILoopType
     ): PlayState? {
         if (!isModLoaded) return null
-        return SWarfareCompatImpl.handleTaczAnim(
-            entity,
-            event as AnimationEvent<out LivingAnimatable<out LivingEntity>>,
-            str,
-            loopType
-        )
+        return SWarfareCompatImpl.handleTaczAnim(entity, event, str, loopType)
     }
 
     @JvmStatic
@@ -60,10 +54,7 @@ object SWarfareCompat : ModCompat("superbwarfare") {
         event: AnimationEvent<*>
     ): PlayState? {
         if (!isModLoaded) return null
-        return SWarfareCompatImpl.handleGunHoldAnim(
-            stack,
-            event as AnimationEvent<out LivingAnimatable<out LivingEntity>>
-        )
+        return SWarfareCompatImpl.handleGunHoldAnim(stack, event)
     }
 
     @JvmStatic
@@ -72,10 +63,7 @@ object SWarfareCompat : ModCompat("superbwarfare") {
         event: AnimationEvent<*>
     ): PlayState? {
         if (!isModLoaded) return null
-        return SWarfareCompatImpl.handleGunActionAnim(
-            stack,
-            event as AnimationEvent<out LivingAnimatable<out LivingEntity>>
-        )
+        return SWarfareCompatImpl.handleGunActionAnim(stack, event)
     }
 
     @JvmStatic

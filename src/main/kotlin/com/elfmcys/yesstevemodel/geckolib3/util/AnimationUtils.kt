@@ -5,7 +5,6 @@ import net.minecraft.client.renderer.entity.EntityRenderDispatcher
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.world.entity.Entity
 
-@Suppress("UNCHECKED_CAST")
 object AnimationUtils {
     @JvmStatic
     fun convertTicksToSeconds(ticks: Float): Float {
@@ -18,8 +17,8 @@ object AnimationUtils {
     }
 
     @JvmStatic
-    fun <T : Entity> getRenderer(entity: T): EntityRenderer<T, *>? {
+    fun <T : Entity> getRenderer(entity: T): EntityRenderer<in T, *>? {
         val renderManager: EntityRenderDispatcher = Minecraft.getInstance().entityRenderDispatcher
-        return renderManager.getRenderer(entity) as? EntityRenderer<T, *>
+        return renderManager.getRenderer(entity)
     }
 }

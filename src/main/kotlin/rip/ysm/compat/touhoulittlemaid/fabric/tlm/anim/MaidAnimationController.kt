@@ -16,12 +16,8 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.world.entity.EquipmentSlot
-import org.apache.commons.lang3.function.TriFunction
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
-import java.util.function.BiFunction
 
-// TODO: Fix UNCHECKED_CAST
-@Suppress("UNCHECKED_CAST")
 @Environment(EnvType.CLIENT)
 object MaidAnimationController {
     private const val PLAYER_PREFIX = "player"
@@ -186,13 +182,13 @@ object MaidAnimationController {
 
     private fun registerController(
         controllerName: String,
-        controllerFactory: BiFunction<String, MaidAnimatable, IAnimationController<MaidAnimatable>>
+        controllerFactory: (String, MaidAnimatable) -> IAnimationController<MaidAnimatable>
     ) {
         val controllerKey = "$PLAYER_PREFIX.$controllerName"
         val processor: ModelProcessor<MaidAnimatable, PlayerModelBundle> =
             ModelProcessor { _, _ ->
                 ControllerFactory { animatable, consumer ->
-                    consumer(controllerFactory.apply(controllerKey, animatable))
+                    consumer(controllerFactory(controllerKey, animatable))
                 }
             }
         REGISTRY.register(processor)
@@ -200,7 +196,7 @@ object MaidAnimationController {
 
     private fun registerSlotController(
         slotName: String,
-        controllerFactory: BiFunction<String, MaidAnimatable, IAnimationController<MaidAnimatable>>
+        controllerFactory: (String, MaidAnimatable) -> IAnimationController<MaidAnimatable>
     ) {
         REGISTRY.register(
             ControllerSlotBinder(
@@ -214,9 +210,9 @@ object MaidAnimationController {
 
     private fun registerNamedController(
         slotName: String,
-        requiredAnimations: Array<String>,
+        requiredAnimations: Array<String>?,
         checkAnimationEntries: Boolean,
-        controllerFactory: BiFunction<String, MaidAnimatable, IAnimationController<MaidAnimatable>>
+        controllerFactory: (String, MaidAnimatable) -> IAnimationController<MaidAnimatable>
     ) {
         REGISTRY.register(
             NamedModelProcessor(
@@ -232,7 +228,7 @@ object MaidAnimationController {
 
     private fun registerParallelController(
         slotName: String,
-        controllerFactory: TriFunction<String, MaidAnimatable, String, IAnimationController<MaidAnimatable>>
+        controllerFactory: (String, MaidAnimatable, String?) -> IAnimationController<MaidAnimatable>
     ) {
         REGISTRY.register(
             ParallelProcessor(
@@ -247,7 +243,7 @@ object MaidAnimationController {
 
     private fun registerArmorController(
         category: String,
-        controllerFactory: TriFunction<String, MaidAnimatable, EquipmentSlot, IAnimationController<MaidAnimatable>>
+        controllerFactory: (String, MaidAnimatable, EquipmentSlot) -> IAnimationController<MaidAnimatable>
     ) {
         REGISTRY.register(
             ArmorSlotProcessor(

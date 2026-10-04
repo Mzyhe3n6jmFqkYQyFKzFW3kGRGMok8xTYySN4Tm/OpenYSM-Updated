@@ -33,7 +33,9 @@ class AnimatedGeoModel(@JvmField val geoModel: GeoModel) {
     private val leftHandGroupChains: MutableList<List<IBone>> = ReferenceArrayList()
     private val rightHandGroupChains: MutableList<List<IBone>> = ReferenceArrayList()
     private val passengerGroupChains: MutableList<List<IBone>> = ReferenceArrayList()
-    private var touhouMaidData: Any? = null
+    @JvmField
+    @PublishedApi
+    internal var rawTouhouMaidData: Any? = null
 
     init {
         val bones = geoModel.topLevelBones()
@@ -118,13 +120,11 @@ class AnimatedGeoModel(@JvmField val geoModel: GeoModel) {
 
     fun headBones(): List<IBone> = headBones
 
-    // TODO: Remove Suppress
-    @Suppress("UNCHECKED_CAST")
-    fun <T> getTouhouMaidData(): T? {
-        if (touhouMaidData == null) {
-            touhouMaidData = TouhouMaidBoneProcessor.createLocationModel(this)
+    inline fun <reified T> getTouhouMaidData(): T? {
+        if (rawTouhouMaidData == null) {
+            rawTouhouMaidData = TouhouMaidBoneProcessor.createLocationModel(this)
         }
-        return touhouMaidData as? T
+        return rawTouhouMaidData as? T
     }
 
     companion object {

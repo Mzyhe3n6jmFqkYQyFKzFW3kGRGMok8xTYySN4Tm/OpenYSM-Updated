@@ -17,14 +17,10 @@ class OrderedStringMap<K, V> : Map<K, V> {
         this.hashMap = Object2ObjectOpenHashMap(this.arrayMap)
     }
 
-    // TODO: Fix UNCHECKED_CAST
-    @Suppress("UNCHECKED_CAST")
     constructor(object2ObjectArrayMap: Object2ObjectArrayMap<K, V>) {
-        val array = object2ObjectArrayMap.keys.toTypedArray()
-        val array2 = object2ObjectArrayMap.values.toTypedArray()
-        this.keyList = ObjectLists.unmodifiable(ObjectArrayList.wrap(array))
-        this.valuesList = ObjectLists.unmodifiable(ObjectArrayList.wrap(array2))
-        this.arrayMap = Object2ObjectArrayMap(array, array2)
+        this.keyList = ObjectLists.unmodifiable(ObjectArrayList(object2ObjectArrayMap.keys))
+        this.valuesList = ObjectLists.unmodifiable(ObjectArrayList(object2ObjectArrayMap.values))
+        this.arrayMap = Object2ObjectArrayMap(object2ObjectArrayMap)
         this.hashMap = Object2ObjectOpenHashMap(this.arrayMap)
     }
 

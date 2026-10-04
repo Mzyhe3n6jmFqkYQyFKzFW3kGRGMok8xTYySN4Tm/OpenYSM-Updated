@@ -7,14 +7,13 @@ import net.minecraft.world.entity.player.Player
 import rip.ysm.compat.ModCompat
 import rip.ysm.compat.carryon.fabric.CarryOnCompatImpl
 import java.util.*
-import java.util.function.BiFunction
 
 object CarryOnCompat : ModCompat("carryon") {
     @JvmStatic
     fun isLoaded(): Boolean = isModLoaded
 
     @JvmStatic
-    fun getControllerFactory(): Optional<BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>> {
+    fun getControllerFactory(): Optional<(String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>> {
         if (!isModLoaded) return Optional.empty()
         return CarryOnCompatImpl.getControllerFactory()
     }

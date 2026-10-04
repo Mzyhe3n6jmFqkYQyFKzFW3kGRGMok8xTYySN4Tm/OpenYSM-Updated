@@ -8,7 +8,6 @@ import org.apache.commons.lang3.tuple.Pair
 import rip.ysm.compat.ModCompat
 import rip.ysm.compat.parcool.fabric.ParcoolCompatImpl
 import java.util.*
-import java.util.function.BiFunction
 
 object ParcoolCompat : ModCompat("parcool") {
     @JvmStatic
@@ -18,7 +17,7 @@ object ParcoolCompat : ModCompat("parcool") {
     }
 
     @JvmStatic
-    fun getControllerFactory(): Optional<BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>> {
+    fun getControllerFactory(): Optional<(String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>> {
         if (!isModLoaded) return Optional.empty()
         return ParcoolCompatImpl.getControllerFactory()
     }

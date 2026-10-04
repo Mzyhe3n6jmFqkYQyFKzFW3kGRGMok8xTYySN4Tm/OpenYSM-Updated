@@ -164,16 +164,11 @@ class PlayerStateSynchronizer {
             val instance = activeEffects.iterator().next()
             message.setEffects(Object2ByteMaps.singleton(instance.effect, (instance.amplifier + 1).toByte()))
         } else {
-            @Suppress("UNCHECKED_CAST")
-            val effectIds = arrayOfNulls<Holder<MobEffect>>(activeEffects.size) as Array<Holder<MobEffect>>
-            val amplifiers = ByteArray(activeEffects.size)
-            var i = 0
+            val map = Object2ByteArrayMap<Holder<MobEffect>>(activeEffects.size)
             for (instance in activeEffects) {
-                effectIds[i] = instance.effect
-                amplifiers[i] = (instance.amplifier + 1).toByte()
-                i++
+                map.put(instance.effect, (instance.amplifier + 1).toByte())
             }
-            message.setEffects(Object2ByteArrayMap(effectIds, amplifiers))
+            message.setEffects(map)
         }
         message.setHealth(serverPlayer.health.toInt())
         message.setMaxHealth(serverPlayer.maxHealth.toInt())

@@ -253,17 +253,15 @@ class S2CSyncPlayerStatePacket(
                         message.effectAmplifiers = Object2ByteMaps.singleton(holder, buffer.readByte())
                     }
                 } else {
-                    @Suppress("UNCHECKED_CAST")
-                    val effects = arrayOfNulls<Holder<MobEffect>>(effectCount) as Array<Holder<MobEffect>>
-                    val amplifiers = ByteArray(effectCount)
+                    val map = Object2ByteArrayMap<Holder<MobEffect>>(effectCount)
                     for (i in 0 until effectCount) {
                         val holder = BuiltInRegistries.MOB_EFFECT.asHolderIdMap().byId(buffer.readVarInt())
+                        val amplifier = buffer.readByte()
                         if (holder != null) {
-                            effects[i] = holder
+                            map.put(holder, amplifier)
                         }
-                        amplifiers[i] = buffer.readByte()
                     }
-                    message.effectAmplifiers = Object2ByteArrayMap(effects, amplifiers)
+                    message.effectAmplifiers = map
                 }
             }
             if (flagsInt and 8 != 0) {

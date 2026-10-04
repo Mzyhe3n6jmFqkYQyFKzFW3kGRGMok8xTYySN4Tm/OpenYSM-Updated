@@ -9,15 +9,14 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import net.minecraft.world.entity.player.Player
 import rip.ysm.compat.carryon.CarryOnDataHelper
 import java.util.*
-import java.util.function.BiFunction
 
 // TODO: Replace Optional
 object CarryOnCompatImpl {
     @JvmStatic
-    fun getControllerFactory(): Optional<BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>> =
-        Optional.of(BiFunction { animationEntryKey, entity ->
+    fun getControllerFactory(): Optional<(String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>> =
+        Optional.of { animationEntryKey, entity ->
             CompositeAnimationController(entity, animationEntryKey, 0.1f, PlayerAnimationPredicate())
-        })
+        }
 
     @JvmStatic
     fun isPlayerCarrying(player: Player): Boolean = CarryOnDataHelper.isPlayerCarrying(player)

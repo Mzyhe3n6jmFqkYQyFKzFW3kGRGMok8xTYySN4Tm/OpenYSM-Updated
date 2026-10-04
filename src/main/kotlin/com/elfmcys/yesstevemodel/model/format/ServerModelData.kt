@@ -8,8 +8,8 @@ import net.minecraft.resources.Identifier
 class ServerModelData(
     val modelId: String,
     val serverAnimationInfo: ServerAnimationInfo,
-    private var projectiles: Array<Any>?,
-    private var vehicles: Array<Any>?,
+    private var projectiles: List<Array<String>>?,
+    private var vehicles: List<Array<String>>?,
     private val info: ServerModelInfo,
     private val isCustomSkinModel: Boolean,
     private val isAuth: Boolean
@@ -20,12 +20,9 @@ class ServerModelData(
     val modelInfo: ServerAnimationInfo = serverAnimationInfo
 
     fun getEntityTypes(): Set<Identifier> {
-        projectiles?.let { array ->
-            for (obj in array) {
-                if (obj is Array<*>) {
-                    @Suppress("UNCHECKED_CAST")
-                    entityTypes.addAll(FileTypeUtil.resolveEntityTypes(obj as Array<String>))
-                }
+        projectiles?.let { list ->
+            for (arr in list) {
+                entityTypes.addAll(FileTypeUtil.resolveEntityTypes(arr))
             }
             projectiles = null
         }
@@ -33,12 +30,9 @@ class ServerModelData(
     }
 
     fun getExcludedEntityTypes(): Set<Identifier> {
-        vehicles?.let { array ->
-            for (obj in array) {
-                if (obj is Array<*>) {
-                    @Suppress("UNCHECKED_CAST")
-                    excludedEntityTypes.addAll(FileTypeUtil.resolveEntityTypes(obj as Array<String>))
-                }
+        vehicles?.let { list ->
+            for (arr in list) {
+                excludedEntityTypes.addAll(FileTypeUtil.resolveEntityTypes(arr))
             }
             vehicles = null
         }

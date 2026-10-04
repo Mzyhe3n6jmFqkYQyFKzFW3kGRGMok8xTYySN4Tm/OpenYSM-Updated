@@ -80,10 +80,7 @@ abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEn
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
-    override fun createRenderState(): S {
-        return EntityRenderState() as S
-    }
+    abstract override fun createRenderState(): S
 
     override fun extractRenderState(entity: TEntity, state: S, partialTick: Float) {
         super.extractRenderState(entity, state, partialTick)

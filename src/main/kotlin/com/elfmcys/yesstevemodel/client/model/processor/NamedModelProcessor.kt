@@ -4,7 +4,6 @@ import com.elfmcys.yesstevemodel.client.entity.GeoEntity
 import com.elfmcys.yesstevemodel.client.model.AnimationDataProvider
 import com.elfmcys.yesstevemodel.client.model.ModelResourceBundle
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
-import java.util.function.BiFunction
 
 open class NamedModelProcessor<T : GeoEntity<*>, TModel>(
     prefix: String,
@@ -12,7 +11,7 @@ open class NamedModelProcessor<T : GeoEntity<*>, TModel>(
     private val requiredAnimations: Array<String>?,
     private val checkAnimationEntries: Boolean,
     private val animationDataProvider: AnimationDataProvider<TModel>,
-    private val controllerFactory: BiFunction<String, T, IAnimationController<T>>
+    private val controllerFactory: (String, T) -> IAnimationController<T>
 ) : ModelProcessor<T, TModel> {
     private val animationEntryKey: String = "$prefix.$slotName"
     private val controllerKey: String = "${prefix}_ctrl_$slotName"
@@ -35,7 +34,7 @@ open class NamedModelProcessor<T : GeoEntity<*>, TModel>(
 
         if (hasContent)
             return ControllerFactory { entity, consumer ->
-                consumer(controllerFactory.apply(animationEntryKey, entity))
+                consumer(controllerFactory(animationEntryKey, entity))
             }
         return ControllerFactory { _, _ -> }
     }

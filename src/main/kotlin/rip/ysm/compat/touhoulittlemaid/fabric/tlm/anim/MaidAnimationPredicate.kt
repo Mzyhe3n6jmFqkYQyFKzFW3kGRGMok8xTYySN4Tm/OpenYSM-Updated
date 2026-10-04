@@ -38,7 +38,6 @@ open class MaidAnimationPredicate : IAnimationPredicate<MaidAnimatable> {
     companion object {
         private const val PRIORITY_BUCKETS: Int = 5
 
-        @Suppress("UNCHECKED_CAST")
         private val PRIORITY_HANDLERS: Array<ReferenceArrayList<AnimationState<EntityMaid, MaidAnimatable>>> =
             Array(PRIORITY_BUCKETS) { ReferenceArrayList(6) }
 

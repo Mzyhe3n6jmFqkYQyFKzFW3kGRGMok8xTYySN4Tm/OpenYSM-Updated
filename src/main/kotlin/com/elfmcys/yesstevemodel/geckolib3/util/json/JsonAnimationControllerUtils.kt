@@ -57,7 +57,7 @@ object JsonAnimationControllerUtils {
             val name = state.key
             val stateJsonObject = state.value.asJsonObject
 
-            val animations: MutableList<Pair<String, IValue?>> = Lists.newArrayList()
+            val animations: MutableList<Pair<String, IValue>> = Lists.newArrayList()
             val transitions: MutableList<Pair<String, IValue>> = Lists.newArrayList()
             val soundEffects: MutableList<String> = Lists.newArrayList()
 
@@ -75,11 +75,10 @@ object JsonAnimationControllerUtils {
                 blendViaShortestPath = stateJsonObject.get("blend_via_shortest_path").asBoolean
             }
 
-            @Suppress("UNCHECKED_CAST")
             states.add(
                 AnimationState(
                     name,
-                    animations.toTypedArray() as Array<Pair<String, IValue>>,
+                    animations.toTypedArray(),
                     transitions.toTypedArray(),
                     soundEffects.toTypedArray(),
                     onEntry,
@@ -94,13 +93,13 @@ object JsonAnimationControllerUtils {
     }
 
     @JvmStatic
-    fun getAnimations(animations: MutableList<Pair<String, IValue?>>, element: JsonElement?, parser: MolangParser) {
+    fun getAnimations(animations: MutableList<Pair<String, IValue>>, element: JsonElement?, parser: MolangParser) {
         if (element == null || !element.isJsonArray) {
             return
         }
         for (animation in element.asJsonArray) {
             if (animation.isJsonPrimitive) {
-                animations.add(Pair.of(animation.asString, null))
+                animations.add(Pair.of(animation.asString, com.elfmcys.yesstevemodel.geckolib3.core.molang.value.FloatValue.ZERO))
             } else if (animation.isJsonObject) {
                 for (entry in animation.asJsonObject.entrySet()) {
                     animations.add(Pair.of(entry.key, parser.parseExpression(entry.value.asString, false)))
