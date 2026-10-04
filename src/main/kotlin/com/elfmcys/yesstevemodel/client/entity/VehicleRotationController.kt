@@ -46,7 +46,7 @@ open class VehicleRotationController(
         isSomething: Boolean
     ) {
         val rot = ImmersiveAirCraftCompat.getAircraftRotation(event)
-            ?: SimplePlanesCompat.getSimplePlanesRotation(event).orElse(null)
+            ?: SimplePlanesCompat.getSimplePlanesRotation(event)
         if (rot != null) {
             vehicleRotation = TransitionVector3f(rot).apply {
                 setPercentCompleted(0.0f)

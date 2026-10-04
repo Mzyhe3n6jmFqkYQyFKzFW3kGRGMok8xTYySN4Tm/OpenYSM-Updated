@@ -31,6 +31,10 @@ open class CustomPlayerCarryOnLayer : GeoLayerRenderer<CustomPlayerEntity>() {
         if (entity !is Player) return
         if (!CarryOnDataHelper.isPlayerCarrying(entity)) return
         val collector = RenderContext.collector() ?: return
+        poseStack.pushPose()
+        poseStack.scale(-1.0f, -1.0f, 1.0f)
+        poseStack.translate(0.0, -1.501, 0.0)
         CarryOnRenderer.render(entity, poseStack, packedLightIn, partialTick, collector)
+        poseStack.popPose()
     }
 }

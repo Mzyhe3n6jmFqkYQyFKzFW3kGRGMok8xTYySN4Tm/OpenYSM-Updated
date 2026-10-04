@@ -555,9 +555,8 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             localPlayer
         )
         val cap = PlayerCapability[localPlayer] ?: return
-        val modelAssemblyOpt = ClientModelManager.getModelContext(cap.getModelId())
-        val modelAssembly = if (modelAssemblyOpt.isPresent) modelAssemblyOpt.get() else null
-        val displayName = if (modelAssembly != null && modelAssembly.modelData.metadata != null) {
+        val modelAssembly = ClientModelManager.getModelContext(cap.getModelId())
+        val displayName = if (modelAssembly?.modelData?.metadata != null) {
             ModelMetadataPresenter.getLocalizedModelString(
                 modelAssembly,
                 "metadata.name",

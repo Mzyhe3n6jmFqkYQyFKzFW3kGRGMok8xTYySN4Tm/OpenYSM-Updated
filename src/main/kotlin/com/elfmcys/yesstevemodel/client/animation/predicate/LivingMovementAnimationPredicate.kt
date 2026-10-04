@@ -30,7 +30,7 @@ class LivingMovementAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>
         if (str.isNotBlank())
             return IAnimationPredicate.playAnimationWithLoop(event, str, ILoopType.EDefaultLoopTypes.LOOP)
         val conditionManager = animatable.getModelConfig() ?: return null
-        if (TouhouLittleMaidCompat.isLoaded()) {
+        if (TouhouLittleMaidCompat.isModLoaded) {
             val conditionChair = conditionManager.chair
             val str2 = conditionChair.doTest(livingEntity)
             if (str2.isNotBlank())
