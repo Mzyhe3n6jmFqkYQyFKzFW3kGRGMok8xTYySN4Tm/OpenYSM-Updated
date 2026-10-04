@@ -34,7 +34,7 @@ import java.util.function.Consumer
 
 class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEntity<TEntity>) {
     private val bones: ReferenceArrayList<BoneTopLevelSnapshot> = ReferenceArrayList()
-    private var initExpressions: Object2ReferenceMap<String, out List<IValue>> = Object2ReferenceMaps.emptyMap()
+    private var initExpressions: Object2ReferenceMap<String, MutableList<IValue>> = Object2ReferenceMaps.emptyMap()
     private val boneById: Int2ReferenceOpenHashMap<BoneTopLevelSnapshot> = Int2ReferenceOpenHashMap()
     private val modelRendererList: ArrayDeque<BoneTopLevelSnapshot> = ArrayDeque()
     private val animationStorage: VariableStorage = VariableStorage()
@@ -72,8 +72,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
         currentSeekTime = seekTime
         for (controller in manager.getAnimationControllers()) {
             if (needsInit) {
-                @Suppress("UNCHECKED_CAST")
-                controller.init(bones, initExpressions as Object2ReferenceMap<String, MutableList<IValue>>)
+                controller.init(bones, initExpressions)
             }
             if (z) {
                 @Suppress("UNCHECKED_CAST")
@@ -232,7 +231,11 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
             }
         }
         needsInit = true
-        initExpressions = object2ReferenceMap
+        val map = it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap<String, MutableList<IValue>>(object2ReferenceMap.size)
+        for (entry in object2ReferenceMap.object2ReferenceEntrySet()) {
+            map.put(entry.key, it.unimi.dsi.fastutil.objects.ObjectArrayList(entry.value))
+        }
+        initExpressions = map
     }
 
     fun setRoamingProperties(struct: Struct?) {

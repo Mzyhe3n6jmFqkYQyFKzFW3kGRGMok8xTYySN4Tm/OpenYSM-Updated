@@ -182,7 +182,7 @@ open class ModelSettingsScreen(
     private fun renderPreview(g: GuiGraphics, partialTick: Float) {
         val mc = minecraft
         if (mc.player == null) return
-        val la = animatable as? LivingAnimatable<*> ?: return
+        val la = animatable as? com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity ?: return
         val scale = mc.window.guiScale
         val sx = (previewLeft * scale)
         val sy = (mc.window.height - previewBottom * scale)
@@ -248,8 +248,8 @@ open class ModelSettingsScreen(
             pitch: Float,
             yaw: Float,
             partialTick: Float,
-            animatable: LivingAnimatable<*>,
-            renderer: GeoReplacedEntityRenderer<*, *, *>
+            animatable: com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity,
+            renderer: com.elfmcys.yesstevemodel.client.renderer.CustomPlayerRenderer
         ) {
             ModelPreviewRenderer.setPreviewMode(true)
             val livingEntity = animatable.entity
@@ -286,9 +286,8 @@ open class ModelSettingsScreen(
             val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
             val state = AvatarRenderState()
             try {
-                @Suppress("UNCHECKED_CAST")
-                (renderer as GeoReplacedEntityRenderer<Player, LivingAnimatable<Player>, AvatarRenderState>).renderEntity(
-                    animatable as LivingAnimatable<Player>,
+                renderer.renderEntity(
+                    animatable,
                     state,
                     0.0f,
                     partialTick,

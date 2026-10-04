@@ -113,20 +113,20 @@ object ModelPreviewRenderer {
 
     // 动画测试界面的模型
     @JvmStatic
-    fun renderEntityPreview(
+    fun <TEntity : Player, TAnimatable : LivingAnimatable<TEntity>, TRenderState : AvatarRenderState> renderEntityPreview(
         x: Float,
         y: Float,
         scale: Float,
         pitch: Float,
         yaw: Float,
         partialTick: Float,
-        animatableEntity: AnimatableEntity<*>,
-        state: AvatarRenderState,
-        renderer: GeoReplacedEntityRenderer<*, *, *>,
+        animatableEntity: TAnimatable,
+        state: TRenderState,
+        renderer: GeoReplacedEntityRenderer<TEntity, TAnimatable, TRenderState>,
         renderGround: Boolean
     ) {
         setPreviewMode(true)
-        val livingEntity = animatableEntity.entity as LivingEntity
+        val livingEntity = animatableEntity.entity
         val modelViewStack = RenderSystem.getModelViewStack()
         modelViewStack.pushMatrix()
         modelViewStack.translate(x, y, 1250.0f)
@@ -191,10 +191,8 @@ object ModelPreviewRenderer {
         if (renderGround) {
             renderGroundPreview(scale, pitch, yaw, bufferSource)
         }
-        // TODO: Fix UNCHECKED_CAST
-        @Suppress("UNCHECKED_CAST")
-        (renderer as GeoReplacedEntityRenderer<LivingEntity, LivingAnimatable<LivingEntity>, AvatarRenderState>).renderEntity(
-            animatableEntity as LivingAnimatable<LivingEntity>,
+        renderer.renderEntity(
+            animatableEntity,
             state,
             0.0f,
             partialTick,

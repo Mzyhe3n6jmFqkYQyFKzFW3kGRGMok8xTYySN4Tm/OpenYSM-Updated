@@ -19,8 +19,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.CompositeAnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
-import org.apache.commons.lang3.function.TriFunction
-import java.util.function.BiFunction
 
 object ProjectileAnimationController {
     object ProjectileAnimationDataProvider : AnimationDataProvider<ProjectileModelBundle> {
@@ -83,11 +81,11 @@ object ProjectileAnimationController {
     @JvmStatic
     fun registerController(
         controllerName: String,
-        controllerFactory: BiFunction<String, GeckoProjectileEntity, IAnimationController<GeckoProjectileEntity>>
+        controllerFactory: (String, GeckoProjectileEntity) -> IAnimationController<GeckoProjectileEntity>
     ): ModelProcessor<GeckoProjectileEntity, ProjectileModelBundle> {
         val controllerKey = "$PROJECTILE_PREFIX.$controllerName"
         return REGISTRY.register { _, _ ->
-            { entity, consumer -> consumer(controllerFactory.apply(controllerKey, entity)) }
+            { entity, consumer -> consumer(controllerFactory(controllerKey, entity)) }
         }
     }
 
@@ -96,7 +94,7 @@ object ProjectileAnimationController {
         slotName: String,
         requiredAnimations: Array<String>?,
         checkAnimationEntries: Boolean,
-        controllerFactory: BiFunction<String, GeckoProjectileEntity, IAnimationController<GeckoProjectileEntity>>
+        controllerFactory: (String, GeckoProjectileEntity) -> IAnimationController<GeckoProjectileEntity>
     ): ModelProcessor<GeckoProjectileEntity, ProjectileModelBundle> {
         return REGISTRY.register(
             NamedModelProcessor(
@@ -113,7 +111,7 @@ object ProjectileAnimationController {
     @JvmStatic
     fun registerParallelController(
         slotName: String,
-        controllerFactory: TriFunction<String, GeckoProjectileEntity, String, IAnimationController<GeckoProjectileEntity>>
+        controllerFactory: (String, GeckoProjectileEntity, String?) -> IAnimationController<GeckoProjectileEntity>
     ): ModelProcessor<GeckoProjectileEntity, ProjectileModelBundle> {
         return REGISTRY.register(
             ParallelProcessor(

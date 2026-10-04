@@ -7,14 +7,13 @@ import com.elfmcys.yesstevemodel.client.model.ModelResourceBundle
 import com.elfmcys.yesstevemodel.client.model.PlayerModelBundle
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import net.minecraft.world.entity.EquipmentSlot
-import org.apache.commons.lang3.function.TriFunction
 import org.apache.commons.lang3.tuple.Pair
 
 open class ArmorSlotProcessor<T : GeoEntity<*>>(
     private val prefix: String,
     private val category: String,
     private val animationDataProvider: AnimationDataProvider<PlayerModelBundle>,
-    private val controllerFactory: TriFunction<String, T, EquipmentSlot, IAnimationController<T>>
+    private val controllerFactory: (String, T, EquipmentSlot) -> IAnimationController<T>
 ) : ModelProcessor<T, PlayerModelBundle> {
 
     override fun process(modelData: PlayerModelBundle, resourceBundle: ModelResourceBundle): ControllerFactory<T> {
@@ -38,7 +37,7 @@ open class ArmorSlotProcessor<T : GeoEntity<*>>(
         }
         return ControllerFactory { entity, consumer ->
             if (entity !is IPreviewAnimatable) {
-                for (pair in matchingSlots) consumer(controllerFactory.apply(pair.left, entity, pair.right))
+                for (pair in matchingSlots) consumer(controllerFactory(pair.left, entity, pair.right))
             }
         }
     }

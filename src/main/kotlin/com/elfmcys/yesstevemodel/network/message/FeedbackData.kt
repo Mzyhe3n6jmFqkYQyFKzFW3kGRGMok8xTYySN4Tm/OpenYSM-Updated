@@ -46,14 +46,9 @@ data class FeedbackData(
                 int2FloatArrayMap = Int2FloatArrayMap(iArr, fArr)
                 object2FloatArrayMap = null
             } else {
-                val strArr = arrayOfNulls<String>(entryCount)
-                val fArr2 = FloatArray(entryCount)
-                for (i in 0 until entryCount) {
-                    strArr[i] = buf.readUtf()
-                    fArr2[i] = buf.readFloat()
-                }
-                @Suppress("UNCHECKED_CAST")
-                object2FloatArrayMap = Object2FloatArrayMap(strArr as Array<String>, fArr2)
+                val strArr = Array(entryCount) { buf.readUtf() }
+                val fArr2 = FloatArray(entryCount) { buf.readFloat() }
+                object2FloatArrayMap = Object2FloatArrayMap(strArr, fArr2)
                 int2FloatArrayMap = null
             }
             return FeedbackData(entityId, object2FloatArrayMap, int2FloatArrayMap, varInt)

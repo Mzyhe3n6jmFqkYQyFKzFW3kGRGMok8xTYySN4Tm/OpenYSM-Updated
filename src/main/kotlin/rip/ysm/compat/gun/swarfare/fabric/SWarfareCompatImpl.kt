@@ -32,7 +32,7 @@ object SWarfareCompatImpl {
     @JvmStatic
     fun handleTaczAnim(
         entity: LivingEntity,
-        event: AnimationEvent<out LivingAnimatable<out LivingEntity>>,
+        event: AnimationEvent<*>,
         str: String,
         loopType: ILoopType
     ): PlayState? = null
@@ -40,13 +40,13 @@ object SWarfareCompatImpl {
     @JvmStatic
     fun handleGunHoldAnim(
         stack: ItemStack,
-        event: AnimationEvent<out LivingAnimatable<out LivingEntity>>
+        event: AnimationEvent<*>
     ): PlayState? = null
 
     @JvmStatic
     fun handleGunActionAnim(
         stack: ItemStack,
-        event: AnimationEvent<out LivingAnimatable<out LivingEntity>>
+        event: AnimationEvent<*>
     ): PlayState? = null
 
     @JvmStatic

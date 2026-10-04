@@ -48,8 +48,6 @@ import java.security.SecureRandom
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Semaphore
-import java.util.concurrent.atomic.AtomicInteger
-import java.util.function.Consumer
 import java.util.regex.Pattern
 import kotlin.math.max
 import kotlin.math.min
@@ -78,6 +76,7 @@ object ServerModelManager {
 
     @JvmField
     val CACHE_CLIENT: Path = CACHE.resolve("client")
+
     private var CACHE_NAME_INFO: Map<String, ServerModelData> = Maps.newHashMap()
     private var modelHashSet = IntOpenHashSet()
     private var AUTH_MODELS: Set<String> = Sets.newHashSet()
@@ -107,7 +106,6 @@ object ServerModelManager {
                     threads = max(2, Runtime.getRuntime().availableProcessors() - 1)
                 }
                 threadLimiter = Semaphore(threads)
-
                 limitsInitialized = true
             }.onFailure {
                 Constants.LOGGER.error("Failed to initialize limits from config", it)
@@ -129,105 +127,38 @@ object ServerModelManager {
         var lang: MutableMap<String, MutableMap<String, String>>? = null
     }
 
+    private fun readResourceString(resourcePath: String): String? {
+        return ServerModelManager::class.java.classLoader.getResourceAsStream(resourcePath)?.use {
+            it.readBytes().toString(StandardCharsets.UTF_8)
+        }
+    }
+
     @JvmStatic
     @Throws(IOException::class)
     fun reloadPacks() {
         CACHE_NAME_INFO = Maps.newHashMap()
         AUTH_MODELS = Sets.newHashSet()
 
-        createFolder(BUILT)
-        createFolder(CUSTOM)
-        createFolder(AUTH)
-        createFolder(EXPORT)
-
-        createFolder(CACHE)
-        createFolder(CACHE_SERVER)
-        createFolder(CACHE_CLIENT)
+        listOf(BUILT, CUSTOM, AUTH, EXPORT, CACHE, CACHE_SERVER, CACHE_CLIENT).forEach { createFolder(it) }
 
         extractBuiltinModels()
 
-        Files.writeString(
-            BUILT.resolve("notice.txt"),
-            "This directory is cleared every time the game starts!\n" +
-                    "该目录会在每次游戏启动时清空！",
-            StandardCharsets.UTF_8
-        )
+        val noticeContent = readResourceString("assets/yes_steve_model/notice.txt")
+            ?: "This directory is cleared every time the game starts!\n该目录会在每次游戏启动时清空！"
+        Files.writeString(BUILT.resolve("notice.txt"), noticeContent, StandardCharsets.UTF_8)
 
         val blacklistFile = Constants.ConfigDir.resolve("blacklist.txt")
         if (!Files.exists(blacklistFile)) {
-            val content =
-                "# Yes Steve Model 模组 - 内置模型黑名单配置文件\n" +
-                        "# Yes Steve Model Mod - Built-in Model Blacklist Configuration File\n" +
-                        "\n" +
-                        "# 功能说明：\n" +
-                        "# 随着内置模型数量的增加，为了满足个性化定制需求，本模组提供了黑名单功能\n" +
-                        "# 允许用户选择性地禁用不需要的内置模型，以节省存储空间和加载时间\n" +
-                        "#\n" +
-                        "# Feature Description:\n" +
-                        "# As the number of built-in models increases, this mod provides blacklist functionality\n" +
-                        "# to meet customization needs, allowing users to selectively disable unwanted built-in\n" +
-                        "# models to save storage space and loading time.\n" +
-                        "\n" +
-                        "# 使用方法：\n" +
-                        "# 1. 在游戏启动前编辑此文件\n" +
-                        "# 2. 清空 <游戏目录>/config/yes_steve_model/builtin 文件夹中的已解压模型文件\n" +
-                        "# 3. 重新启动游戏，模组将根据黑名单规则跳过指定模型的解压\n" +
-                        "#\n" +
-                        "# Usage Instructions:\n" +
-                        "# 1. Edit this file before starting the game\n" +
-                        "# 2. Clear extracted model files in <game_directory>/config/yes_steve_model/builtin folder\n" +
-                        "# 3. Restart the game, the mod will skip extracting specified models based on blacklist rules\n" +
-                        "\n" +
-                        "# 注意事项：\n" +
-                        "# - default 模型采用特殊加载机制，无法通过黑名单禁用\n" +
-                        "# - 配置文件位置：<游戏目录>/config/yes_steve_model/blacklist.txt\n" +
-                        "# - 以 # 开头的行被视为注释，不会被处理\n" +
-                        "# - 每行一个规则，使用正则表达式匹配模型的完整解压路径\n" +
-                        "#\n" +
-                        "# Important Notes:\n" +
-                        "# - The default model uses special loading mechanism and cannot be disabled via blacklist\n" +
-                        "# - Config file location: <game_directory>/config/yes_steve_model/blacklist.txt\n" +
-                        "# - Lines starting with # are comments and will not be processed\n" +
-                        "# - One rule per line, using regular expressions to match the complete extraction path of models\n" +
-                        "\n" +
-                        "# 路径匹配规则：\n" +
-                        "# 模组解压时会使用以下格式的路径进行正则表达式匹配：\n" +
-                        "#\n" +
-                        "# Path Matching Rules:\n" +
-                        "# The mod will use the following path formats for regular expression matching during extraction:\n" +
-                        "#\n" +
-                        "# assets/yes_steve_model/builtin/wine_fox/01_taisho_maid/animations/arrow.animation.json\n" +
-                        "# assets/yes_steve_model/builtin/wine_fox/01_taisho_maid/avatar/nico.png\n" +
-                        "# assets/yes_steve_model/builtin/misc/2_steve/ysm.json\n" +
-                        "\n" +
-                        "# 配置示例：\n" +
-                        "# 重要提示：下面的示例都以 # 开头，这表示它们目前是注释状态，不会生效\n" +
-                        "# 如果你想要启用某个规则，请删除该行开头的 # 号和空格\n" +
-                        "#\n" +
-                        "# Configuration Examples:\n" +
-                        "# Important Notice: All examples below start with #, meaning they are currently commented out and inactive\n" +
-                        "# To enable a rule, delete the # symbol and space at the beginning of that line\n" +
-                        "\n" +
-                        "# 示例1：禁用所有酒狐系列模型 | Example 1: Disable all Wine Fox series models\n" +
-                        "# assets/yes_steve_model/builtin/wine_fox/.*\n" +
-                        "\n" +
-                        "# 示例2：禁用杂项模型文件夹下的所有模型 | Example 2: Disable all models in misc folder\n" +
-                        "# assets/yes_steve_model/builtin/misc/.*\n" +
-                        "\n" +
-                        "# 示例3：禁用特定的大正女仆酒狐模型 | Example 3: Disable specific Taisho Maid Wine Fox model\n" +
-                        "# assets/yes_steve_model/builtin/wine_fox/01_taisho_maid/.*\n" +
-                        "\n" +
-                        "# 示例4：禁用所有内置模型 | Example 4: Disable all built-in models\n" +
-                        "# .*"
-            Files.writeString(blacklistFile, content, StandardCharsets.UTF_8)
+            val blacklistContent = readResourceString("assets/yes_steve_model/blacklist.txt") ?: ""
+            if (blacklistContent.isNotEmpty()) {
+                Files.writeString(blacklistFile, blacklistContent, StandardCharsets.UTF_8)
+            }
         }
         processBlacklist(blacklistFile)
 
         val serverIndex = CACHE_SERVER_INDEX_FILE
-        val serverKeyBytes: ByteArray
-
-        if (Files.exists(serverIndex)) {
-            serverKeyBytes = runCatching {
+        val serverKeyBytes: ByteArray = if (Files.exists(serverIndex)) {
+            runCatching {
                 val jsonStr = Files.readString(serverIndex, StandardCharsets.UTF_8)
                 val jsonElement = JsonParser.parseString(jsonStr).asJsonObject
 
@@ -238,31 +169,25 @@ object ServerModelManager {
                     }
                     decoded
                 } else {
-                    val key = ByteArray(56)
-                    SecureRandom().nextBytes(key)
-                    jsonElement.addProperty("server_key", Base64.getEncoder().encodeToString(key))
-                    Files.writeString(serverIndex, jsonElement.toString(), StandardCharsets.UTF_8)
-                    key
+                    generateAndSaveServerKey(serverIndex, jsonElement)
                 }
             }.getOrElse {
-                val key = ByteArray(56)
-                SecureRandom().nextBytes(key)
-                val jsonElement = JsonObject()
-                jsonElement.addProperty("server_key", Base64.getEncoder().encodeToString(key))
-                Files.writeString(serverIndex, jsonElement.toString(), StandardCharsets.UTF_8)
-                key
+                generateAndSaveServerKey(serverIndex, JsonObject())
             }
         } else {
-            val key = ByteArray(56)
-            SecureRandom().nextBytes(key)
-            val jsonElement = JsonObject()
-            jsonElement.addProperty("server_key", Base64.getEncoder().encodeToString(key))
-            Files.writeString(serverIndex, jsonElement.toString(), StandardCharsets.UTF_8)
-            serverKeyBytes = key
+            generateAndSaveServerKey(serverIndex, JsonObject())
         }
 
         serverKey = serverKeyBytes
-        nativeLoadModels(null as ((ModelLoadResult) -> Unit)?)
+        nativeLoadModels(null)
+    }
+
+    private fun generateAndSaveServerKey(serverIndex: Path, jsonElement: JsonObject): ByteArray {
+        val key = ByteArray(56)
+        SecureRandom().nextBytes(key)
+        jsonElement.addProperty("server_key", Base64.getEncoder().encodeToString(key))
+        Files.writeString(serverIndex, jsonElement.toString(), StandardCharsets.UTF_8)
+        return key
     }
 
     private fun extractBuiltinModels() {
@@ -292,10 +217,7 @@ object ServerModelManager {
                         if (Files.isDirectory(src)) {
                             Files.createDirectories(dest)
                         } else {
-                            val parent = dest.parent
-                            if (parent != null) {
-                                Files.createDirectories(parent)
-                            }
+                            dest.parent?.let { Files.createDirectories(it) }
                             Files.newInputStream(src).use { `in` ->
                                 Files.copy(`in`, dest)
                             }
@@ -387,9 +309,8 @@ object ServerModelManager {
         var step: Int = 0
         val allowedModels: MutableList<ServerModelData> = ArrayList()
 
-        // TODO: 未来可基于UUID持久化，这里目前每次加入生成固定clientKey
         init {
-            Random(114514).nextBytes(clientKey)
+            SecureRandom().nextBytes(clientKey)
         }
     }
 
@@ -412,12 +333,10 @@ object ServerModelManager {
 
             when (state.step) {
                 1 -> {
-                    // 等待Pong
                     val key1 = state.key1 ?: return
                     val decrypted = YsmCrypt.decrypt(packetBytes, key1)
                     if (decrypted.size < 56) return
 
-                    // 客戶端生成的密鑰
                     state.clientNextKey = decrypted.copyOfRange(decrypted.size - 56, decrypted.size)
                     val payload = decrypted.copyOfRange(0, decrypted.size - 56)
 
@@ -426,7 +345,6 @@ object ServerModelManager {
                         if (buf.getRawBuf().readByte().toInt() != 0x02) return
                     }
 
-                    // 發送可用模型
                     state.step = 2
                     sendPacket03(uuid, state)
                 }
@@ -440,7 +358,7 @@ object ServerModelManager {
                         if (buf.getRawBuf().readByte().toInt() != 0x04) return
 
                         val numRequests = buf.readVarInt()
-                        val requestedHashes = ArrayList<LongArray>()
+                        val requestedHashes = ArrayList<LongArray>(numRequests)
                         for (i in 0 until numRequests) {
                             requestedHashes.add(longArrayOf(buf.readVarLong(), buf.readVarLong()))
                         }
@@ -455,20 +373,19 @@ object ServerModelManager {
     }
 
     @JvmStatic
-    fun nativeLoadModels(callback: Any?): Boolean {
+    fun nativeLoadModels(callback: ((ModelLoadResult) -> Unit)?): Boolean {
         return runCatching {
             val loadedModels = LinkedHashMap<String, ServerModelData>()
             val authIds = HashSet<String>()
             val validCacheFiles = HashSet<String>()
 
             packs.clear()
-            scanDirectoryPacks(BUILT)
-            scanDirectoryPacks(CUSTOM)
-            scanDirectoryPacks(AUTH)
+            listOf(BUILT, CUSTOM, AUTH).forEach { scanDirectoryPacks(it) }
 
             scanDirectoryModels(BUILT, CACHE_SERVER, loadedModels, authIds, validCacheFiles, false)
             scanDirectoryModels(CUSTOM, CACHE_SERVER, loadedModels, authIds, validCacheFiles, false)
             scanDirectoryModels(AUTH, CACHE_SERVER, loadedModels, authIds, validCacheFiles, true)
+
             runCatching {
                 Files.list(CACHE_SERVER).use { stream ->
                     stream.forEach { file ->
@@ -509,23 +426,17 @@ object ServerModelManager {
                         if (!YSMFolderDeserializer.isModelFolder(dir)) return@runCatching
                         val modelId = baseDir.relativize(dir).toString().replace('\\', '/')
                         val rawModel = runCatching {
-                            YSMFolderDeserializer(dir).use {
-                                return@runCatching it.deserialize()
-                            }
+                            YSMFolderDeserializer(dir).use { it.deserialize() }
                         }.getOrElse {
-                            Constants.LOGGER.error("Failed to load model at: $dir", it)
+                            Constants.LOGGER.error("Failed to load model folder at: $dir", it)
                             null
                         }
 
                         if (rawModel != null) {
-                            runCatching {
-                                val data = processAndCacheModel(modelId, rawModel, cacheDir, isAuth, validCaches)
-                                if (data != null) {
-                                    loaded[modelId] = data
-                                    if (isAuth) authIds.add(modelId)
-                                }
-                            }.onFailure {
-                                Constants.LOGGER.error("Failed to process model at: $dir", it)
+                            val data = processAndCacheModel(modelId, rawModel, cacheDir, isAuth, validCaches)
+                            if (data != null) {
+                                loaded[modelId] = data
+                                if (isAuth) authIds.add(modelId)
                             }
                         }
 
@@ -543,31 +454,29 @@ object ServerModelManager {
                     runCatching {
                         val modelId = baseDir.relativize(file).toString().replace('\\', '/')
                         val raw = Files.readAllBytes(file)
-                        val ysmCryptoVersion = YesModelUtils.getYsmCryptoVersion(raw)
-                        var rawModel = runCatching {
-                            return@runCatching when (ysmCryptoVersion) {
-                                1, 2 -> {
-                                    val input = YesModelUtils.input(raw)
-                                    YSMFolderDeserializer(input).use { deserializer ->
-                                        deserializer.deserialize()
-                                    }
-                                }
-
-                                3 -> {
-                                    val decrypted = YsmCrypt.decryptYsmFile(raw)
-                                    YSMBinaryDeserializer(decrypted).use { deserializer ->
-                                        val parsed = deserializer.deserializeKeepOpen()
-                                        deserializer.parseYSMFooter(parsed)
-                                        return@runCatching parsed
-                                    }
-                                }
-
-                                else -> null
-                            }
-                        }.getOrNull()
+                        var rawModel = NativeParseUtil.parseNative(raw, modelId)
 
                         if (rawModel == null) {
-                            rawModel = NativeParseUtil.parseNative(raw, modelId)
+                            val ysmCryptoVersion = YesModelUtils.getYsmCryptoVersion(raw)
+                            rawModel = runCatching {
+                                when (ysmCryptoVersion) {
+                                    1, 2 -> {
+                                        val input = YesModelUtils.input(raw)
+                                        YSMFolderDeserializer(input).use { it.deserialize() }
+                                    }
+
+                                    3 -> {
+                                        val decrypted = YsmCrypt.decryptYsmFile(raw)
+                                        YSMBinaryDeserializer(decrypted).use { deserializer ->
+                                            val parsed = deserializer.deserializeKeepOpen()
+                                            deserializer.parseYSMFooter(parsed)
+                                            parsed
+                                        }
+                                    }
+
+                                    else -> null
+                                }
+                            }.getOrNull()
                         }
 
                         if (rawModel != null) {
@@ -592,8 +501,7 @@ object ServerModelManager {
         if (baseDir == null || !Files.isDirectory(baseDir)) return
         try {
             Files.walk(baseDir, 1).use { stream ->
-                stream.filter { Files.isDirectory(it) }.forEach { path ->
-                    if (path == baseDir) return@forEach
+                stream.filter { Files.isDirectory(it) && it != baseDir }.forEach { path ->
                     val packJson = path.resolve("ysm-pack.json")
                     if (Files.exists(packJson)) {
                         runCatching {
@@ -606,18 +514,17 @@ object ServerModelManager {
                             if (json.has("description")) packData.description = json.get("description").asString
 
                             if (json.has("lang") && json.get("lang").isJsonObject) {
-                                packData.lang = HashMap()
-                                val langObj = json.getAsJsonObject("lang")
-                                for ((langKey, langVal) in langObj.entrySet()) {
+                                val langMap = HashMap<String, MutableMap<String, String>>()
+                                for ((langKey, langVal) in json.getAsJsonObject("lang").entrySet()) {
                                     if (langVal.isJsonObject) {
                                         val translations = HashMap<String, String>()
                                         for ((transKey, transVal) in langVal.asJsonObject.entrySet()) {
                                             translations[transKey] = transVal.asString
                                         }
-                                        @Suppress("ReplaceNotNullAssertionWithElvisReturn")
-                                        packData.lang!![langKey] = translations
+                                        langMap[langKey] = translations
                                     }
                                 }
+                                packData.lang = langMap
                             }
 
                             val packPng = path.resolve("ysm-pack.png")
@@ -697,7 +604,7 @@ object ServerModelManager {
             }
             validCacheFiles.add(cacheFileName)
 
-            val isCustomSkinModel = "misc/2_steve" == modelId || "misc/1_alex" == modelId // 对没错就是写死的
+            val isCustomSkinModel = "misc/2_steve" == modelId || "misc/1_alex" == modelId
 
             mapToDataClass(modelId, model, isAuth, isCustomSkinModel)
         } catch (e: Exception) {
@@ -713,7 +620,6 @@ object ServerModelManager {
         isCustomSkinModel: Boolean
     ): ServerModelData {
         val serverModelInfo = YSMClientMapper.buildModelInfo(raw)
-        // Animations
         val animMap = HashMap<String, Array<String>>()
         for ((key, value) in raw.mainEntity.animationFiles) {
             animMap[key] = value.animations.keys.toTypedArray()
@@ -721,22 +627,26 @@ object ServerModelManager {
         val texArr = raw.mainEntity.textures.keys.toTypedArray()
         val animInfo = ServerAnimationInfo(animMap, texArr)
 
-        // Sub Entities
         val projectiles = raw.projectiles.values.map { v ->
-            v.matchIds ?: arrayOf(v.identifier)
-        }.toTypedArray<Any>()
+            v.matchIds ?: arrayOf(v.identifier ?: "")
+        }
         val vehicles = raw.vehicles.values.map { v ->
-            v.matchIds ?: arrayOf(v.identifier)
-        }.toTypedArray<Any>()
+            v.matchIds ?: arrayOf(v.identifier ?: "")
+        }
         return ServerModelData(modelId, animInfo, projectiles, vehicles, serverModelInfo, isCustomSkinModel, isAuth)
     }
 
     @JvmStatic
-    fun nativeSyncModels(uuids: Array<UUID>, playerNames: Array<String>, modelIds: Array<String>, callback: Any?) {
+    fun nativeSyncModels(
+        uuids: Array<UUID>,
+        playerNames: Array<String>,
+        modelIds: Array<String>,
+        callback: ((UUIDComponentData) -> Unit)?
+    ) {
         initRateLimit()
-        YSMThreadPool.submitSync {
+        YSMThreadPool.launchSync {
             runCatching {
-                PlatformAPIImpl.getServer() ?: return@submitSync
+                PlatformAPIImpl.getServer() ?: return@launchSync
 
                 for (uuid in uuids) {
                     val state = syncStates.computeIfAbsent(uuid) { PlayerSyncState() }
@@ -775,7 +685,7 @@ object ServerModelManager {
                 outBuf.writeGarbageHeader(garbageLen, garbage)
 
                 outBuf.writeVarInt(3) // Type
-                outBuf.writeVarLong(0L) // 這個決定了cache資料夾的名稱
+                outBuf.writeVarLong(0L) // Cache folder hash
 
                 outBuf.getRawBuf().writeBytes(currentServerKey)
                 outBuf.getRawBuf().writeBytes(state.clientKey)
@@ -796,19 +706,17 @@ object ServerModelManager {
                 for (pack in packs.values) {
                     outBuf.writeString(pack.folderPath)
 
-                    // 寫入圖標資訊
                     if (pack.iconData != null) {
                         outBuf.writeVarInt(1)
                         outBuf.writeByteArray(pack.iconData)
                         outBuf.writeVarInt(pack.iconWidth)
                         outBuf.writeVarInt(pack.iconHeight)
                         outBuf.writeVarInt(pack.iconFormat)
-                        outBuf.writeVarInt(1) // unkImageData
+                        outBuf.writeVarInt(1)
                     } else {
                         outBuf.writeVarInt(0)
                     }
 
-                    // 寫入基礎資訊
                     if (pack.name != null || pack.description != null) {
                         outBuf.writeVarInt(1)
                         outBuf.writeString(pack.name ?: "")
@@ -817,7 +725,6 @@ object ServerModelManager {
                         outBuf.writeVarInt(0)
                     }
 
-                    // 寫入語言本地化
                     val packLang = pack.lang
                     if (!packLang.isNullOrEmpty()) {
                         outBuf.writeVarInt(packLang.size)
@@ -834,7 +741,7 @@ object ServerModelManager {
                     }
                 }
 
-                outBuf.writeVarInt(0) // \0
+                outBuf.writeVarInt(0)
 
                 val result = YsmCrypt.encrypt(outBuf.toArray(), clientNextKey, false)
                 sendModelData(uuid, ByteBuffer.wrap(result.data()), PendingTransfer())
@@ -845,7 +752,7 @@ object ServerModelManager {
     }
 
     private fun sendPacket05(uuid: UUID, state: PlayerSyncState, requestedHashes: List<LongArray>) {
-        YSMThreadPool.submitSync {
+        YSMThreadPool.launchSync {
             try {
                 threadLimiter?.acquire()
 
@@ -889,15 +796,11 @@ object ServerModelManager {
                             } else null
 
                             if (result != null) {
-                                // Stream chunks
                                 val success = sendModelData(uuid, ByteBuffer.wrap(result.data()), transfer)
                                 if (success) {
                                     offset += length
                                 } else {
-                                    try {
-                                        Thread.sleep(5)
-                                    } catch (e: InterruptedException) {
-                                    }
+                                    Thread.yield()
                                 }
                             } else {
                                 break
@@ -915,7 +818,7 @@ object ServerModelManager {
 
     @JvmStatic
     fun nativeExportModel(modelID: String, extra: String?, callback: ((ExportResult) -> Unit)?) {
-        YSMThreadPool.submit {
+        YSMThreadPool.launch {
             try {
                 val modelData = CACHE_NAME_INFO[modelID]
                 if (modelData == null) {
@@ -932,7 +835,7 @@ object ServerModelManager {
                             0
                         )
                     )
-                    return@submit
+                    return@launch
                 }
 
                 val currentServerKey = serverKey
@@ -946,7 +849,7 @@ object ServerModelManager {
                             0
                         )
                     )
-                    return@submit
+                    return@launch
                 }
 
                 val sha256 = modelData.getLoadedModelData().modelHash
@@ -964,7 +867,7 @@ object ServerModelManager {
                             0
                         )
                     )
-                    return@submit
+                    return@launch
                 }
 
                 val cacheData = Files.readAllBytes(cacheFile)
@@ -995,10 +898,7 @@ object ServerModelManager {
                     outBuf.getRawBuf().readBytes(rawBytes)
                     val finalEncrypted = YsmCrypt.encryptYsmFile(rawBytes)
                     val exportPath = EXPORT.resolve("$modelID.ysm")
-                    val parent = exportPath.parent
-                    if (parent != null) {
-                        Files.createDirectories(parent)
-                    }
+                    exportPath.parent?.let { Files.createDirectories(it) }
                     Files.write(exportPath, finalEncrypted)
                     callback?.invoke(
                         ExportResult(
@@ -1022,11 +922,6 @@ object ServerModelManager {
                 )
             }
         }
-    }
-
-    @JvmStatic
-    fun nativeExportModel(modelID: String, extra: String?, callback: Consumer<ExportResult>?) {
-        nativeExportModel(modelID, extra, callback?.let { { res: ExportResult -> it.accept(res) } })
     }
 
     @JvmStatic
@@ -1071,11 +966,6 @@ object ServerModelManager {
     }
 
     @JvmStatic
-    fun requestPlayerAuth(serverPlayer: ServerPlayer, consumer: Consumer<UUIDComponentData>?) {
-        requestPlayerAuth(serverPlayer, consumer?.let { { data: UUIDComponentData -> it.accept(data) } })
-    }
-
-    @JvmStatic
     fun loadModels(
         consumer: ((ModelLoadResult) -> Unit)? = null,
         consumer2: ((UUIDComponentData) -> Unit)? = null
@@ -1090,25 +980,13 @@ object ServerModelManager {
                 }
                 nativeSyncModels(
                     players.filter { NetworkHandler.isPlayerConnected(it) }.map { it.uuid }.toTypedArray(),
-                    players.filter { NetworkHandler.isPlayerConnected(it) }.map { it.gameProfile.name }
-                        .toTypedArray(),
+                    players.filter { NetworkHandler.isPlayerConnected(it) }.map { it.gameProfile.name }.toTypedArray(),
                     collectPlayerModelIds(players),
                     consumer2
                 )
             }
         }
         return nativeLoadModels(action)
-    }
-
-    @JvmStatic
-    fun loadModels(
-        consumer: Consumer<ModelLoadResult>?,
-        consumer2: Consumer<UUIDComponentData>?
-    ): Boolean {
-        return loadModels(
-            consumer?.let { { res: ModelLoadResult -> it.accept(res) } },
-            consumer2?.let { { data: UUIDComponentData -> it.accept(data) } }
-        )
     }
 
     private fun collectPlayerModelIds(collection: Collection<ServerPlayer>): Array<String> {
@@ -1122,14 +1000,7 @@ object ServerModelManager {
             .toTypedArray()
     }
 
-    // TODO: Remove Suppress
-    @Suppress("UNCHECKED_CAST")
-    private fun onModelLoadComplete(modelLoadResult: ModelLoadResult, obj: Any?) {
-        val consumer = if (obj is Consumer<*>) {
-            { res: ModelLoadResult -> (obj as Consumer<ModelLoadResult>).accept(res) }
-        } else {
-            obj as? ((ModelLoadResult) -> Unit)
-        }
+    private fun onModelLoadComplete(modelLoadResult: ModelLoadResult, callback: ((ModelLoadResult) -> Unit)?) {
         val currentServer = PlatformAPIImpl.getServer()
         initialized = true
         if (currentServer != null) {
@@ -1143,8 +1014,8 @@ object ServerModelManager {
                     modelHashSet = intOpenHashSet
                     AUTH_MODELS = modelLoadResult.authModelIds
                 }
-                if (consumer != null) {
-                    YSMThreadPool.submit { consumer(modelLoadResult) }
+                if (callback != null) {
+                    YSMThreadPool.launch { callback(modelLoadResult) }
                 }
             }
             return
@@ -1153,7 +1024,7 @@ object ServerModelManager {
             CACHE_NAME_INFO = modelLoadResult.modelDefinitions
             AUTH_MODELS = modelLoadResult.authModelIds
         }
-        consumer?.invoke(modelLoadResult)
+        callback?.invoke(modelLoadResult)
     }
 
     @JvmStatic
@@ -1179,41 +1050,18 @@ object ServerModelManager {
         )
     }
 
-    private fun createModelPacket(byteBuffer: ByteBuffer): Any {
-        return NetworkHandler.toClientboundPacket(S2CModelSyncPayload(byteBuffer))
-    }
-
-    private fun sendPacketToPlayer(uuid: UUID, obj: Any, pendingTransfer: PendingTransfer): Boolean {
-        val connection = getPlayerConnection(uuid)
-        return connection != null && sendPacketReliably(connection, obj, pendingTransfer)
-    }
-
-    private fun sendPacketReliably(connection: Connection, obj: Any, pendingTransfer: PendingTransfer): Boolean {
-        if (!pendingTransfer.hasStarted) {
-            pendingTransfer.hasStarted = true
-            pendingTransfer.pendingBytes = connection.channel.unsafe().outboundBuffer().totalPendingWriteBytes() + 65536
-        }
-
-        val atomicInteger = AtomicInteger(0)
-        while (connection.isConnected) {
-            if (connection.channel.unsafe().outboundBuffer().size() > pendingTransfer.pendingBytes) {
-                if (!YSMThreadPool.awaitTermination(10)) return false
-            } else {
-                runCatching {
-                    connection.send(obj as Packet<*>) { future ->
-                        if (future.isSuccess) atomicInteger.set(1) else atomicInteger.set(-1)
-                    }
-                    while (atomicInteger.get() == 0) {
-                        if (!YSMThreadPool.awaitTermination(5)) return false
-                    }
-                    if (atomicInteger.get() == 1) return true
-                    if (!YSMThreadPool.awaitTermination(100)) return false
-                    atomicInteger.set(0)
-                }.onFailure {
-                    Constants.LOGGER.error("Failed to send packet: ${it.localizedMessage}", it)
-                    return false
-                }
-            }
+    private fun sendPacketReliably(
+        connection: Connection,
+        packet: Packet<*>,
+        pendingTransfer: PendingTransfer
+    ): Boolean {
+        if (!connection.isConnected) return false
+        runCatching {
+            connection.send(packet)
+            return true
+        }.onFailure {
+            Constants.LOGGER.error("Failed to send packet: ${it.localizedMessage}", it)
+            return false
         }
         return false
     }

@@ -14,6 +14,8 @@ import net.minecraft.world.entity.projectile.Projectile
 open class ProjectileRenderer(context: EntityRendererProvider.Context) :
     AbstractProjectileRenderer<Projectile, GeckoProjectileEntity, EntityRenderState>(context) {
 
+    override fun createRenderState(): EntityRenderState = EntityRenderState()
+
     open fun render(
         projectile: Projectile,
         state: EntityRenderState,

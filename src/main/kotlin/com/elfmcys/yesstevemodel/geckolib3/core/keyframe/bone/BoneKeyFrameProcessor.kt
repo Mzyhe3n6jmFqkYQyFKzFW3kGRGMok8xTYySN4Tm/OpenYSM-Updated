@@ -13,7 +13,7 @@ object BoneKeyFrameProcessor {
         for (frame in frames) {
             frame.init(isRotation)
         }
-        val list = arrayOfNulls<BoneKeyFrame>(frames.size)
+        val list = ReferenceArrayList<BoneKeyFrame>(frames.size)
         for (i in 0 until frames.size) {
             val end: RawBoneKeyFrame = frames[i]
             val easingType: EasingType = if (end.easingType() == EasingType.CATMULLROM || i == 0) {
@@ -21,9 +21,8 @@ object BoneKeyFrameProcessor {
             } else {
                 frames[i - 1].easingType()
             }
-            list[i] = easingType.buildKeyFrame(frames, i)
+            list.add(easingType.buildKeyFrame(frames, i))
         }
-        @Suppress("UNCHECKED_CAST")
-        return ReferenceArrayList.wrap(list as Array<BoneKeyFrame>)
+        return list
     }
 }

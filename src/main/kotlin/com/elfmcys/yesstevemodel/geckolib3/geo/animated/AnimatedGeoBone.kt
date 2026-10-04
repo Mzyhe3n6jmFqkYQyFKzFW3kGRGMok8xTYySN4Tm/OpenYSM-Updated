@@ -18,7 +18,9 @@ class AnimatedGeoBone(
     private val pivotY: Float = geoBone.pivotY
     private val pivotZ: Float = geoBone.pivotZ
     private val initialRotation: Vector3f = Vector3f(geoBone.rotX, geoBone.rotY, geoBone.rotZ)
-    private var touhouMaidBone: Any? = null
+    @JvmField
+    @PublishedApi
+    internal var rawTouhouMaidBone: Any? = null
 
     init {
         setHidden(geoBone.isHidden, geoBone.childBonesAreHiddenToo())
@@ -121,12 +123,11 @@ class AnimatedGeoBone(
         matrixData[matrixOffset + TRACK_XFORM_OFFSET] = if (z) 1.0f else 0.0f
     }
 
-    @Suppress("UNCHECKED_CAST")
-    fun <T> getTouhouMaidBone(): T? {
-        if (touhouMaidBone == null) {
-            touhouMaidBone = TouhouMaidBoneProcessor.createLocationBone(this)
+    inline fun <reified T> getTouhouMaidBone(): T? {
+        if (rawTouhouMaidBone == null) {
+            rawTouhouMaidBone = TouhouMaidBoneProcessor.createLocationBone(this)
         }
-        return touhouMaidBone as? T
+        return rawTouhouMaidBone as? T
     }
 
     companion object {

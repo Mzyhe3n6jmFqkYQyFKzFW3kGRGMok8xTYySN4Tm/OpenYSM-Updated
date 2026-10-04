@@ -30,7 +30,7 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
     predicate: IAnimationPredicate<*>,
     private val deprecatedMode: Boolean = false
 ) : IAnimationController<T> {
-    // TODO: Unchecked cast of 'IAnimationPredicate<*>' to 'IAnimationPredicate<T (of class PredicateBasedController<T : AnimatableEntity<*>>)>'.
+    @Suppress("UNCHECKED_CAST")
     private val predicate: IAnimationPredicate<T> = predicate as IAnimationPredicate<T>
     private val transitionInterpolator: AnimationControllerInstance =
         AnimationControllerInstance(animatable, transitionLengthTicks, true)

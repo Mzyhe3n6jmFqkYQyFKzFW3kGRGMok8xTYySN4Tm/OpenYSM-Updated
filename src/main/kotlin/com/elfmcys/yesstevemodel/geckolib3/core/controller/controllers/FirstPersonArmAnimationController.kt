@@ -16,8 +16,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.controller.CompositeAnimationCon
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import net.minecraft.world.entity.EquipmentSlot
-import org.apache.commons.lang3.function.TriFunction
-import java.util.function.BiFunction
 
 @Suppress("unused")
 object FirstPersonArmAnimationController {
@@ -79,7 +77,7 @@ object FirstPersonArmAnimationController {
     @JvmStatic
     fun registerSimpleProcessor(
         slotName: String,
-        controllerFactory: BiFunction<String, PlayerGeoEntity, IAnimationController<PlayerGeoEntity>>
+        controllerFactory: (String, PlayerGeoEntity) -> IAnimationController<PlayerGeoEntity>
     ) {
         registerProcessorWithFilter(slotName, false, controllerFactory)
     }
@@ -88,11 +86,11 @@ object FirstPersonArmAnimationController {
     fun registerProcessorWithFilter(
         slotName: String,
         skipOnPreview: Boolean,
-        controllerFactory: BiFunction<String, PlayerGeoEntity, IAnimationController<PlayerGeoEntity>>
+        controllerFactory: (String, PlayerGeoEntity) -> IAnimationController<PlayerGeoEntity>
     ) {
         val animationEntryKey = "$FP_ARM_PREFIX.$slotName"
         var processor: ModelProcessor<PlayerGeoEntity, PlayerModelBundle> = { _, _ ->
-            { entity, consumer -> consumer(controllerFactory.apply(animationEntryKey, entity)) }
+            { entity, consumer -> consumer(controllerFactory(animationEntryKey, entity)) }
         }
         if (skipOnPreview) {
             processor = processor.withFilter { entity -> entity is IPreviewAnimatable }
@@ -103,7 +101,7 @@ object FirstPersonArmAnimationController {
     @JvmStatic
     fun registerMolangProcessor(
         slotName: String,
-        controllerFactory: BiFunction<String, PlayerGeoEntity, IAnimationController<PlayerGeoEntity>>
+        controllerFactory: (String, PlayerGeoEntity) -> IAnimationController<PlayerGeoEntity>
     ) {
         processorRegistry.register(
             ControllerSlotBinder(
@@ -120,7 +118,7 @@ object FirstPersonArmAnimationController {
         slotName: String,
         requiredAnimations: Array<String>?,
         checkAnimationEntries: Boolean,
-        controllerFactory: BiFunction<String, PlayerGeoEntity, IAnimationController<PlayerGeoEntity>>
+        controllerFactory: (String, PlayerGeoEntity) -> IAnimationController<PlayerGeoEntity>
     ) {
         processorRegistry.register(
             NamedModelProcessor(
@@ -137,7 +135,7 @@ object FirstPersonArmAnimationController {
     @JvmStatic
     fun registerParallelProcessor(
         slotName: String,
-        controllerFactory: TriFunction<String, PlayerGeoEntity, String, IAnimationController<PlayerGeoEntity>>
+        controllerFactory: (String, PlayerGeoEntity, String?) -> IAnimationController<PlayerGeoEntity>
     ) {
         processorRegistry.register(
             ParallelProcessor(
@@ -153,7 +151,7 @@ object FirstPersonArmAnimationController {
     @JvmStatic
     fun registerArmorProcessor(
         category: String,
-        controllerFactory: TriFunction<String, PlayerGeoEntity, EquipmentSlot, IAnimationController<PlayerGeoEntity>>
+        controllerFactory: (String, PlayerGeoEntity, EquipmentSlot) -> IAnimationController<PlayerGeoEntity>
     ) {
         processorRegistry.register(
             ArmorSlotProcessor(

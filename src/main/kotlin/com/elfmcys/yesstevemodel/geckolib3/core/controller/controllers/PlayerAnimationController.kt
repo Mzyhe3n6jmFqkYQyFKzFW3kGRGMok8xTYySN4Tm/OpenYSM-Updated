@@ -17,11 +17,9 @@ import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.PredicateBasedController
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import net.minecraft.world.entity.EquipmentSlot
-import org.apache.commons.lang3.function.TriFunction
 import rip.ysm.compat.carryon.CarryOnCompat
 import rip.ysm.compat.gun.common.ItemUseAnimationPredicate
 import rip.ysm.compat.parcool.ParcoolCompat
-import java.util.function.BiFunction
 
 object PlayerAnimationController {
     object PlayerAnimationDataProvider : AnimationDataProvider<PlayerModelBundle> {
@@ -250,7 +248,7 @@ object PlayerAnimationController {
     @JvmStatic
     fun registerController(
         controllerName: String,
-        controllerFactory: BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>
+        controllerFactory: (String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>
     ) {
         registerController(controllerName, false, controllerFactory)
     }
@@ -259,11 +257,11 @@ object PlayerAnimationController {
     fun registerController(
         controllerName: String,
         guiOnly: Boolean,
-        controllerFactory: BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>
+        controllerFactory: (String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>
     ) {
         val controllerKey = "$PLAYER_PREFIX.$controllerName"
         var processor: ModelProcessor<CustomPlayerEntity, PlayerModelBundle> =
-            { _, _ -> { entity, consumer -> consumer(controllerFactory.apply(controllerKey, entity)) } }
+            { _, _ -> { entity, consumer -> consumer(controllerFactory(controllerKey, entity)) } }
         if (guiOnly) {
             processor = processor.withFilter { entity -> entity is IPreviewAnimatable }
         }
@@ -273,7 +271,7 @@ object PlayerAnimationController {
     @JvmStatic
     fun registerSlotController(
         slotName: String,
-        controllerFactory: BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>
+        controllerFactory: (String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>
     ) {
         REGISTRY.register(
             ControllerSlotBinder(
@@ -290,7 +288,7 @@ object PlayerAnimationController {
         slotName: String,
         requiredAnimations: Array<String>?,
         checkAnimationEntries: Boolean,
-        controllerFactory: BiFunction<String, CustomPlayerEntity, IAnimationController<CustomPlayerEntity>>
+        controllerFactory: (String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>
     ) {
         REGISTRY.register(
             NamedModelProcessor(
@@ -307,7 +305,7 @@ object PlayerAnimationController {
     @JvmStatic
     fun registerParallelController(
         slotName: String,
-        controllerFactory: TriFunction<String, CustomPlayerEntity, String, IAnimationController<CustomPlayerEntity>>
+        controllerFactory: (String, CustomPlayerEntity, String?) -> IAnimationController<CustomPlayerEntity>
     ) {
         REGISTRY.register(
             ParallelProcessor(
@@ -323,7 +321,7 @@ object PlayerAnimationController {
     @JvmStatic
     fun registerArmorController(
         category: String,
-        controllerFactory: TriFunction<String, CustomPlayerEntity, EquipmentSlot, IAnimationController<CustomPlayerEntity>>
+        controllerFactory: (String, CustomPlayerEntity, EquipmentSlot) -> IAnimationController<CustomPlayerEntity>
     ) {
         REGISTRY.register(
             ArmorSlotProcessor(

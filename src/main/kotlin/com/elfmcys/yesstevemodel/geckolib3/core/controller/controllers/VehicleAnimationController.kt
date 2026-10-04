@@ -20,8 +20,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.CompositeAnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
-import org.apache.commons.lang3.function.TriFunction
-import java.util.function.BiFunction
 
 object VehicleAnimationController {
     object VehicleAnimationDataProvider : AnimationDataProvider<VehicleModelBundle> {
@@ -102,11 +100,11 @@ object VehicleAnimationController {
     @JvmStatic
     fun registerOriginController(
         controllerName: String,
-        controllerFactory: BiFunction<String, GeckoVehicleEntity, IAnimationController<GeckoVehicleEntity>>
+        controllerFactory: (String, GeckoVehicleEntity) -> IAnimationController<GeckoVehicleEntity>
     ): ModelProcessor<GeckoVehicleEntity, VehicleModelBundle> {
         val controllerKey = "$VEHICLE_PREFIX.$controllerName"
         return REGISTRY.register { _, _ ->
-            { entity, consumer -> consumer(controllerFactory.apply(controllerKey, entity)) }
+            { entity, consumer -> consumer(controllerFactory(controllerKey, entity)) }
         }
     }
 
@@ -115,7 +113,7 @@ object VehicleAnimationController {
         slotName: String,
         requiredAnimations: Array<String>?,
         checkAnimationEntries: Boolean,
-        controllerFactory: BiFunction<String, GeckoVehicleEntity, IAnimationController<GeckoVehicleEntity>>
+        controllerFactory: (String, GeckoVehicleEntity) -> IAnimationController<GeckoVehicleEntity>
     ): ModelProcessor<GeckoVehicleEntity, VehicleModelBundle> {
         return REGISTRY.register(
             NamedModelProcessor(
@@ -132,7 +130,7 @@ object VehicleAnimationController {
     @JvmStatic
     fun registerParallelController(
         slotName: String,
-        controllerFactory: TriFunction<String, GeckoVehicleEntity, String, IAnimationController<GeckoVehicleEntity>>
+        controllerFactory: (String, GeckoVehicleEntity, String?) -> IAnimationController<GeckoVehicleEntity>
     ): ModelProcessor<GeckoVehicleEntity, VehicleModelBundle> {
         return REGISTRY.register(
             ParallelProcessor(
