@@ -2,11 +2,12 @@ package rip.ysm.compat.carryon.fabric
 
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.carryon.CarryOnDataHelper.CarryType
 import tschipp.carryon.common.carry.CarryOnData
 import tschipp.carryon.common.carry.CarryOnDataManager
 
-object CarryOnDataHelperImpl {
+object CarryOnDataHelperImpl : ModCompat("carryon") {
     @JvmStatic
     fun isPlayerCarrying(livingEntity: LivingEntity): Boolean {
         if (livingEntity !is Player) return false

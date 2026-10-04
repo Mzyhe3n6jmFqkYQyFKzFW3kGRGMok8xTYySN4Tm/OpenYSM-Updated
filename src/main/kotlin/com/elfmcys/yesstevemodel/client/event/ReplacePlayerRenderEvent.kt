@@ -10,7 +10,6 @@ import com.elfmcys.yesstevemodel.util.CameraUtil
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.LightTexture
-import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.SubmitNodeCollector
 import net.minecraft.client.renderer.entity.state.AvatarRenderState
 import net.minecraft.client.renderer.state.CameraRenderState
@@ -30,16 +29,10 @@ object ReplacePlayerRenderEvent {
         collector: SubmitNodeCollector,
         cameraState: CameraRenderState
     ): Boolean {
-        if (!YesSteveModel.isAvailable()) {
-            return false
-        }
+        if (!YesSteveModel.isAvailable()) return false
         val localPlayer = Minecraft.getInstance().player
-        if (entity == localPlayer && GeneralConfig.DISABLE_SELF_MODEL.get()) {
-            return false
-        }
-        if ((entity != localPlayer && GeneralConfig.DISABLE_OTHER_MODEL.get()) || entity.isSpectator) {
-            return false
-        }
+        if (entity == localPlayer && GeneralConfig.DISABLE_SELF_MODEL.get()) return false
+        if ((entity != localPlayer && GeneralConfig.DISABLE_OTHER_MODEL.get()) || entity.isSpectator) return false
         var cancelled = false
         PlayerCapability[entity]?.let { cap ->
             if (cap.isModelActive()) {
@@ -50,7 +43,7 @@ object ReplacePlayerRenderEvent {
                     (localPlayer == null || !PlayerAnimatorCompat.isPlayerAnimated(localPlayer))
                 ) {
                     cancelled = true
-                    val bufferSource: MultiBufferSource.BufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
+                    val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
                     RenderContext.enter(collector, cameraState)
                     try {
                         val packedLight = if (ModelPreviewRenderer.isPreview()) {

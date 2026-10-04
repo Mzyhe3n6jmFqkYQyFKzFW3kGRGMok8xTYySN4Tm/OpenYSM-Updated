@@ -3,9 +3,9 @@ package rip.ysm.compat.simpleplanes.fabric
 import com.elfmcys.yesstevemodel.client.entity.GeckoVehicleEntity
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import org.joml.Vector3f
-import java.util.*
+import rip.ysm.compat.ModCompat
 
-object SimplePlanesCompatImpl {
+object SimplePlanesCompatImpl : ModCompat("simpleplanes") {
     @JvmStatic
-    fun getSimplePlanesRotation(event: AnimationEvent<GeckoVehicleEntity>): Optional<Vector3f> = Optional.empty()
+    fun getSimplePlanesRotation(event: AnimationEvent<GeckoVehicleEntity>): Vector3f? = null
 }

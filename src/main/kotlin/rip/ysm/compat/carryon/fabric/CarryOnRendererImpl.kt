@@ -3,9 +3,10 @@ package rip.ysm.compat.carryon.fabric
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.renderer.SubmitNodeCollector
 import net.minecraft.world.entity.player.Player
+import rip.ysm.compat.ModCompat
 import tschipp.carryon.client.render.CarriedObjectRender
 
-object CarryOnRendererImpl {
+object CarryOnRendererImpl : ModCompat("carryon") {
     @JvmStatic
     fun render(
         player: Player,

@@ -6,109 +6,67 @@ import com.elfmcys.yesstevemodel.client.model.ModelResourceBundle
 import com.elfmcys.yesstevemodel.client.model.PlayerModelBundle
 import com.elfmcys.yesstevemodel.geckolib3.core.enums.PlayState
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
-import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
-import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.Item
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.*
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.anim.MaidAnimationController
 
 // TODO: Using ModCompat
-object TouhouLittleMaidCompatImpl {
-    private const val MOD_ID: String = "touhou_little_maid"
-    private val IS_LOADED: Boolean = FabricLoader.getInstance().isModLoaded(MOD_ID)
-
+object TouhouLittleMaidCompatImpl : ModCompat("touhou_little_maid") {
     @JvmStatic
-    fun isLoaded(): Boolean = IS_LOADED
+    private fun initClient() {
+        if (!isModLoaded) return
+        MaidClientSetup.init()
+    }
 
-    @JvmStatic
-    fun initClient() {
-        if (isLoaded()) {
-            MaidClientSetup.init()
-        }
+    init {
+        initClient()
     }
 
     @JvmStatic
-    fun isMaidEntity(entity: Entity): Boolean = isLoaded() && MaidEventHandler.isMaid(entity)
+    fun isMaidEntity(entity: Entity): Boolean = MaidEventHandler.isMaid(entity)
 
     @JvmStatic
-    fun isMaidRideable(entity: Entity): Boolean = isLoaded() && MaidEventHandler.isYsmModelMaid(entity)
+    fun isMaidRideable(entity: Entity): Boolean = MaidEventHandler.isYsmModelMaid(entity)
 
     @JvmStatic
-    fun isSimplePlanesEntity(entity: Entity): Boolean = isLoaded() && MaidEventHandler.isChair(entity)
+    fun isSimplePlanesEntity(entity: Entity): Boolean = MaidEventHandler.isChair(entity)
 
     @JvmStatic
-    fun isImmersiveAircraftEntity(entity: Entity): Boolean = isLoaded() && MaidEventHandler.isSit(entity)
+    fun isImmersiveAircraftEntity(entity: Entity): Boolean = MaidEventHandler.isSit(entity)
 
     @JvmStatic
-    fun isMaidItem(item: Item): Boolean = isLoaded() && MaidEventHandler.isGohei(item)
+    fun isMaidItem(item: Item): Boolean = MaidEventHandler.isGohei(item)
 
     @JvmStatic
-    fun getMaidEntityId(entity: Entity): String =
-        if (isLoaded()) MaidEventHandler.getChairModelId(entity) else StringPool.EMPTY
+    fun getMaidEntityId(entity: Entity): String = MaidEventHandler.getChairModelId(entity)
 
     @JvmStatic
-    fun isMaidSitting(livingEntity: LivingEntity): Boolean =
-        isLoaded() && MaidEventHandler.isMaidFishing(livingEntity)
+    fun isMaidSitting(livingEntity: LivingEntity): Boolean = MaidEventHandler.isMaidFishing(livingEntity)
 
     @JvmStatic
-    fun registerMaidAnimStates(tlmBinding: TLMBinding) {
-        if (isLoaded()) {
-            MaidBinding.registerBindings(tlmBinding)
-        } else {
-            registerDummyBindings(tlmBinding)
-        }
-    }
-
-    @JvmStatic
-    private fun registerDummyBindings(tlmBinding: TLMBinding) {
-        tlmBinding.livingEntityVar("is_begging") { false }
-        tlmBinding.livingEntityVar("is_sitting") { false }
-        tlmBinding.livingEntityVar("has_backpack") { false }
-        tlmBinding.livingEntityVar("favorability_point") { 0 }
-        tlmBinding.livingEntityVar("favorability_level") { 0 }
-        tlmBinding.livingEntityVar("task_id") { StringPool.EMPTY }
-        tlmBinding.livingEntityVar("schedule") { StringPool.EMPTY }
-        tlmBinding.livingEntityVar("activity") { StringPool.EMPTY }
-        tlmBinding.livingEntityVar("gomoku_win_count") { 0 }
-        tlmBinding.livingEntityVar("gomoku_rank") { 1 }
-        tlmBinding.livingEntityVar("game_statue") { StringPool.EMPTY }
-        tlmBinding.livingEntityVar("backpack_type") { StringPool.EMPTY }
-        tlmBinding.livingEntityVar("is_entity") { true }
-        tlmBinding.livingEntityVar("is_statue") { false }
-        tlmBinding.livingEntityVar("is_garage_kit") { false }
-        tlmBinding.livingEntityVar("show_item") { StringPool.EMPTY }
-    }
+    fun registerMaidAnimStates(tlmBinding: TLMBinding) = MaidBinding.registerBindings(tlmBinding)
 
     @JvmStatic
     fun handleMaidInteraction(
         event: AnimationEvent<LivingAnimatable<*>>,
         livingEntity: LivingEntity,
         entity: Entity
-    ): PlayState? {
-        if (isLoaded()) {
-            return MaidInteractionAnimHandler.handleMaidInteractionAnim(event, livingEntity, entity)
-        }
-        return null
-    }
+    ): PlayState? = MaidInteractionAnimHandler.handleMaidInteractionAnim(event, livingEntity, entity)
 
     @JvmStatic
-    fun isMaidChatAvailable(): Boolean = isLoaded() && MaidAnimationRoulette.canOpenRoulette()
+    fun isMaidChatAvailable(): Boolean = MaidAnimationRoulette.canOpenRoulette()
 
     @JvmStatic
     fun openMaidChat() {
-        if (isLoaded()) {
-            MaidAnimationRoulette.openRouletteScreen()
-        }
+        MaidAnimationRoulette.openRouletteScreen()
     }
 
     @JvmStatic
     fun buildControllers(
         modelBundle: PlayerModelBundle,
         resourceBundle: ModelResourceBundle
-    ): ((MaidAnimatable) -> Unit)? {
-        if (!isLoaded()) return null
-        return MaidAnimationController.buildControllers(modelBundle, resourceBundle)
-    }
+    ): (MaidAnimatable) -> Unit = MaidAnimationController.buildControllers(modelBundle, resourceBundle)
 }

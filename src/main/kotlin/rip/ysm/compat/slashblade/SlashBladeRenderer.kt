@@ -20,7 +20,15 @@ object SlashBladeRenderer : ModCompat("slashblade") {
         partialTick: Float
     ) {
         if (!isModLoaded) return
-        SlashBladeRendererImpl.renderOnEntity(livingEntity, model, poseStack, bufferSource, packedLight, stack, partialTick)
+        SlashBladeRendererImpl.renderOnEntity(
+            livingEntity,
+            model,
+            poseStack,
+            bufferSource,
+            packedLight,
+            stack,
+            partialTick
+        )
     }
 
     @JvmStatic

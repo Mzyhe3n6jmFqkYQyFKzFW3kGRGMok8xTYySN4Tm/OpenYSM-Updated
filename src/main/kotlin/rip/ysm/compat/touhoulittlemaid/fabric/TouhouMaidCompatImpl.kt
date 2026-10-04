@@ -5,10 +5,11 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.projectile.Projectile
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidEventHandler
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidModelHandler
 
-object TouhouMaidCompatImpl {
+object TouhouMaidCompatImpl : ModCompat("touhou_little_maid") {
     @JvmStatic
     fun isMaidEntity(entity: Entity): Boolean = MaidEventHandler.isMaid(entity)
 

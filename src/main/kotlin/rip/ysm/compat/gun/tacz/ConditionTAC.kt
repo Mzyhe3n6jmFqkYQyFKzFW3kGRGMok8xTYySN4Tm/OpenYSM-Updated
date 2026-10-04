@@ -26,9 +26,7 @@ class ConditionTAC {
     }
 
     fun doTest(itemStack: ItemStack, str: String): String {
-        if (itemStack.isEmpty) {
-            return EMPTY
-        }
+        if (itemStack.isEmpty) return EMPTY
         var gunId = TacCompat.getGunTexture(itemStack)
         if (gunId == null) {
             gunId = SWarfareCompat.getGunTexture(itemStack)

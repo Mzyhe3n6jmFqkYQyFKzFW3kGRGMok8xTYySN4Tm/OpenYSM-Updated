@@ -10,32 +10,26 @@ class ConditionChair {
     private val idPre: String = "chair$"
 
     fun addTest(name: String) {
-        val preSize: Int = idPre.length
+        val preSize = idPre.length
         if (name.length <= preSize) {
             return
         }
-        val strSubstring: String = name.substring(preSize)
+        val strSubstring = name.substring(preSize)
         if (name.startsWith(idPre) && Identifier.tryParse(strSubstring) != null) {
             idTest.add(strSubstring)
         }
     }
 
     fun doTest(entity: Entity): String {
-        val vehicle: Entity? = entity.vehicle
-        if (vehicle != null && TouhouLittleMaidCompat.isSimplePlanesEntity(vehicle)) {
-            return doIdTest(vehicle)
-        }
+        val vehicle = entity.vehicle
+        if (vehicle != null && TouhouLittleMaidCompat.isSimplePlanesEntity(vehicle)) return doIdTest(vehicle)
         return EMPTY
     }
 
     private fun doIdTest(entity: Entity): String {
-        if (idTest.isEmpty()) {
-            return EMPTY
-        }
-        val modelId: String = TouhouLittleMaidCompat.getMaidEntityId(entity)
-        if (idTest.contains(modelId)) {
-            return idPre + modelId
-        }
+        if (idTest.isEmpty()) return EMPTY
+        val modelId = TouhouLittleMaidCompat.getMaidEntityId(entity)
+        if (modelId.isNullOrBlank() && idTest.contains(modelId)) return idPre + modelId
         return EMPTY
     }
 
