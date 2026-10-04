@@ -4,6 +4,7 @@ import net.minecraftforge.common.ForgeConfigSpec
 import kotlin.math.max
 
 object ServerConfig {
+    lateinit var SPEC: ForgeConfigSpec
     lateinit var THREAD_COUNT: ForgeConfigSpec.IntValue
     lateinit var BANDWIDTH_LIMIT: ForgeConfigSpec.IntValue
     lateinit var PLAYER_SYNC_TIMEOUT: ForgeConfigSpec.IntValue
@@ -18,7 +19,14 @@ object ServerConfig {
     fun buildSpec(): ForgeConfigSpec {
         val builder = ForgeConfigSpec.Builder()
         defineOptions(builder)
-        return builder.build()
+        val spec = builder.build()
+        SPEC = spec
+        return spec
+    }
+
+    @JvmStatic
+    fun save() {
+        if (::SPEC.isInitialized) runCatching { SPEC.save() }
     }
 
     private fun defineOptions(builder: ForgeConfigSpec.Builder) {

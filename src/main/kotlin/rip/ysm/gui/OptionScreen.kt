@@ -1,6 +1,7 @@
 package rip.ysm.gui
 
 import com.elfmcys.yesstevemodel.config.GeneralConfig
+import com.elfmcys.yesstevemodel.config.ServerConfig
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
@@ -255,6 +256,8 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
         for (g in groups) {
             g.apply()
         }
+        GeneralConfig.save()
+        ServerConfig.save()
     }
 
     open fun onSave() {

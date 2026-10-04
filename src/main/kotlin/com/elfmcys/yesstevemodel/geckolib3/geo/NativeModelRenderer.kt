@@ -60,6 +60,7 @@ object NativeModelRenderer {
             if (!GpuCapability.isAvailable()) {
                 ChatLogger.logFormatted("Disabled GPU renderer for: " + GpuCapability.getReason())
                 GeneralConfig.USE_GPU_RENDERER.set(false)
+                GeneralConfig.save()
                 return
             }
             if (OculusCompat.isShaderPackInUse() && !isPreview) {

@@ -11,7 +11,10 @@ object ConfigCheckBoxForge {
         return Checkbox.builder(Component.translatable("gui.yes_steve_model.config.$key"), Minecraft.getInstance().font)
             .pos(x, y)
             .selected(booleanValue.get())
-            .onValueChange { _, value -> booleanValue.set(value) }
+            .onValueChange { _, value ->
+                booleanValue.set(value)
+                runCatching { booleanValue.save() }
+            }
             .build()
     }
 }

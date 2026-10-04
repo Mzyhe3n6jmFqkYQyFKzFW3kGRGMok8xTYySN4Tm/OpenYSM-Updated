@@ -29,5 +29,6 @@ class LoadingStateButton(x: Int, y: Int) : Button.Plain(x, y, 100, 20, Component
             else -> LoadingStateConfig.Position.TOP_LEFT
         }
         LoadingStateConfig.LOADING_STATE_POSITION.set(nextPosition)
+        LoadingStateConfig.save()
     }
 }
