@@ -147,12 +147,13 @@ open class ModelButton(
             }
         }
 
-        val listSplit = font.split(message, 45)
+        val msg = getMessage()
+        val listSplit = font.split(msg, 45)
         if (listSplit.size > 1) {
             guiGraphics.drawCenteredString(font, listSplit[0], x + (width / 2), (y + height) - 19, 0xFFF3F0E0.toInt())
             guiGraphics.drawCenteredString(font, listSplit[1], x + (width / 2), (y + height) - 10, 0xFFF3F0E0.toInt())
         } else {
-            guiGraphics.drawCenteredString(font, message, x + (width / 2), (y + height) - 15, 0xFFF3F0E0.toInt())
+            guiGraphics.drawCenteredString(font, msg, x + (width / 2), (y + height) - 15, 0xFFF3F0E0.toInt())
         }
 
         if (!isStarred && isHoveredOrFocused) {

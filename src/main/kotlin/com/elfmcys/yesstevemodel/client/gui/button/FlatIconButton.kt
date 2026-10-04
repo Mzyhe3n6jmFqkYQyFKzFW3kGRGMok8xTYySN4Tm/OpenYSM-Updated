@@ -18,7 +18,7 @@ class FlatIconButton(
 
     override fun renderWidget(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         guiGraphics.fill(x, y, x + width, y + backgroundHeight, -280804798)
-        renderScrollingStringOverContents(guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE), message, 2)
+        renderScrollingStringOverContents(guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE), getMessage(), 2)
     }
 
     override fun updateWidgetNarration(narrationElementOutput: NarrationElementOutput) {

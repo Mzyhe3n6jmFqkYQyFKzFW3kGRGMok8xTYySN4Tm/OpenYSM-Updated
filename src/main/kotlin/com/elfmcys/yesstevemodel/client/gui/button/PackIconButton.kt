@@ -42,12 +42,13 @@ class PackIconButton(
         val iconToDraw = if (missing) DEFAULT_PACK_ICON else location
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, iconToDraw, x, y, 0.0f, 0.0f, width, height, width, height)
 
-        val listSplit = font.split(message, 45)
+        val msg = getMessage()
+        val listSplit = font.split(msg, 45)
         if (listSplit.size > 1) {
             drawCenteredString(guiGraphics, font, listSplit[0], x + (width / 2), (y + height) - 19, 0xFF555555.toInt())
             drawCenteredString(guiGraphics, font, listSplit[1], x + (width / 2), (y + height) - 10, 0xFF555555.toInt())
         } else {
-            drawCenteredString(guiGraphics, font, message, x + (width / 2), (y + height) - 15, 0xFF555555.toInt())
+            drawCenteredString(guiGraphics, font, msg, x + (width / 2), (y + height) - 15, 0xFF555555.toInt())
         }
         if (isHoveredOrFocused) {
             guiGraphics.fillGradient(x, y + 1, x + 1, (y + height) - 1, -1982745, -1982745)
