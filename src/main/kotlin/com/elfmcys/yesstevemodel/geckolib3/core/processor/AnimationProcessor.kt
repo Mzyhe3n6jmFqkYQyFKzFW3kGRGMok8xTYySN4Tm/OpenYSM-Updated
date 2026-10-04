@@ -20,9 +20,7 @@ import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import com.elfmcys.yesstevemodel.molang.runtime.Struct
 import it.unimi.dsi.fastutil.ints.Int2ReferenceMaps
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap
-import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
-import it.unimi.dsi.fastutil.objects.Object2ReferenceMaps
-import it.unimi.dsi.fastutil.objects.ReferenceArrayList
+import it.unimi.dsi.fastutil.objects.*
 import net.minecraft.util.RandomSource
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.level.levelgen.RandomSupport
@@ -231,9 +229,9 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
             }
         }
         needsInit = true
-        val map = it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap<String, MutableList<IValue>>(object2ReferenceMap.size)
-        for (entry in object2ReferenceMap.object2ReferenceEntrySet()) {
-            map.put(entry.key, it.unimi.dsi.fastutil.objects.ObjectArrayList(entry.value))
+        val map = Object2ReferenceOpenHashMap<String, MutableList<IValue>>(object2ReferenceMap.size)
+        for ((key, value) in object2ReferenceMap.object2ReferenceEntrySet()) {
+            map[key] = ObjectArrayList(value)
         }
         initExpressions = map
     }
