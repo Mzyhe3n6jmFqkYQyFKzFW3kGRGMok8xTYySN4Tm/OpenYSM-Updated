@@ -1,5 +1,6 @@
 package com.elfmcys.yesstevemodel.resource
 
+import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.NativeLibLoader
 import com.elfmcys.yesstevemodel.audio.AudioCodec
 import com.elfmcys.yesstevemodel.audio.AudioTrackData
@@ -15,7 +16,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.builder.Animation
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationState
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.ILoopType
-import com.elfmcys.yesstevemodel.geckolib3.core.event.ParticleEventKeyFrame
 import com.elfmcys.yesstevemodel.geckolib3.core.keyframe.BoneAnimation
 import com.elfmcys.yesstevemodel.geckolib3.core.keyframe.bone.BoneKeyFrame
 import com.elfmcys.yesstevemodel.geckolib3.core.keyframe.bone.BoneKeyFrameProcessor
@@ -28,7 +28,6 @@ import com.elfmcys.yesstevemodel.geckolib3.file.*
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoBone
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
 import com.elfmcys.yesstevemodel.geckolib3.resource.GeckoLibCache
-import com.elfmcys.yesstevemodel.geckolib3.util.IInterpolable
 import com.elfmcys.yesstevemodel.geckolib3.util.LinearKeyframeInterpolator
 import com.elfmcys.yesstevemodel.geckolib3.util.TicksInterpolator
 import com.elfmcys.yesstevemodel.model.format.ServerModelInfo
@@ -52,7 +51,6 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
-import java.util.*
 import javax.imageio.ImageIO
 import kotlin.math.abs
 import kotlin.math.floor
@@ -171,43 +169,46 @@ object YSMClientMapper {
             }
         }
 
-        return try {
-            if (format == -1) {
-                if (width > 0 && height > 0 && data.size >= width * height * 4) {
-                    val img = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-                    val pixels = IntArray(width * height)
-                    for (i in pixels.indices) {
-                        val r = data[i * 4].toInt() and 0xFF
-                        val g = data[i * 4 + 1].toInt() and 0xFF
-                        val b = data[i * 4 + 2].toInt() and 0xFF
-                        val a = data[i * 4 + 3].toInt() and 0xFF
-                        pixels[i] = (a shl 24) or (r shl 16) or (g shl 8) or b
+        return runCatching {
+            when (format) {
+                -1 -> {
+                    if (width > 0 && height > 0 && data.size >= width * height * 4) {
+                        val img = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+                        val pixels = IntArray(width * height)
+                        for (i in pixels.indices) {
+                            val r = data[i * 4].toInt() and 0xFF
+                            val g = data[i * 4 + 1].toInt() and 0xFF
+                            val b = data[i * 4 + 2].toInt() and 0xFF
+                            val a = data[i * 4 + 3].toInt() and 0xFF
+                            pixels[i] = (a shl 24) or (r shl 16) or (g shl 8) or b
+                        }
+                        img.setRGB(0, 0, width, height, pixels, 0, width)
+                        img
+                    } else throw RuntimeException("Invalid RGBA texture")
+                }
+
+                else -> {
+                    when (format) {
+                        1, 2, 3 -> ImageIO.read(ByteArrayInputStream(data))
+                        4 -> WebpDecoder().read(data)
+                        5 -> AvifDecoder().read(data)
+                        else -> null
                     }
-                    img.setRGB(0, 0, width, height, pixels, 0, width)
-                    img
-                } else throw RuntimeException("Invalid RGBA texture")
-            } else {
-                when (format) {
-                    1, 2, 3 -> ImageIO.read(ByteArrayInputStream(data))
-                    4 -> WebpDecoder().read(data)
-                    5 -> AvifDecoder().read(data)
-                    else -> null
                 }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
+        }.onFailure {
+            Constants.LOGGER.error("Failed to decode texture", it)
+        }.getOrNull()
     }
 
     private fun encodeToPng(img: BufferedImage?, fallbackData: ByteArray?): ByteArray? {
         if (img != null) {
-            try {
+            runCatching {
                 val baos = ByteArrayOutputStream()
                 ImageIO.write(img, "png", baos)
                 return baos.toByteArray()
-            } catch (e: Exception) {
-                e.printStackTrace()
+            }.onFailure {
+                Constants.LOGGER.error("Failed to encode texture", it)
             }
         }
         return fallbackData
@@ -253,7 +254,8 @@ object YSMClientMapper {
         val avatarTextures = LinkedHashMap<String, OuterFileTexture>()
         for (author in raw.metadata.authors) {
             val avatarImg = author.avatarImage ?: continue
-            val processedAvatarData = toPng(avatarImg.data, avatarImg.format, avatarImg.width, avatarImg.height) ?: ByteArray(0)
+            val processedAvatarData =
+                toPng(avatarImg.data, avatarImg.format, avatarImg.width, avatarImg.height) ?: ByteArray(0)
             val tex = OuterFileTexture(processedAvatarData)
             avatarTextures[avatarImg.name ?: ""] = tex
         }
@@ -266,7 +268,13 @@ object YSMClientMapper {
         val armScanner = if (raw.mainEntity.armModel != null) TranslucencyScanner(imagesArray, textureCount) else null
 
         val mainMesh = buildMesh(raw.mainEntity.mainModel, context, textureCount, mainScanner, raw.properties.allCutout)
-        val armMesh = if (raw.mainEntity.armModel != null) buildMesh(raw.mainEntity.armModel, context, textureCount, armScanner, raw.properties.allCutout) else mainMesh
+        val armMesh = if (raw.mainEntity.armModel != null) buildMesh(
+            raw.mainEntity.armModel,
+            context,
+            textureCount,
+            armScanner,
+            raw.properties.allCutout
+        ) else mainMesh
 
         val meshes = arrayOf(mainMesh, armMesh)
 
@@ -291,10 +299,24 @@ object YSMClientMapper {
         val extraEntityModels = buildExtraEntityModels(raw, context, raw.properties.mergeMultilineExpr)
         val extraTextures = buildExtraTextures(raw)
 
-        return ClientModelInfo(mainModelData, extraItemModels, extraEntityModels, extraResources, modelInfo, avatarTextures, extraTextures)
+        return ClientModelInfo(
+            mainModelData,
+            extraItemModels,
+            extraEntityModels,
+            extraResources,
+            modelInfo,
+            avatarTextures,
+            extraTextures
+        )
     }
 
-    private fun buildMesh(rawGeo: RawYsmModel.RawGeometry?, context: GeometryDescription, textureCount: Int, scanner: TranslucencyScanner?, allCutout: Boolean): GeoModel {
+    private fun buildMesh(
+        rawGeo: RawYsmModel.RawGeometry?,
+        context: GeometryDescription,
+        textureCount: Int,
+        scanner: TranslucencyScanner?,
+        allCutout: Boolean
+    ): GeoModel {
         if (rawGeo == null || rawGeo.bones.isEmpty()) {
             val fallbackArray = scanner?.getResults() ?: BooleanArray(max(1, textureCount))
             return buildMesh(emptyArray(), emptyMap(), context, fallbackArray)
@@ -307,7 +329,20 @@ object YSMClientMapper {
         for (rb in rawGeo.bones) {
             val boneName = rb.name ?: ""
             parentMap[boneName] = rb.parentName ?: ""
-            geoBones.add(GeoBone(boneName, false, false, false, rb.pivot[0], rb.pivot[1], rb.pivot[2], rb.rotation[0], rb.rotation[1], rb.rotation[2]))
+            geoBones.add(
+                GeoBone(
+                    boneName,
+                    false,
+                    false,
+                    false,
+                    rb.pivot[0],
+                    rb.pivot[1],
+                    rb.pivot[2],
+                    rb.rotation[0],
+                    rb.rotation[1],
+                    rb.rotation[2]
+                )
+            )
 
             val bb = GeoModel.BakedBone()
             bb.name = boneName
@@ -425,10 +460,13 @@ object YSMClientMapper {
         return mesh
     }
 
-    private fun buildAnimations(animFile: RawYsmModel.RawAnimationFile, mergeMultilineExpr: Boolean): LinkedHashMap<String, Animation> {
+    private fun buildAnimations(
+        animFile: RawYsmModel.RawAnimationFile,
+        mergeMultilineExpr: Boolean
+    ): LinkedHashMap<String, Animation> {
         val result = LinkedHashMap<String, Animation>()
         for (ra in animFile.animations.values) {
-            val loopMode: ILoopType = when (ra.loopMode) {
+            val loopMode = when (ra.loopMode) {
                 1 -> ILoopType.EDefaultLoopTypes.LOOP
                 3 -> ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME
                 else -> ILoopType.EDefaultLoopTypes.PLAY_ONCE
@@ -439,7 +477,14 @@ object YSMClientMapper {
                 val rotFrames = parseKeyframes(rba.rotation, true)
                 val posFrames = parseKeyframes(rba.position, false)
                 val scaleFrames = parseKeyframes(rba.scale, false)
-                boneAnims.add(BoneAnimation(rba.boneName ?: "", rotFrames.toMutableList(), posFrames.toMutableList(), scaleFrames.toMutableList()))
+                boneAnims.add(
+                    BoneAnimation(
+                        rba.boneName ?: "",
+                        rotFrames.toMutableList(),
+                        posFrames.toMutableList(),
+                        scaleFrames.toMutableList()
+                    )
+                )
             }
 
             val soundEffects = ArrayList<EventKeyFrame<String>>()
@@ -453,14 +498,11 @@ object YSMClientMapper {
                 timelineEvents.add(EventKeyFrame((rte.timestamp * 20.0f).toDouble(), values.toTypedArray()))
             }
 
-            val blendWeight: IValue? = when (val bw = ra.blendWeight) {
+            val blendWeight = when (val bw = ra.blendWeight) {
                 is Float -> FloatValue(bw)
                 is Number -> FloatValue(bw.toFloat())
-                is String -> try {
-                    parse(bw)
-                } catch (e: Exception) {
-                    null
-                }
+                is String -> runCatching { parse(bw) }.getOrNull()
+
                 else -> null
             }
 
@@ -468,14 +510,11 @@ object YSMClientMapper {
                 ra.name ?: "",
                 (ra.length * 20.0f).toDouble(),
                 loopMode,
-                null,
-                null,
-                blendWeight,
-                null,
-                boneAnims.toTypedArray(),
-                soundEffects.toTypedArray(),
-                emptyArray(),
-                timelineEvents.toTypedArray()
+                unKnowData2 = blendWeight,
+                blendWeight = boneAnims.toTypedArray(),
+                soundKeyFrames = soundEffects.toTypedArray(),
+                particleKeyFrames = emptyArray(),
+                customInstructionKeyframes = timelineEvents.toTypedArray()
             )
             result[ra.name ?: ""] = anim
         }
@@ -505,50 +544,57 @@ object YSMClientMapper {
         for (axis in 0 until 3) {
             var dVal = 0.0
             var iVal: IValue? = null
-            val valObj = data[axis]
-            if (valObj is Float) dVal = valObj.toDouble()
-            else if (valObj is Number) dVal = valObj.toDouble()
-            else if (valObj is String) {
-                try {
-                    iVal = parse(valObj)
-                } catch (ignore: Exception) {
-                }
+            when (val valObj = data[axis]) {
+                is Float -> dVal = valObj.toDouble()
+                is Number -> dVal = valObj.toDouble()
+                is String -> runCatching { iVal = parse(valObj) }
             }
-            if (isPre) {
-                when (axis) {
-                    0 -> {
-                        builder.preX = dVal
-                        builder.preXValue = iVal
-                    }
-                    1 -> {
-                        builder.preY = dVal
-                        builder.preYValue = iVal
-                    }
-                    2 -> {
-                        builder.preZ = dVal
-                        builder.preZValue = iVal
+            when {
+                isPre -> {
+                    when (axis) {
+                        0 -> {
+                            builder.preX = dVal
+                            builder.preXValue = iVal
+                        }
+
+                        1 -> {
+                            builder.preY = dVal
+                            builder.preYValue = iVal
+                        }
+
+                        2 -> {
+                            builder.preZ = dVal
+                            builder.preZValue = iVal
+                        }
                     }
                 }
-            } else {
-                when (axis) {
-                    0 -> {
-                        builder.postX = dVal
-                        builder.postXValue = iVal
-                    }
-                    1 -> {
-                        builder.postY = dVal
-                        builder.postYValue = iVal
-                    }
-                    2 -> {
-                        builder.postZ = dVal
-                        builder.postZValue = iVal
+
+                else -> {
+                    when (axis) {
+                        0 -> {
+                            builder.postX = dVal
+                            builder.postXValue = iVal
+                        }
+
+                        1 -> {
+                            builder.postY = dVal
+                            builder.postYValue = iVal
+                        }
+
+                        2 -> {
+                            builder.postZ = dVal
+                            builder.postZValue = iVal
+                        }
                     }
                 }
             }
         }
     }
 
-    private fun buildControllers(rawControllers: Map<String, RawYsmModel.RawAnimationController>, mergeMultilineExpr: Boolean): LinkedHashMap<String, AnimationController> {
+    private fun buildControllers(
+        rawControllers: Map<String, RawYsmModel.RawAnimationController>,
+        mergeMultilineExpr: Boolean
+    ): LinkedHashMap<String, AnimationController> {
         val result = LinkedHashMap<String, AnimationController>()
         for (rac in rawControllers.values) {
             val states = ArrayList<AnimationState>()
@@ -556,12 +602,7 @@ object YSMClientMapper {
                 val animations = ArrayList<Pair<String, IValue>>()
                 for ((k, v) in rs.animations) {
                     var blend: IValue? = null
-                    if (v.isNotEmpty()) {
-                        try {
-                            blend = parse(v)
-                        } catch (ignore: Exception) {
-                        }
-                    }
+                    if (v.isNotEmpty()) runCatching { blend = parse(v) }
                     animations.add(Pair.of(k, blend))
                 }
 
@@ -574,7 +615,7 @@ object YSMClientMapper {
                 val onEntry = parse(rs.onEntry, mergeMultilineExpr)
                 val onExit = parse(rs.onExit, mergeMultilineExpr)
 
-                val blendTransition: IInterpolable = if (rs.blendTransitions.isNotEmpty()) {
+                val blendTransition = if (rs.blendTransitions.isNotEmpty()) {
                     val keys = FloatArray(rs.blendTransitions.size)
                     val values = FloatArray(rs.blendTransitions.size)
                     var i = 0
@@ -636,12 +677,43 @@ object YSMClientMapper {
             val metaList = ArrayList<AbstractConfig>()
             for (form in rBtn.forms) {
                 when (form.type) {
-                    "checkbox" -> metaList.add(CheckboxConfig(form.title ?: "", form.description ?: "", form.defaultValue ?: ""))
-                    "radio" -> metaList.add(RadioConfig(form.title ?: "", form.description ?: "", form.defaultValue ?: "", OrderedStringMap(Object2ObjectArrayMap(form.labels))))
-                    "range" -> metaList.add(RangeConfig(form.title ?: "", form.description ?: "", form.defaultValue ?: "", form.step.toDouble(), form.min.toDouble(), form.max.toDouble()))
+                    "checkbox" -> metaList.add(
+                        CheckboxConfig(
+                            form.title ?: "",
+                            form.description ?: "",
+                            form.defaultValue ?: ""
+                        )
+                    )
+
+                    "radio" -> metaList.add(
+                        RadioConfig(
+                            form.title ?: "",
+                            form.description ?: "",
+                            form.defaultValue ?: "",
+                            OrderedStringMap(Object2ObjectArrayMap(form.labels))
+                        )
+                    )
+
+                    "range" -> metaList.add(
+                        RangeConfig(
+                            form.title ?: "",
+                            form.description ?: "",
+                            form.defaultValue ?: "",
+                            form.step.toDouble(),
+                            form.min.toDouble(),
+                            form.max.toDouble()
+                        )
+                    )
                 }
             }
-            buttonsList.add(ExtraAnimationButtons(rBtn.id ?: "", rBtn.name ?: "", rBtn.description ?: "", metaList.toTypedArray()))
+            buttonsList.add(
+                ExtraAnimationButtons(
+                    rBtn.id ?: "",
+                    rBtn.name ?: "",
+                    rBtn.description ?: "",
+                    metaList.toTypedArray()
+                )
+            )
         }
         val properties = ModelProperties(
             rp.heightScale,
@@ -695,15 +767,12 @@ object YSMClientMapper {
         for ((name, value) in raw.functionFiles) {
             val data = value.data ?: continue
             val molangScript = String(data, StandardCharsets.UTF_8)
-            try {
-                functions[name] = GeckoLibCache.getMolangParser().parseExpression(molangScript, true)
-            } catch (ignored: Exception) {
-            }
+            runCatching { functions[name] = GeckoLibCache.getMolangParser().parseExpression(molangScript, true) }
         }
 
         val translations = LinkedHashMap<String, MutableMap<String, String>>()
         for ((key, value) in raw.languageFiles) {
-            val data = value.data ?: continue
+            val data = value.data
             translations[key] = data
             val normalized = key.lowercase(java.util.Locale.ROOT).replace('-', '_')
             if (normalized != key) {
@@ -716,14 +785,14 @@ object YSMClientMapper {
 
     private fun parseAudioTrackData(oggData: ByteArray?): AudioTrackData? {
         if (oggData == null || oggData.size < 8) return null
-        return try {
+        return runCatching {
             val bais = ByteArrayInputStream(oggData)
             val oggFile = OggFile(bais)
             val header = String(oggData, 0, min(oggData.size, 100), StandardCharsets.US_ASCII)
             val isOpus = header.contains("OpusHead")
 
             val codec = if (isOpus) AudioCodec.OPUS else AudioCodec.VORBIS
-            val sampleRate: Int = if (isOpus) {
+            val sampleRate = if (isOpus) {
                 val opus = OpusFile(oggFile)
                 opus.info.rate.toInt()
             } else {
@@ -745,12 +814,14 @@ object YSMClientMapper {
             directBuf.flip()
 
             AudioTrackData(directBuf, codec.ordinal, sampleRate, durationSamples)
-        } catch (e: Exception) {
-            null
-        }
+        }.getOrNull()
     }
 
-    private fun buildExtraItemModels(raw: RawYsmModel, context: GeometryDescription, mergeMultilineExpr: Boolean): Array<ProjectileModelFiles> {
+    private fun buildExtraItemModels(
+        raw: RawYsmModel,
+        context: GeometryDescription,
+        mergeMultilineExpr: Boolean
+    ): Array<ProjectileModelFiles> {
         val list = ArrayList<ProjectileModelFiles>()
         for (sub in raw.projectiles.values) {
             val holder = buildSubEntityHolder(sub, context, 1, mergeMultilineExpr)
@@ -759,7 +830,11 @@ object YSMClientMapper {
         return list.toTypedArray()
     }
 
-    private fun buildExtraEntityModels(raw: RawYsmModel, context: GeometryDescription, mergeMultilineExpr: Boolean): Array<VehicleModelFiles> {
+    private fun buildExtraEntityModels(
+        raw: RawYsmModel,
+        context: GeometryDescription,
+        mergeMultilineExpr: Boolean
+    ): Array<VehicleModelFiles> {
         val list = ArrayList<VehicleModelFiles>()
         for (sub in raw.vehicles.values) {
             val wrapper = buildSubEntityWrapper(sub, context, 1, mergeMultilineExpr)
@@ -768,7 +843,12 @@ object YSMClientMapper {
         return list.toTypedArray()
     }
 
-    private fun buildSubEntityHolder(sub: RawYsmModel.RawSubEntity, context: GeometryDescription, textureCount: Int, mergeMultilineExpr: Boolean): ProjectileModelFiles {
+    private fun buildSubEntityHolder(
+        sub: RawYsmModel.RawSubEntity,
+        context: GeometryDescription,
+        textureCount: Int,
+        mergeMultilineExpr: Boolean
+    ): ProjectileModelFiles {
         var texture: OuterFileTexture? = null
         var subScanner: TranslucencyScanner? = null
 
@@ -805,10 +885,21 @@ object YSMClientMapper {
         val controllers = AnimationControllerFile(controllerMap)
 
         val matchIds = sub.matchIds ?: arrayOf(sub.identifier ?: "")
-        return ProjectileModelFiles(matchIds, mesh, combinedAnim, controllers, texture ?: OuterFileTexture(ByteArray(0)))
+        return ProjectileModelFiles(
+            matchIds,
+            mesh,
+            combinedAnim,
+            controllers,
+            texture ?: OuterFileTexture(ByteArray(0))
+        )
     }
 
-    private fun buildSubEntityWrapper(sub: RawYsmModel.RawSubEntity, context: GeometryDescription, textureCount: Int, mergeMultilineExpr: Boolean): VehicleModelFiles {
+    private fun buildSubEntityWrapper(
+        sub: RawYsmModel.RawSubEntity,
+        context: GeometryDescription,
+        textureCount: Int,
+        mergeMultilineExpr: Boolean
+    ): VehicleModelFiles {
         var texture: OuterFileTexture? = null
         var subScanner: TranslucencyScanner? = null
 
@@ -868,7 +959,7 @@ object YSMClientMapper {
             return values
         }
 
-        try {
+        runCatching {
             val parserText = StringBuilder()
             for (i in array.indices) {
                 parserText.append(array[i])
@@ -877,7 +968,7 @@ object YSMClientMapper {
                 }
             }
             values.add(parse(parserText.toString()))
-        } catch (ex: Throwable) {
+        }.onFailure {
             values.add(FloatValue.ZERO)
         }
         return values
@@ -885,17 +976,15 @@ object YSMClientMapper {
 
     @JvmStatic
     fun parse(str: String): IValue {
-        return try {
+        return runCatching {
             GeckoLibCache.getMolangParser().parseExpression(str, false)
-        } catch (ex: Throwable) {
+        }.getOrElse {
             FloatValue.ZERO
         }
     }
 
     private fun buildPath(targetBone: String, parentMap: Map<String, String>): Array<String> {
-        if (!parentMap.containsKey(targetBone)) {
-            return emptyArray()
-        }
+        if (!parentMap.containsKey(targetBone)) return emptyArray()
         val path = ArrayList<String>()
         var current: String? = targetBone
         while (!current.isNullOrEmpty()) {
@@ -958,9 +1047,18 @@ object YSMClientMapper {
     }
 
     @JvmStatic
-    fun buildMesh(bones: Array<GeoBone>, parentMap: Map<String, String>, context: GeometryDescription, translucencyArray: BooleanArray): GeoModel {
+    fun buildMesh(
+        bones: Array<GeoBone>,
+        parentMap: Map<String, String>,
+        context: GeometryDescription,
+        translucencyArray: BooleanArray
+    ): GeoModel {
         val boneNameArrays = buildBoneNameArrays(parentMap)
-        val flags = booleanArrayOf(parentMap.containsKey("LeftArm"), parentMap.containsKey("RightArm"), parentMap.containsKey("Background"))
+        val flags = booleanArrayOf(
+            parentMap.containsKey("LeftArm"),
+            parentMap.containsKey("RightArm"),
+            parentMap.containsKey("Background")
+        )
         return GeoModel(bones, boneNameArrays, flags, context, translucencyArray)
     }
 
