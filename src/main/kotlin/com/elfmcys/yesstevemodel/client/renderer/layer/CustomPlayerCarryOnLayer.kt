@@ -3,6 +3,7 @@ package com.elfmcys.yesstevemodel.client.renderer.layer
 import com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity
 import com.elfmcys.yesstevemodel.client.renderer.RenderContext
 import com.elfmcys.yesstevemodel.geckolib3.geo.GeoLayerRenderer
+import com.elfmcys.yesstevemodel.geckolib3.util.RenderUtils
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.state.AvatarRenderState
@@ -31,10 +32,22 @@ open class CustomPlayerCarryOnLayer : GeoLayerRenderer<CustomPlayerEntity>() {
         if (entity !is Player) return
         if (!CarryOnDataHelper.isPlayerCarrying(entity)) return
         val collector = RenderContext.collector() ?: return
+        val animatedGeoModel = entityLivingBaseIn.getCurrentModel()
+
         poseStack.pushPose()
-        poseStack.scale(-1.0f, -1.0f, 1.0f)
-        poseStack.translate(0.0, -1.501, 0.0)
-        CarryOnRenderer.render(entity, poseStack, packedLightIn, partialTick, collector)
+        val locatorBones = when {
+            animatedGeoModel != null && animatedGeoModel.rightHandBones().isNotEmpty() -> animatedGeoModel.rightHandBones()
+            animatedGeoModel != null && animatedGeoModel.leftHandBones().isNotEmpty() -> animatedGeoModel.leftHandBones()
+            else -> null
+        }
+
+        if (locatorBones != null && !RenderUtils.prepMatrixForLocator(poseStack, locatorBones)) {
+            CarryOnRenderer.render(entity, poseStack, packedLightIn, partialTick, collector)
+        } else {
+            poseStack.scale(-1.0f, -1.0f, 1.0f)
+            poseStack.translate(0.0, -1.501, 0.0)
+            CarryOnRenderer.render(entity, poseStack, packedLightIn, partialTick, collector)
+        }
         poseStack.popPose()
     }
 }
