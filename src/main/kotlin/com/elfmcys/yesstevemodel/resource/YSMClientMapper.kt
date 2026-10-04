@@ -703,7 +703,12 @@ object YSMClientMapper {
 
         val translations = LinkedHashMap<String, MutableMap<String, String>>()
         for ((key, value) in raw.languageFiles) {
-            translations[key] = value.data
+            val data = value.data ?: continue
+            translations[key] = data
+            val normalized = key.lowercase(java.util.Locale.ROOT).replace('-', '_')
+            if (normalized != key) {
+                translations[normalized] = data
+            }
         }
 
         return ModelExtraResourcesFile(sounds, functions, translations)

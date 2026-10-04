@@ -14,7 +14,6 @@ open class FlatColorButton(
     component: Component,
     onPress: OnPress
 ) : Button(x, y, width, height, component, onPress, DEFAULT_NARRATION) {
-
     var selected: Boolean = false
     private var tooltip: List<Component>? = null
 
@@ -47,6 +46,10 @@ open class FlatColorButton(
             guiGraphics.fillGradient((x + width) - 1, y + 1, x + width, (y + height) - 1, -790560, -790560)
             guiGraphics.fillGradient(x, (y + height) - 1, x + width, y + height, -790560, -790560)
         }
-        renderScrollingStringOverContents(guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE), getMessage(), 2)
+        renderScrollingStringOverContents(
+            guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE),
+            getMessage(),
+            2
+        )
     }
 }

@@ -13,21 +13,59 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 object ModelMetadataPresenter {
-    private const val DEFAULT_LOCALE = "en_us"
+    const val DEFAULT_LOCALE = "en_us"
+
+    @JvmStatic
+    fun normalizeLocale(locale: String): String {
+        return locale.lowercase(Locale.ROOT).replace('-', '_')
+    }
+
+    @JvmStatic
+    fun findLocaleMap(translations: Map<String, Map<String, String>>?, targetLocale: String): Map<String, String>? {
+        if (translations.isNullOrEmpty()) return null
+        val normalized = normalizeLocale(targetLocale)
+
+        // 1. Direct or normalized match
+        translations[normalized]?.let { return it }
+        for ((key, value) in translations) {
+            if (normalizeLocale(key) == normalized) {
+                return value
+            }
+        }
+
+        // 2. Language family / prefix match (e.g. "zh" for "zh_tw", "zh_cn", "zh_hk")
+        val langPrefix = normalized.substringBefore('_')
+        for ((key, value) in translations) {
+            val k = normalizeLocale(key)
+            if (k.substringBefore('_') == langPrefix) {
+                return value
+            }
+        }
+
+        // 3. Fallback to English ("en_us", "en")
+        translations[DEFAULT_LOCALE]?.let { return it }
+        for ((key, value) in translations) {
+            val k = normalizeLocale(key)
+            if (k == "en_us" || k == "en_gb" || k.substringBefore('_') == "en") {
+                return value
+            }
+        }
+
+        // 4. Any available language
+        return translations.values.firstOrNull()
+    }
 
     @JvmStatic
     fun getLocalizedString(modelPackData: ModelPackData, key: String, defaultValue: String?): String {
         val def = defaultValue ?: StringPool.EMPTY
+        val translations = modelPackData.translations ?: return def
+        if (translations.isEmpty()) return def
+
         val selectedLocale = Minecraft.getInstance().languageManager.selected
-        val translations = modelPackData.translations
-        return when {
-            translations.isNullOrEmpty() -> def
-            translations.containsKey(selectedLocale) -> translations[selectedLocale]?.getOrDefault(key, def) ?: def
-            translations.containsKey(DEFAULT_LOCALE) -> translations[DEFAULT_LOCALE]?.getOrDefault(key, def) ?: def
-            else -> def
-        }
+        return lookupTranslation(translations, selectedLocale, key, def)
     }
 
     @JvmStatic
@@ -49,11 +87,32 @@ object ModelMetadataPresenter {
     ): String {
         val metadataMap = modelAssembly.expressionCache.metadata
         if (metadataMap.isEmpty()) return defaultValue
-        val localeMap = metadataMap[locale]
-        if (localeMap != null && localeMap.containsKey(key)) return localeMap[key] ?: defaultValue
-        val defaultLocaleMap = metadataMap[DEFAULT_LOCALE]
-        if (defaultLocaleMap != null && defaultLocaleMap.containsKey(key))
-            return defaultLocaleMap[key] ?: defaultValue
+        return lookupTranslation(metadataMap, locale, key, defaultValue)
+    }
+
+    private fun lookupTranslation(
+        translations: Map<String, Map<String, String>>,
+        locale: String,
+        key: String,
+        defaultValue: String
+    ): String {
+        val primary = findLocaleMap(translations, locale)
+        val primaryVal = primary?.get(key)
+        if (!primaryVal.isNullOrBlank()) return primaryVal
+
+        val fallback = findLocaleMap(translations, DEFAULT_LOCALE)
+        if (fallback != null && fallback !== primary) {
+            val fbVal = fallback[key]
+            if (!fbVal.isNullOrBlank()) return fbVal
+        }
+
+        for (other in translations.values) {
+            if (other !== primary && other !== fallback) {
+                val otherVal = other[key]
+                if (!otherVal.isNullOrBlank()) return otherVal
+            }
+        }
+
         return defaultValue
     }
 
