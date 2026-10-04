@@ -9,9 +9,6 @@ import rip.ysm.compat.carryon.fabric.CarryOnCompatImpl
 
 object CarryOnCompat : ModCompat("carryon") {
     @JvmStatic
-    fun isLoaded(): Boolean = isModLoaded
-
-    @JvmStatic
     fun getControllerFactory(): ((String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>)? {
         if (!isModLoaded) return null
         return CarryOnCompatImpl.getControllerFactory()

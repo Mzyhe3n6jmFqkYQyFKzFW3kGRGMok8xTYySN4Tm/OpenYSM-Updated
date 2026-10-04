@@ -27,7 +27,7 @@ open class CustomPlayerCarryOnLayer : GeoLayerRenderer<CustomPlayerEntity>() {
         netHeadYaw: Float,
         headPitch: Float
     ) {
-        if (!CarryOnCompat.isLoaded()) return
+        if (!CarryOnCompat.isModLoaded) return
         val entity = entityLivingBaseIn.entity as LivingEntity
         if (entity !is Player) return
         if (!CarryOnDataHelper.isPlayerCarrying(entity)) return
