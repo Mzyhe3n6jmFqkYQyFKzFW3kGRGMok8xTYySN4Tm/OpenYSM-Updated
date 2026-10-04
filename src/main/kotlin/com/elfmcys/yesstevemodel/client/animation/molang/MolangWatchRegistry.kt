@@ -4,7 +4,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import java.text.DecimalFormat
-import java.util.function.BiConsumer
 
 class MolangWatchRegistry {
     val entries: ReferenceArrayList<WatchEntry> = ReferenceArrayList()
@@ -37,9 +36,9 @@ class MolangWatchRegistry {
         }
     }
 
-    fun forEachEntry(biConsumer: BiConsumer<String, String>) {
+    fun forEachEntry(biConsumer: (String, String) -> Unit) {
         for (entry in entries) {
-            biConsumer.accept(entry.label, entry.resultValue)
+            biConsumer(entry.label, entry.resultValue)
         }
     }
 
@@ -57,8 +56,7 @@ class MolangWatchRegistry {
 
         fun evaluate(evaluator: ExpressionEvaluator<*>) {
             resultValue = runCatching {
-                val obj = value.evalUnsafe(evaluator)
-                when (obj) {
+                when (val obj = value.evalUnsafe(evaluator)) {
                     null -> "null"
                     is Number -> DECIMAL_FORMAT.format(obj)
                     else -> obj.toString()

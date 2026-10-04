@@ -173,7 +173,15 @@ object AnimationDebugOverlay {
     }
 
     @JvmStatic
-    fun renderDebugOverlay(font: Font, guiGraphics: GuiGraphics, currentY: IntArray, key: String, value: String, screenWidth: Int, screenHeight: Int) {
+    fun renderDebugOverlay(
+        font: Font,
+        guiGraphics: GuiGraphics,
+        currentY: IntArray,
+        key: String,
+        value: String,
+        screenWidth: Int,
+        screenHeight: Int
+    ) {
         if ((currentY[0] - 5) % 20 == 0) {
             guiGraphics.fill(2, currentY[0] - 1, screenWidth, currentY[0] + 9, -1068478384)
         } else {
