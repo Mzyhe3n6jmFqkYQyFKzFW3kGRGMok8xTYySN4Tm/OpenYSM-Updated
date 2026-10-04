@@ -532,7 +532,6 @@ class RawYsmModel {
         var labels: MutableMap<String, String> = LinkedHashMap()
     }
 
-    @JvmRecord
     data class RawDataFile(@JvmField val hash: String, @JvmField val data: ByteArray?) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -553,7 +552,6 @@ class RawYsmModel {
         }
     }
 
-    @JvmRecord
     data class RawLanguageFile(@JvmField val hash: String, @JvmField val data: MutableMap<String, String>)
 
     class RawFooter {

@@ -6,7 +6,6 @@ import net.fabricmc.api.Environment
 import net.minecraft.network.FriendlyByteBuf
 import rip.ysm.api.network.PacketContext
 
-@JvmRecord
 data class S2CModelUploadStartPacket(
     val uploadId: Long,
     val status: Byte,

@@ -73,7 +73,6 @@ object AudioStreamCache {
             }
         }
 
-        @JvmRecord
         private data class CachedAudioEntry(
             val audioData: ByteBuffer,
             val audioFormat: AudioFormat,

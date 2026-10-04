@@ -57,6 +57,5 @@ object ObjectPool {
         }
     }
 
-    @JvmRecord
     private data class PoolEntry<T>(val value: T, val expirationTick: Int)
 }

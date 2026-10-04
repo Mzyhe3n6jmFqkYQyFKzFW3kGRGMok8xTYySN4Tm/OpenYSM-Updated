@@ -6,7 +6,6 @@ import net.fabricmc.api.Environment
 import net.minecraft.network.FriendlyByteBuf
 import rip.ysm.api.network.PacketContext
 
-@JvmRecord
 data class S2CModelUploadResultPacket(
     val uploadId: Long,
     val status: Byte,
@@ -50,7 +49,14 @@ data class S2CModelUploadResultPacket(
         @JvmStatic
         @Environment(EnvType.CLIENT)
         fun handleOnClient(packet: S2CModelUploadResultPacket) {
-            ModelUploadSession.onResult(packet.uploadId, packet.status, packet.modelId, packet.h1, packet.h2, packet.message)
+            ModelUploadSession.onResult(
+                packet.uploadId,
+                packet.status,
+                packet.modelId,
+                packet.h1,
+                packet.h2,
+                packet.message
+            )
         }
     }
 }

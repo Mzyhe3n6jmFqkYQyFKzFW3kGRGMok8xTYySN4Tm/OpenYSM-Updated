@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.ints.Int2FloatArrayMap
 import it.unimi.dsi.fastutil.objects.Object2FloatArrayMap
 import net.minecraft.network.FriendlyByteBuf
 
-@JvmRecord
 data class FeedbackData(
     val entityId: Int,
     val stringValues: Object2FloatArrayMap<String>?,
