@@ -1,6 +1,6 @@
 package rip.ysm.gui
 
-import com.elfmcys.yesstevemodel.client.entity.LivingAnimatable
+import com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity
 import com.elfmcys.yesstevemodel.client.gui.ModelMetadataPresenter
 import com.elfmcys.yesstevemodel.client.gui.custom.AbstractConfig
 import com.elfmcys.yesstevemodel.client.gui.custom.ExtraAnimationButtons
@@ -8,10 +8,10 @@ import com.elfmcys.yesstevemodel.client.gui.custom.configs.CheckboxConfig
 import com.elfmcys.yesstevemodel.client.gui.custom.configs.RadioConfig
 import com.elfmcys.yesstevemodel.client.gui.custom.configs.RangeConfig
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
+import com.elfmcys.yesstevemodel.client.renderer.CustomPlayerRenderer
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
 import com.elfmcys.yesstevemodel.client.renderer.RendererManager
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
-import com.elfmcys.yesstevemodel.geckolib3.geo.GeoReplacedEntityRenderer
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.math.Axis
@@ -22,7 +22,6 @@ import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.client.renderer.entity.state.AvatarRenderState
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
-import net.minecraft.world.entity.player.Player
 import rip.ysm.gui.components.BooleanOptionRow
 import rip.ysm.gui.components.RadioOptionRow
 import rip.ysm.gui.components.SliderOptionRow
@@ -36,7 +35,6 @@ open class ModelSettingsScreen(
     parent: Screen? = null,
     private val initialGroupId: String? = null
 ) : OptionScreen(Component.translatable("gui.yes_steve_model.model_settings.title"), parent) {
-
     private var previewLeft: Int = 0
     private var previewTop: Int = 0
     private var previewRight: Int = 0
@@ -182,7 +180,7 @@ open class ModelSettingsScreen(
     private fun renderPreview(g: GuiGraphics, partialTick: Float) {
         val mc = minecraft
         if (mc.player == null) return
-        val la = animatable as? com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity ?: return
+        val la = animatable as? CustomPlayerEntity ?: return
         val scale = mc.window.guiScale
         val sx = (previewLeft * scale)
         val sy = (mc.window.height - previewBottom * scale)
@@ -248,8 +246,8 @@ open class ModelSettingsScreen(
             pitch: Float,
             yaw: Float,
             partialTick: Float,
-            animatable: com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity,
-            renderer: com.elfmcys.yesstevemodel.client.renderer.CustomPlayerRenderer
+            animatable: CustomPlayerEntity,
+            renderer: CustomPlayerRenderer
         ) {
             ModelPreviewRenderer.setPreviewMode(true)
             val livingEntity = animatable.entity
