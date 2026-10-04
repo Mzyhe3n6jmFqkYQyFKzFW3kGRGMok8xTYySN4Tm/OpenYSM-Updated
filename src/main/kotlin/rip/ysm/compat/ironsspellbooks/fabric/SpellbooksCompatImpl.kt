@@ -5,8 +5,9 @@ import com.elfmcys.yesstevemodel.client.entity.LivingAnimatable
 import com.elfmcys.yesstevemodel.geckolib3.core.enums.PlayState
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import net.minecraft.world.entity.LivingEntity
+import rip.ysm.compat.ModCompat
 
-object SpellbooksCompatImpl {
+object SpellbooksCompatImpl : ModCompat("irons_spellbooks") {
     @JvmStatic
     fun registerBindings(binding: CtrlBinding) {
     }

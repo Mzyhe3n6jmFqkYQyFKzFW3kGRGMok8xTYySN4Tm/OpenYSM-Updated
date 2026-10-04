@@ -1,6 +1,8 @@
 package rip.ysm.compat.optifine.fabric
 
-object OptiFineDetectorImpl {
+import rip.ysm.compat.ModCompat
+
+object OptiFineDetectorImpl : ModCompat("optifabric") {
     @JvmStatic
     fun isOptifinePresent(): Boolean = false
 }

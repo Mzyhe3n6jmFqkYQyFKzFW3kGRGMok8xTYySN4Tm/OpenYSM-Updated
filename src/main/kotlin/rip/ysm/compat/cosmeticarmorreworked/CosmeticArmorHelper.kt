@@ -8,10 +8,14 @@ import rip.ysm.compat.cosmeticarmorreworked.fabric.CosmeticArmorHelperImpl
 
 object CosmeticArmorHelper : ModCompat("cosmeticarmorreworked") {
     @JvmStatic
-    fun getArmorItem(entity: LivingEntity, slot: EquipmentSlot): ItemStack =
-        CosmeticArmorHelperImpl.getArmorItem(entity, slot)
+    fun getArmorItem(entity: LivingEntity, slot: EquipmentSlot): ItemStack {
+        if (!isModLoaded) return ItemStack.EMPTY
+        return CosmeticArmorHelperImpl.getArmorItem(entity, slot)
+    }
 
     @JvmStatic
-    fun getElytraItem(livingEntity: LivingEntity): ItemStack =
-        CosmeticArmorHelperImpl.getElytraItem(livingEntity)
+    fun getElytraItem(livingEntity: LivingEntity): ItemStack {
+        if (!isModLoaded) return ItemStack.EMPTY
+        return CosmeticArmorHelperImpl.getElytraItem(livingEntity)
+    }
 }

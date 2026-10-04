@@ -6,41 +6,68 @@ import com.elfmcys.yesstevemodel.client.model.ModelResourceBundle
 import com.elfmcys.yesstevemodel.client.model.PlayerModelBundle
 import com.elfmcys.yesstevemodel.geckolib3.core.enums.PlayState
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
+import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.Item
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.touhoulittlemaid.fabric.TouhouLittleMaidCompatImpl
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 
-object TouhouLittleMaidCompat {
+object TouhouLittleMaidCompat : ModCompat("touhou_little_maid") {
     @JvmStatic
-    fun isLoaded(): Boolean = TouhouLittleMaidCompatImpl.isLoaded()
+    fun isMaidEntity(entity: Entity): Boolean = isModLoaded && TouhouLittleMaidCompatImpl.isMaidEntity(entity)
 
     @JvmStatic
-    fun isMaidEntity(entity: Entity): Boolean = TouhouLittleMaidCompatImpl.isMaidEntity(entity)
+    fun isMaidRideable(entity: Entity): Boolean = isModLoaded && TouhouLittleMaidCompatImpl.isMaidRideable(entity)
 
     @JvmStatic
-    fun isMaidRideable(entity: Entity): Boolean = TouhouLittleMaidCompatImpl.isMaidRideable(entity)
-
-    @JvmStatic
-    fun isSimplePlanesEntity(entity: Entity): Boolean = TouhouLittleMaidCompatImpl.isSimplePlanesEntity(entity)
+    fun isSimplePlanesEntity(entity: Entity): Boolean =
+        isModLoaded && TouhouLittleMaidCompatImpl.isSimplePlanesEntity(entity)
 
     @JvmStatic
     fun isImmersiveAircraftEntity(entity: Entity): Boolean =
-        TouhouLittleMaidCompatImpl.isImmersiveAircraftEntity(entity)
+        isModLoaded && TouhouLittleMaidCompatImpl.isImmersiveAircraftEntity(entity)
 
     @JvmStatic
-    fun isMaidItem(item: Item): Boolean = TouhouLittleMaidCompatImpl.isMaidItem(item)
+    fun isMaidItem(item: Item): Boolean = isModLoaded && TouhouLittleMaidCompatImpl.isMaidItem(item)
 
     @JvmStatic
-    fun getMaidEntityId(entity: Entity): String = TouhouLittleMaidCompatImpl.getMaidEntityId(entity)
+    fun getMaidEntityId(entity: Entity): String? {
+        if (!isModLoaded) return null
+        return TouhouLittleMaidCompatImpl.getMaidEntityId(entity)
+    }
 
     @JvmStatic
-    fun isMaidSitting(livingEntity: LivingEntity): Boolean = TouhouLittleMaidCompatImpl.isMaidSitting(livingEntity)
+    fun isMaidSitting(livingEntity: LivingEntity): Boolean =
+        isModLoaded && TouhouLittleMaidCompatImpl.isMaidSitting(livingEntity)
 
     @JvmStatic
     fun registerMaidAnimStates(tlmBinding: TLMBinding) {
-        TouhouLittleMaidCompatImpl.registerMaidAnimStates(tlmBinding)
+        if (isModLoaded)
+            TouhouLittleMaidCompatImpl.registerMaidAnimStates(tlmBinding)
+        else
+            registerDummyBindings(tlmBinding)
+    }
+
+    @JvmStatic
+    private fun registerDummyBindings(tlmBinding: TLMBinding) {
+        tlmBinding.livingEntityVar("is_begging") { false }
+        tlmBinding.livingEntityVar("is_sitting") { false }
+        tlmBinding.livingEntityVar("has_backpack") { false }
+        tlmBinding.livingEntityVar("favorability_point") { 0 }
+        tlmBinding.livingEntityVar("favorability_level") { 0 }
+        tlmBinding.livingEntityVar("task_id") { StringPool.EMPTY }
+        tlmBinding.livingEntityVar("schedule") { StringPool.EMPTY }
+        tlmBinding.livingEntityVar("activity") { StringPool.EMPTY }
+        tlmBinding.livingEntityVar("gomoku_win_count") { 0 }
+        tlmBinding.livingEntityVar("gomoku_rank") { 1 }
+        tlmBinding.livingEntityVar("game_statue") { StringPool.EMPTY }
+        tlmBinding.livingEntityVar("backpack_type") { StringPool.EMPTY }
+        tlmBinding.livingEntityVar("is_entity") { true }
+        tlmBinding.livingEntityVar("is_statue") { false }
+        tlmBinding.livingEntityVar("is_garage_kit") { false }
+        tlmBinding.livingEntityVar("show_item") { StringPool.EMPTY }
     }
 
     @JvmStatic
@@ -48,13 +75,17 @@ object TouhouLittleMaidCompat {
         event: AnimationEvent<LivingAnimatable<*>>,
         livingEntity: LivingEntity,
         entity: Entity
-    ): PlayState? = TouhouLittleMaidCompatImpl.handleMaidInteraction(event, livingEntity, entity)
+    ): PlayState? {
+        if (!isModLoaded) return null
+        return TouhouLittleMaidCompatImpl.handleMaidInteraction(event, livingEntity, entity)
+    }
 
     @JvmStatic
-    fun isMaidChatAvailable(): Boolean = TouhouLittleMaidCompatImpl.isMaidChatAvailable()
+    fun isMaidChatAvailable(): Boolean = isModLoaded && TouhouLittleMaidCompatImpl.isMaidChatAvailable()
 
     @JvmStatic
     fun openMaidChat() {
+        if (!isModLoaded) return
         TouhouLittleMaidCompatImpl.openMaidChat()
     }
 
@@ -62,6 +93,8 @@ object TouhouLittleMaidCompat {
     fun buildControllers(
         modelBundle: PlayerModelBundle,
         resourceBundle: ModelResourceBundle
-    ): ((MaidAnimatable) -> Unit)? =
-        TouhouLittleMaidCompatImpl.buildControllers(modelBundle, resourceBundle)
+    ): ((MaidAnimatable) -> Unit)? {
+        if (!isModLoaded) return null
+        return TouhouLittleMaidCompatImpl.buildControllers(modelBundle, resourceBundle)
+    }
 }

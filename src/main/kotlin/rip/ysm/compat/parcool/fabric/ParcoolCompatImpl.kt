@@ -5,9 +5,10 @@ import com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import net.minecraft.world.entity.player.Player
 import org.apache.commons.lang3.tuple.Pair
+import rip.ysm.compat.ModCompat
 import java.util.*
 
-object ParcoolCompatImpl {
+object ParcoolCompatImpl : ModCompat("parcool") {
     @JvmStatic
     fun getInCompatibleInfo(): Optional<Pair<String, String>> = Optional.empty()
 

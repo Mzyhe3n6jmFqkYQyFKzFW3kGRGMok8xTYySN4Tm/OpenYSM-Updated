@@ -11,20 +11,17 @@ import rip.ysm.compat.curios.fabric.CuriosCompatImpl
 object CuriosCompat : ModCompat("trinkets", "accessories") {
     @JvmStatic
     fun hasItemInSlot(livingEntity: LivingEntity, str: String, set: ReferenceOpenHashSet<Item>): Boolean {
-        if (!isModLoaded) return false
-        return CuriosCompatImpl.hasItemInSlot(livingEntity, str, set)
+        return isModLoaded && CuriosCompatImpl.hasItemInSlot(livingEntity, str, set)
     }
 
     @JvmStatic
     fun hasTaggedItemInSlot(livingEntity: LivingEntity, str: String, list: List<TagKey<Item>>): Boolean {
-        if (!isModLoaded) return false
-        return CuriosCompatImpl.hasTaggedItemInSlot(livingEntity, str, list)
+        return isModLoaded && CuriosCompatImpl.hasTaggedItemInSlot(livingEntity, str, list)
     }
 
     @JvmStatic
     fun hasNoTaggedItemInSlot(entity: LivingEntity, str: String, list: List<TagKey<Item>>): Boolean {
-        if (!isModLoaded) return false
-        return CuriosCompatImpl.hasNoTaggedItemInSlot(entity, str, list)
+        return isModLoaded && CuriosCompatImpl.hasNoTaggedItemInSlot(entity, str, list)
     }
 
     @JvmStatic

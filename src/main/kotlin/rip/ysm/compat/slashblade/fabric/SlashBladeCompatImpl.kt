@@ -9,8 +9,9 @@ import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.ItemStack
+import rip.ysm.compat.ModCompat
 
-object SlashBladeCompatImpl {
+object SlashBladeCompatImpl : ModCompat("slashblade") {
     @JvmStatic
     fun isSlashBladeItem(stack: ItemStack): Boolean = false
 

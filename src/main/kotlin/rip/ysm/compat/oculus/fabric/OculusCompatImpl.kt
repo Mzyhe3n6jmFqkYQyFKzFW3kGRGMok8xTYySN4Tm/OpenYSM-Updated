@@ -1,8 +1,9 @@
 package rip.ysm.compat.oculus.fabric
 
 import net.irisshaders.iris.api.v0.IrisApi
+import rip.ysm.compat.ModCompat
 
-object OculusCompatImpl {
+object OculusCompatImpl : ModCompat("iris") {
     @JvmStatic
     fun isPBRActive(): Boolean = runCatching { IrisApi.getInstance().isRenderingShadowPass }.getOrElse { false }
 

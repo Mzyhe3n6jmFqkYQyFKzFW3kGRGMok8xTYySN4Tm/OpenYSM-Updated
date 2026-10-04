@@ -7,14 +7,13 @@ import com.elfmcys.yesstevemodel.geckolib3.core.controller.CompositeAnimationCon
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import net.minecraft.world.entity.player.Player
+import rip.ysm.compat.ModCompat
 import rip.ysm.compat.carryon.CarryOnDataHelper
-import java.util.*
 
-// TODO: Replace Optional
-object CarryOnCompatImpl {
+object CarryOnCompatImpl : ModCompat("carryon") {
     @JvmStatic
-    fun getControllerFactory(): Optional<(String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>> =
-        Optional.of { animationEntryKey, entity ->
+    fun getControllerFactory(): (String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity> =
+        { animationEntryKey, entity ->
             CompositeAnimationController(entity, animationEntryKey, 0.1f, PlayerAnimationPredicate())
         }
 
