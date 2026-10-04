@@ -13,7 +13,6 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.*
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.anim.MaidAnimationController
 
-// TODO: Using ModCompat
 object TouhouLittleMaidCompatImpl : ModCompat("touhou_little_maid") {
     @JvmStatic
     private fun initClient() {
