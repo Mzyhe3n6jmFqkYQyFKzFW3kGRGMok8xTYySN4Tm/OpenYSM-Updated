@@ -19,11 +19,6 @@ object PlayerCapabilityClientStore {
         val existing = STORE[uuid]
         if (existing != null && existing.entity == player) return existing
         val fresh = PlayerCapability(player)
-        if (existing != null) {
-            CapabilityLifecycle.revive(existing.entity)
-            fresh.copyFrom(existing)
-            CapabilityLifecycle.invalidate(existing.entity)
-        }
         STORE[uuid] = fresh
         return fresh
     }
