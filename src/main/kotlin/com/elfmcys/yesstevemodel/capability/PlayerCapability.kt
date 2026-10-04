@@ -182,7 +182,12 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     }
 
     fun copyFrom(playerCapability: PlayerCapability) {
-        molangVarsMap.putAll(playerCapability.molangVarsMap)
+        molangVarsMap.clear()
+        for (entry in playerCapability.molangVarsMap.int2ReferenceEntrySet()) {
+            val holder = MolangVarHolder()
+            entry.value.currentVars?.let { holder.currentVars = Int2FloatOpenHashMap(it) }
+            molangVarsMap.put(entry.intKey, holder)
+        }
         initModelWithTexture(playerCapability.getModelId(), playerCapability.currentTextureName)
         setForceDisabled(playerCapability.isForceDisabled())
         val holder = molangVarsMap[currentModelHashId]
@@ -190,8 +195,6 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         if (vars != null) {
             serverVarContainer = if (isLocalPlayerModel()) RoamingStruct(currentModelHashId, vars) else Int2FloatOpenHashMapStruct(vars)
         }
-        playerCapability.molangVarsMap.clear()
-        playerCapability.serverVarContainer = null
     }
 
     override fun buildRenderShape(

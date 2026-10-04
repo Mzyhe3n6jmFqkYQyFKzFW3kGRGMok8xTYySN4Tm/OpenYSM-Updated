@@ -1,28 +1,41 @@
 package com.elfmcys.yesstevemodel.capability.fabric.client
 
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
+import com.google.common.collect.MapMaker
 import net.minecraft.client.player.AbstractClientPlayer
 import net.minecraft.world.entity.player.Player
 import rip.ysm.api.capability.CapabilityLifecycle
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 
 object PlayerCapabilityClientStore {
-    @JvmField
-    val STORE: ConcurrentMap<UUID, PlayerCapability> = ConcurrentHashMap()
+    private val STORE_BY_PLAYER: MutableMap<Player, PlayerCapability> = MapMaker().weakKeys().makeMap()
+    private val LAST_BY_UUID: MutableMap<UUID, PlayerCapability> = ConcurrentHashMap()
 
     @JvmStatic
     operator fun get(player: Player): PlayerCapability? {
         if (player !is AbstractClientPlayer) return null
-        val uuid = player.uuid
-        val existing = STORE[uuid]
-        if (existing != null && existing.entity == player) return existing
-        val fresh = PlayerCapability(player)
-        STORE[uuid] = fresh
-        return fresh
+        synchronized(STORE_BY_PLAYER) {
+            val existing = STORE_BY_PLAYER[player]
+            if (existing != null) return existing
+            val fresh = PlayerCapability(player)
+            val previous = LAST_BY_UUID[player.uuid]
+            if (previous != null && previous.entity != player) {
+                CapabilityLifecycle.revive(previous.entity)
+                fresh.copyFrom(previous)
+                CapabilityLifecycle.invalidate(previous.entity)
+            }
+            STORE_BY_PLAYER[player] = fresh
+            LAST_BY_UUID[player.uuid] = fresh
+            return fresh
+        }
     }
 
     @JvmStatic
-    fun clear() = STORE.clear()
+    fun clear() {
+        synchronized(STORE_BY_PLAYER) {
+            STORE_BY_PLAYER.clear()
+            LAST_BY_UUID.clear()
+        }
+    }
 }
