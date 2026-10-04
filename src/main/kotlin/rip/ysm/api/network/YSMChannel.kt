@@ -7,8 +7,6 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import rip.ysm.api.network.fabric.YSMChannelImpl
-import java.util.function.BiConsumer
-import java.util.function.Function
 
 object YSMChannel {
     @JvmStatic
@@ -20,9 +18,9 @@ object YSMChannel {
     fun <T : Any> register(
         discriminator: Int,
         type: Class<T>,
-        encoder: BiConsumer<T, FriendlyByteBuf>,
-        decoder: Function<FriendlyByteBuf, T>,
-        handler: BiConsumer<T, PacketContext>,
+        encoder: (T, FriendlyByteBuf) -> Unit,
+        decoder: (FriendlyByteBuf) -> T,
+        handler: (T, PacketContext) -> Unit,
         direction: PacketDirection
     ) = YSMChannelImpl.register(discriminator, type, encoder, decoder, handler, direction)
 

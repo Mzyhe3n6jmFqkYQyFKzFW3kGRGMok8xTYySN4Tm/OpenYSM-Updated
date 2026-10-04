@@ -32,7 +32,6 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import rip.ysm.api.entity.EntityDataBridge
 import java.util.*
-import java.util.function.Consumer
 
 abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity) {
     @JvmField
@@ -315,12 +314,12 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
         value: IValue,
         isClientPlayer: Boolean,
         executeBeforeAnimation: Boolean,
-        consumer: Consumer<String>?
+        func: ((String) -> Unit)?
     ) {
-        if (consumer != null) {
-            animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, consumer)
+        if (func != null) {
+            animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, func)
         } else {
-            animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, null as Consumer<String>?)
+            animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, null)
         }
     }
 
@@ -346,5 +345,5 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
         return animationStates.getOrDefault(name, AnimationState.IDLE)
     }
 
-    fun interface AnimationControllerVisitor : Consumer<Consumer<IAnimationController<*>>>
+    fun interface AnimationControllerVisitor : ((IAnimationController<*>) -> Unit) -> Unit
 }

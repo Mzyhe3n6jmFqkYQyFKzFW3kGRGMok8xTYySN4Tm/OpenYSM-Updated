@@ -18,8 +18,6 @@ import net.minecraft.world.entity.player.Player
 import rip.ysm.api.network.PacketContext
 import rip.ysm.api.network.PacketDirection
 import rip.ysm.api.network.fabric.client.YSMChannelClientImpl
-import java.util.function.BiConsumer
-import java.util.function.Function
 
 object YSMChannelImpl {
     private val CODECS_BY_ID: MutableMap<Int, Codec<*>> = HashMap()
@@ -55,9 +53,9 @@ object YSMChannelImpl {
     fun <T : Any> register(
         discriminator: Int,
         type: Class<T>,
-        encoder: BiConsumer<T, FriendlyByteBuf>,
-        decoder: Function<FriendlyByteBuf, T>,
-        handler: BiConsumer<T, PacketContext>,
+        encoder: (T, FriendlyByteBuf) -> Unit,
+        decoder: (FriendlyByteBuf) -> T,
+        handler: (T, PacketContext) -> Unit,
         direction: PacketDirection
     ) {
         if ((discriminator and 0xff.inv()) != 0) {

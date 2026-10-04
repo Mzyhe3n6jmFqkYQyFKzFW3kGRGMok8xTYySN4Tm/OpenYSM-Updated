@@ -36,9 +36,9 @@ class MolangWatchRegistry {
         }
     }
 
-    fun forEachEntry(biConsumer: (String, String) -> Unit) {
+    fun forEachEntry(func: (String, String) -> Unit) {
         for (entry in entries) {
-            biConsumer(entry.label, entry.resultValue)
+            func(entry.label, entry.resultValue)
         }
     }
 

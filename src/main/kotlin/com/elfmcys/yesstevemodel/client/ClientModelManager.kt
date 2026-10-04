@@ -49,7 +49,6 @@ import java.time.Instant
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
-import java.util.function.Consumer
 
 @Environment(EnvType.CLIENT)
 object ClientModelManager {
@@ -1069,10 +1068,5 @@ object ClientModelManager {
                 )
             }
         }
-    }
-
-    @JvmStatic
-    fun exportAllCachedModels(extra: String?, callback: Consumer<ExportResult>?) {
-        exportAllCachedModels(extra, callback?.let { { res: ExportResult -> it.accept(res) } })
     }
 }
