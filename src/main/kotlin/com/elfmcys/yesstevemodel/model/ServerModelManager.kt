@@ -495,7 +495,7 @@ object ServerModelManager {
 
     private fun scanDirectoryPacks(baseDir: Path?) {
         if (baseDir == null || !Files.isDirectory(baseDir)) return
-        try {
+        runCatching {
             Files.walk(baseDir, 1).use { stream ->
                 stream.filter { Files.isDirectory(it) && it != baseDir }.forEach { path ->
                     val packJson = path.resolve("ysm-pack.json")
@@ -543,8 +543,8 @@ object ServerModelManager {
                     }
                 }
             }
-        } catch (e: Exception) {
-            Constants.LOGGER.error("Failed to walk directory for packs: $baseDir", e)
+        }.onFailure {
+            Constants.LOGGER.error("Failed to walk directory for packs: $baseDir", it)
         }
     }
 
@@ -579,9 +579,7 @@ object ServerModelManager {
             val hashes = YsmCrypt.calculateModelHashes(sha256, currentServerKey)
             val cacheFileName = String.format("%016x%016x", hashes[0], hashes[1])
             val cacheFile = serverCacheDir.resolve(cacheFileName)
-            if (!serverCacheDir.toFile().isDirectory) {
-                Files.createDirectories(serverCacheDir)
-            }
+            if (!serverCacheDir.toFile().isDirectory) Files.createDirectories(serverCacheDir)
             var needsUpdate = true
             if (Files.exists(cacheFile)) {
                 val existingData = Files.readAllBytes(cacheFile)
@@ -680,7 +678,7 @@ object ServerModelManager {
         val garbage = ByteArray(garbageLen)
         theRandom.nextBytes(garbage)
 
-        try {
+        runCatching {
             YSMByteBuf(Unpooled.buffer()).use { outBuf ->
                 outBuf.writeGarbageHeader(garbageLen, garbage)
 
@@ -758,8 +756,8 @@ object ServerModelManager {
                 val result = YsmCrypt.encrypt(outBuf.toArray(), clientNextKey, false)
                 sendModelData(uuid, ByteBuffer.wrap(result.data()), PendingTransfer())
             }
-        } catch (e: Exception) {
-            throw RuntimeException(e)
+        }.onFailure {
+            Constants.LOGGER.error("Fail to send packet 03", it)
         }
     }
 
@@ -823,7 +821,7 @@ object ServerModelManager {
     @JvmStatic
     fun nativeExportModel(modelID: String, extra: String?, callback: ((ExportResult) -> Unit)?) {
         YSMThreadPool.launch {
-            try {
+            runCatching {
                 val modelData = CACHE_NAME_INFO[modelID]
                 if (modelData == null) {
                     val msg = YSMNativeHelper.createTranslatableComponent(
@@ -914,11 +912,11 @@ object ServerModelManager {
                         )
                     )
                 }
-            } catch (e: Exception) {
+            }.onFailure {
                 callback?.invoke(
                     ExportResult(
                         false,
-                        Component.literal("Export failed: ${e.message}"),
+                        Component.literal("Export failed: ${it.message}"),
                         "",
                         "",
                         0
