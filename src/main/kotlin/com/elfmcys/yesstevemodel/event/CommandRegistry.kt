@@ -64,7 +64,7 @@ object CommandRegistry {
                     }
                 } else if (ClientModelManager.getModelAssemblyMap().containsKey(str)) {
                     val list = mutableListOf("-")
-                    ClientModelManager.getModelContext(str).ifPresent { context ->
+                    ClientModelManager.getModelContext(str)?.let { context ->
                         list.addAll(context.animationBundle.textures.keys.map(::escapeIfRequired))
                     }
                     return@register SharedSuggestionProvider.suggest(list, suggestionsBuilder)
