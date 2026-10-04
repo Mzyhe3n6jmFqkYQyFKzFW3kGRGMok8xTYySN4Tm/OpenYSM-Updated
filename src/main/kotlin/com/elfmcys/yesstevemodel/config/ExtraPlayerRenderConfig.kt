@@ -10,6 +10,9 @@ object ExtraPlayerRenderConfig {
     lateinit var PLAYER_YAW_OFFSET: ForgeConfigSpec.DoubleValue
 
     @JvmStatic
+    fun save() = GeneralConfig.save()
+
+    @JvmStatic
     fun define(builder: ForgeConfigSpec.Builder) {
         builder.push("extra_player_render")
         builder.comment("Whether to display player")

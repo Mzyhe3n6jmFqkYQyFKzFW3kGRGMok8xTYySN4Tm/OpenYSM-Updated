@@ -41,6 +41,7 @@ class ExtraPlayerRenderScreen : Screen(Component.literal("YSM Extra Player Rende
                 .selected(ExtraPlayerRenderConfig.DISABLE_PLAYER_RENDER.get())
                 .onValueChange { _, value ->
                     ExtraPlayerRenderConfig.DISABLE_PLAYER_RENDER.set(value)
+                    ExtraPlayerRenderConfig.save()
                 }
                 .build()
         )
@@ -181,6 +182,7 @@ class ExtraPlayerRenderScreen : Screen(Component.literal("YSM Extra Player Rende
         ExtraPlayerRenderConfig.PLAYER_POS_Y.set(mouseStartY)
         ExtraPlayerRenderConfig.PLAYER_SCALE.set(rotationX.toDouble())
         ExtraPlayerRenderConfig.PLAYER_YAW_OFFSET.set(rotationY.toDouble())
+        ExtraPlayerRenderConfig.save()
         super.onClose()
     }
 

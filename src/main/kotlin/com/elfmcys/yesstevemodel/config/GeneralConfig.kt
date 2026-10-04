@@ -23,6 +23,7 @@ object GeneralConfig {
         CLASSIC
     }
 
+    lateinit var SPEC: ForgeConfigSpec
     lateinit var DISCLAIMER_SHOW: ForgeConfigSpec.BooleanValue
     lateinit var PRINT_ANIMATION_ROULETTE_MSG: ForgeConfigSpec.BooleanValue
     lateinit var DISABLE_SELF_MODEL: ForgeConfigSpec.BooleanValue
@@ -53,7 +54,14 @@ object GeneralConfig {
         defineGeneral(builder)
         ExtraPlayerRenderConfig.define(builder)
         LoadingStateConfig.define(builder)
-        return builder.build()
+        val spec = builder.build()
+        SPEC = spec
+        return spec
+    }
+
+    @JvmStatic
+    fun save() {
+        if (::SPEC.isInitialized) runCatching { SPEC.save() }
     }
 
     @JvmStatic

@@ -31,6 +31,7 @@ class DisclaimerScreen : Screen(Component.literal("Disclaimer GUI")) {
         val closeButton = Button.builder(Component.translatable("gui.yes_steve_model.disclaimer.close")) {
             if (cb.selected()) {
                 GeneralConfig.DISCLAIMER_SHOW.set(false)
+                GeneralConfig.save()
                 minecraft.setScreen(PlayerModelScreen())
             } else {
                 minecraft.setScreen(null)
