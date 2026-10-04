@@ -513,7 +513,7 @@ object ModelPreviewRenderer {
         guiGraphics.enableScissor(x0, y0, x1, y1)
         guiGraphics.submitEntityRenderState(state, submitScale, translation, rotation, cameraTilt, x0, y0, x1, y1)
         guiGraphics.disableScissor()
-        if (savedEquipment != null && entity is Player) {
+        if (savedEquipment != null) {
             for ((i, slot) in EquipmentSlot.entries.withIndex()) {
                 val item = savedEquipment[i]
                 if (item != null) {
