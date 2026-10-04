@@ -71,4 +71,16 @@ class LangTest {
         val packZh = ModelMetadataPresenter.findLocaleMap(pack.translations, "zh_cn")
         assertEquals("博丽灵梦", packZh?.get("metadata.name"))
     }
+    @Test
+    fun testZhTwHasAllZhCnKeys() {
+        val zhCnFile = File("src/main/resources/assets/yes_steve_model/lang/zh_cn.json")
+        val zhTwFile = File("src/main/resources/assets/yes_steve_model/lang/zh_tw.json")
+        val zhCnJson = JsonParser.parseString(zhCnFile.readText(Charsets.UTF_8)).asJsonObject
+        val zhTwJson = JsonParser.parseString(zhTwFile.readText(Charsets.UTF_8)).asJsonObject
+
+        for (key in zhCnJson.keySet()) {
+            assertTrue(zhTwJson.has(key), "zh_tw.json should contain key: $key")
+        }
+        assertEquals(zhCnJson.size(), zhTwJson.size(), "zh_tw.json should match zh_cn.json key count")
+    }
 }
