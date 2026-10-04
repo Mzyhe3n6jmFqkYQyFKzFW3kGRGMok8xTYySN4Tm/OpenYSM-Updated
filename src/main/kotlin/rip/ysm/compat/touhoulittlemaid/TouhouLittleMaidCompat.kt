@@ -14,6 +14,7 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.touhoulittlemaid.fabric.TouhouLittleMaidCompatImpl
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 
+// TODO: Fix anim on maid
 object TouhouLittleMaidCompat : ModCompat("touhou_little_maid") {
     @JvmStatic
     fun isMaidEntity(entity: Entity): Boolean = isModLoaded && TouhouLittleMaidCompatImpl.isMaidEntity(entity)
