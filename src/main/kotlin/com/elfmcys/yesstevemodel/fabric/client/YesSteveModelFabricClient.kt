@@ -1,5 +1,6 @@
 package com.elfmcys.yesstevemodel.fabric.client
 
+import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.client.ClientModelManager
 import com.elfmcys.yesstevemodel.client.renderer.AnimationDebugOverlay
 import com.elfmcys.yesstevemodel.client.renderer.ExtraPlayerOverlay
@@ -27,7 +28,7 @@ class YesSteveModelFabricClient : ClientModInitializer {
 
         // TLM 兼容的客户端装配。必须在此阶段完成：TLM 的 EntityMaidRenderer 构造时读静态钩子，
         // 而渲染器由 EntityRenderDispatcher 在启动后期构造——晚于此处赋值即静默失效。
-        TouhouLittleMaidCompatImpl.initClient()
+        Constants.doNothing(TouhouLittleMaidCompatImpl)
 
         ClientModelManager.loadDefaultModel()
     }
