@@ -44,10 +44,8 @@ object GeneralConfig {
     lateinit var MODEL_INFO_SCREEN_MODE: ForgeConfigSpec.EnumValue<ModelInfoScreenMode>
 
     @JvmStatic
-    fun effectiveModernRoulette(): Boolean {
-        if (!::ROULETTE_MODE.isInitialized || !::ROULETTE_SETTINGS_MODE.isInitialized) return false
-        return ROULETTE_MODE.get() == RouletteMode.MODERN && ROULETTE_SETTINGS_MODE.get() == RouletteSettingsMode.MODERN
-    }
+    fun effectiveModernRoulette(): Boolean =
+        !(!::ROULETTE_MODE.isInitialized || !::ROULETTE_SETTINGS_MODE.isInitialized) && ROULETTE_MODE.get() == RouletteMode.MODERN && ROULETTE_SETTINGS_MODE.get() == RouletteSettingsMode.MODERN
 
     @JvmStatic
     fun buildSpec(): ForgeConfigSpec {
