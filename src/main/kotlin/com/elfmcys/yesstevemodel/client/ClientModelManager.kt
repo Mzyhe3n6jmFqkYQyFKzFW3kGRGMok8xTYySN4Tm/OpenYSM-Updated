@@ -594,9 +594,7 @@ object ClientModelManager {
     fun getModelPackMap(): Map<String, ModelPackData> = modelPackMap
 
     @JvmStatic
-    fun getModelContext(str: String): Optional<ModelAssembly> {
-        return Optional.ofNullable(modelAssemblyMap[str])
-    }
+    fun getModelContext(str: String): ModelAssembly? = modelAssemblyMap[str]
 
     fun findModelContext(str: String): ModelAssembly? = modelAssemblyMap[str]
 

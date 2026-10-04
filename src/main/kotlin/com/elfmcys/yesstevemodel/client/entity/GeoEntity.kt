@@ -23,7 +23,6 @@ import com.elfmcys.yesstevemodel.util.log.ILogger
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.world.entity.Entity
 import rip.ysm.compat.oculus.OculusCompat
-import java.util.*
 import java.util.concurrent.Future
 
 abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : AnimatableEntity<T>(t) {
@@ -102,18 +101,18 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     }
 
     private fun refreshModel() {
-        ClientModelManager.getModelContext(modelId).ifPresentOrElse({ assembly ->
+        ClientModelManager.getModelContext(modelId)?.let { assembly ->
             val shape = renderShape
             if (shape == null || shape.isDefault || assembly != shape.context) {
                 renderShape = buildRenderShape(assembly, false)
             }
-        }, {
+        } ?: run {
             val localAssembly = ClientModelManager.getLocalModelContext()
             val shape = renderShape
             if (shape == null || !shape.isDefault || localAssembly != shape.context) {
                 renderShape = buildRenderShape(localAssembly, true)
             }
-        })
+        }
 
         val shape = renderShape
         if (shape != null) {
@@ -158,40 +157,33 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
         clearModel()
     }
 
-    fun getModelId(): String {
-        return modelId
-    }
+    fun getModelId(): String = modelId
 
     override fun isModelReady(): Boolean {
         val shape = renderShape
         return shape != null && !shape.isDefault && shape.isValid()
     }
 
-    override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean {
-        return event.isFirstPerson() || OculusCompat.isPBRActive()
-    }
+    override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean =
+        event.isFirstPerson() || OculusCompat.isPBRActive()
 
-    override fun resolveExpression(str: String): IValue? {
-        return getModelAssembly()?.expressionCache?.functions?.get(str)
-    }
+    override fun resolveExpression(str: String): IValue? = getModelAssembly()?.expressionCache?.functions?.get(str)
 
-    override fun getAudioStreamFactory(str: String): Optional<IAudioStreamFactory> {
-        val shape = renderShape ?: return Optional.empty()
-        val provider = shape.audioProvider ?: return Optional.empty()
+    override fun getAudioStreamFactory(str: String): IAudioStreamFactory? {
+        val shape = renderShape ?: return null
+        val provider = shape.audioProvider ?: return null
         val trackData = getModelAssembly()?.expressionCache?.soundEffects?.get(str)
-        if (trackData?.data != null && trackData.codec != AudioCodec.UNDEFINED) {
-            return Optional.of(IAudioStreamFactory { provider.createAudioStream(trackData) })
-        }
-        return Optional.empty()
-    }
-
-    override fun getLogger(): ILogger? {
-        if (AnimationDebugOverlay.isDebugActive()) {
-            return ChatLogger
-        }
+        if (trackData?.data != null && trackData.codec != AudioCodec.UNDEFINED)
+            return IAudioStreamFactory { provider.createAudioStream(trackData) }
         return null
     }
 
+    override fun getLogger(): ILogger? {
+        if (AnimationDebugOverlay.isDebugActive()) return ChatLogger
+        return null
+    }
+
+    // TODO: 'fun storeFence(): Unit' is deprecated. Deprecated in Java.
     open fun submitAsyncUpdate(partialTick: Float) {
         UnsafeUtil.getUnsafe().storeFence()
         modelFuture = YSMThreadPool.submitCallable {

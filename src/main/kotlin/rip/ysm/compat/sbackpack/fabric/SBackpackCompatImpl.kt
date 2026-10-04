@@ -5,7 +5,6 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.ItemStack
 import org.apache.commons.lang3.tuple.Pair
 import rip.ysm.compat.ModCompat
-import java.util.*
 
 object SBackpackCompatImpl : ModCompat("sophisticatedbackpacks") {
     @JvmStatic
@@ -13,7 +12,7 @@ object SBackpackCompatImpl : ModCompat("sophisticatedbackpacks") {
     }
 
     @JvmStatic
-    fun getInCompatibleInfo(): Optional<Pair<String, String>> = Optional.empty()
+    fun getInCompatibleInfo(): Pair<String, String>? = null
 
     @JvmStatic
     fun getBackpack(livingEntity: LivingEntity): ItemStack = ItemStack.EMPTY

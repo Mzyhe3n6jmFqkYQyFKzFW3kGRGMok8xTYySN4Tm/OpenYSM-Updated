@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package rip.ysm.compat.parcool
 
 import com.elfmcys.yesstevemodel.client.animation.molang.CtrlBinding
@@ -7,25 +9,22 @@ import net.minecraft.world.entity.player.Player
 import org.apache.commons.lang3.tuple.Pair
 import rip.ysm.compat.ModCompat
 import rip.ysm.compat.parcool.fabric.ParcoolCompatImpl
-import java.util.*
 
 object ParcoolCompat : ModCompat("parcool") {
     @JvmStatic
-    fun getInCompatibleInfo(): Optional<Pair<String, String>> {
-        if (!isModLoaded) return Optional.empty()
+    fun getInCompatibleInfo(): Pair<String, String>? {
+        if (!isModLoaded) return null
         return ParcoolCompatImpl.getInCompatibleInfo()
     }
 
     @JvmStatic
-    fun getControllerFactory(): Optional<(String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>> {
-        if (!isModLoaded) return Optional.empty()
+    fun getControllerFactory(): ((String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>)? {
+        if (!isModLoaded) return null
         return ParcoolCompatImpl.getControllerFactory()
     }
 
     @JvmStatic
-    fun isPlayerParcooling(player: Player): Boolean {
-        return isModLoaded && ParcoolCompatImpl.isPlayerParcooling(player)
-    }
+    fun isPlayerParcooling(player: Player): Boolean = isModLoaded && ParcoolCompatImpl.isPlayerParcooling(player)
 
     @JvmStatic
     fun getActionName(player: Player): String {

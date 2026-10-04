@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.core.controller.controllers
 
 import com.elfmcys.yesstevemodel.client.animation.AnimationManager
@@ -59,8 +61,7 @@ object PlayerAnimationController {
                 if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.getInstance()
             )
         }
-        ParcoolCompat.getControllerFactory()
-            .ifPresent { controllerFactory -> registerController("parcool", controllerFactory) }
+        ParcoolCompat.getControllerFactory()?.let { registerController("parcool", it) }
         registerController("vehicle") { animationEntryKey, entity ->
             CompositeAnimationController(
                 entity,
@@ -191,8 +192,7 @@ object PlayerAnimationController {
                 OffhandAttackAnimationPredicate()
             )
         }
-        CarryOnCompat.getControllerFactory()
-            .ifPresent { controllerFactory -> registerController("carry_on", controllerFactory) }
+        CarryOnCompat.getControllerFactory()?.let { registerController("carry_on", it) }
         registerController("cap") { animationEntryKey, entity ->
             PredicateBasedController(
                 entity,

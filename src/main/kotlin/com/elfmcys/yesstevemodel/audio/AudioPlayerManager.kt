@@ -28,11 +28,9 @@ class AudioPlayerManager {
                 ), entity.entity
             ) else null
         } else {
-            entity.getAudioStreamFactory(soundName)
-                .map { audioStreamFactory ->
-                    YSMSoundInstance(ModSoundEvents.CUSTOM_SOUND.get(), audioStreamFactory, entity.entity)
-                }
-                .orElse(null)
+            entity.getAudioStreamFactory(soundName)?.let { audioStreamFactory ->
+                YSMSoundInstance(ModSoundEvents.CUSTOM_SOUND.get(), audioStreamFactory, entity.entity)
+            }
         }
 
         callback?.invoke(soundInstance)
@@ -40,14 +38,18 @@ class AudioPlayerManager {
         if (soundInstance == null) return false
 
         if (soundId != 0) {
-            if (forceReplace) {
-                val previousPlayer = activePlayers.put(soundId, soundInstance)
-                if (previousPlayer != null && !previousPlayer.isStopped()) previousPlayer.release()
-            } else {
-                val computed = activePlayers.compute(soundId) { _, existingPlayer ->
-                    if (existingPlayer == null || existingPlayer.isStopped()) soundInstance else existingPlayer
+            when {
+                forceReplace -> {
+                    val previousPlayer = activePlayers.put(soundId, soundInstance)
+                    if (previousPlayer != null && !previousPlayer.isStopped()) previousPlayer.release()
                 }
-                if (computed !== soundInstance) return false
+
+                else -> {
+                    val computed = activePlayers.compute(soundId) { _, existingPlayer ->
+                        if (existingPlayer == null || existingPlayer.isStopped()) soundInstance else existingPlayer
+                    }
+                    if (computed !== soundInstance) return false
+                }
             }
         } else playerList.add(soundInstance)
 

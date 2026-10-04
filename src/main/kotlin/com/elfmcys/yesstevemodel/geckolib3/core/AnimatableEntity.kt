@@ -31,7 +31,6 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import rip.ysm.api.entity.EntityDataBridge
-import java.util.*
 
 abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity) {
     @JvmField
@@ -125,7 +124,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
 
     open fun resolveExpression(str: String): IValue? = null
 
-    open fun getAudioStreamFactory(str: String): Optional<IAudioStreamFactory> = Optional.empty()
+    open fun getAudioStreamFactory(str: String): IAudioStreamFactory? = null
 
     fun getAnimationExpressions(str: String): MutableList<IValue>? = animationMap?.get(str)
 

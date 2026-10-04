@@ -8,7 +8,6 @@ import net.minecraft.world.item.ItemStack
 import org.apache.commons.lang3.tuple.Pair
 import rip.ysm.compat.ModCompat
 import rip.ysm.compat.sbackpack.fabric.SBackpackCompatImpl
-import java.util.*
 
 object SBackpackCompat : ModCompat("sophisticatedbackpacks") {
     @JvmStatic
@@ -18,8 +17,8 @@ object SBackpackCompat : ModCompat("sophisticatedbackpacks") {
     }
 
     @JvmStatic
-    fun getInCompatibleInfo(): Optional<Pair<String, String>> {
-        if (!isModLoaded) return Optional.empty()
+    fun getInCompatibleInfo(): Pair<String, String>? {
+        if (!isModLoaded) return null
         return SBackpackCompatImpl.getInCompatibleInfo()
     }
 

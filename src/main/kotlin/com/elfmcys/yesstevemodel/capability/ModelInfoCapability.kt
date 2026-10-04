@@ -105,13 +105,11 @@ class ModelInfoCapability {
         }
 
     fun withMolangVars(consumer: (Object2FloatOpenHashMap<String>) -> Unit) {
-        ServerModelManager.getModelDefinition(getModelId()).ifPresentOrElse({ value ->
-            consumer(molangStorage.computeIfAbsent(value.getLoadedModelData().hashId) {
+        ServerModelManager[getModelId()]?.let {
+            consumer(molangStorage.computeIfAbsent(it.getLoadedModelData().hashId) {
                 Object2FloatOpenHashMap(0)
             })
-        }, {
-            pendingCallbacks.add(consumer)
-        })
+        } ?: pendingCallbacks.add(consumer)
     }
 
     fun getMolangVars(): Object2FloatOpenHashMap<String>? = ServerModelManager[getModelId()]?.let { serverModelData ->
