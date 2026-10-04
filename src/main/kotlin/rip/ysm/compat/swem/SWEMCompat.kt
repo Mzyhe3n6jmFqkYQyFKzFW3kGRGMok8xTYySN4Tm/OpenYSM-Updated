@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package rip.ysm.compat.swem
 
 import com.elfmcys.yesstevemodel.client.animation.molang.CtrlBinding
