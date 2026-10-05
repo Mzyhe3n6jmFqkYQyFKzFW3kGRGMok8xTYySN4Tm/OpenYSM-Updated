@@ -22,7 +22,7 @@ glsl-transformer = "2.0.2"
 jcpp = "1.4.14"
 
 # Build & Toolchain
-loom = "1.17-SNAPSHOT"
+loom = "1.18-SNAPSHOT"
 kotlin = "2.4.20"
 jvm-toolchain = "25"
 jvm-target = "21"
@@ -52,5 +52,5 @@ glsl-transformer = { module = "io.github.douira:glsl-transformer", version.ref =
 jcpp = { module = "org.anarres:jcpp", version.ref = "jcpp" }
 
 [plugins]
-fabric-loom = { id = "fabric-loom", version.ref = "loom" }
+fabric-loom-remap = { id = "net.fabricmc.fabric-loom-remap", version.ref = "loom" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

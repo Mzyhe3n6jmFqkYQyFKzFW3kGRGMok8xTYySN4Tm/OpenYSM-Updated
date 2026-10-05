@@ -3,7 +3,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.fabric.loom)
+    alias(libs.plugins.fabric.loom.remap)
     `maven-publish`
     alias(libs.plugins.kotlin.jvm)
 }
