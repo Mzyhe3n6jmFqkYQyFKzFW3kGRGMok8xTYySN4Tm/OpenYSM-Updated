@@ -2,6 +2,7 @@
 
 package rip.ysm.security
 
+import com.elfmcys.yesstevemodel.Constants
 import io.netty.buffer.Unpooled
 import rip.ysm.algorithms.CityHash
 import rip.ysm.algorithms.MT19937
@@ -436,7 +437,7 @@ object YsmCrypt {
         val ch = CityHash()
         val calculatedHash = ch.hash64WithSeed(packet, 0, payloadLen, SEED_PACKET_VERIFICATION)
         if (calculatedHash != packetHash) {
-            System.err.println("Integrity compromised: " + Base64.getEncoder().encodeToString(packet))
+            Constants.LOGGER.warn("Integrity compromised: {}", Base64.getEncoder().encodeToString(packet))
         }
 
         val xoredData = mt19937Xor(packet, 0, payloadLen, key, SEED_KEY_DERIVATION)

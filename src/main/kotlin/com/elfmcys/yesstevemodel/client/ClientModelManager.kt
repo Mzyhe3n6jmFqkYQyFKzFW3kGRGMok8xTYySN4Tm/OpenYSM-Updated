@@ -58,6 +58,7 @@ object ClientModelManager {
     private var currentCacheFolderName: String? = null
     private val pendingModelsCount: AtomicInteger = AtomicInteger(0)
 
+    // TODO: Replace to kotlin version
     private val modelPhraseExecutor: ThreadPoolExecutor = ThreadPoolExecutor(
         1, 1, 0L, TimeUnit.MILLISECONDS,
         LinkedBlockingQueue()
@@ -769,13 +770,13 @@ object ClientModelManager {
                     }
                 }
                 Minecraft.getInstance().execute {
-                    for (assembly in removed) {
-                        for (tex in assembly.textures) UploadManager.removeTexture(tex)
+                    for ((animationBundle, projectileModels, vehicleModels, _, _, _, textures) in removed) {
+                        for (tex in textures) UploadManager.removeTexture(tex)
                         if (NativeLibLoader.isLoaded()) {
-                            for ((_, value) in assembly.projectileModels) value.model.freeNativeCache()
-                            for ((_, value) in assembly.vehicleModels) value.model.freeNativeCache()
-                            assembly.animationBundle.mainModel.freeNativeCache()
-                            assembly.animationBundle.armModel.freeNativeCache()
+                            for ((_, value) in projectileModels) value.model.freeNativeCache()
+                            for ((_, value) in vehicleModels) value.model.freeNativeCache()
+                            animationBundle.mainModel.freeNativeCache()
+                            animationBundle.armModel.freeNativeCache()
                         }
                     }
                 }
@@ -919,7 +920,7 @@ object ClientModelManager {
     fun getPendingModelCount(): Int = pendingModelQueue.size
 
     fun exportAllCachedModels(extra: String? = null, callback: ((ExportResult) -> Unit)?) {
-        YSMThreadPool.submit {
+        YSMThreadPool.launch {
             runCatching {
                 val currentClientKey = clientKey
                 if (currentClientKey == null) {
@@ -932,7 +933,7 @@ object ClientModelManager {
                             0
                         )
                     )
-                    return@submit
+                    return@launch
                 }
 
                 val folder = currentCacheFolderName ?: "default_cache"
@@ -948,7 +949,7 @@ object ClientModelManager {
                             0
                         )
                     )
-                    return@submit
+                    return@launch
                 }
 
                 val files = cacheDir.listFiles()
@@ -962,7 +963,7 @@ object ClientModelManager {
                             0
                         )
                     )
-                    return@submit
+                    return@launch
                 }
 
                 var successCount = 0
@@ -981,12 +982,16 @@ object ClientModelManager {
                             coreDataLength = deserializer.reader.getRawBuf().readerIndex()
 
                             val metaName = rawModel.metadata.name
-                            if (metaName.isNotBlank()) {
-                                exportName = metaName.trim()
-                            } else {
-                                val sha256 = rawModel.properties.sha256
-                                if (sha256.isNotEmpty()) {
-                                    exportName = sha256
+                            when {
+                                metaName.isNotBlank() -> {
+                                    exportName = metaName.trim()
+                                }
+
+                                else -> {
+                                    val sha256 = rawModel.properties.sha256
+                                    if (sha256.isNotEmpty()) {
+                                        exportName = sha256
+                                    }
                                 }
                             }
                         }

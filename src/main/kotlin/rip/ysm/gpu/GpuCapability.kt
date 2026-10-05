@@ -1,17 +1,20 @@
 package rip.ysm.gpu
 
+import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.NativeLibLoader
 import com.mojang.blaze3d.systems.RenderSystem
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GLCapabilities
-import java.util.Locale
+import java.util.*
 
 object GpuCapability {
     @Volatile
     private var checked: Boolean = false
+
     @Volatile
     private var available: Boolean = false
+
     @Volatile
     private var reason: String? = null
 
@@ -69,10 +72,10 @@ object GpuCapability {
             return
         }
 
-        println("OpenGL version: $glVersion")
-        println("OpenGL renderer version: $glRenderer")
-        println("OpenGL vendor: $glVendor")
-        println("OpenGL glsl version: $glslVersion")
+        Constants.LOGGER.info("OpenGL version: {}", glVersion)
+        Constants.LOGGER.info("OpenGL renderer version: {}", glRenderer)
+        Constants.LOGGER.info("OpenGL vendor: {}", glVendor)
+        Constants.LOGGER.info("OpenGL glsl version: {}", glslVersion)
 
         if (!caps.OpenGL30) {
             reason = "OpenGL 3.0 not supported (got $glVersion)"
