@@ -65,7 +65,7 @@ class AuthorRow(
             g.drawString(
                 font,
                 Component.literal(role).withStyle(ChatFormatting.GREEN),
-                tx + nameW + 8,
+                tx + nameW + 15,
                 y + 6,
                 -1,
                 false
