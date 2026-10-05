@@ -7,16 +7,12 @@ import rip.ysm.api.client.KeyMappingFactory
 
 object InputUtil {
     @JvmStatic
-    fun isKeyPressed(event: KeyEvent, keyMapping: KeyMapping): Boolean {
-        return KeyMappingFactory.isActiveAndMatches(keyMapping, event)
-    }
+    fun isKeyPressed(event: KeyEvent, keyMapping: KeyMapping): Boolean =
+        KeyMappingFactory.isActiveAndMatches(keyMapping, event)
 
     @JvmStatic
     fun isPlayerReady(): Boolean {
         val minecraft = Minecraft.getInstance()
-        if (minecraft.overlay != null || minecraft.screen != null || !minecraft.mouseHandler.isMouseGrabbed) {
-            return false
-        }
-        return minecraft.isWindowActive
+        return !(minecraft.overlay != null || minecraft.screen != null || !minecraft.mouseHandler.isMouseGrabbed) && minecraft.isWindowActive
     }
 }

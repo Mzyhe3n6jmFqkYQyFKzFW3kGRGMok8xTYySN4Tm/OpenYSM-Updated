@@ -13,60 +13,30 @@ object InnerClassify {
     @JvmStatic
     fun doClassifyTest(str: String, livingEntity: LivingEntity, interactionHand: InteractionHand): String {
         val itemType: String = getItemType(livingEntity.getItemInHand(interactionHand))
-        if (itemType.isNotEmpty()) {
-            return str + itemType
-        }
+        if (itemType.isNotEmpty()) return str + itemType
         return ""
     }
 
     @JvmStatic
     fun getItemType(itemStack: ItemStack): String {
         val item: Item = itemStack.item
-        if (SlashBladeCompat.isSlashBladeItem(itemStack)) {
-            return "slashblade"
+        when {
+            SlashBladeCompat.isSlashBladeItem(itemStack) -> return "slashblade"
+            itemStack.`is`(ItemTagsConstants.SWORDS) -> return "sword"
+            item is MaceItem || itemStack.`is`(ItemTagsConstants.MACE) -> return "mace"
+            TouhouLittleMaidCompat.isMaidItem(item) -> return "gohei"
+            item is AxeItem || itemStack.`is`(ItemTagsConstants.AXES) -> return "axe"
+            itemStack.`is`(ItemTagsConstants.PICKAXES) -> return "pickaxe"
+            item is ShovelItem || itemStack.`is`(ItemTagsConstants.SHOVELS) -> return "shovel"
+            item is HoeItem || itemStack.`is`(ItemTagsConstants.HOES) -> return "hoe"
+            item is ShieldItem || itemStack.`is`(ItemTagsConstants.SHIELDS) -> return "shield"
+            item is CrossbowItem || itemStack.`is`(ItemTagsConstants.CROSSBOWS) -> return "crossbow"
+            item is BowItem || itemStack.`is`(ItemTagsConstants.BOWS) -> return "bow"
+            item is FishingRodItem || itemStack.`is`(ItemTagsConstants.FISHING_RODS) -> return "fishing_rod"
+            item is TridentItem || itemStack.`is`(ItemTagsConstants.TRIDENTS) -> return "spear"
+            itemStack.`is`(ItemTagsConstants.PIKE) -> return "lance"
+            item is ThrowablePotionItem || itemStack.`is`(ItemTagsConstants.THROWABLE_POTION) -> return "throwable_potion"
+            else -> return ""
         }
-        if (itemStack.`is`(ItemTagsConstants.SWORDS)) {
-            return "sword"
-        }
-        if (item is MaceItem || itemStack.`is`(ItemTagsConstants.MACE)) {
-            return "mace"
-        }
-        if (TouhouLittleMaidCompat.isMaidItem(item)) {
-            return "gohei"
-        }
-        if (item is AxeItem || itemStack.`is`(ItemTagsConstants.AXES)) {
-            return "axe"
-        }
-        if (itemStack.`is`(ItemTagsConstants.PICKAXES)) {
-            return "pickaxe"
-        }
-        if (item is ShovelItem || itemStack.`is`(ItemTagsConstants.SHOVELS)) {
-            return "shovel"
-        }
-        if (item is HoeItem || itemStack.`is`(ItemTagsConstants.HOES)) {
-            return "hoe"
-        }
-        if (item is ShieldItem || itemStack.`is`(ItemTagsConstants.SHIELDS)) {
-            return "shield"
-        }
-        if (item is CrossbowItem || itemStack.`is`(ItemTagsConstants.CROSSBOWS)) {
-            return "crossbow"
-        }
-        if (item is BowItem || itemStack.`is`(ItemTagsConstants.BOWS)) {
-            return "bow"
-        }
-        if (item is FishingRodItem || itemStack.`is`(ItemTagsConstants.FISHING_RODS)) {
-            return "fishing_rod"
-        }
-        if (item is TridentItem || itemStack.`is`(ItemTagsConstants.TRIDENTS)) {
-            return "spear"
-        }
-        if (itemStack.`is`(ItemTagsConstants.PIKE)) {
-            return "lance"
-        }
-        if (item is ThrowablePotionItem || itemStack.`is`(ItemTagsConstants.THROWABLE_POTION)) {
-            return "throwable_potion"
-        }
-        return ""
     }
 }

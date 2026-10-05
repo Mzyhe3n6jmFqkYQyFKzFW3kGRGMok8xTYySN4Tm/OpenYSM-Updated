@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.util
 
 import net.minecraft.client.Minecraft
@@ -20,9 +22,8 @@ object YSMMessageFormatter {
     }
 
     @JvmStatic
-    fun isCurrentClientPlayer(entity: Entity?): Boolean {
-        return entity != null && !PlatformAPI.isServer() && entity.uuid == Minecraft.getInstance().user.profileId
-    }
+    fun isCurrentClientPlayer(entity: Entity?): Boolean =
+        entity != null && !PlatformAPI.isServer() && entity.uuid == Minecraft.getInstance().user.profileId
 
     private fun permissionFor(level: Int): Permission? {
         return when (level) {
@@ -36,20 +37,17 @@ object YSMMessageFormatter {
 
     @JvmStatic
     fun hasPermission(entity: Entity?, level: Int): Boolean {
-        if (entity == null) {
-            return false
-        }
+        if (entity == null) return false
         val permission = permissionFor(level)
-        return (entity is Player && (permission == null || entity.permissions().hasPermission(permission))) || isCurrentClientPlayer(entity)
+        return (entity is Player && (permission == null || entity.permissions()
+            .hasPermission(permission))) || isCurrentClientPlayer(entity)
     }
 
     @JvmStatic
     fun hasCommandPermission(commandSourceStack: CommandSourceStack, level: Int): Boolean {
         val permission = permissionFor(level)
-        if (permission == null || commandSourceStack.permissions().hasPermission(permission)) {
-            return true
-        }
-        return commandSourceStack.entity != null && isCurrentClientPlayer(commandSourceStack.entity)
+        return permission == null || commandSourceStack.permissions()
+            .hasPermission(permission) || commandSourceStack.entity != null && isCurrentClientPlayer(commandSourceStack.entity)
     }
 
     @JvmStatic
@@ -60,13 +58,9 @@ object YSMMessageFormatter {
             val entity = commandSourceStack?.entity
             if (entity is ServerPlayer) {
                 val player = currentServer.playerList.getPlayer(entity.uuid)
-                if (player != null) {
-                    sourceStack = player.createCommandSourceStack()
-                }
+                if (player != null) sourceStack = player.createCommandSourceStack()
             }
-            if (sourceStack == null) {
-                sourceStack = currentServer.createCommandSourceStack()
-            }
+            if (sourceStack == null) sourceStack = currentServer.createCommandSourceStack()
             sourceStack.sendSuccess({ component }, broadcastToOps)
         }
     }
