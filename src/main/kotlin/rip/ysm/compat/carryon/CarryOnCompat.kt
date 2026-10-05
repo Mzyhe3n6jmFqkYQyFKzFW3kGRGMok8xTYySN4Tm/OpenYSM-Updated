@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player
 import rip.ysm.compat.ModCompat
 import rip.ysm.compat.carryon.fabric.CarryOnCompatImpl
 
+// TODO: Funny anim when player is carrying and crawl at the same time
 object CarryOnCompat : ModCompat("carryon") {
     @JvmStatic
     fun getControllerFactory(): ((String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>)? {
