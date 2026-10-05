@@ -130,16 +130,16 @@ object ClientModelManager {
         var syncedModels: Int = -1
 
         fun setState(syncState: SyncState) {
-            println("Sync state: $syncState")
-            this.currentState = syncState
-            this.totalModels = -1
-            this.syncedModels = -1
+            Constants.LOGGER.info("Sync state: {}", syncState)
+            currentState = syncState
+            totalModels = -1
+            syncedModels = -1
         }
 
         fun startSyncing(totalModels: Int) {
-            this.currentState = SyncState.SYNCING
+            currentState = SyncState.SYNCING
             this.totalModels = totalModels
-            this.syncedModels = 0
+            syncedModels = 0
         }
     }
 
