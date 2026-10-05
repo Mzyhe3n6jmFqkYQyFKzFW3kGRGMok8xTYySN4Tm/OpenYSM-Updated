@@ -18,7 +18,7 @@ carryon = "2.9.2"
 aircompressor = "2.0.3"
 sodium = "mc1.21.11-0.8.15-beta.1-fabric"
 antlr4 = "4.13.2"
-glsl-transformer = "2.0.2"
+glsl-transformer = "3.0.0-pre3"
 jcpp = "1.4.14"
 
 # Build & Toolchain
