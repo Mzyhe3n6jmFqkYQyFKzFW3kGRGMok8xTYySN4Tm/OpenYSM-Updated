@@ -1,16 +1,15 @@
 package rip.ysm.security
 
+import com.elfmcys.yesstevemodel.Constants
 import rip.ysm.algorithms.CityHash
 import rip.ysm.algorithms.MT19937
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.file.Files
-import java.util.Arrays
-import java.util.UUID
+import java.util.*
 
 object YSMClientCache {
-
     @JvmStatic
     fun generateCacheFileName(hash1: Long, hash2: Long, rtKey: ByteArray?): String? {
         if (rtKey == null || rtKey.size != 56) return null
@@ -39,35 +38,28 @@ object YSMClientCache {
 
     @JvmStatic
     fun verifyFileContent(cacheFile: File?, hash1: Long, hash2: Long): Boolean {
-        if (cacheFile == null || !cacheFile.exists() || cacheFile.length() <= 8) {
-            return false
-        }
-
-        return try {
+        return !(cacheFile == null || !cacheFile.exists() || cacheFile.length() <= 8) && runCatching {
             val fileData = Files.readAllBytes(cacheFile.toPath())
             val payloadLen = fileData.size - 8
 
             val realHash = ByteBuffer.wrap(fileData, payloadLen, 8).order(ByteOrder.LITTLE_ENDIAN).long
 
-            val payload = Arrays.copyOfRange(fileData, 0, payloadLen)
+            val payload = fileData.copyOfRange(0, payloadLen)
             val ch = CityHash()
             val calculatedHash = ch.hash64WithSeed(payload, YsmCrypt.SEED_CACHE_VERIFICATION)
 
             val verif = calculatedHash xor hash1 xor hash2
             verif == realHash
-        } catch (e: Exception) {
-            e.printStackTrace()
+        }.getOrElse {
+            Constants.LOGGER.error("Failed to verify cache file content", it)
             false
         }
     }
 
     @JvmStatic
     fun getModelUUIDFromFileName(fileName: String?, rtKey: ByteArray?): UUID? {
-        if (fileName == null || fileName.length != 40 || rtKey == null || rtKey.size != 56) {
-            return null
-        }
-
-        return try {
+        if (fileName == null || fileName.length != 40 || rtKey == null || rtKey.size != 56) return null
+        return runCatching {
             val buf = ByteArray(20)
             for (i in 0 until 20) {
                 val high = Character.digit(fileName[i * 2], 16)
@@ -90,22 +82,18 @@ object YSMClientCache {
             val hash2 = m2 xor mt.extract_number()
 
             UUID(hash1, hash2)
-        } catch (e: Exception) {
-            null
-        }
+        }.getOrNull()
     }
 
     @JvmStatic
     fun buildCacheIndex(cacheDir: File, rtKey: ByteArray): MutableMap<UUID, File> {
         val cacheIndex = HashMap<UUID, File>()
 
-        if (!cacheDir.exists() || !cacheDir.isDirectory) {
-            return cacheIndex
-        }
+        if (!cacheDir.exists() || !cacheDir.isDirectory) return cacheIndex
 
         val files = cacheDir.listFiles() ?: return cacheIndex
 
-        println("scanning cache directory")
+        Constants.LOGGER.info("scanning cache directory")
         for (file in files) {
             if (file.isFile) {
                 val realModelUuid = getModelUUIDFromFileName(file.name, rtKey)
@@ -114,7 +102,7 @@ object YSMClientCache {
                 }
             }
         }
-        println("indexed ${cacheIndex.size} cached models.")
+        Constants.LOGGER.info("indexed {} cached models.", cacheIndex.size)
         return cacheIndex
     }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.resource
 
 import com.elfmcys.yesstevemodel.Constants
@@ -68,7 +70,7 @@ class YSMFolderDeserializer : AutoCloseable {
 
     private fun readResource(relativePath: String?): ByteArray? {
         if (relativePath.isNullOrEmpty()) return null
-        return try {
+        return runCatching {
             var path = relativePath
             if (path.startsWith("/")) {
                 path = path.substring(1)
@@ -89,8 +91,8 @@ class YSMFolderDeserializer : AutoCloseable {
                 readFilesMd5Map[normalizedPath] = DigestUtil.md5Hex(data)
             }
             data
-        } catch (e: Exception) {
-            System.err.println("Warning: Failed to read resource: $relativePath")
+        }.getOrElse {
+            Constants.LOGGER.warn("Failed to read resource: $relativePath", it)
             null
         }
     }
@@ -1221,29 +1223,23 @@ class YSMFolderDeserializer : AutoCloseable {
         }
     }
 
-    private fun calculateFinalFolderHash(): String {
-        return try {
-            val digest = MessageDigest.getInstance("MD5")
-            for ((key, value) in readFilesMd5Map) {
-                digest.update(key.toByteArray(StandardCharsets.UTF_8))
-                digest.update(value.toByteArray(StandardCharsets.UTF_8))
-            }
-            val hash = digest.digest()
-            val hexString = StringBuilder(32)
-            for (b in hash) {
-                val hex = Integer.toHexString(0xff and b.toInt())
-                if (hex.length == 1) hexString.append('0')
-                hexString.append(hex)
-            }
-            hexString.toString()
-        } catch (e: Exception) {
-            ""
+    private fun calculateFinalFolderHash(): String = runCatching {
+        val digest = MessageDigest.getInstance("MD5")
+        for ((key, value) in readFilesMd5Map) {
+            digest.update(key.toByteArray(StandardCharsets.UTF_8))
+            digest.update(value.toByteArray(StandardCharsets.UTF_8))
         }
-    }
+        val hash = digest.digest()
+        val hexString = StringBuilder(32)
+        for (b in hash) {
+            val hex = Integer.toHexString(0xff and b.toInt())
+            if (hex.length == 1) hexString.append('0')
+            hexString.append(hex)
+        }
+        hexString.toString()
+    }.getOrElse { "" }
 
-    fun getFolderHash(): String? {
-        return finalFolderHash
-    }
+    fun getFolderHash(): String? = finalFolderHash
 
     private fun parseLegacyFormat() {
         val mainData = readResource("main.json") ?: throw RuntimeException("Legacy model missing main.json")
@@ -1293,12 +1289,11 @@ class YSMFolderDeserializer : AutoCloseable {
 
         val infoData = readResource("info.json")
         if (infoData != null) {
-            try {
+            runCatching {
                 val infoObj = JsonParser.parseString(String(infoData, StandardCharsets.UTF_8)).asJsonObject
                 parseLegacyMetadata(infoObj, true)
-            } catch (e: Exception) {
-                System.err.println("Failed to parse info.json")
-                e.printStackTrace()
+            }.onFailure {
+                Constants.LOGGER.error("Failed to parse info.json", it)
             }
         }
 
