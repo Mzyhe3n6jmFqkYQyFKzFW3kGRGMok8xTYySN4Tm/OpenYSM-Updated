@@ -42,6 +42,7 @@ import rip.ysm.gpu.Pie
 import java.util.*
 import kotlin.math.*
 
+// TODO: Change style
 open class ModernAnimationRouletteScreen(
     modelId: String,
     private val renderContext: ModelAssembly,
@@ -57,12 +58,12 @@ open class ModernAnimationRouletteScreen(
     private var hoveredNext: Boolean = false
     private var currentNavEntry: MutablePair<String, Int>
     private val currentProperties: OrderedStringMap<String, String>
-    private val renderGroups: Map<String, ExtraAnimationButtons>
-    private val textProperties: Map<String, OrderedStringMap<String, String>>
+    private val renderGroups: Map<String, ExtraAnimationButtons> =
+        renderContext.modelData.modelProperties.extraAnimationButtons
+    private val textProperties: Map<String, OrderedStringMap<String, String>> =
+        renderContext.modelData.modelProperties.extraAnimationClassify
 
     init {
-        this.textProperties = renderContext.modelData.modelProperties.extraAnimationClassify
-        this.renderGroups = renderContext.modelData.modelProperties.extraAnimationButtons
         if (lastModelId != modelId) {
             navigationStack.clear()
             lastModelId = modelId
@@ -70,22 +71,22 @@ open class ModernAnimationRouletteScreen(
         if (navigationStack.isEmpty()) {
             navigationStack.add(MutablePair.of(StringPool.EMPTY, 0))
         }
-        this.currentNavEntry = navigationStack.peekLast()
-        val navKey = this.currentNavEntry.left
-        if (navKey != null && this.textProperties.containsKey(navKey)) {
-            this.currentProperties =
-                this.textProperties[navKey] ?: renderContext.modelData.modelProperties.extraAnimation
+        currentNavEntry = navigationStack.peekLast()
+        val navKey = currentNavEntry.left
+        if (navKey != null && textProperties.containsKey(navKey)) {
+            currentProperties =
+                textProperties[navKey] ?: renderContext.modelData.modelProperties.extraAnimation
         } else {
-            this.currentProperties = renderContext.modelData.modelProperties.extraAnimation
+            currentProperties = renderContext.modelData.modelProperties.extraAnimation
             navigationStack.clear()
-            navigationStack.add(MutablePair.of(StringPool.EMPTY, this.currentNavEntry.right))
-            this.currentNavEntry = navigationStack.peekLast()
+            navigationStack.add(MutablePair.of(StringPool.EMPTY, currentNavEntry.right))
+            currentNavEntry = navigationStack.peekLast()
         }
     }
 
     override fun init() {
-        this.centerX = this.width / 2
-        this.centerY = this.height / 2
+        centerX = width / 2
+        centerY = height / 2
         if (currentNavEntry.right >= pageCount()) {
             currentNavEntry.setValue(0)
         }
@@ -241,9 +242,7 @@ open class ModernAnimationRouletteScreen(
     }
 
     private fun renderKeyBinding(g: GuiGraphics, slot: Int, x: Int, y: Int) {
-        if (slot >= ExtraAnimationKey.KEY_MAPPINGS.size) {
-            return
-        }
+        if (slot >= ExtraAnimationKey.KEY_MAPPINGS.size) return
         val km: KeyMapping = ExtraAnimationKey.KEY_MAPPINGS[slot]
         val label: MutableComponent = Component.literal("[ ").withStyle(ChatFormatting.YELLOW)
         if (km.isUnbound) {
