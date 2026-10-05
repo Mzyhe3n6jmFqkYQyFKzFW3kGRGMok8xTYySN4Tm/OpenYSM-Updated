@@ -91,17 +91,8 @@ dependencies {
     implementation(libs.concentus)
     include(libs.concentus)
 
-    implementation(libs.vorbis.java.core)
-    include(libs.vorbis.java.core)
-
-    implementation(libs.aircompressor)
-    include(libs.aircompressor)
-
-    modCompileOnly(libs.iris)
-
-    modCompileOnly(libs.touhoulittlemaid.fabric)
-    modLocalRuntime(libs.touhoulittlemaid.fabric)
-
+    modImplementation(libs.iris)
+    modImplementation(libs.touhoulittlemaid.fabric)
     modImplementation(libs.crawl)
     modImplementation(libs.modmenu)
     modImplementation(libs.carryon)
