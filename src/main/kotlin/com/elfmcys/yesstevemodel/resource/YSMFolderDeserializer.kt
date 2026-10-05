@@ -1132,24 +1132,28 @@ class YSMFolderDeserializer : AutoCloseable {
     }
 
     private fun parseGlobalResources() {
-        if (inMemoryFiles != null) {
-            for ((key, value) in inMemoryFiles) {
-                processGlobalResourceFile(key, value)
+        when {
+            inMemoryFiles != null -> {
+                for ((key, value) in inMemoryFiles) {
+                    processGlobalResourceFile(key, value)
+                }
             }
-        } else {
-            val root = rootPath ?: return
-            try {
-                Files.walk(root).use { stream ->
-                    stream.filter { Files.isRegularFile(it) }.forEach { path ->
-                        val relativePath = root.relativize(path).toString().replace('\\', '/')
-                        val data = readResource(relativePath)
-                        if (data != null) {
-                            processGlobalResourceFile(relativePath, data)
+
+            else -> {
+                val root = rootPath ?: return
+                try {
+                    Files.walk(root).use { stream ->
+                        stream.filter { Files.isRegularFile(it) }.forEach { path ->
+                            val relativePath = root.relativize(path).toString().replace('\\', '/')
+                            val data = readResource(relativePath)
+                            if (data != null) {
+                                processGlobalResourceFile(relativePath, data)
+                            }
                         }
                     }
+                } catch (e: IOException) {
+                    Constants.LOGGER.warn("Failed to scan global resources. " + e.message)
                 }
-            } catch (e: IOException) {
-                System.err.println("Warning: Failed to scan global resources. " + e.message)
             }
         }
     }
