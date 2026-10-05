@@ -21,9 +21,11 @@ import com.elfmcys.yesstevemodel.util.YSMThreadPool
 import com.elfmcys.yesstevemodel.util.log.ChatLogger
 import com.elfmcys.yesstevemodel.util.log.ILogger
 import com.mojang.blaze3d.systems.RenderSystem
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.runBlocking
 import net.minecraft.world.entity.Entity
 import rip.ysm.compat.oculus.OculusCompat
-import java.util.concurrent.Future
 
 abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : AnimatableEntity<T>(t) {
     private var modelId: String = "default"
@@ -34,9 +36,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     private var bones: PhysicsManager? = null
     private var boneLookup: MolangWatchRegistry? = null
     private var renderLayers: List<IValue>? = null
-
-    // TODO: Maybe replace future to kotlin version
-    private var modelFuture: Future<AnimationEvent<*>?>? = null
+    private var modelFuture: Deferred<AnimationEvent<*>?>? = null
 
     init {
         if (registerWithCache) {
@@ -186,7 +186,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     // TODO: 'fun storeFence(): Unit' is deprecated. Deprecated in Java.
     open fun submitAsyncUpdate(partialTick: Float) {
         UnsafeUtil.getUnsafe().storeFence()
-        modelFuture = YSMThreadPool.submitCallable {
+        modelFuture = YSMThreadPool.async {
             runCatching {
                 val event = super.processAnimationImpl(partialTick, true)
                 UnsafeUtil.getUnsafe().storeFence()
@@ -205,20 +205,16 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     }
 
     open fun awaitAsyncResult(): AnimationEvent<*>? {
-        val future = modelFuture
-        if (future != null) {
-            var event: AnimationEvent<*>? = null
-            runCatching {
-                event = future.get()
+        val future = modelFuture ?: return null
+        modelFuture = null
+        return runCatching {
+            runBlocking { future.await() }.also {
                 UnsafeUtil.getUnsafe().loadFence()
-            }.onFailure {
-                if (it is InterruptedException) return@onFailure
-                Constants.LOGGER.error("Failed to get model future", it)
             }
-            modelFuture = null
-            return event
-        }
-        return null
+        }.onFailure {
+            if (it is InterruptedException || it is CancellationException) return@onFailure
+            Constants.LOGGER.error("Failed to get model future", it)
+        }.getOrNull()
     }
 
     open fun supportsAsync(): Boolean = true

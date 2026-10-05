@@ -3,59 +3,48 @@
 package com.elfmcys.yesstevemodel.util
 
 import kotlinx.coroutines.*
-import java.util.concurrent.Callable
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 object YSMThreadPool {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    private val syncScope = CoroutineScope(SupervisorJob() + Dispatchers.IO.limitedParallelism(8))
+    val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default + CoroutineName("YSM-Default"))
+    val ioScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO + CoroutineName("YSM-IO"))
+    val syncScope: CoroutineScope =
+        CoroutineScope(SupervisorJob() + Dispatchers.IO.limitedParallelism(8) + CoroutineName("YSM-Sync"))
 
-    @JvmStatic
-    fun submit(runnable: Runnable): Future<*> {
-        val future = CompletableFuture<Unit>()
-        scope.launch {
-            runCatching {
-                runnable.run()
-                future.complete(Unit)
-            }.onFailure {
-                future.completeExceptionally(it)
-            }
-        }
-        return future
-    }
+    fun <T> async(
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> T
+    ): Deferred<T> = scope.async(context = context, start = start, block = block)
 
-    @JvmStatic
-    fun <T> submitCallable(callable: Callable<T>): Future<T> {
-        val future = CompletableFuture<T>()
-        scope.launch {
-            runCatching {
-                future.complete(callable.call())
-            }.onFailure {
-                future.completeExceptionally(it)
-            }
-        }
-        return future
-    }
+    fun launch(
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ): Job = scope.launch(context = context, start = start, block = block)
 
-    @JvmStatic
-    fun submitSync(runnable: Runnable): Future<*> {
-        val future = CompletableFuture<Unit>()
-        syncScope.launch {
-            runCatching {
-                runnable.run()
-                future.complete(Unit)
-            }.onFailure {
-                future.completeExceptionally(it)
-            }
-        }
-        return future
-    }
+    fun <T> asyncIO(
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> T
+    ): Deferred<T> = ioScope.async(context = context, start = start, block = block)
 
-    fun launch(block: suspend CoroutineScope.() -> Unit): Job = scope.launch(block = block)
+    fun launchIO(
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ): Job = ioScope.launch(context = context, start = start, block = block)
 
-    fun launchIO(block: suspend CoroutineScope.() -> Unit): Job = ioScope.launch(block = block)
+    fun <T> asyncSync(
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> T
+    ): Deferred<T> = syncScope.async(context = context, start = start, block = block)
 
-    fun launchSync(block: suspend CoroutineScope.() -> Unit): Job = syncScope.launch(block = block)
+    fun launchSync(
+        context: CoroutineContext = EmptyCoroutineContext,
+        start: CoroutineStart = CoroutineStart.DEFAULT,
+        block: suspend CoroutineScope.() -> Unit
+    ): Job = syncScope.launch(context = context, start = start, block = block)
 }

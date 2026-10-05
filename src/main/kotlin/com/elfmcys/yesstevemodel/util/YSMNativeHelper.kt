@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.util
 
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
@@ -6,12 +8,12 @@ import net.fabricmc.api.Environment
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
-import java.util.UUID
+import java.util.*
 
 object YSMNativeHelper {
     @JvmStatic
     fun createTranslatableComponent(str: String, objArr: Array<Any>?): Any {
-        if (objArr == null || objArr.isEmpty()) {
+        if (objArr.isNullOrEmpty()) {
             return Component.translatable(str)
         }
         return Component.translatable(str, *objArr)

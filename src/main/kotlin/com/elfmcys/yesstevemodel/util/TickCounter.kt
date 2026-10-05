@@ -15,14 +15,12 @@ class TickCounter(initialCapacity: Int, ticksPerSecond: Float) {
 
     fun tryIncrement(): Boolean {
         val currentTime = System.currentTimeMillis()
-        if (currentTime < windowMs) {
-            return false
-        }
+        if (currentTime < windowMs) return false
         timestamps.removeLong(timestamps.size - 1)
         timestamps.add(0, currentTime)
         val j = maxCount.toLong()
         var minTime = Long.MAX_VALUE
-        for (i in 0 until timestamps.size) {
+        for (i in timestamps.indices) {
             minTime = min(minTime, timestamps.getLong(i) + j * (i + 1))
         }
         windowMs = minTime
