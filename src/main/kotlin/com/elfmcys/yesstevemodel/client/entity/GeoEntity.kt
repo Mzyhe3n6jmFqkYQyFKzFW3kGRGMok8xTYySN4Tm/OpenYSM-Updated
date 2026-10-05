@@ -36,7 +36,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     private var bones: PhysicsManager? = null
     private var boneLookup: MolangWatchRegistry? = null
     private var renderLayers: List<IValue>? = null
-    private var modelFuture: Deferred<AnimationEvent<*>?>? = null
+    private var modelDeferred: Deferred<AnimationEvent<*>?>? = null
 
     init {
         if (registerWithCache) {
@@ -186,7 +186,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     // TODO: 'fun storeFence(): Unit' is deprecated. Deprecated in Java.
     open fun submitAsyncUpdate(partialTick: Float) {
         UnsafeUtil.getUnsafe().storeFence()
-        modelFuture = YSMThreadPool.async {
+        modelDeferred = YSMThreadPool.async {
             runCatching {
                 val event = super.processAnimationImpl(partialTick, true)
                 UnsafeUtil.getUnsafe().storeFence()
@@ -199,14 +199,14 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
 
     override fun processAnimationImpl(partialTick: Float, isFirstPerson: Boolean): AnimationEvent<*>? {
         RenderSystem.assertOnRenderThread()
-        if (isFirstPerson && modelFuture != null) return awaitAsyncResult()
+        if (isFirstPerson && modelDeferred != null) return awaitAsyncResult()
         awaitAsyncResult()
         return super.processAnimationImpl(partialTick, isFirstPerson)
     }
 
     open fun awaitAsyncResult(): AnimationEvent<*>? {
-        val future = modelFuture ?: return null
-        modelFuture = null
+        val future = modelDeferred ?: return null
+        modelDeferred = null
         return runCatching {
             runBlocking { future.await() }.also {
                 UnsafeUtil.getUnsafe().loadFence()
