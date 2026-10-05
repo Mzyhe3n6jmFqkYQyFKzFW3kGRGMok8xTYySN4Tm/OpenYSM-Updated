@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.util
 
 import kotlin.math.abs
@@ -45,7 +47,13 @@ object Interpolations {
         wrappedY1 = normalizeYaw(wrappedY0, wrappedY1)
         wrappedY2 = normalizeYaw(wrappedY1, wrappedY2)
         wrappedY3 = normalizeYaw(wrappedY2, wrappedY3)
-        return cubicHermite(wrappedY0.toDouble(), wrappedY1.toDouble(), wrappedY2.toDouble(), wrappedY3.toDouble(), position.toDouble())
+        return cubicHermite(
+            wrappedY0.toDouble(),
+            wrappedY1.toDouble(),
+            wrappedY2.toDouble(),
+            wrappedY3.toDouble(),
+            position.toDouble()
+        )
     }
 
     /**
@@ -106,9 +114,7 @@ object Interpolations {
     }
 
     @JvmStatic
-    fun bezierX(x1: Float, x2: Float, t: Float): Float {
-        return bezierX(x1, x2, t, 0.0005f)
-    }
+    fun bezierX(x1: Float, x2: Float, t: Float): Float = bezierX(x1, x2, t, 0.0005f)
 
     @JvmStatic
     fun bezier(x1: Float, x2: Float, x3: Float, x4: Float, t: Float): Float {
@@ -131,22 +137,16 @@ object Interpolations {
     }
 
     @JvmStatic
-    fun envelope(x: Float, duration: Float, fades: Float): Float {
-        return envelope(x, 0.0f, fades, duration - fades, duration)
-    }
+    fun envelope(x: Float, duration: Float, fades: Float): Float = envelope(x, 0.0f, fades, duration - fades, duration)
 
     @JvmStatic
     fun envelope(x: Float, lowIn: Float, lowOut: Float, highIn: Float, highOut: Float): Float {
-        if (x < lowIn || x > highOut) {
-            return 0.0f
+        return when {
+            x !in lowIn..highOut -> 0.0f
+            x < lowOut -> (x - lowIn) / (lowOut - lowIn)
+            x > highIn -> 1.0f - (x - highIn) / (highOut - highIn)
+            else -> 1.0f
         }
-        if (x < lowOut) {
-            return (x - lowIn) / (lowOut - lowIn)
-        }
-        if (x > highIn) {
-            return 1.0f - (x - highIn) / (highOut - highIn)
-        }
-        return 1.0f
     }
 
     /* --- double 版本的函数 --- */
@@ -225,21 +225,16 @@ object Interpolations {
     }
 
     @JvmStatic
-    fun envelope(x: Double, duration: Double, fades: Double): Double {
-        return envelope(x, 0.0, fades, duration - fades, duration)
-    }
+    fun envelope(x: Double, duration: Double, fades: Double): Double =
+        envelope(x, 0.0, fades, duration - fades, duration)
 
     @JvmStatic
     fun envelope(x: Double, lowIn: Double, lowOut: Double, highIn: Double, highOut: Double): Double {
-        if (x < lowIn || x > highOut) {
-            return 0.0
+        return when {
+            x !in lowIn..highOut -> 0.0
+            x < lowOut -> (x - lowIn) / (lowOut - lowIn)
+            x > highIn -> 1.0 - (x - highIn) / (highOut - highIn)
+            else -> 1.0
         }
-        if (x < lowOut) {
-            return (x - lowIn) / (lowOut - lowIn)
-        }
-        if (x > highIn) {
-            return 1.0 - (x - highIn) / (highOut - highIn)
-        }
-        return 1.0
     }
 }
