@@ -1,3 +1,5 @@
+@file:Suppress("AvoidDuplicateDependencies")
+
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
