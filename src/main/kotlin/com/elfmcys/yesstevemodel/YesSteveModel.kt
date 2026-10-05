@@ -14,7 +14,6 @@ import net.minecraft.network.chat.Component
 import net.neoforged.fml.config.ModConfig
 import rip.ysm.api.PlatformAPI
 import rip.ysm.api.config.ConfigRegistration
-import java.io.File
 
 object YesSteveModel {
     @JvmField
@@ -37,9 +36,9 @@ object YesSteveModel {
     }
 
     private fun initConfig() {
-        val oldConfig: File = Constants.MainConfigDir.resolve("yes_steve_model-common.toml").toFile()
+        val oldConfig = Constants.MainConfigDir.resolve("yes_steve_model-common.toml").toFile()
         if (oldConfig.isFile) {
-            val file2: File = Constants.MainConfigDir.resolve("yes_steve_model-client.toml").toFile()
+            val file2 = Constants.MainConfigDir.resolve("yes_steve_model-client.toml").toFile()
             if (!file2.isFile) {
                 oldConfig.renameTo(file2)
             } else {
