@@ -51,9 +51,9 @@ object JsonAnimationUtils {
     @JvmStatic
     @Throws(ChainedJsonException::class)
     private fun getObjectByKey(json: Set<Map.Entry<String, JsonElement>>, key: String): JsonElement {
-        for (entry in json) {
-            if (entry.key == key) {
-                return entry.value
+        for ((key1, value) in json) {
+            if (key1 == key) {
+                return value
             }
         }
         throw ChainedJsonException("Could not find key: $key")
@@ -94,9 +94,8 @@ object JsonAnimationUtils {
         val customInstructionKeyframes = ReferenceArrayList<EventKeyFrame<Array<IValue>>>()
         val soundKeyFrames = ReferenceArrayList<EventKeyFrame<String>>()
 
-        for (keyFrame in getSoundEffects(animationJsonObject)) {
-            val startTick = (keyFrame.key.toDoubleOrNull() ?: 0.0) * 20.0
-            val value = keyFrame.value
+        for ((key, value) in getSoundEffects(animationJsonObject)) {
+            val startTick = (key.toDoubleOrNull() ?: 0.0) * 20.0
 
             if (value.isJsonPrimitive && value.asJsonPrimitive.isString) {
                 soundKeyFrames.add(EventKeyFrame(startTick, value.asString))
@@ -108,9 +107,8 @@ object JsonAnimationUtils {
             }
         }
 
-        for (keyFrame in getCustomInstructionKeyFrames(animationJsonObject)) {
-            val startTick = (keyFrame.key.toDoubleOrNull() ?: 0.0) * 20.0
-            val value = keyFrame.value
+        for ((key, value) in getCustomInstructionKeyFrames(animationJsonObject)) {
+            val startTick = (key.toDoubleOrNull() ?: 0.0) * 20.0
             if (value.isJsonArray) {
                 val array: JsonArray = value.asJsonArray
                 val values: Array<IValue> = JsonMolangUtils.getExpressions(array, parser, mergeMultilineExpr)
@@ -123,11 +121,11 @@ object JsonAnimationUtils {
 
         customInstructionKeyframes.sortWith(Comparator.comparingDouble { it.startTick.toDouble() })
 
-        for (bone in getBones(animationJsonObject)) {
+        for ((key, value) in getBones(animationJsonObject)) {
             val rotationKeyFrames: MutableList<RawBoneKeyFrame> = Lists.newArrayList()
             val positionKeyFrames: MutableList<RawBoneKeyFrame> = Lists.newArrayList()
             val scaleKeyFrames: MutableList<RawBoneKeyFrame> = Lists.newArrayList()
-            val boneJsonObj = bone.value.asJsonObject
+            val boneJsonObj = value.asJsonObject
 
             JsonKeyFrameUtils.getKeyFrames(scaleKeyFrames, boneJsonObj.get("scale"), parser)
             JsonKeyFrameUtils.getKeyFrames(positionKeyFrames, boneJsonObj.get("position"), parser)
@@ -135,7 +133,7 @@ object JsonAnimationUtils {
 
             boneAnimations.add(
                 BoneAnimation(
-                    bone.key,
+                    key,
                     BoneKeyFrameProcessor.process(rotationKeyFrames, true),
                     BoneKeyFrameProcessor.process(positionKeyFrames, false),
                     BoneKeyFrameProcessor.process(scaleKeyFrames, false)

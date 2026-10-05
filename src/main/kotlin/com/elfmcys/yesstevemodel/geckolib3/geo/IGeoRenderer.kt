@@ -34,8 +34,32 @@ interface IGeoRenderer<T : AnimatableEntity<*>> {
         alpha: Float
     ) {
         setCurrentRTB(bufferSource)
-        renderEarly(animatable, poseStack, partialTick, bufferSource, vertexConsumer, packedLight, packedOverlayIn, red, green, blue, alpha)
-        renderLate(animatable, poseStack, partialTick, bufferSource, vertexConsumer, packedLight, packedOverlayIn, red, green, blue, alpha)
+        renderEarly(
+            animatable,
+            poseStack,
+            partialTick,
+            bufferSource,
+            vertexConsumer,
+            packedLight,
+            packedOverlayIn,
+            red,
+            green,
+            blue,
+            alpha
+        )
+        renderLate(
+            animatable,
+            poseStack,
+            partialTick,
+            bufferSource,
+            vertexConsumer,
+            packedLight,
+            packedOverlayIn,
+            red,
+            green,
+            blue,
+            alpha
+        )
     }
 
     fun renderWithBoneAndRenderType(
@@ -58,7 +82,22 @@ interface IGeoRenderer<T : AnimatableEntity<*>> {
         animatable.resetAnimationState()
         val tex = animatable.getTextureLocation()
         if (consumer != null) {
-            NativeModelRenderer.renderMesh(consumer, poseStack.last(), model.getGeoModel(), model.getMatrixData(), model.getAbsPivotData(), i, 0, i2, i3, f2, f3, f4, f5, tex)
+            NativeModelRenderer.renderMesh(
+                consumer,
+                poseStack.last(),
+                model.getGeoModel(),
+                model.getMatrixData(),
+                model.getAbsPivotData(),
+                i,
+                0,
+                i2,
+                i3,
+                f2,
+                f3,
+                f4,
+                f5,
+                tex
+            )
         }
         setCurrentModelRenderCycle(EModelRenderCycle.REPEATED)
     }
