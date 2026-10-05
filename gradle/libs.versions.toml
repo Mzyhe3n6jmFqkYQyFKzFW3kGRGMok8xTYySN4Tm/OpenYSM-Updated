@@ -16,6 +16,10 @@ concentus = "1.0.0"
 vorbis-java = "0.8"
 carryon = "2.9.2"
 aircompressor = "2.0.3"
+sodium = "mc1.21.11-0.8.15-beta.1-fabric"
+antlr4 = "4.13.2"
+glsl-transformer = "2.0.2"
+jcpp = "1.4.14"
 
 # Build & Toolchain
 loom = "1.17-SNAPSHOT"
@@ -42,6 +46,10 @@ concentus = { module = "com.plasmoverse:concentus", version.ref = "concentus" }
 vorbis-java-core = { module = "org.gagravarr:vorbis-java-core", version.ref = "vorbis-java" }
 carryon = { module = "tschipp.carryon:carryon-fabric-1.21.11", version.ref = "carryon" }
 aircompressor = { module = "io.airlift:aircompressor", version.ref = "aircompressor" }
+sodium = { module = "maven.modrinth:sodium", version.ref = "sodium" }
+antlr4-runtime = { module = "org.antlr:antlr4-runtime", version.ref = "antlr4" }
+glsl-transformer = { module = "io.github.douira:glsl-transformer", version.ref = "glsl-transformer" }
+jcpp = { module = "org.anarres:jcpp", version.ref = "jcpp" }
 
 [plugins]
 fabric-loom = { id = "fabric-loom", version.ref = "loom" }

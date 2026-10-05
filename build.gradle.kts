@@ -99,7 +99,11 @@ dependencies {
     implementation(libs.aircompressor)
     include(libs.aircompressor)
 
+    modImplementation(libs.sodium)
     modImplementation(libs.iris)
+    modImplementation(libs.antlr4.runtime)
+    modImplementation(libs.glsl.transformer)
+    modImplementation(libs.jcpp)
     modImplementation(libs.touhoulittlemaid.fabric)
     modImplementation(libs.crawl)
     modImplementation(libs.modmenu)
