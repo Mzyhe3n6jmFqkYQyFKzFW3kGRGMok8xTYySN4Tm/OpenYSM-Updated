@@ -19,15 +19,15 @@ class YSMSoundInstance(
     @Volatile
     private var audioStream: IAudioStreamSupport? = null
 
-    fun getStream(z: Boolean): CompletableFuture<AudioStream> {
+    private fun getStream(z: Boolean): CompletableFuture<AudioStream> {
         val completableFuture = CompletableFuture<AudioStream>()
         Minecraft.getInstance().execute {
-            try {
+            runCatching {
                 val stream = if (z) AudioStreamWrapper(streamFactory) else streamFactory.openStream()
                 audioStream = stream
                 completableFuture.complete(stream)
-            } catch (th: Throwable) {
-                completableFuture.completeExceptionally(th)
+            }.onFailure {
+                completableFuture.completeExceptionally(it)
             }
         }
         return completableFuture
