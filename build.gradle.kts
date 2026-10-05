@@ -93,6 +93,12 @@ dependencies {
     implementation(libs.concentus)
     include(libs.concentus)
 
+    implementation(libs.vorbis.java.core)
+    include(libs.vorbis.java.core)
+
+    implementation(libs.aircompressor)
+    include(libs.aircompressor)
+
     modImplementation(libs.iris)
     modImplementation(libs.touhoulittlemaid.fabric)
     modImplementation(libs.crawl)
