@@ -3,7 +3,6 @@ package com.elfmcys.yesstevemodel.geckolib3.geo
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import com.elfmcys.yesstevemodel.geckolib3.core.util.Color
-import com.elfmcys.yesstevemodel.geckolib3.geo.animated.AnimatedGeoModel
 import com.elfmcys.yesstevemodel.geckolib3.util.EModelRenderCycle
 import com.elfmcys.yesstevemodel.geckolib3.util.IRenderCycle
 import com.mojang.blaze3d.vertex.PoseStack
@@ -14,7 +13,6 @@ import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.state.EntityRenderState
-import net.minecraft.client.renderer.rendertype.RenderType
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.world.entity.Entity
 import org.joml.Matrix4f
@@ -84,13 +82,7 @@ abstract class GeoEntityRenderer<TEntity : Entity, T : AnimatableEntity<TEntity>
         }
     }
 
-    override fun createRenderState(): EntityRenderState {
-        return EntityRenderState()
-    }
-
-    override fun extractRenderState(entity: TEntity, state: EntityRenderState, partialTick: Float) {
-        super.extractRenderState(entity, state, partialTick)
-    }
+    override fun createRenderState(): EntityRenderState = EntityRenderState()
 
     override fun renderEarly(
         animatable: T,
@@ -133,14 +125,11 @@ abstract class GeoEntityRenderer<TEntity : Entity, T : AnimatableEntity<TEntity>
         this.bufferSource = bufferSource
     }
 
-    override fun getCurrentRTB(): MultiBufferSource? {
-        return bufferSource
-    }
+    override fun getCurrentRTB(): MultiBufferSource? = bufferSource
 
     companion object {
         @JvmStatic
-        fun packOverlayCoords(entity: Entity, f: Float): Int {
-            return OverlayTexture.pack(OverlayTexture.u(f), OverlayTexture.v(false))
-        }
+        fun packOverlayCoords(entity: Entity, f: Float): Int =
+            OverlayTexture.pack(OverlayTexture.u(f), OverlayTexture.v(false))
     }
 }

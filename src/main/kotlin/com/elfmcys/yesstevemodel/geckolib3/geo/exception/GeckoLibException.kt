@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.geo.exception
 
 import net.minecraft.resources.Identifier
