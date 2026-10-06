@@ -75,11 +75,6 @@ open class AnimationControllerInstance(
     @JvmField
     var isAnimationFinished: Boolean = true
 
-    constructor(animatable: AnimatableEntity<*>, transitionLengthTicks: Float) : this(
-        animatable,
-        transitionLengthTicks
-    )
-
     open fun initBoneQueues(list: MutableList<BoneTopLevelSnapshot>) {
         fullReset()
         for (boneTopLevelSnapshot in list) {
