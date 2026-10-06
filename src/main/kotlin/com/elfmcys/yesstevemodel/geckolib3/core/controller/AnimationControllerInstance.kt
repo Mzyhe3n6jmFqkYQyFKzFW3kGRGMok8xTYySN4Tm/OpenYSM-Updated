@@ -30,23 +30,55 @@ open class AnimationControllerInstance(
     transitionLengthTicks: Float,
     @JvmField var isScaleTransitionSpecial: Boolean = false
 ) {
-    @JvmField val boneAnimationQueues: Int2ReferenceOpenHashMap<BoneAnimationQueue> = Int2ReferenceOpenHashMap()
-    @JvmField val activeBoneAnimationQueues: ReferenceArrayList<BoneAnimationQueue> = ReferenceArrayList()
-    @JvmField val context: AnimationControllerContext = AnimationControllerContext()
-    @JvmField val defaultTransitionTick: Float = 3.0f
-    @JvmField var animationState: AnimationState = AnimationState.IDLE
-    @JvmField var tickOffset: Float = 0.0f
-    @JvmField var transitionInterpolator: IInterpolable = TicksInterpolator(transitionLengthTicks)
-    @JvmField var savedEndingTick: Float = 0.0f
-    @JvmField var lastRequestedAnimation: Pair<ILoopType, String>? = null
-    @JvmField var pendingAnimation: Pair<ILoopType, Animation>? = null
-    @JvmField var currentAnimation: Animation? = null
-    @JvmField var currentAnimationLoop: ILoopType? = null
-    @JvmField var instructionExecutor: InstructionKeyFrameExecutor? = null
-    @JvmField var soundExecutor: SoundKeyFrameExecutor? = null
-    @JvmField var isAnimationFinished: Boolean = true
+    @JvmField
+    val boneAnimationQueues: Int2ReferenceOpenHashMap<BoneAnimationQueue> = Int2ReferenceOpenHashMap()
 
-    constructor(animatable: AnimatableEntity<*>, transitionLengthTicks: Float) : this(animatable, transitionLengthTicks, false)
+    @JvmField
+    val activeBoneAnimationQueues: ReferenceArrayList<BoneAnimationQueue> = ReferenceArrayList()
+
+    @JvmField
+    val context: AnimationControllerContext = AnimationControllerContext()
+
+    @JvmField
+    val defaultTransitionTick: Float = 3.0f
+
+    @JvmField
+    var animationState: AnimationState = AnimationState.IDLE
+
+    @JvmField
+    var tickOffset: Float = 0.0f
+
+    @JvmField
+    var transitionInterpolator: IInterpolable = TicksInterpolator(transitionLengthTicks)
+
+    @JvmField
+    var savedEndingTick: Float = 0.0f
+
+    @JvmField
+    var lastRequestedAnimation: Pair<ILoopType, String>? = null
+
+    @JvmField
+    var pendingAnimation: Pair<ILoopType, Animation>? = null
+
+    @JvmField
+    var currentAnimation: Animation? = null
+
+    @JvmField
+    var currentAnimationLoop: ILoopType? = null
+
+    @JvmField
+    var instructionExecutor: InstructionKeyFrameExecutor? = null
+
+    @JvmField
+    var soundExecutor: SoundKeyFrameExecutor? = null
+
+    @JvmField
+    var isAnimationFinished: Boolean = true
+
+    constructor(animatable: AnimatableEntity<*>, transitionLengthTicks: Float) : this(
+        animatable,
+        transitionLengthTicks
+    )
 
     open fun initBoneQueues(list: MutableList<BoneTopLevelSnapshot>) {
         fullReset()
@@ -119,17 +151,21 @@ open class AnimationControllerInstance(
         if (animationState == AnimationState.RUNNING && runningAnim != null) {
             if (adjustedTick > runningAnim.animationLength) {
                 isAnimationFinished = true
-                if (currentAnimationLoop == ILoopType.EDefaultLoopTypes.LOOP) {
-                    context.executeRenderLayers(evaluator)
-                    adjustedTick = if (runningAnim.animationLength > 0.0f) {
-                        adjustedTick % runningAnim.animationLength
-                    } else {
-                        0.0f
+                when (currentAnimationLoop) {
+                    ILoopType.EDefaultLoopTypes.LOOP -> {
+                        context.executeRenderLayers(evaluator)
+                        adjustedTick = if (runningAnim.animationLength > 0.0f) {
+                            adjustedTick % runningAnim.animationLength
+                        } else {
+                            0.0f
+                        }
+                        executeRemainingEvents(evaluator, z)
+                        tickOffset = tick - adjustedTick
                     }
-                    executeRemainingEvents(evaluator, z)
-                    tickOffset = tick - adjustedTick
-                } else if (currentAnimationLoop == ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME) {
-                    adjustedTick = runningAnim.animationLength
+
+                    ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME -> {
+                        adjustedTick = runningAnim.animationLength
+                    }
                 }
             }
             context.setAnimTime(adjustedTick / 20.0f)
@@ -164,7 +200,11 @@ open class AnimationControllerInstance(
         evaluator.entity().setAnimationControllerContext(null)
     }
 
-    open fun executeTimelineEvents(evaluator: ExpressionEvaluator<AnimationContext<*>>, currentTick: Float, isActive: Boolean) {
+    open fun executeTimelineEvents(
+        evaluator: ExpressionEvaluator<AnimationContext<*>>,
+        currentTick: Float,
+        isActive: Boolean
+    ) {
         soundExecutor?.playSound(animatable, currentTick, isActive)
         instructionExecutor?.executeTo(evaluator, currentTick, isActive)
     }
@@ -210,16 +250,23 @@ open class AnimationControllerInstance(
             val boneSnapshot: BoneSnapshot = boneAnimationQueue.snapshot()
             val rotTimeline = boneAnimationQueue.rotationTimeline
             if (rotTimeline != null) {
-                boneAnimationQueue.rotationQueue = getTransitionPointAtTick(rotTimeline, tick, lerpFactor, boneSnapshot.rotation)
+                boneAnimationQueue.rotationQueue =
+                    getTransitionPointAtTick(rotTimeline, tick, lerpFactor, boneSnapshot.rotation)
             }
             val posTimeline = boneAnimationQueue.positionTimeline
             if (posTimeline != null) {
-                boneAnimationQueue.positionQueue = getTransitionPointAtTick(posTimeline, tick, lerpFactor, boneSnapshot.position)
+                boneAnimationQueue.positionQueue =
+                    getTransitionPointAtTick(posTimeline, tick, lerpFactor, boneSnapshot.position)
             }
             val scaleTimeline = boneAnimationQueue.scaleTimeline
             if (scaleTimeline != null) {
                 val transitionPoint = if (isScaleTransitionSpecial) {
-                    getTransitionPointAtTick(scaleTimeline, transitionInterpolator.getProgress(), 1.0f, boneSnapshot.scale)
+                    getTransitionPointAtTick(
+                        scaleTimeline,
+                        transitionInterpolator.getProgress(),
+                        1.0f,
+                        boneSnapshot.scale
+                    )
                 } else {
                     getTransitionPointAtTick(scaleTimeline, tick, lerpFactor, boneSnapshot.scale)
                 }
@@ -281,8 +328,20 @@ open class AnimationControllerInstance(
         return KeyFramePoint(tick - frame.getStartTick(), frame, context)
     }
 
-    open fun getTransitionPointAtTick(frames: InterpolationLookup<BoneKeyFrame>, tick: Float, lerpFactor: Float, offsetPoint: Vector3f): TransitionPoint {
-        return TransitionPoint(tick, lerpFactor, transitionInterpolator.getProgress(), offsetPoint, frames.getAtTime(0.0f) as TransitionKeyFrame, context)
+    open fun getTransitionPointAtTick(
+        frames: InterpolationLookup<BoneKeyFrame>,
+        tick: Float,
+        lerpFactor: Float,
+        offsetPoint: Vector3f
+    ): TransitionPoint {
+        return TransitionPoint(
+            tick,
+            lerpFactor,
+            transitionInterpolator.getProgress(),
+            offsetPoint,
+            frames.getAtTime(0.0f) as TransitionKeyFrame,
+            context
+        )
     }
 
     open fun getConstantPointAtTick(tick: Float, offsetPoint: Vector3f, isInstant: Boolean): ConstantPoint {
@@ -330,23 +389,28 @@ open class AnimationControllerInstance(
     open fun setTransitionInterpolator(interpolable: IInterpolable) {
         transitionInterpolator = interpolable
     }
+
     open fun getInterpolated(): Float = transitionInterpolator.getProgress() * 20.0f
     open fun adjustTick(tick: Float): Float = max(tick - tickOffset, 0.0f)
     open fun stopSound() {
         soundExecutor?.stop()
     }
+
     open fun cancelAnimation() {
         lastRequestedAnimation = null
         pendingAnimation = null
         clearAnimation()
     }
+
     open fun fullReset() {
         cancelAnimation()
         boneAnimationQueues.clear()
     }
+
     open fun resetRequestedAnimation() {
         lastRequestedAnimation = null
     }
+
     open fun beginEndingTransition(tick: Float) {
         startEndingTransition(tick)
     }

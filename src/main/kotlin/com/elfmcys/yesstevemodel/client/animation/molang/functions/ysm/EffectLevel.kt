@@ -28,28 +28,38 @@ class EffectLevel : ContextFunction<Entity>() {
         for (i in 0 until arguments.size()) {
             val effectId: Identifier? = arguments.getResourceLocation(context, i)
             if (effectId != null) {
-                val mobEffectHolder: Holder<MobEffect>? = BuiltInRegistries.MOB_EFFECT.get(ResourceKey.create(Registries.MOB_EFFECT, effectId)).orElse(null)
+                val mobEffectHolder: Holder<MobEffect>? =
+                    BuiltInRegistries.MOB_EFFECT.get(ResourceKey.create(Registries.MOB_EFFECT, effectId)).orElse(null)
                 if (mobEffectHolder != null) {
                     val geoInstance = context.entity().geoInstance()
                     if (geoInstance is PlayerCapability && !geoInstance.isLocalPlayerModel()) {
                         effects += geoInstance.getPositionTracker().getEffectAmplifier(mobEffectHolder)
                     } else {
-                        val entity = context.entity().entity()
-                        if (entity is LivingEntity) {
-                            val mobEffectInstance: MobEffectInstance? = entity.getEffect(mobEffectHolder)
-                            if (mobEffectInstance != null) {
-                                effects += mobEffectInstance.amplifier + 1
-                            }
-                        } else if (entity is Arrow) {
-                            val potionContents: PotionContents = entity.pickupItemStackOrigin.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY)
-                            for (mobEffectInstance in potionContents.allEffects) {
-                                if (mobEffectInstance.effect == mobEffectHolder) {
+                        when (val entity = context.entity().entity()) {
+                            is LivingEntity -> {
+                                val mobEffectInstance: MobEffectInstance? = entity.getEffect(mobEffectHolder)
+                                if (mobEffectInstance != null) {
                                     effects += mobEffectInstance.amplifier + 1
-                                    break
                                 }
                             }
-                        } else {
-                            return null
+
+                            is Arrow -> {
+                                val potionContents: PotionContents =
+                                    entity.pickupItemStackOrigin.getOrDefault(
+                                        DataComponents.POTION_CONTENTS,
+                                        PotionContents.EMPTY
+                                    )
+                                for (mobEffectInstance in potionContents.allEffects) {
+                                    if (mobEffectInstance.effect == mobEffectHolder) {
+                                        effects += mobEffectInstance.amplifier + 1
+                                        break
+                                    }
+                                }
+                            }
+
+                            else -> {
+                                return null
+                            }
                         }
                     }
                 }

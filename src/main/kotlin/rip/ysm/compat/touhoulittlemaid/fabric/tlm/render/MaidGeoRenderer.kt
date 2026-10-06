@@ -240,18 +240,20 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
         if (state.isFullyFrozen)
             rot += (cos((Mth.floor(state.ageInTicks) * 3.25f).toDouble()) * Math.PI * 0.4f).toFloat()
         val sleeping = state.hasPose(Pose.SLEEPING)
-        if (!sleeping) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - rot))
-        }
-        if (sleeping) {
-            val bedOrientation = state.bedOrientation
-            val sleepRot = if (bedOrientation != null) sleepDirectionToRotation(bedOrientation) else rot
-            poseStack.mulPose(Axis.YP.rotationDegrees(sleepRot))
-            poseStack.mulPose(Axis.ZP.rotationDegrees(FLIP_DEGREES))
-            poseStack.mulPose(Axis.YP.rotationDegrees(270.0f))
-        } else if (state.isUpsideDown) {
-            poseStack.translate(0.0f, (state.boundingBoxHeight + 0.1f) / scale, 0.0f)
-            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0f))
+        if (!sleeping) poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - rot))
+        when {
+            sleeping -> {
+                val bedOrientation = state.bedOrientation
+                val sleepRot = if (bedOrientation != null) sleepDirectionToRotation(bedOrientation) else rot
+                poseStack.mulPose(Axis.YP.rotationDegrees(sleepRot))
+                poseStack.mulPose(Axis.ZP.rotationDegrees(FLIP_DEGREES))
+                poseStack.mulPose(Axis.YP.rotationDegrees(270.0f))
+            }
+
+            state.isUpsideDown -> {
+                poseStack.translate(0.0f, (state.boundingBoxHeight + 0.1f) / scale, 0.0f)
+                poseStack.mulPose(Axis.ZP.rotationDegrees(180.0f))
+            }
         }
     }
 

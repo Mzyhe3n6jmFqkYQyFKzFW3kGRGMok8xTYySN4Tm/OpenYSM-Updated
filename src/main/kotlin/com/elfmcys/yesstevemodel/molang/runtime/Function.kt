@@ -49,24 +49,30 @@ fun interface Function {
         fun getResourceLocation(ctx: ExecutionContext<out IContext<*>>, index: Int): Identifier? {
             val obj2 = getValue(ctx, index)
             val obj: Any?
-            if (obj2 is StringExpression) {
-                if (obj2.getResourceLocation() != null) {
-                    return obj2.getResourceLocation()
+            when (obj2) {
+                is StringExpression -> {
+                    if (obj2.getResourceLocation() != null) {
+                        return obj2.getResourceLocation()
+                    }
+                    val resourceLocationTryParse = Identifier.tryParse(obj2.getName())
+                    if (resourceLocationTryParse != null) {
+                        obj2.setResourceLocation(resourceLocationTryParse)
+                        return resourceLocationTryParse
+                    }
+                    obj = obj2.getName()
                 }
-                val resourceLocationTryParse = Identifier.tryParse(obj2.getName())
-                if (resourceLocationTryParse != null) {
-                    obj2.setResourceLocation(resourceLocationTryParse)
-                    return resourceLocationTryParse
+
+                is String -> {
+                    val resourceLocationTryParse = Identifier.tryParse(obj2)
+                    if (resourceLocationTryParse != null) {
+                        return resourceLocationTryParse
+                    }
+                    obj = obj2
                 }
-                obj = obj2.getName()
-            } else if (obj2 is String) {
-                val resourceLocationTryParse = Identifier.tryParse(obj2)
-                if (resourceLocationTryParse != null) {
-                    return resourceLocationTryParse
+
+                else -> {
+                    obj = obj2
                 }
-                obj = obj2
-            } else {
-                obj = obj2
             }
             ctx.entity().logWarning("Illegal resource location: ", obj ?: "null")
             return null

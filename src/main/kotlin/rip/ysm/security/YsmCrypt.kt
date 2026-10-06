@@ -96,10 +96,14 @@ object YsmCrypt {
             if (other !is EncryptedPacket) return false
 
             if (!data.contentEquals(other.data)) return false
-            if (nextKey != null) {
-                if (other.nextKey == null) return false
-                if (!nextKey.contentEquals(other.nextKey)) return false
-            } else if (other.nextKey != null) return false
+            when {
+                nextKey != null -> {
+                    if (other.nextKey == null) return false
+                    if (!nextKey.contentEquals(other.nextKey)) return false
+                }
+
+                other.nextKey != null -> return false
+            }
 
             return true
         }
@@ -140,10 +144,10 @@ object YsmCrypt {
         val zstdData = YsmZstd.compress(clearText, clearOffset, clearLength)
         val paddingLength = 16 + theRandom.nextInt(112)
         val randomTop6Bits = theRandom.nextInt(64) shl 10
-        val headerWord = (paddingLength and 0x3FF) or randomTop6Bits
+        val headerWord = paddingLength and 0x3FF or randomTop6Bits
         val payloadToEncrypt = ByteArray(2 + paddingLength + zstdData.size)
         payloadToEncrypt[0] = (headerWord and 0xFF).toByte()
-        payloadToEncrypt[1] = ((headerWord shr 8) and 0xFF).toByte()
+        payloadToEncrypt[1] = (headerWord shr 8 and 0xFF).toByte()
         val padding = ByteArray(paddingLength)
         theRandom.nextBytes(padding)
         System.arraycopy(padding, 0, payloadToEncrypt, 2, paddingLength)
@@ -207,10 +211,10 @@ object YsmCrypt {
         val zstdData = YsmZstd.compress(rawClearText)
         val paddingLength = 16 + theRandom.nextInt(112)
         val randomTop6Bits = theRandom.nextInt(64) shl 10
-        val headerWord = (paddingLength and 0x3FF) or randomTop6Bits
+        val headerWord = paddingLength and 0x3FF or randomTop6Bits
         val payloadToEncrypt = ByteArray(2 + paddingLength + zstdData.size)
         payloadToEncrypt[0] = (headerWord and 0xFF).toByte()
-        payloadToEncrypt[1] = ((headerWord shr 8) and 0xFF).toByte()
+        payloadToEncrypt[1] = (headerWord shr 8 and 0xFF).toByte()
         val padding = ByteArray(paddingLength)
         theRandom.nextBytes(padding)
         System.arraycopy(padding, 0, payloadToEncrypt, 2, paddingLength)
@@ -314,7 +318,7 @@ object YsmCrypt {
         val ch = CityHash()
         val hash2 = ch.hash64WithSeed(keyIv, seed)
 
-        var nextRoundSize = (((hash2 and 0x3FL) or 0x40L) shl 6).toInt()
+        var nextRoundSize = (hash2 and 0x3FL or 0x40L shl 6).toInt()
         val rounds = (10 * java.lang.Long.remainderUnsigned(hash2, 3) + 10).toInt()
 
         val ctx = XChaCha20(key, iv, rounds)
@@ -375,7 +379,7 @@ object YsmCrypt {
         System.arraycopy(iv, 0, keyIv, 32, 24)
         mt19937XorInPlace(chachaDecrypted, keyIv, SEED_KEY_DERIVATION)
 
-        val n = ((chachaDecrypted[0].toInt() and 0xFF) or ((chachaDecrypted[1].toInt() and 0xFF) shl 8)) and 0x3FF
+        val n = chachaDecrypted[0].toInt() and 0xFF or (chachaDecrypted[1].toInt() and 0xFF shl 8) and 0x3FF
 
         val zstdOffset = 2 + n
         return YsmZstd.decompress(chachaDecrypted, zstdOffset, chachaDecrypted.size - zstdOffset)
@@ -402,7 +406,7 @@ object YsmCrypt {
         val ch = CityHash()
         val hash2 = ch.hash64WithSeed(keyIv, seed)
 
-        var nextRoundSize = (((hash2 and 0x3FL) or 0x40L) shl 6).toInt()
+        var nextRoundSize = (hash2 and 0x3FL or 0x40L shl 6).toInt()
         val rounds = (10 * java.lang.Long.remainderUnsigned(hash2, 3) + 10).toInt()
 
         val ctx = XChaCha20(key, iv, rounds)
@@ -500,7 +504,7 @@ object YsmCrypt {
             val rnd = mt.extract_number()
             var j = 0
             while (j < 8 && i < length) {
-                val keystreamByte = ((rnd ushr (j * 8)) and 0xFF).toByte()
+                val keystreamByte = (rnd ushr j * 8 and 0xFF).toByte()
                 result[i] = (data[offset + i].toInt() xor keystreamByte.toInt()).toByte()
                 i++
                 j++
@@ -518,7 +522,7 @@ object YsmCrypt {
             val rnd = mt.extract_number()
             var j = 0
             while (j < 8 && i < data.size) {
-                val keystreamByte = ((rnd ushr (j * 8)) and 0xFF).toByte()
+                val keystreamByte = (rnd ushr j * 8 and 0xFF).toByte()
                 data[i] = (data[i].toInt() xor keystreamByte.toInt()).toByte()
                 i++
                 j++
@@ -559,7 +563,7 @@ object YsmCrypt {
             )
             mt19937XorInPlace(plainText, clientKey, SEED_KEY_DERIVATION)
 
-            val n = ((plainText[0].toInt() and 0xFF) or ((plainText[1].toInt() and 0xFF) shl 8)) and 0x3FF
+            val n = plainText[0].toInt() and 0xFF or (plainText[1].toInt() and 0xFF shl 8) and 0x3FF
             val zstdOffset = 2 + n
 
             return YsmZstd.decompress(plainText, zstdOffset, plainText.size - zstdOffset)

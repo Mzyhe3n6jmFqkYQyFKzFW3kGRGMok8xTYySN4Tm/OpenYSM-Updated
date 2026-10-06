@@ -24,9 +24,7 @@ object JsonKeyFrameUtils {
             return
         }
 
-        if (!element.isJsonObject) {
-            return
-        }
+        if (!element.isJsonObject) return
 
         val obj = element.asJsonObject
         for (time in obj.keySet()) {
@@ -34,33 +32,49 @@ object JsonKeyFrameUtils {
             keyframe.startTick = convertSecondsToTicks(time.toFloat()).toDouble()
 
             val item = obj.get(time)
-            if (item.isJsonPrimitive || item.isJsonArray) {
-                readPreKeyFrame(item, keyframe, parser)
-            } else if (item.isJsonObject) {
-                val jsonObject = item.asJsonObject
-                if (jsonObject.has("vector")) {
-                    val vector = jsonObject.get("vector")
-                    val easing = jsonObject.get("easing")
-                    readPreKeyFrame(vector, keyframe, parser)
-                    tryGetEasingType(easing, keyframe)
-                } else {
-                    val pre = jsonObject.get("pre")
-                    val post = jsonObject.get("post")
-                    val easing = jsonObject.get("lerp_mode")
+            when {
+                item.isJsonPrimitive || item.isJsonArray -> {
+                    readPreKeyFrame(item, keyframe, parser)
+                }
 
-                    if (pre != null && post != null) {
-                        readPreKeyFrame(pre, keyframe, parser)
-                        readPostKeyFrame(post, keyframe, parser)
-                        keyframe.contiguous = false
-                    } else {
-                        if (pre != null) {
-                            readPreKeyFrame(pre, keyframe, parser)
-                        } else if (post != null) {
-                            // 没错，post 赋给 pre
-                            readPreKeyFrame(post, keyframe, parser)
+                item.isJsonObject -> {
+                    val jsonObject = item.asJsonObject
+                    when {
+                        jsonObject.has("vector") -> {
+                            val vector = jsonObject.get("vector")
+                            val easing = jsonObject.get("easing")
+                            readPreKeyFrame(vector, keyframe, parser)
+                            tryGetEasingType(easing, keyframe)
+                        }
+
+                        else -> {
+                            val pre = jsonObject.get("pre")
+                            val post = jsonObject.get("post")
+                            val easing = jsonObject.get("lerp_mode")
+
+                            when {
+                                pre != null && post != null -> {
+                                    readPreKeyFrame(pre, keyframe, parser)
+                                    readPostKeyFrame(post, keyframe, parser)
+                                    keyframe.contiguous = false
+                                }
+
+                                else -> {
+                                    when {
+                                        pre != null -> {
+                                            readPreKeyFrame(pre, keyframe, parser)
+                                        }
+
+                                        post != null -> {
+                                            // 没错，post 赋给 pre
+                                            readPreKeyFrame(post, keyframe, parser)
+                                        }
+                                    }
+                                }
+                            }
+                            tryGetEasingType(easing, keyframe)
                         }
                     }
-                    tryGetEasingType(easing, keyframe)
                 }
             }
             boneKeyFrames.add(keyframe)
@@ -82,63 +96,81 @@ object JsonKeyFrameUtils {
     fun readPreKeyFrame(element: JsonElement, keyframe: RawBoneKeyFrame, parser: MolangParser) {
         if (element.isJsonPrimitive) {
             val primitive = element.asJsonPrimitive
-            if (primitive.isString) {
-                val value = parser.parseExpression(primitive.asString, false)
-                keyframe.preXValue = value
-                keyframe.preYValue = value
-                keyframe.preZValue = value
-            } else if (primitive.isNumber) {
-                val value = primitive.asDouble
-                keyframe.preX = value
-                keyframe.preY = value
-                keyframe.preZ = value
+            when {
+                primitive.isString -> {
+                    val value = parser.parseExpression(primitive.asString, false)
+                    keyframe.preXValue = value
+                    keyframe.preYValue = value
+                    keyframe.preZValue = value
+                }
+
+                primitive.isNumber -> {
+                    val value = primitive.asDouble
+                    keyframe.preX = value
+                    keyframe.preY = value
+                    keyframe.preZ = value
+                }
             }
             return
         }
 
         if (element.isJsonArray) {
             val array = element.asJsonArray
-            if (array.isEmpty) {
-                return
-            }
+            if (array.isEmpty) return
 
             if (array.size() >= 3) {
                 val xPri = array[0].asJsonPrimitive
                 val yPri = array[1].asJsonPrimitive
                 val zPri = array[2].asJsonPrimitive
 
-                if (xPri.isString) {
-                    keyframe.preXValue = parser.parseExpression(xPri.asString, false)
-                } else if (xPri.isNumber) {
-                    keyframe.preX = xPri.asDouble
+                when {
+                    xPri.isString -> {
+                        keyframe.preXValue = parser.parseExpression(xPri.asString, false)
+                    }
+
+                    xPri.isNumber -> {
+                        keyframe.preX = xPri.asDouble
+                    }
                 }
 
-                if (yPri.isString) {
-                    keyframe.preYValue = parser.parseExpression(yPri.asString, false)
-                } else if (yPri.isNumber) {
-                    keyframe.preY = yPri.asDouble
+                when {
+                    yPri.isString -> {
+                        keyframe.preYValue = parser.parseExpression(yPri.asString, false)
+                    }
+
+                    yPri.isNumber -> {
+                        keyframe.preY = yPri.asDouble
+                    }
                 }
 
-                if (zPri.isString) {
-                    keyframe.preZValue = parser.parseExpression(zPri.asString, false)
-                } else if (zPri.isNumber) {
-                    keyframe.preZ = zPri.asDouble
+                when {
+                    zPri.isString -> {
+                        keyframe.preZValue = parser.parseExpression(zPri.asString, false)
+                    }
+
+                    zPri.isNumber -> {
+                        keyframe.preZ = zPri.asDouble
+                    }
                 }
 
                 return
             }
 
             val primitive = array[0].asJsonPrimitive
-            if (primitive.isString) {
-                val value = parser.parseExpression(primitive.asString, false)
-                keyframe.preXValue = value
-                keyframe.preYValue = value
-                keyframe.preZValue = value
-            } else if (primitive.isNumber) {
-                val value = primitive.asDouble
-                keyframe.preX = value
-                keyframe.preY = value
-                keyframe.preZ = value
+            when {
+                primitive.isString -> {
+                    val value = parser.parseExpression(primitive.asString, false)
+                    keyframe.preXValue = value
+                    keyframe.preYValue = value
+                    keyframe.preZValue = value
+                }
+
+                primitive.isNumber -> {
+                    val value = primitive.asDouble
+                    keyframe.preX = value
+                    keyframe.preY = value
+                    keyframe.preZ = value
+                }
             }
         }
     }
@@ -147,63 +179,81 @@ object JsonKeyFrameUtils {
     fun readPostKeyFrame(element: JsonElement, keyframe: RawBoneKeyFrame, parser: MolangParser) {
         if (element.isJsonPrimitive) {
             val primitive = element.asJsonPrimitive
-            if (primitive.isString) {
-                val value = parser.parseExpression(primitive.asString, false)
-                keyframe.postXValue = value
-                keyframe.postYValue = value
-                keyframe.postZValue = value
-            } else if (primitive.isNumber) {
-                val value = primitive.asDouble
-                keyframe.postX = value
-                keyframe.postY = value
-                keyframe.postZ = value
+            when {
+                primitive.isString -> {
+                    val value = parser.parseExpression(primitive.asString, false)
+                    keyframe.postXValue = value
+                    keyframe.postYValue = value
+                    keyframe.postZValue = value
+                }
+
+                primitive.isNumber -> {
+                    val value = primitive.asDouble
+                    keyframe.postX = value
+                    keyframe.postY = value
+                    keyframe.postZ = value
+                }
             }
             return
         }
 
         if (element.isJsonArray) {
             val array = element.asJsonArray
-            if (array.isEmpty) {
-                return
-            }
+            if (array.isEmpty) return
 
             if (array.size() >= 3) {
                 val xPri = array[0].asJsonPrimitive
                 val yPri = array[1].asJsonPrimitive
                 val zPri = array[2].asJsonPrimitive
 
-                if (xPri.isString) {
-                    keyframe.postXValue = parser.parseExpression(xPri.asString, false)
-                } else if (xPri.isNumber) {
-                    keyframe.postX = xPri.asDouble
+                when {
+                    xPri.isString -> {
+                        keyframe.postXValue = parser.parseExpression(xPri.asString, false)
+                    }
+
+                    xPri.isNumber -> {
+                        keyframe.postX = xPri.asDouble
+                    }
                 }
 
-                if (yPri.isString) {
-                    keyframe.postYValue = parser.parseExpression(yPri.asString, false)
-                } else if (yPri.isNumber) {
-                    keyframe.postY = yPri.asDouble
+                when {
+                    yPri.isString -> {
+                        keyframe.postYValue = parser.parseExpression(yPri.asString, false)
+                    }
+
+                    yPri.isNumber -> {
+                        keyframe.postY = yPri.asDouble
+                    }
                 }
 
-                if (zPri.isString) {
-                    keyframe.postZValue = parser.parseExpression(zPri.asString, false)
-                } else if (zPri.isNumber) {
-                    keyframe.postZ = zPri.asDouble
+                when {
+                    zPri.isString -> {
+                        keyframe.postZValue = parser.parseExpression(zPri.asString, false)
+                    }
+
+                    zPri.isNumber -> {
+                        keyframe.postZ = zPri.asDouble
+                    }
                 }
 
                 return
             }
 
             val primitive = array[0].asJsonPrimitive
-            if (primitive.isString) {
-                val value = parser.parseExpression(primitive.asString, false)
-                keyframe.postXValue = value
-                keyframe.postYValue = value
-                keyframe.postZValue = value
-            } else if (primitive.isNumber) {
-                val value = primitive.asDouble
-                keyframe.postX = value
-                keyframe.postY = value
-                keyframe.postZ = value
+            when {
+                primitive.isString -> {
+                    val value = parser.parseExpression(primitive.asString, false)
+                    keyframe.postXValue = value
+                    keyframe.postYValue = value
+                    keyframe.postZValue = value
+                }
+
+                primitive.isNumber -> {
+                    val value = primitive.asDouble
+                    keyframe.postX = value
+                    keyframe.postY = value
+                    keyframe.postZ = value
+                }
             }
         }
     }

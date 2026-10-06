@@ -33,16 +33,20 @@ data class C2SCompleteFeedbackPacket(val feedbackData: FeedbackData) {
         @JvmStatic
         fun handleOnServer(message: C2SCompleteFeedbackPacket, serverLevel: ServerLevel) {
             val entity = serverLevel.getEntity(message.feedbackData.flags) ?: return
-            if (TouhouMaidCompat.isMaidEntity(entity)) {
-                TouhouMaidCompat.applyFeedback(entity, message.feedbackData)
-            } else if (entity is ServerPlayer) {
-                ModelInfoCapability[entity]?.let { cap ->
-                    cap.applyFeedback(entity, message.feedbackData)
-                    val vehicle = entity.vehicle
-                    if (vehicle != null && vehicle.firstPassenger == entity) {
-                        VehicleModelCapability[vehicle]?.let { vehicleCap ->
-                            cap.getMolangVars()?.let { map ->
-                                vehicleCap.setModel(cap.getModelId(), map)
+            when {
+                TouhouMaidCompat.isMaidEntity(entity) -> {
+                    TouhouMaidCompat.applyFeedback(entity, message.feedbackData)
+                }
+
+                entity is ServerPlayer -> {
+                    ModelInfoCapability[entity]?.let { cap ->
+                        cap.applyFeedback(entity, message.feedbackData)
+                        val vehicle = entity.vehicle
+                        if (vehicle != null && vehicle.firstPassenger == entity) {
+                            VehicleModelCapability[vehicle]?.let { vehicleCap ->
+                                cap.getMolangVars()?.let { map ->
+                                    vehicleCap.setModel(cap.getModelId(), map)
+                                }
                             }
                         }
                     }

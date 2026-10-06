@@ -44,16 +44,22 @@ class YSMFolderDeserializer : AutoCloseable {
 
         inMemoryFiles = null
 
-        if (Files.isDirectory(sourcePath)) {
-            rootPath = sourcePath
-            zipFileSystem = null
-        } else if (sourcePath.toString().endsWith(".zip") || sourcePath.toString().endsWith(".ysm")) {
-            val uri = URI.create("jar:" + sourcePath.toUri())
-            val fs = FileSystems.newFileSystem(uri, emptyMap<String, Any>())
-            zipFileSystem = fs
-            rootPath = fs.getPath("/")
-        } else {
-            throw IllegalArgumentException("Unsupported file type. Expected directory or .zip")
+        when {
+            Files.isDirectory(sourcePath) -> {
+                rootPath = sourcePath
+                zipFileSystem = null
+            }
+
+            sourcePath.toString().endsWith(".zip") || sourcePath.toString().endsWith(".ysm") -> {
+                val uri = URI.create("jar:" + sourcePath.toUri())
+                val fs = FileSystems.newFileSystem(uri, emptyMap<String, Any>())
+                zipFileSystem = fs
+                rootPath = fs.getPath("/")
+            }
+
+            else -> {
+                throw IllegalArgumentException("Unsupported file type. Expected directory or .zip")
+            }
         }
 
         model = RawYsmModel()
@@ -293,10 +299,14 @@ class YSMFolderDeserializer : AutoCloseable {
                 if (texElem.isJsonArray) texElem.asJsonArray else Collections.singletonList(texElem)
             for (elem in texArr) {
                 var texPath: String? = null
-                if (elem.isJsonPrimitive) {
-                    texPath = elem.asString
-                } else if (elem.isJsonObject && elem.asJsonObject.has("uv")) {
-                    texPath = elem.asJsonObject.get("uv").asString
+                when {
+                    elem.isJsonPrimitive -> {
+                        texPath = elem.asString
+                    }
+
+                    elem.isJsonObject && elem.asJsonObject.has("uv") -> {
+                        texPath = elem.asJsonObject.get("uv").asString
+                    }
                 }
                 if (texPath == null) continue
 
@@ -408,11 +418,15 @@ class YSMFolderDeserializer : AutoCloseable {
 
             if (item.has("match")) {
                 val match = item.get("match")
-                if (match.isJsonArray) {
-                    val mArr = match.asJsonArray
-                    sub.matchIds = Array(mArr.size()) { mArr.get(it).asString }
-                } else if (match.isJsonPrimitive) {
-                    sub.matchIds = arrayOf(match.asString)
+                when {
+                    match.isJsonArray -> {
+                        val mArr = match.asJsonArray
+                        sub.matchIds = Array(mArr.size()) { mArr.get(it).asString }
+                    }
+
+                    match.isJsonPrimitive -> {
+                        sub.matchIds = arrayOf(match.asString)
+                    }
                 }
             }
 
@@ -559,240 +573,244 @@ class YSMFolderDeserializer : AutoCloseable {
 
                         if (cObj.has("uv")) {
                             val uvElem = cObj.get("uv")
-                            if (uvElem.isJsonObject) {
-                                val uvObj = uvElem.asJsonObject
-                                bakeFaceToRaw(
-                                    cube,
-                                    uvObj,
-                                    "north",
-                                    "north",
-                                    mirror,
-                                    cx,
-                                    cy,
-                                    cz,
-                                    cw,
-                                    ch,
-                                    cd,
-                                    geo.textureWidth,
-                                    geo.textureHeight,
-                                    Vector3f(0f, 0f, -1f),
-                                    cubeBakeMat,
-                                    cubeNormalMat
-                                )
-                                bakeFaceToRaw(
-                                    cube,
-                                    uvObj,
-                                    "south",
-                                    "south",
-                                    mirror,
-                                    cx,
-                                    cy,
-                                    cz,
-                                    cw,
-                                    ch,
-                                    cd,
-                                    geo.textureWidth,
-                                    geo.textureHeight,
-                                    Vector3f(0f, 0f, 1f),
-                                    cubeBakeMat,
-                                    cubeNormalMat
-                                )
-                                bakeFaceToRaw(
-                                    cube,
-                                    uvObj,
-                                    "east",
-                                    if (mirror) "west" else "east",
-                                    mirror,
-                                    cx,
-                                    cy,
-                                    cz,
-                                    cw,
-                                    ch,
-                                    cd,
-                                    geo.textureWidth,
-                                    geo.textureHeight,
-                                    Vector3f(1f, 0f, 0f),
-                                    cubeBakeMat,
-                                    cubeNormalMat
-                                )
-                                bakeFaceToRaw(
-                                    cube,
-                                    uvObj,
-                                    "west",
-                                    if (mirror) "east" else "west",
-                                    mirror,
-                                    cx,
-                                    cy,
-                                    cz,
-                                    cw,
-                                    ch,
-                                    cd,
-                                    geo.textureWidth,
-                                    geo.textureHeight,
-                                    Vector3f(-1f, 0f, 0f),
-                                    cubeBakeMat,
-                                    cubeNormalMat
-                                )
-                                bakeFaceToRaw(
-                                    cube,
-                                    uvObj,
-                                    "up",
-                                    "up",
-                                    mirror,
-                                    cx,
-                                    cy,
-                                    cz,
-                                    cw,
-                                    ch,
-                                    cd,
-                                    geo.textureWidth,
-                                    geo.textureHeight,
-                                    Vector3f(0f, 1f, 0f),
-                                    cubeBakeMat,
-                                    cubeNormalMat
-                                )
-                                bakeFaceToRaw(
-                                    cube,
-                                    uvObj,
-                                    "down",
-                                    "down",
-                                    mirror,
-                                    cx,
-                                    cy,
-                                    cz,
-                                    cw,
-                                    ch,
-                                    cd,
-                                    geo.textureWidth,
-                                    geo.textureHeight,
-                                    Vector3f(0f, -1f, 0f),
-                                    cubeBakeMat,
-                                    cubeNormalMat
-                                )
-                            } else if (uvElem.isJsonArray) {
-                                val uvArr = uvElem.asJsonArray
-                                val uvX = uvArr.get(0).asFloat
-                                val uvY = uvArr.get(1).asFloat
-                                val dx = floor(size[0].toDouble()).toFloat()
-                                val dy = floor(size[1].toDouble()).toFloat()
-                                val dz = floor(size[2].toDouble()).toFloat()
+                            when {
+                                uvElem.isJsonObject -> {
+                                    val uvObj = uvElem.asJsonObject
+                                    bakeFaceToRaw(
+                                        cube,
+                                        uvObj,
+                                        "north",
+                                        "north",
+                                        mirror,
+                                        cx,
+                                        cy,
+                                        cz,
+                                        cw,
+                                        ch,
+                                        cd,
+                                        geo.textureWidth,
+                                        geo.textureHeight,
+                                        Vector3f(0f, 0f, -1f),
+                                        cubeBakeMat,
+                                        cubeNormalMat
+                                    )
+                                    bakeFaceToRaw(
+                                        cube,
+                                        uvObj,
+                                        "south",
+                                        "south",
+                                        mirror,
+                                        cx,
+                                        cy,
+                                        cz,
+                                        cw,
+                                        ch,
+                                        cd,
+                                        geo.textureWidth,
+                                        geo.textureHeight,
+                                        Vector3f(0f, 0f, 1f),
+                                        cubeBakeMat,
+                                        cubeNormalMat
+                                    )
+                                    bakeFaceToRaw(
+                                        cube,
+                                        uvObj,
+                                        "east",
+                                        if (mirror) "west" else "east",
+                                        mirror,
+                                        cx,
+                                        cy,
+                                        cz,
+                                        cw,
+                                        ch,
+                                        cd,
+                                        geo.textureWidth,
+                                        geo.textureHeight,
+                                        Vector3f(1f, 0f, 0f),
+                                        cubeBakeMat,
+                                        cubeNormalMat
+                                    )
+                                    bakeFaceToRaw(
+                                        cube,
+                                        uvObj,
+                                        "west",
+                                        if (mirror) "east" else "west",
+                                        mirror,
+                                        cx,
+                                        cy,
+                                        cz,
+                                        cw,
+                                        ch,
+                                        cd,
+                                        geo.textureWidth,
+                                        geo.textureHeight,
+                                        Vector3f(-1f, 0f, 0f),
+                                        cubeBakeMat,
+                                        cubeNormalMat
+                                    )
+                                    bakeFaceToRaw(
+                                        cube,
+                                        uvObj,
+                                        "up",
+                                        "up",
+                                        mirror,
+                                        cx,
+                                        cy,
+                                        cz,
+                                        cw,
+                                        ch,
+                                        cd,
+                                        geo.textureWidth,
+                                        geo.textureHeight,
+                                        Vector3f(0f, 1f, 0f),
+                                        cubeBakeMat,
+                                        cubeNormalMat
+                                    )
+                                    bakeFaceToRaw(
+                                        cube,
+                                        uvObj,
+                                        "down",
+                                        "down",
+                                        mirror,
+                                        cx,
+                                        cy,
+                                        cz,
+                                        cw,
+                                        ch,
+                                        cd,
+                                        geo.textureWidth,
+                                        geo.textureHeight,
+                                        Vector3f(0f, -1f, 0f),
+                                        cubeBakeMat,
+                                        cubeNormalMat
+                                    )
+                                }
 
-                                val fakeUvObj = JsonObject()
-                                fakeUvObj.add("north", createFaceUVNode(uvX + dz, uvY + dz, dx, dy))
-                                fakeUvObj.add("south", createFaceUVNode(uvX + dz + dx + dz, uvY + dz, dx, dy))
-                                fakeUvObj.add("east", createFaceUVNode(uvX, uvY + dz, dz, dy))
-                                fakeUvObj.add("west", createFaceUVNode(uvX + dz + dx, uvY + dz, dz, dy))
-                                fakeUvObj.add("up", createFaceUVNode(uvX + dz, uvY, dx, dz))
-                                fakeUvObj.add("down", createFaceUVNode(uvX + dz + dx, uvY + dz, dx, -dz))
+                                uvElem.isJsonArray -> {
+                                    val uvArr = uvElem.asJsonArray
+                                    val uvX = uvArr.get(0).asFloat
+                                    val uvY = uvArr.get(1).asFloat
+                                    val dx = floor(size[0].toDouble()).toFloat()
+                                    val dy = floor(size[1].toDouble()).toFloat()
+                                    val dz = floor(size[2].toDouble()).toFloat()
 
-                                bakeFaceToRaw(
-                                    cube,
-                                    fakeUvObj,
-                                    "north",
-                                    "north",
-                                    mirror,
-                                    cx,
-                                    cy,
-                                    cz,
-                                    cw,
-                                    ch,
-                                    cd,
-                                    geo.textureWidth,
-                                    geo.textureHeight,
-                                    Vector3f(0f, 0f, -1f),
-                                    cubeBakeMat,
-                                    cubeNormalMat
-                                )
-                                bakeFaceToRaw(
-                                    cube,
-                                    fakeUvObj,
-                                    "south",
-                                    "south",
-                                    mirror,
-                                    cx,
-                                    cy,
-                                    cz,
-                                    cw,
-                                    ch,
-                                    cd,
-                                    geo.textureWidth,
-                                    geo.textureHeight,
-                                    Vector3f(0f, 0f, 1f),
-                                    cubeBakeMat,
-                                    cubeNormalMat
-                                )
-                                bakeFaceToRaw(
-                                    cube,
-                                    fakeUvObj,
-                                    "east",
-                                    if (mirror) "west" else "east",
-                                    mirror,
-                                    cx,
-                                    cy,
-                                    cz,
-                                    cw,
-                                    ch,
-                                    cd,
-                                    geo.textureWidth,
-                                    geo.textureHeight,
-                                    Vector3f(1f, 0f, 0f),
-                                    cubeBakeMat,
-                                    cubeNormalMat
-                                )
-                                bakeFaceToRaw(
-                                    cube,
-                                    fakeUvObj,
-                                    "west",
-                                    if (mirror) "east" else "west",
-                                    mirror,
-                                    cx,
-                                    cy,
-                                    cz,
-                                    cw,
-                                    ch,
-                                    cd,
-                                    geo.textureWidth,
-                                    geo.textureHeight,
-                                    Vector3f(-1f, 0f, 0f),
-                                    cubeBakeMat,
-                                    cubeNormalMat
-                                )
-                                bakeFaceToRaw(
-                                    cube,
-                                    fakeUvObj,
-                                    "up",
-                                    "up",
-                                    mirror,
-                                    cx,
-                                    cy,
-                                    cz,
-                                    cw,
-                                    ch,
-                                    cd,
-                                    geo.textureWidth,
-                                    geo.textureHeight,
-                                    Vector3f(0f, 1f, 0f),
-                                    cubeBakeMat,
-                                    cubeNormalMat
-                                )
-                                bakeFaceToRaw(
-                                    cube,
-                                    fakeUvObj,
-                                    "down",
-                                    "down",
-                                    mirror,
-                                    cx,
-                                    cy,
-                                    cz,
-                                    cw,
-                                    ch,
-                                    cd,
-                                    geo.textureWidth,
-                                    geo.textureHeight,
-                                    Vector3f(0f, -1f, 0f),
-                                    cubeBakeMat,
-                                    cubeNormalMat
-                                )
+                                    val fakeUvObj = JsonObject()
+                                    fakeUvObj.add("north", createFaceUVNode(uvX + dz, uvY + dz, dx, dy))
+                                    fakeUvObj.add("south", createFaceUVNode(uvX + dz + dx + dz, uvY + dz, dx, dy))
+                                    fakeUvObj.add("east", createFaceUVNode(uvX, uvY + dz, dz, dy))
+                                    fakeUvObj.add("west", createFaceUVNode(uvX + dz + dx, uvY + dz, dz, dy))
+                                    fakeUvObj.add("up", createFaceUVNode(uvX + dz, uvY, dx, dz))
+                                    fakeUvObj.add("down", createFaceUVNode(uvX + dz + dx, uvY + dz, dx, -dz))
+
+                                    bakeFaceToRaw(
+                                        cube,
+                                        fakeUvObj,
+                                        "north",
+                                        "north",
+                                        mirror,
+                                        cx,
+                                        cy,
+                                        cz,
+                                        cw,
+                                        ch,
+                                        cd,
+                                        geo.textureWidth,
+                                        geo.textureHeight,
+                                        Vector3f(0f, 0f, -1f),
+                                        cubeBakeMat,
+                                        cubeNormalMat
+                                    )
+                                    bakeFaceToRaw(
+                                        cube,
+                                        fakeUvObj,
+                                        "south",
+                                        "south",
+                                        mirror,
+                                        cx,
+                                        cy,
+                                        cz,
+                                        cw,
+                                        ch,
+                                        cd,
+                                        geo.textureWidth,
+                                        geo.textureHeight,
+                                        Vector3f(0f, 0f, 1f),
+                                        cubeBakeMat,
+                                        cubeNormalMat
+                                    )
+                                    bakeFaceToRaw(
+                                        cube,
+                                        fakeUvObj,
+                                        "east",
+                                        if (mirror) "west" else "east",
+                                        mirror,
+                                        cx,
+                                        cy,
+                                        cz,
+                                        cw,
+                                        ch,
+                                        cd,
+                                        geo.textureWidth,
+                                        geo.textureHeight,
+                                        Vector3f(1f, 0f, 0f),
+                                        cubeBakeMat,
+                                        cubeNormalMat
+                                    )
+                                    bakeFaceToRaw(
+                                        cube,
+                                        fakeUvObj,
+                                        "west",
+                                        if (mirror) "east" else "west",
+                                        mirror,
+                                        cx,
+                                        cy,
+                                        cz,
+                                        cw,
+                                        ch,
+                                        cd,
+                                        geo.textureWidth,
+                                        geo.textureHeight,
+                                        Vector3f(-1f, 0f, 0f),
+                                        cubeBakeMat,
+                                        cubeNormalMat
+                                    )
+                                    bakeFaceToRaw(
+                                        cube,
+                                        fakeUvObj,
+                                        "up",
+                                        "up",
+                                        mirror,
+                                        cx,
+                                        cy,
+                                        cz,
+                                        cw,
+                                        ch,
+                                        cd,
+                                        geo.textureWidth,
+                                        geo.textureHeight,
+                                        Vector3f(0f, 1f, 0f),
+                                        cubeBakeMat,
+                                        cubeNormalMat
+                                    )
+                                    bakeFaceToRaw(
+                                        cube,
+                                        fakeUvObj,
+                                        "down",
+                                        "down",
+                                        mirror,
+                                        cx,
+                                        cy,
+                                        cz,
+                                        cw,
+                                        ch,
+                                        cd,
+                                        geo.textureWidth,
+                                        geo.textureHeight,
+                                        Vector3f(0f, -1f, 0f),
+                                        cubeBakeMat,
+                                        cubeNormalMat
+                                    )
+                                }
                             }
                         }
                         bone.cubes.add(cube)
@@ -1075,11 +1093,15 @@ class YSMFolderDeserializer : AutoCloseable {
 
                     if (sObj.has("animations") && sObj.get("animations").isJsonArray) {
                         for (ae in sObj.getAsJsonArray("animations")) {
-                            if (ae.isJsonPrimitive) {
-                                state.animations[ae.asString] = ""
-                            } else if (ae.isJsonObject) {
-                                for ((objKey, objVal) in ae.asJsonObject.entrySet()) {
-                                    state.animations[objKey] = objVal.asString
+                            when {
+                                ae.isJsonPrimitive -> {
+                                    state.animations[ae.asString] = ""
+                                }
+
+                                ae.isJsonObject -> {
+                                    for ((objKey, objVal) in ae.asJsonObject.entrySet()) {
+                                        state.animations[objKey] = objVal.asString
+                                    }
                                 }
                             }
                         }
@@ -1105,21 +1127,29 @@ class YSMFolderDeserializer : AutoCloseable {
 
                     if (sObj.has("sound_effects") && sObj.get("sound_effects").isJsonArray) {
                         for (se in sObj.getAsJsonArray("sound_effects")) {
-                            if (se.isJsonObject) {
-                                state.soundEffects.add(getStr(se.asJsonObject, "effect", ""))
-                            } else if (se.isJsonPrimitive) {
-                                state.soundEffects.add(se.asString)
+                            when {
+                                se.isJsonObject -> {
+                                    state.soundEffects.add(getStr(se.asJsonObject, "effect", ""))
+                                }
+
+                                se.isJsonPrimitive -> {
+                                    state.soundEffects.add(se.asString)
+                                }
                             }
                         }
                     }
 
                     if (sObj.has("blend_transition")) {
                         val btElem = sObj.get("blend_transition")
-                        if (btElem.isJsonPrimitive && btElem.asJsonPrimitive.isNumber) {
-                            state.blendTransitionValue = btElem.asFloat
-                        } else if (btElem.isJsonObject) {
-                            for ((btKey, btVal) in btElem.asJsonObject.entrySet()) {
-                                state.blendTransitions[btKey.toFloat()] = btVal.asFloat
+                        when {
+                            btElem.isJsonPrimitive && btElem.asJsonPrimitive.isNumber -> {
+                                state.blendTransitionValue = btElem.asFloat
+                            }
+
+                            btElem.isJsonObject -> {
+                                for ((btKey, btVal) in btElem.asJsonObject.entrySet()) {
+                                    state.blendTransitions[btKey.toFloat()] = btVal.asFloat
+                                }
                             }
                         }
                     }
@@ -1159,33 +1189,39 @@ class YSMFolderDeserializer : AutoCloseable {
     }
 
     private fun processGlobalResourceFile(relativePath: String, data: ByteArray) {
-        if (relativePath.startsWith("sounds/") || relativePath.endsWith(".ogg")) {
-            val soundName = extractFileName(relativePath)
-            val hash = DigestUtil.sha256Hex(data)
-            model.soundFiles[soundName] = RawYsmModel.RawDataFile(hash, data)
-        } else if (relativePath.startsWith("lang/") && relativePath.endsWith(".json")) {
-            val rawLocale = relativePath.substring("lang/".length, relativePath.length - 5)
-            val normalizedLocale = rawLocale.lowercase(Locale.ROOT).replace('-', '_')
-            runCatching {
+        when {
+            relativePath.startsWith("sounds/") || relativePath.endsWith(".ogg") -> {
+                val soundName = extractFileName(relativePath)
                 val hash = DigestUtil.sha256Hex(data)
-                val langJsonStr = String(data, StandardCharsets.UTF_8)
-                val langJson = JsonParser.parseString(langJsonStr).asJsonObject
-                val langMap = LinkedHashMap<String, String>()
-                for ((key, value) in langJson.entrySet()) {
-                    if (value.isJsonPrimitive) {
-                        langMap[key] = value.asString
+                model.soundFiles[soundName] = RawYsmModel.RawDataFile(hash, data)
+            }
+
+            relativePath.startsWith("lang/") && relativePath.endsWith(".json") -> {
+                val rawLocale = relativePath.substring("lang/".length, relativePath.length - 5)
+                val normalizedLocale = rawLocale.lowercase(Locale.ROOT).replace('-', '_')
+                runCatching {
+                    val hash = DigestUtil.sha256Hex(data)
+                    val langJsonStr = String(data, StandardCharsets.UTF_8)
+                    val langJson = JsonParser.parseString(langJsonStr).asJsonObject
+                    val langMap = LinkedHashMap<String, String>()
+                    for ((key, value) in langJson.entrySet()) {
+                        if (value.isJsonPrimitive) {
+                            langMap[key] = value.asString
+                        }
+                    }
+                    val rawLangFile = RawYsmModel.RawLanguageFile(hash, langMap)
+                    model.languageFiles[rawLocale] = rawLangFile
+                    if (normalizedLocale != rawLocale) {
+                        model.languageFiles[normalizedLocale] = rawLangFile
                     }
                 }
-                val rawLangFile = RawYsmModel.RawLanguageFile(hash, langMap)
-                model.languageFiles[rawLocale] = rawLangFile
-                if (normalizedLocale != rawLocale) {
-                    model.languageFiles[normalizedLocale] = rawLangFile
-                }
             }
-        } else if (relativePath.startsWith("functions/") && relativePath.endsWith(".molang")) {
-            val fnName = extractFileName(relativePath)
-            val hash = DigestUtil.sha256Hex(data)
-            model.functionFiles[fnName] = RawYsmModel.RawDataFile(hash, data)
+
+            relativePath.startsWith("functions/") && relativePath.endsWith(".molang") -> {
+                val fnName = extractFileName(relativePath)
+                val hash = DigestUtil.sha256Hex(data)
+                model.functionFiles[fnName] = RawYsmModel.RawDataFile(hash, data)
+            }
         }
     }
 

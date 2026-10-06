@@ -55,19 +55,23 @@ object CommandRegistry {
         SuggestionProviders.register(NameSpaces.MOD.path("textures")) { commandContext, suggestionsBuilder ->
             if (commandContext.source is SharedSuggestionProvider) {
                 val str = commandContext.getArgument("model_id", String::class.java)
-                if (PlatformAPI.isServer()) {
-                    ServerModelManager.getServerModelInfo()[str]?.let { serverModelInfo ->
-                        val list = mutableListOf("-").apply {
-                            addAll(serverModelInfo.modelInfo.textures.map(::escapeIfRequired))
+                when {
+                    PlatformAPI.isServer() -> {
+                        ServerModelManager.getServerModelInfo()[str]?.let { serverModelInfo ->
+                            val list = mutableListOf("-").apply {
+                                addAll(serverModelInfo.modelInfo.textures.map(::escapeIfRequired))
+                            }
+                            return@register SharedSuggestionProvider.suggest(list, suggestionsBuilder)
+                        }
+                    }
+
+                    ClientModelManager.getModelAssemblyMap().containsKey(str) -> {
+                        val list = mutableListOf("-")
+                        ClientModelManager.getModelContext(str)?.let { context ->
+                            list.addAll(context.animationBundle.textures.keys.map(::escapeIfRequired))
                         }
                         return@register SharedSuggestionProvider.suggest(list, suggestionsBuilder)
                     }
-                } else if (ClientModelManager.getModelAssemblyMap().containsKey(str)) {
-                    val list = mutableListOf("-")
-                    ClientModelManager.getModelContext(str)?.let { context ->
-                        list.addAll(context.animationBundle.textures.keys.map(::escapeIfRequired))
-                    }
-                    return@register SharedSuggestionProvider.suggest(list, suggestionsBuilder)
                 }
             }
             Suggestions.empty()

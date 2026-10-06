@@ -115,30 +115,40 @@ object YSMParserNativeLoader {
 
         when {
             os.contains("win") -> {
-                if (arch == "x64" || arch.contains("amd64")) {
-                    info.folder = "windows-x64"
-                    info.libraryName = "YSMParserJNI.dll"
-                } else if (arch.contains("x86") || arch.contains("i386")) {
-                    info.folder = "windows-x86"
-                    info.libraryName = "YSMParserJNI.dll"
+                when {
+                    arch == "x64" || arch.contains("amd64") -> {
+                        info.folder = "windows-x64"
+                        info.libraryName = "YSMParserJNI.dll"
+                    }
+
+                    arch.contains("x86") || arch.contains("i386") -> {
+                        info.folder = "windows-x86"
+                        info.libraryName = "YSMParserJNI.dll"
+                    }
                 }
             }
 
             os.contains("mac") || os.contains("darwin") -> {
-                if (arch == "arm64" || arch.contains("aarch64")) {
-                    info.folder = "macos-arm64"
-                    info.libraryName = "libYSMParserJNI.dylib"
+                when {
+                    arch == "arm64" || arch.contains("aarch64") -> {
+                        info.folder = "macos-arm64"
+                        info.libraryName = "libYSMParserJNI.dylib"
+                    }
                 }
                 // x64 macOS not bundled — no JNI
             }
 
             os.contains("linux") -> {
-                if (arch == "x64" || arch.contains("amd64")) {
-                    info.folder = "linux-x64"
-                    info.libraryName = "libYSMParserJNI.so"
-                } else if (arch == "arm64" || arch.contains("aarch64")) {
-                    info.folder = "linux-arm64"
-                    info.libraryName = "libYSMParserJNI.so"
+                when {
+                    arch == "x64" || arch.contains("amd64") -> {
+                        info.folder = "linux-x64"
+                        info.libraryName = "libYSMParserJNI.so"
+                    }
+
+                    arch == "arm64" || arch.contains("aarch64") -> {
+                        info.folder = "linux-arm64"
+                        info.libraryName = "libYSMParserJNI.so"
+                    }
                 }
                 // loongarch64, riscv64 — no JNI
             }

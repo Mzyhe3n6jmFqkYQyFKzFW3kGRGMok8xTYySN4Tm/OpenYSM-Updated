@@ -646,10 +646,14 @@ class YSMBinaryDeserializer : AutoCloseable {
                 val blendWeightMolangCount = reader.readVarInt()
                 for (i in 0 until blendWeightMolangCount) {
                     val datatype = reader.readByte().toInt()
-                    if (datatype == 0x01) {
-                        anim.blendWeight = reader.readFloat()
-                    } else if (datatype == 0x02) {
-                        anim.blendWeight = reader.readString()
+                    when (datatype) {
+                        0x01 -> {
+                            anim.blendWeight = reader.readFloat()
+                        }
+
+                        0x02 -> {
+                            anim.blendWeight = reader.readString()
+                        }
                     }
                 }
                 anim.unkInt4 = reader.readVarInt()
@@ -705,10 +709,14 @@ class YSMBinaryDeserializer : AutoCloseable {
             val firstData = arrayOfNulls<Any>(3)
             for (j in 0 until 3) {
                 val datatype = reader.readByte().toInt()
-                if (datatype == 0x01) {
-                    firstData[j] = reader.readFloat()
-                } else if (datatype == 0x02) {
-                    firstData[j] = reader.readString()
+                when (datatype) {
+                    0x01 -> {
+                        firstData[j] = reader.readFloat()
+                    }
+
+                    0x02 -> {
+                        firstData[j] = reader.readString()
+                    }
                 }
             }
 
@@ -716,10 +724,14 @@ class YSMBinaryDeserializer : AutoCloseable {
             if (kf.hasPreData) {
                 for (j in 0 until 3) {
                     val datatype = reader.readByte().toInt()
-                    if (datatype == 0x01) {
-                        kf.postData[j] = reader.readFloat()
-                    } else if (datatype == 0x02) {
-                        kf.postData[j] = reader.readString()
+                    when (datatype) {
+                        0x01 -> {
+                            kf.postData[j] = reader.readFloat()
+                        }
+
+                        0x02 -> {
+                            kf.postData[j] = reader.readString()
+                        }
                     }
                 }
                 kf.preData = firstData

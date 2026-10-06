@@ -52,16 +52,24 @@ class S2CExecuteMolangPacket {
             val level = Minecraft.getInstance().level ?: return
             for (i in message.entityIds) {
                 val entity = level.getEntity(i) ?: continue
-                if (entity is Player) {
-                    PlayerCapability[entity]?.let { cap ->
-                        runCatching {
-                            cap.executeExpression(GeckoLibCache.parseSimpleExpression(message.expression), true, false) {}
-                        }.onFailure { e ->
-                            Constants.LOGGER.error("Failed to execute molang {}", message.expression, e)
+                when {
+                    entity is Player -> {
+                        PlayerCapability[entity]?.let { cap ->
+                            runCatching {
+                                cap.executeExpression(
+                                    GeckoLibCache.parseSimpleExpression(message.expression),
+                                    true,
+                                    false
+                                ) {}
+                            }.onFailure { e ->
+                                Constants.LOGGER.error("Failed to execute molang {}", message.expression, e)
+                            }
                         }
                     }
-                } else if (TouhouMaidCompat.isMaidEntity(entity)) {
-                    TouhouMaidCompat.playMaidAnimation(entity, message.expression)
+
+                    TouhouMaidCompat.isMaidEntity(entity) -> {
+                        TouhouMaidCompat.playMaidAnimation(entity, message.expression)
+                    }
                 }
             }
         }

@@ -153,8 +153,8 @@ open class ModernAnimationRouletteScreen(
         val prevDx: Float = (mouseX - (centerX - 128)).toFloat()
         val nextDx: Float = (mouseX - (centerX + 128)).toFloat()
         val btnDy: Float = (mouseY - centerY).toFloat()
-        hoveredPrev = page() > 0 && (prevDx * prevDx + btnDy * btnDy <= 16.0f * 16.0f)
-        hoveredNext = (page() + 1) * 8 < currentProperties.size && (nextDx * nextDx + btnDy * btnDy <= 16.0f * 16.0f)
+        hoveredPrev = page() > 0 && prevDx * prevDx + btnDy * btnDy <= 16.0f * 16.0f
+        hoveredNext = (page() + 1) * 8 < currentProperties.size && nextDx * nextDx + btnDy * btnDy <= 16.0f * 16.0f
     }
 
     private fun renderSlices(g: GuiGraphics) {
@@ -170,7 +170,7 @@ open class ModernAnimationRouletteScreen(
             val isSubmenu: Boolean = currentProperties.getKeyAt(absoluteIdx).startsWith("#")
             val hasGear: Boolean = currentProperties.getValueAt(absoluteIdx).startsWith("#")
             val mainColor: Int =
-                if (isHover) (if (isSubmenu) 0xD0FFCC00.toInt() else 0xB0FFFFFF.toInt()) else (if (isSubmenu) 0x70552200.toInt() else 0x60000000)
+                if (isHover) (if (isSubmenu) 0xD0FFCC00.toInt() else 0xB0FFFFFF.toInt()) else if (isSubmenu) 0x70552200.toInt() else 0x60000000
             if (hasGear) {
                 val gearColor: Int = if (gearHover) 0xD0FFCC00.toInt() else 0x80333333.toInt()
                 drawSlice(g, i, sliceSpan, 46.0f, 100.0f, mainColor)
@@ -227,7 +227,7 @@ open class ModernAnimationRouletteScreen(
             }
             val showKey: Boolean =
                 page() == 0 && navigationStack.size == 1 && absoluteIdx < ExtraAnimationKey.KEY_MAPPINGS.size
-            val wrapWidth: Int = ((100.0f - (if (hasGear) 46.0f else 22.0f)) * 0.9f).toInt()
+            val wrapWidth: Int = ((100.0f - if (hasGear) 46.0f else 22.0f) * 0.9f).toInt()
             val lines: List<FormattedCharSequence> = font.split(comp, wrapWidth)
             val totalH: Int = lines.size * 9 + if (showKey) 10 else 0
             var lineY: Int = ly - totalH / 2
@@ -350,8 +350,8 @@ open class ModernAnimationRouletteScreen(
             val s = if (raw.isNullOrBlank()) rootLabel else raw
             val w = font.width(s)
             val isLast = i == navigationStack.size - 1
-            val hover = mouseX in x until (x + w) && mouseY in (pathY - 2) until (pathY + 10)
-            val color = if (isLast) 0xFFFFCC00.toInt() else (if (hover) 0xFFFFFFFF.toInt() else 0xFFAAAAAA.toInt())
+            val hover = mouseX in x until x + w && mouseY in pathY - 2 until pathY + 10
+            val color = if (isLast) 0xFFFFCC00.toInt() else if (hover) 0xFFFFFFFF.toInt() else 0xFFAAAAAA.toInt()
             g.drawString(font, s, x, pathY, color, true)
             if (hover && !isLast) {
                 g.fill(x, pathY + 9, x + w, pathY + 10, color)
@@ -378,7 +378,7 @@ open class ModernAnimationRouletteScreen(
             nextPage()
             return true
         }
-        if (hoveredPathSegment in 0 until (navigationStack.size - 1)) {
+        if (hoveredPathSegment in 0 until navigationStack.size - 1) {
             playClick()
             navigateTo(hoveredPathSegment)
             return true
@@ -397,12 +397,18 @@ open class ModernAnimationRouletteScreen(
         if (hoveredIndex >= 0) {
             playClick()
             val key = currentProperties.getKeyAt(hoveredIndex)
-            if ("#return" == key) {
-                navigateBack()
-            } else if (key.startsWith("#")) {
-                navigateToSubmenu(key)
-            } else {
-                playAnimation(key)
+            when {
+                "#return" == key -> {
+                    navigateBack()
+                }
+
+                key.startsWith("#") -> {
+                    navigateToSubmenu(key)
+                }
+
+                else -> {
+                    playAnimation(key)
+                }
             }
             return true
         }
@@ -480,17 +486,21 @@ open class ModernAnimationRouletteScreen(
 
     private fun playAnimation(key: String) {
         val player: LocalPlayer? = Minecraft.getInstance().player
-        if (NetworkHandler.isClientConnected()) {
-            val last = navigationStack.peekLast()
-            val submenu = if (last != null && !last.left.isNullOrBlank()) last.left else StringPool.EMPTY
-            val entity: Entity = animatableModel.entity
-            if (entity is Player) {
-                NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, submenu))
-            } else {
-                NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, submenu, entity.id))
+        when {
+            NetworkHandler.isClientConnected() -> {
+                val last = navigationStack.peekLast()
+                val submenu = if (last != null && !last.left.isNullOrBlank()) last.left else StringPool.EMPTY
+                val entity: Entity = animatableModel.entity
+                if (entity is Player) {
+                    NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, submenu))
+                } else {
+                    NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, submenu, entity.id))
+                }
             }
-        } else if (player != null) {
-            PlayerCapability[player]?.requestModelSwitch(key)
+
+            player != null -> {
+                PlayerCapability[player]?.requestModelSwitch(key)
+            }
         }
         if (player != null && GeneralConfig.PRINT_ANIMATION_ROULETTE_MSG.get() == true) {
             player.displayClientMessage(

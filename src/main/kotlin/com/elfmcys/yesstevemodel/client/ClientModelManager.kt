@@ -376,13 +376,17 @@ object ClientModelManager {
         for (loadedId in modelAssemblyMap.keys) {
             if ("default" == loadedId) continue
 
-            if (!validServerModelIds.contains(loadedId)) {
-                modelsToRemove.add(loadedId)
-            } else if (modelsToRequest.any { h ->
+            when {
+                !validServerModelIds.contains(loadedId) -> {
+                    modelsToRemove.add(loadedId)
+                }
+
+                modelsToRequest.any { h ->
                     val serverCtx = serverModels[UUID(h.hash1, h.hash2)]
                     serverCtx != null && serverCtx.modelId == loadedId
-                }) {
-                modelsToRemove.add(loadedId)
+                } -> {
+                    modelsToRemove.add(loadedId)
+                }
             }
         }
 

@@ -81,11 +81,17 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
             if (model2.allHeadBone() != null) {
                 model2.allHeadBone()?.setHidden(FirstPersonCompat.shouldHideHead())
             }
-            if (model2.viewLocatorBone() != null) {
-                FirstPersonCompat.setCameraDistance((model2.viewLocatorBone() ?: return).getPivotY() * getWidthScale())
-            } else if (wasAnimEvaluated && model2.headBones().isNotEmpty()) {
-                val bone = model2.headBones()[model2.headBones().size - 1]
-                FirstPersonCompat.setCameraDistance(bone.getPivotY() * getWidthScale())
+            when {
+                model2.viewLocatorBone() != null -> {
+                    FirstPersonCompat.setCameraDistance(
+                        (model2.viewLocatorBone() ?: return).getPivotY() * getWidthScale()
+                    )
+                }
+
+                wasAnimEvaluated && model2.headBones().isNotEmpty() -> {
+                    val bone = model2.headBones()[model2.headBones().size - 1]
+                    FirstPersonCompat.setCameraDistance(bone.getPivotY() * getWidthScale())
+                }
             }
         }
     }
@@ -193,7 +199,8 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         val holder = molangVarsMap[currentModelHashId]
         val vars = holder?.currentVars
         if (vars != null) {
-            serverVarContainer = if (isLocalPlayerModel()) RoamingStruct(currentModelHashId, vars) else Int2FloatOpenHashMapStruct(vars)
+            serverVarContainer =
+                if (isLocalPlayerModel()) RoamingStruct(currentModelHashId, vars) else Int2FloatOpenHashMapStruct(vars)
         }
     }
 

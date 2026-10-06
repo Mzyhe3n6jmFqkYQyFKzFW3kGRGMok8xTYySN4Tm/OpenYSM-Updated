@@ -158,17 +158,23 @@ class PlayerStateSynchronizer {
         message.setExperienceLevel(serverPlayer.experienceLevel)
         message.setFoodLevel(serverPlayer.foodData.foodLevel)
         val activeEffects = serverPlayer.activeEffects
-        if (activeEffects.isEmpty()) {
-            message.setEffects(Object2ByteMaps.emptyMap())
-        } else if (activeEffects.size == 1) {
-            val instance = activeEffects.iterator().next()
-            message.setEffects(Object2ByteMaps.singleton(instance.effect, (instance.amplifier + 1).toByte()))
-        } else {
-            val map = Object2ByteArrayMap<Holder<MobEffect>>(activeEffects.size)
-            for (instance in activeEffects) {
-                map.put(instance.effect, (instance.amplifier + 1).toByte())
+        when {
+            activeEffects.isEmpty() -> {
+                message.setEffects(Object2ByteMaps.emptyMap())
             }
-            message.setEffects(map)
+
+            activeEffects.size == 1 -> {
+                val instance = activeEffects.iterator().next()
+                message.setEffects(Object2ByteMaps.singleton(instance.effect, (instance.amplifier + 1).toByte()))
+            }
+
+            else -> {
+                val map = Object2ByteArrayMap<Holder<MobEffect>>(activeEffects.size)
+                for (instance in activeEffects) {
+                    map.put(instance.effect, (instance.amplifier + 1).toByte())
+                }
+                message.setEffects(map)
+            }
         }
         message.setHealth(serverPlayer.health.toInt())
         message.setMaxHealth(serverPlayer.maxHealth.toInt())

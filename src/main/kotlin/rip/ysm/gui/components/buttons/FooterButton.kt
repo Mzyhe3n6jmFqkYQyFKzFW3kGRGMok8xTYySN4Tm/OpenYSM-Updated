@@ -15,7 +15,6 @@ open class FooterButton(
     label: Component,
     private val onPress: () -> Unit
 ) : AbstractWidget(x, y, width, height, label) {
-
     override fun renderWidget(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         val bg = if (!active) 0x90282828.toInt() else if (isHovered) 0x90171717.toInt() else 0x90000000.toInt()
         g.fill(x, y, x + width, y + height, bg)
