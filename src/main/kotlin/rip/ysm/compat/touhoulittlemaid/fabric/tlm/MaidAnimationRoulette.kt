@@ -26,10 +26,14 @@ object MaidAnimationRoulette {
             return
         }
         val minecraft = Minecraft.getInstance()
-        if (minecraft.screen == null) {
-            minecraft.setScreen(AnimationRouletteScreen(animatable.getModelId(), modelAssembly, animatable))
-        } else if (minecraft.screen is AnimationRouletteScreen) {
-            minecraft.setScreen(null)
+        when (minecraft.screen) {
+            null -> {
+                minecraft.setScreen(AnimationRouletteScreen(animatable.getModelId(), modelAssembly, animatable))
+            }
+
+            is AnimationRouletteScreen -> {
+                minecraft.setScreen(null)
+            }
         }
     }
 

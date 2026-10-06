@@ -417,24 +417,32 @@ class ExpressionEvaluatorImpl<TEntity>(
             // 12: ASSIGN
             Evaluator { evaluator, a, b ->
                 var `val` = b.visit(evaluator)
-                if (a is AssignableVariableExpression) {
-                    val `var` = a.target()
-                    if (`val` is Struct) {
-                        `val` = `val`.copy()
+                when (a) {
+                    is AssignableVariableExpression -> {
+                        val `var` = a.target()
+                        if (`val` is Struct) {
+                            `val` = `val`.copy()
+                        }
+                        `var`.assign(evaluator, `val`)
                     }
-                    `var`.assign(evaluator, `val`)
-                } else if (a is StructAccessExpression) {
-                    if (`val` is Struct) {
-                        return@Evaluator `val`
-                    }
-                    val value = a.left().visit(evaluator)
-                    if (value is Struct) {
-                        value.putProperty(a.path(), `val`)
-                    } else if (a.left() is AssignableVariableExpression) {
-                        val variable = (a.left() as AssignableVariableExpression).target()
-                        val struct: Struct = HashMapStruct()
-                        struct.putProperty(a.path(), `val`)
-                        variable.assign(evaluator, struct)
+
+                    is StructAccessExpression -> {
+                        if (`val` is Struct) {
+                            return@Evaluator `val`
+                        }
+                        val value = a.left().visit(evaluator)
+                        when {
+                            value is Struct -> {
+                                value.putProperty(a.path(), `val`)
+                            }
+
+                            a.left() is AssignableVariableExpression -> {
+                                val variable = (a.left() as AssignableVariableExpression).target()
+                                val struct: Struct = HashMapStruct()
+                                struct.putProperty(a.path(), `val`)
+                                variable.assign(evaluator, struct)
+                            }
+                        }
                     }
                 }
                 `val`

@@ -97,25 +97,33 @@ object JsonAnimationUtils {
         for ((key, value) in getSoundEffects(animationJsonObject)) {
             val startTick = (key.toDoubleOrNull() ?: 0.0) * 20.0
 
-            if (value.isJsonPrimitive && value.asJsonPrimitive.isString) {
-                soundKeyFrames.add(EventKeyFrame(startTick, value.asString))
-            } else if (value.isJsonObject) {
-                val effectObj = value.asJsonObject
-                if (effectObj.has("effect")) {
-                    soundKeyFrames.add(EventKeyFrame(startTick, effectObj.get("effect").asString))
+            when {
+                value.isJsonPrimitive && value.asJsonPrimitive.isString -> {
+                    soundKeyFrames.add(EventKeyFrame(startTick, value.asString))
+                }
+
+                value.isJsonObject -> {
+                    val effectObj = value.asJsonObject
+                    if (effectObj.has("effect")) {
+                        soundKeyFrames.add(EventKeyFrame(startTick, effectObj.get("effect").asString))
+                    }
                 }
             }
         }
 
         for ((key, value) in getCustomInstructionKeyFrames(animationJsonObject)) {
             val startTick = (key.toDoubleOrNull() ?: 0.0) * 20.0
-            if (value.isJsonArray) {
-                val array: JsonArray = value.asJsonArray
-                val values: Array<IValue> = JsonMolangUtils.getExpressions(array, parser, mergeMultilineExpr)
-                customInstructionKeyframes.add(EventKeyFrame(startTick, values))
-            } else if (value.isJsonPrimitive && value.asJsonPrimitive.isString) {
-                val values: Array<IValue> = arrayOf(parser.parseExpression(value.asString, false))
-                customInstructionKeyframes.add(EventKeyFrame(startTick, values))
+            when {
+                value.isJsonArray -> {
+                    val array: JsonArray = value.asJsonArray
+                    val values: Array<IValue> = JsonMolangUtils.getExpressions(array, parser, mergeMultilineExpr)
+                    customInstructionKeyframes.add(EventKeyFrame(startTick, values))
+                }
+
+                value.isJsonPrimitive && value.asJsonPrimitive.isString -> {
+                    val values: Array<IValue> = arrayOf(parser.parseExpression(value.asString, false))
+                    customInstructionKeyframes.add(EventKeyFrame(startTick, values))
+                }
             }
         }
 

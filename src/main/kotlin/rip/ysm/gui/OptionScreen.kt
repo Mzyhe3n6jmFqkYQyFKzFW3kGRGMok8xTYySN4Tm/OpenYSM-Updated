@@ -74,61 +74,71 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
         compactTabs = shouldUseCompactTabs()
         val tabs = showTabs()
 
-        if (!tabs) {
-            tabAreaLeft = panelLeft
-            tabAreaRight = panelLeft
-            tabAreaTop = panelTop + 6 + 18
-            tabAreaBottom = tabAreaTop
+        when {
+            !tabs -> {
+                tabAreaLeft = panelLeft
+                tabAreaRight = panelLeft
+                tabAreaTop = panelTop + 6 + 18
+                tabAreaBottom = tabAreaTop
 
-            rowAreaLeft = panelLeft
-            rowAreaTop = panelTop + 6 + 18
-            rowAreaRight = computeRowAreaRight()
-            rowAreaBottom = panelBottom - 60
-        } else if (compactTabs) {
-            tabAreaLeft = panelLeft
-            tabAreaRight = panelRight
-            tabAreaTop = panelTop + 6 + 18
-            tabAreaBottom = tabAreaTop + 22
+                rowAreaLeft = panelLeft
+                rowAreaTop = panelTop + 6 + 18
+                rowAreaRight = computeRowAreaRight()
+                rowAreaBottom = panelBottom - 60
+            }
 
-            rowAreaLeft = panelLeft
-            rowAreaTop = tabAreaBottom + 4
-            rowAreaRight = computeRowAreaRight()
-            rowAreaBottom = panelBottom - 60
-        } else {
-            tabAreaLeft = panelLeft
-            tabAreaTop = panelTop + 6 + 18
-            tabAreaRight = panelLeft + 110
-            tabAreaBottom = panelBottom - 60
+            compactTabs -> {
+                tabAreaLeft = panelLeft
+                tabAreaRight = panelRight
+                tabAreaTop = panelTop + 6 + 18
+                tabAreaBottom = tabAreaTop + 22
 
-            rowAreaLeft = panelLeft + 110 + 6
-            rowAreaTop = panelTop + 6 + 18
-            rowAreaRight = computeRowAreaRight()
-            rowAreaBottom = panelBottom - 60
+                rowAreaLeft = panelLeft
+                rowAreaTop = tabAreaBottom + 4
+                rowAreaRight = computeRowAreaRight()
+                rowAreaBottom = panelBottom - 60
+            }
+
+            else -> {
+                tabAreaLeft = panelLeft
+                tabAreaTop = panelTop + 6 + 18
+                tabAreaRight = panelLeft + 110
+                tabAreaBottom = panelBottom - 60
+
+                rowAreaLeft = panelLeft + 110 + 6
+                rowAreaTop = panelTop + 6 + 18
+                rowAreaRight = computeRowAreaRight()
+                rowAreaBottom = panelBottom - 60
+            }
         }
 
         tabContentHeight = 0
         tabContentWidth = 0
-        if (tabs && compactTabs) {
-            var tabX = tabAreaLeft
-            for (g in groups) {
-                val textW = font.width(g.getTitle())
-                val w = Mth.clamp(textW + 16, 60, 140)
-                val tb = TabButton(tabX, tabAreaTop, w, 22, g, ::selectGroup)
-                tb.horizontal = true
-                tabButtons.add(tb)
-                tabX += w + 2
+        when {
+            tabs && compactTabs -> {
+                var tabX = tabAreaLeft
+                for (g in groups) {
+                    val textW = font.width(g.getTitle())
+                    val w = Mth.clamp(textW + 16, 60, 140)
+                    val tb = TabButton(tabX, tabAreaTop, w, 22, g, ::selectGroup)
+                    tb.horizontal = true
+                    tabButtons.add(tb)
+                    tabX += w + 2
+                }
+                tabContentWidth = tabX - tabAreaLeft
+                maxTabScroll = max(0, tabContentWidth - (tabAreaRight - tabAreaLeft))
             }
-            tabContentWidth = tabX - tabAreaLeft
-            maxTabScroll = max(0, tabContentWidth - (tabAreaRight - tabAreaLeft))
-        } else if (tabs) {
-            var tabY = tabAreaTop
-            for (g in groups) {
-                val tb = TabButton(tabAreaLeft, tabY, 110, 22, g, ::selectGroup)
-                tabButtons.add(tb)
-                tabY += 22
+
+            tabs -> {
+                var tabY = tabAreaTop
+                for (g in groups) {
+                    val tb = TabButton(tabAreaLeft, tabY, 110, 22, g, ::selectGroup)
+                    tabButtons.add(tb)
+                    tabY += 22
+                }
+                tabContentHeight = tabY - tabAreaTop
+                maxTabScroll = max(0, tabContentHeight - (tabAreaBottom - tabAreaTop))
             }
-            tabContentHeight = tabY - tabAreaTop
-            maxTabScroll = max(0, tabContentHeight - (tabAreaBottom - tabAreaTop))
         }
         tabScrollOffset = 0
         tabScrollDisplay = 0f
@@ -214,23 +224,35 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
         }
         if (selectedIndex >= 0 && maxTabScroll > 0) {
             val sel = tabButtons[selectedIndex]
-            if (compactTabs) {
-                val btnLeft = sel.x - tabAreaLeft
-                val btnRight = btnLeft + sel.width
-                val viewW = tabAreaRight - tabAreaLeft
-                if (btnLeft < tabScrollOffset) {
-                    tabScrollOffset = btnLeft
-                } else if (btnRight > tabScrollOffset + viewW) {
-                    tabScrollOffset = btnRight - viewW
+            when {
+                compactTabs -> {
+                    val btnLeft = sel.x - tabAreaLeft
+                    val btnRight = btnLeft + sel.width
+                    val viewW = tabAreaRight - tabAreaLeft
+                    when {
+                        btnLeft < tabScrollOffset -> {
+                            tabScrollOffset = btnLeft
+                        }
+
+                        btnRight > tabScrollOffset + viewW -> {
+                            tabScrollOffset = btnRight - viewW
+                        }
+                    }
                 }
-            } else {
-                val btnTop = selectedIndex * 22
-                val btnBot = btnTop + 22
-                val viewH = tabAreaBottom - tabAreaTop
-                if (btnTop < tabScrollOffset) {
-                    tabScrollOffset = btnTop
-                } else if (btnBot > tabScrollOffset + viewH) {
-                    tabScrollOffset = btnBot - viewH
+
+                else -> {
+                    val btnTop = selectedIndex * 22
+                    val btnBot = btnTop + 22
+                    val viewH = tabAreaBottom - tabAreaTop
+                    when {
+                        btnTop < tabScrollOffset -> {
+                            tabScrollOffset = btnTop
+                        }
+
+                        btnBot > tabScrollOffset + viewH -> {
+                            tabScrollOffset = btnBot - viewH
+                        }
+                    }
                 }
             }
             tabScrollOffset = Mth.clamp(tabScrollOffset, 0, maxTabScroll)
@@ -301,7 +323,7 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
         hoveredRow = null
         if (inRowArea) {
             for (row in activeRows) {
-                if (mouseX in row.x until (row.x + row.width) && adjMouseY in row.y until (row.y + row.height)) {
+                if (mouseX in row.x until row.x + row.width && adjMouseY in row.y until row.y + row.height) {
                     hoveredRow = row
                     break
                 }

@@ -54,16 +54,30 @@ object AnimationRouletteKey {
                                 val modelAssembly = cap.getModelAssembly()
                                 if (modelAssembly != null && modelAssembly.modelData.modelProperties.extraAnimation.isNotEmpty()) {
                                     val currentScreen = Minecraft.getInstance().screen
-                                    if (currentScreen == null) {
-                                        if (GeneralConfig.effectiveModernRoulette()) {
-                                            Minecraft.getInstance()
-                                                .setScreen(ModernAnimationRouletteScreen(modelId, modelAssembly, cap))
-                                        } else {
-                                            Minecraft.getInstance()
-                                                .setScreen(AnimationRouletteScreen(modelId, modelAssembly, cap))
+                                    when (currentScreen) {
+                                        null -> {
+                                            when {
+                                                GeneralConfig.effectiveModernRoulette() -> {
+                                                    Minecraft.getInstance()
+                                                        .setScreen(
+                                                            ModernAnimationRouletteScreen(
+                                                                modelId,
+                                                                modelAssembly,
+                                                                cap
+                                                            )
+                                                        )
+                                                }
+
+                                                else -> {
+                                                    Minecraft.getInstance()
+                                                        .setScreen(AnimationRouletteScreen(modelId, modelAssembly, cap))
+                                                }
+                                            }
                                         }
-                                    } else if (currentScreen is AnimationRouletteScreen || currentScreen is ModernAnimationRouletteScreen) {
-                                        Minecraft.getInstance().setScreen(null)
+
+                                        is AnimationRouletteScreen, is ModernAnimationRouletteScreen -> {
+                                            Minecraft.getInstance().setScreen(null)
+                                        }
                                     }
                                 }
                             }

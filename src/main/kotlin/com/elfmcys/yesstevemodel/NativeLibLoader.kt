@@ -61,9 +61,13 @@ object NativeLibLoader {
             if (other !is ErrorState) return false
             if (component != other.component) return false
             if (key != other.key) return false
-            if (args != null) {
-                if (other.args == null || !args.contentEquals(other.args)) return false
-            } else if (other.args != null) return false
+            when {
+                args != null -> {
+                    if (other.args == null || !args.contentEquals(other.args)) return false
+                }
+
+                other.args != null -> return false
+            }
             return logMsg == other.logMsg
         }
 

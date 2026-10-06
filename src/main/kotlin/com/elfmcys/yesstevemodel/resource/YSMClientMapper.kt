@@ -240,10 +240,14 @@ object YSMClientMapper {
             for (sub in rt.subTextures) {
                 if (sub.data == null) continue
                 val processedSubData = toPng(sub.data, sub.imageFormat, sub.width, sub.height) ?: ByteArray(0)
-                if (sub.specularType == 1) {
-                    suffixTextures[ShadersTextureType.NORMAL] = OuterFileTexture(processedSubData)
-                } else if (sub.specularType == 2) {
-                    suffixTextures[ShadersTextureType.SPECULAR] = OuterFileTexture(processedSubData)
+                when (sub.specularType) {
+                    1 -> {
+                        suffixTextures[ShadersTextureType.NORMAL] = OuterFileTexture(processedSubData)
+                    }
+
+                    2 -> {
+                        suffixTextures[ShadersTextureType.SPECULAR] = OuterFileTexture(processedSubData)
+                    }
                 }
             }
             tex.setSuffixTextures(suffixTextures)
@@ -416,14 +420,22 @@ object YSMClientMapper {
                     isZeroThickness = false
                 }
 
-                if (forceCull) {
-                    bc.cullable = true
-                } else if (hasTranslucentFace) {
-                    bc.cullable = false
-                } else if (isZeroThickness && validFaceCount > 1) {
-                    bc.cullable = true
-                } else {
-                    bc.cullable = validFaceCount >= 5
+                when {
+                    forceCull -> {
+                        bc.cullable = true
+                    }
+
+                    hasTranslucentFace -> {
+                        bc.cullable = false
+                    }
+
+                    isZeroThickness && validFaceCount > 1 -> {
+                        bc.cullable = true
+                    }
+
+                    else -> {
+                        bc.cullable = validFaceCount >= 5
+                    }
                 }
 
                 if (bc.quads.isNotEmpty()) {
@@ -444,11 +456,13 @@ object YSMClientMapper {
                     }
                 }
             }
-            if (b.name == "LeftArm") b.partMask = 1
-            else if (b.name == "RightArm") b.partMask = 2
-            else if (b.name == "Background") b.partMask = 3
-            else if (b.parentIdx != -1) b.partMask = bakedBones[b.parentIdx].partMask
-            else b.partMask = 0
+            when {
+                b.name == "LeftArm" -> b.partMask = 1
+                b.name == "RightArm" -> b.partMask = 2
+                b.name == "Background" -> b.partMask = 3
+                b.parentIdx != -1 -> b.partMask = bakedBones[b.parentIdx].partMask
+                else -> b.partMask = 0
+            }
         }
 
         val translucencyArray = scanner?.getResults() ?: BooleanArray(max(1, textureCount))

@@ -27,23 +27,23 @@ object YesModelUtils {
 
     @JvmStatic
     fun getYsmCryptoVersion(fileData: ByteArray?): Int {
-        if (fileData == null || fileData.size < 8) {
-            return -1
-        }
+        if (fileData == null || fileData.size < 8) return -1
 
         // EF BB BF YSGP
         if (fileData[0] == 0xEF.toByte() && fileData[1] == 0xBB.toByte() && fileData[2] == 0xBF.toByte() &&
             fileData[3] == 0x59.toByte() && fileData[4] == 0x53.toByte() && fileData[5] == 0x47.toByte() && fileData[6] == 0x50.toByte()
-        ) {
-            return 3
-        }
+        ) return 3
 
         if (fileData[0] == 0x59.toByte() && fileData[1] == 0x53.toByte() && fileData[2] == 0x47.toByte() && fileData[3] == 0x50.toByte()) {
             val cryptoVersion = ByteBuffer.wrap(fileData, 4, 4).order(ByteOrder.BIG_ENDIAN).getInt()
-            if (cryptoVersion == 2) {
-                return 2
-            } else if (cryptoVersion == 1) {
-                return 1
+            when (cryptoVersion) {
+                2 -> {
+                    return 2
+                }
+
+                1 -> {
+                    return 1
+                }
             }
         }
 
@@ -63,9 +63,7 @@ object YesModelUtils {
     @Throws(IOException::class)
     fun input(ysmFile: File): Map<String, ByteArray> {
         val fileName = removeExtension(ysmFile.name)
-        if (Identifier.tryParse(fileName) == null) {
-            return emptyMap()
-        }
+        if (Identifier.tryParse(fileName) == null) return emptyMap()
         val data = FileUtils.readFileToByteArray(ysmFile)
         val head = ByteInteger.bytes2Int(data, 0)
         val version = ByteInteger.bytes2Int(data, 4)
@@ -74,18 +72,12 @@ object YesModelUtils {
 
     @Throws(IOException::class)
     private fun inputInternal(data: ByteArray, head: Int, version: Int): Map<String, ByteArray> {
-        if (head != HEAD) {
-            return emptyMap()
-        }
-        if (version != VERSION && version != VERSION_II) {
-            return emptyMap()
-        }
+        if (head != HEAD) return emptyMap()
+        if (version != VERSION && version != VERSION_II) return emptyMap()
 
         val md5 = ByteArrays.copy(data, 8, 16)
         val modelFilesData = ByteArrays.copy(data, 24, data.size - 24)
-        if (!md5.contentEquals(DigestUtil.md5(modelFilesData))) {
-            return emptyMap()
-        }
+        if (!md5.contentEquals(DigestUtil.md5(modelFilesData))) return emptyMap()
 
         val outputs = HashMap<String, ByteArray>()
         val tmp = ByteArrayInputStream(modelFilesData)

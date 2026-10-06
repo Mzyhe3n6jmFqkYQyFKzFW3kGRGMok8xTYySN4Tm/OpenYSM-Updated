@@ -286,47 +286,53 @@ object ModelPreviewRenderer {
     ) {
         val entity = animatableEntity.entity
         val animationTracker = (animatableEntity as IPreviewAnimatable).getAnimationStateMachine()
-        if (animationTracker.isCurrentAnimation("ride")) {
-            AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.HORSE)) {
-                EntityType.HORSE.create(entity.level(), EntitySpawnReason.LOAD)
-            }.let {
-                renderVehicleEntity(
-                    yaw,
-                    entity,
-                    poseStack,
-                    entityRenderDispatcher,
-                    bufferSource,
-                    it,
-                    partialTick
-                )
+        when {
+            animationTracker.isCurrentAnimation("ride") -> {
+                AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.HORSE)) {
+                    EntityType.HORSE.create(entity.level(), EntitySpawnReason.LOAD)
+                }.let {
+                    renderVehicleEntity(
+                        yaw,
+                        entity,
+                        poseStack,
+                        entityRenderDispatcher,
+                        bufferSource,
+                        it,
+                        partialTick
+                    )
+                }
             }
-        } else if (animationTracker.isCurrentAnimation("ride_pig")) {
-            AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.PIG)) {
-                EntityType.PIG.create(entity.level(), EntitySpawnReason.LOAD)
-            }.let {
-                renderVehicleEntity(
-                    yaw,
-                    entity,
-                    poseStack,
-                    entityRenderDispatcher,
-                    bufferSource,
-                    it,
-                    partialTick
-                )
+
+            animationTracker.isCurrentAnimation("ride_pig") -> {
+                AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.PIG)) {
+                    EntityType.PIG.create(entity.level(), EntitySpawnReason.LOAD)
+                }.let {
+                    renderVehicleEntity(
+                        yaw,
+                        entity,
+                        poseStack,
+                        entityRenderDispatcher,
+                        bufferSource,
+                        it,
+                        partialTick
+                    )
+                }
             }
-        } else if (animationTracker.isCurrentAnimation("boat")) {
-            AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.OAK_BOAT)) {
-                EntityType.OAK_BOAT.create(entity.level(), EntitySpawnReason.LOAD)
-            }.let {
-                renderVehicleEntity(
-                    yaw,
-                    entity,
-                    poseStack,
-                    entityRenderDispatcher,
-                    bufferSource,
-                    it,
-                    partialTick
-                )
+
+            animationTracker.isCurrentAnimation("boat") -> {
+                AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.OAK_BOAT)) {
+                    EntityType.OAK_BOAT.create(entity.level(), EntitySpawnReason.LOAD)
+                }.let {
+                    renderVehicleEntity(
+                        yaw,
+                        entity,
+                        poseStack,
+                        entityRenderDispatcher,
+                        bufferSource,
+                        it,
+                        partialTick
+                    )
+                }
             }
         }
     }
@@ -625,42 +631,50 @@ object ModelPreviewRenderer {
         var scenery: PreviewEntityRegistry.SceneryRenderer? = null
         if (renderGround || wantBed || wantHorse || wantPig || wantBoat) {
             scenery = PreviewEntityRegistry.SceneryRenderer { poseStack, bufferSource, packedLight ->
-                if (wantHorse) {
-                    renderVehicleScenery(
-                        poseStack,
-                        bufferSource,
-                        packedLight,
-                        yaw,
-                        partialTick,
-                        entity,
-                        EntityType.HORSE
-                    )
-                } else if (wantPig) {
-                    renderVehicleScenery(
-                        poseStack,
-                        bufferSource,
-                        packedLight,
-                        yaw,
-                        partialTick,
-                        entity,
-                        EntityType.PIG
-                    )
-                } else if (wantBoat) {
-                    renderVehicleScenery(
-                        poseStack,
-                        bufferSource,
-                        packedLight,
-                        yaw,
-                        partialTick,
-                        entity,
-                        EntityType.OAK_BOAT
-                    )
-                }
-                if (wantBed) {
-                    renderBedScenery(poseStack, bufferSource, packedLight, yaw)
-                }
-                if (renderGround) {
-                    renderGroundScenery(poseStack, bufferSource, packedLight, yaw)
+                when {
+                    wantHorse -> {
+                        renderVehicleScenery(
+                            poseStack,
+                            bufferSource,
+                            packedLight,
+                            yaw,
+                            partialTick,
+                            entity,
+                            EntityType.HORSE
+                        )
+                    }
+
+                    wantPig -> {
+                        renderVehicleScenery(
+                            poseStack,
+                            bufferSource,
+                            packedLight,
+                            yaw,
+                            partialTick,
+                            entity,
+                            EntityType.PIG
+                        )
+                    }
+
+                    wantBoat -> {
+                        renderVehicleScenery(
+                            poseStack,
+                            bufferSource,
+                            packedLight,
+                            yaw,
+                            partialTick,
+                            entity,
+                            EntityType.OAK_BOAT
+                        )
+                    }
+
+                    wantBed -> {
+                        renderBedScenery(poseStack, bufferSource, packedLight, yaw)
+                    }
+
+                    renderGround -> {
+                        renderGroundScenery(poseStack, bufferSource, packedLight, yaw)
+                    }
                 }
             }
         }

@@ -57,11 +57,15 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
         context.setAudioPlayerManager(audioPlayerManager)
         val evaluator = ExpressionEvaluator.evaluator(context)
         val seekTime = event.currentTick
-        if (seekTime - lastAudioTickTime >= 1200.0f) {
-            audioPlayerManager.tick()
-            lastAudioTickTime = seekTime
-        } else if (lastAudioTickTime > seekTime) {
-            lastAudioTickTime = seekTime
+        when {
+            seekTime - lastAudioTickTime >= 1200.0f -> {
+                audioPlayerManager.tick()
+                lastAudioTickTime = seekTime
+            }
+
+            lastAudioTickTime > seekTime -> {
+                lastAudioTickTime = seekTime
+            }
         }
         preProcess(evaluator)
         val manager = animatable.getAnimationData()

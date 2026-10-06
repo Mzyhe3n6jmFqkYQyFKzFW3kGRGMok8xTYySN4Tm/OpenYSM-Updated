@@ -53,10 +53,14 @@ object CustomVehicleRenderer {
     @JvmStatic
     fun getBodyRotation(entity: Entity, entityYaw: Float, partialTick: Float): Float {
         var bodyRotation = entityYaw
-        if (entity is LivingEntity) {
-            bodyRotation = getLivingBodyRotation(entity, partialTick)
-        } else if (entity is AbstractMinecart) {
-            bodyRotation = getMinecartBodyRotation(entity, partialTick, bodyRotation)
+        when (entity) {
+            is LivingEntity -> {
+                bodyRotation = getLivingBodyRotation(entity, partialTick)
+            }
+
+            is AbstractMinecart -> {
+                bodyRotation = getMinecartBodyRotation(entity, partialTick, bodyRotation)
+            }
         }
         return bodyRotation
     }
@@ -87,7 +91,7 @@ object CustomVehicleRenderer {
         val interpY = Mth.lerp(partialTick.toDouble(), minecart.yOld, minecart.y)
         val interpZ = Mth.lerp(partialTick.toDouble(), minecart.zOld, minecart.z)
         val behavior: MinecartBehavior = minecart.behavior
-        val interpPos: Vec3? = if (behavior is OldMinecartBehavior) {
+        val interpPos = if (behavior is OldMinecartBehavior) {
             behavior.getPos(interpX, interpY, interpZ)
         } else {
             Vec3(interpX, interpY, interpZ)
@@ -96,19 +100,19 @@ object CustomVehicleRenderer {
         var calculatedYaw = defaultYaw
 
         if (interpPos != null) {
-            val frontOffsetPos: Vec3 = (if (behavior is OldMinecartBehavior) {
+            val frontOffsetPos = (if (behavior is OldMinecartBehavior) {
                 behavior.getPosOffs(interpX, interpY, interpZ, 0.30000001192092896)
             } else {
                 Vec3(interpX, interpY, interpZ)
             }) ?: interpPos
 
-            val backOffsetPos: Vec3 = (if (behavior is OldMinecartBehavior) {
+            val backOffsetPos = (if (behavior is OldMinecartBehavior) {
                 behavior.getPosOffs(interpX, interpY, interpZ, -0.30000001192092896)
             } else {
                 Vec3(interpX, interpY, interpZ)
             }) ?: interpPos
 
-            val directionVec: Vec3 = backOffsetPos.add(-frontOffsetPos.x, -frontOffsetPos.y, -frontOffsetPos.z)
+            val directionVec = backOffsetPos.add(-frontOffsetPos.x, -frontOffsetPos.y, -frontOffsetPos.z)
             if (directionVec.length() != 0.0) {
                 calculatedYaw = (atan2(directionVec.z, directionVec.x) * 180.0 / Math.PI).toFloat()
             }

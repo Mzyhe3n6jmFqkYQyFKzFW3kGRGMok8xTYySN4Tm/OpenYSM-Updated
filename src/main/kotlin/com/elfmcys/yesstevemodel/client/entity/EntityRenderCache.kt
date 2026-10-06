@@ -25,32 +25,48 @@ object EntityRenderCache {
         val it = weakRefs.iterator()
         while (it.hasNext()) {
             val geoEntity = it.next().get()
-            if (geoEntity == null) {
-                it.remove()
-            } else if (!geoEntity.isDebugMode()) {
-                it.remove()
-            } else {
-                geoEntity.tickModel()
-                if (geoEntity.supportsAsync() && geoEntity.isModelInitialized() && geoEntity.isModelReady()) {
-                    val entity = geoEntity.entity
-                    if (entity is AbstractClientPlayer) {
-                        if (entity is LocalPlayer) {
-                            if (!GeneralConfig.DISABLE_SELF_MODEL.get()) {
+            when {
+                geoEntity == null -> {
+                    it.remove()
+                }
+
+                !geoEntity.isDebugMode() -> {
+                    it.remove()
+                }
+
+                else -> {
+                    geoEntity.tickModel()
+                    if (geoEntity.supportsAsync() && geoEntity.isModelInitialized() && geoEntity.isModelReady()) {
+                        val entity = geoEntity.entity
+                        when {
+                            entity is AbstractClientPlayer -> {
+                                when {
+                                    entity is LocalPlayer -> {
+                                        if (!GeneralConfig.DISABLE_SELF_MODEL.get()) {
+                                            geoEntity.submitAsyncUpdate(partialTick)
+                                            strongRefs.add(geoEntity)
+                                        }
+                                    }
+
+                                    !GeneralConfig.DISABLE_OTHER_MODEL.get() -> {
+                                        geoEntity.submitAsyncUpdate(partialTick)
+                                        strongRefs.add(geoEntity)
+                                    }
+                                }
+                            }
+
+                            entity is Projectile -> {
+                                if (!GeneralConfig.DISABLE_PROJECTILE_MODEL.get()) {
+                                    geoEntity.submitAsyncUpdate(partialTick)
+                                    strongRefs.add(geoEntity)
+                                }
+                            }
+
+                            !GeneralConfig.DISABLE_VEHICLE_MODEL.get() -> {
                                 geoEntity.submitAsyncUpdate(partialTick)
                                 strongRefs.add(geoEntity)
                             }
-                        } else if (!GeneralConfig.DISABLE_OTHER_MODEL.get()) {
-                            geoEntity.submitAsyncUpdate(partialTick)
-                            strongRefs.add(geoEntity)
                         }
-                    } else if (entity is Projectile) {
-                        if (!GeneralConfig.DISABLE_PROJECTILE_MODEL.get()) {
-                            geoEntity.submitAsyncUpdate(partialTick)
-                            strongRefs.add(geoEntity)
-                        }
-                    } else if (!GeneralConfig.DISABLE_VEHICLE_MODEL.get()) {
-                        geoEntity.submitAsyncUpdate(partialTick)
-                        strongRefs.add(geoEntity)
                     }
                 }
             }

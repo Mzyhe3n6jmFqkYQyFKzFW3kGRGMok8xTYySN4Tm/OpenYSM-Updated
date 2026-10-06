@@ -139,14 +139,18 @@ abstract class LivingAnimatable<T : LivingEntity>(
                 getModelAssembly()?.animationBundle?.textures
             if (map != null) {
                 val abstractTexture = map[currentTextureName]
-                if (abstractTexture != null) {
-                    (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(abstractTexture)
-                    textureIndex = map.getValuesList().indexOf(abstractTexture)
-                } else if (!map.isEmpty()) {
-                    currentTextureName = map.getKeyAt(0)
-                    map.getValueAt(0)
-                        .let { (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(it) }
-                    textureIndex = 0
+                when {
+                    abstractTexture != null -> {
+                        (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(abstractTexture)
+                        textureIndex = map.getValuesList().indexOf(abstractTexture)
+                    }
+
+                    !map.isEmpty() -> {
+                        currentTextureName = map.getKeyAt(0)
+                        map.getValueAt(0)
+                            .let { (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(it) }
+                        textureIndex = 0
+                    }
                 }
             }
         }

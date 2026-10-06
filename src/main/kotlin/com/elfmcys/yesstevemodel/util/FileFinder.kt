@@ -11,17 +11,25 @@ object FileFinder {
     }
 
     private fun findFiles(path: File, filter: (File) -> Boolean, list: MutableList<File>) {
-        if (path.isDirectory) {
-            val files = path.listFiles() ?: return
-            for (file in files) {
-                if (file.isDirectory) {
-                    findFiles(file, filter, list)
-                } else if (filter(file)) {
-                    list.add(file)
+        when {
+            path.isDirectory -> {
+                val files = path.listFiles() ?: return
+                for (file in files) {
+                    when {
+                        file.isDirectory -> {
+                            findFiles(file, filter, list)
+                        }
+
+                        filter(file) -> {
+                            list.add(file)
+                        }
+                    }
                 }
             }
-        } else if (filter(path)) {
-            list.add(path)
+
+            filter(path) -> {
+                list.add(path)
+            }
         }
     }
 }

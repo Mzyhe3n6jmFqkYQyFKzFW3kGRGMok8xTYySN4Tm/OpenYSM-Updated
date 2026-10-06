@@ -92,91 +92,95 @@ open class CityHash {
     }
 
     fun hash64(byteArray: ByteArray, base: Int, len: Int): Long {
-        if (len <= 32) {
-            return if (len <= 16) {
-                hashLen0to16(byteArray, base, len)
-            } else {
-                hashLen17to32(byteArray, base, len)
+        when {
+            len <= 32 -> {
+                return if (len <= 16) {
+                    hashLen0to16(byteArray, base, len)
+                } else {
+                    hashLen17to32(byteArray, base, len)
+                }
             }
-        } else if (len <= 64) {
-            return hashLen33to64(byteArray, base, len)
+
+            len <= 64 -> {
+                return hashLen33to64(byteArray, base, len)
+            }
+
+            else -> {
+                var x = fetch64(byteArray, base + len - 40)
+                var y = fetch64(byteArray, base + len - 16) + fetch64(byteArray, base + len - 56)
+                var z = hashLen16(fetch64(byteArray, base + len - 48) + len, fetch64(byteArray, base + len - 24))
+                var vLow: Long
+                var vHi: Long
+                var w0 = fetch64(byteArray, base + len - 64)
+                var x0 = fetch64(byteArray, base + len - 56)
+                var y0 = fetch64(byteArray, base + len - 48)
+                var z0 = fetch64(byteArray, base + len - 40)
+                var a = len.toLong() + w0
+                var b = rotate(z + a + z0, 21)
+                var c = a
+                a += x0
+                a += y0
+                b += rotate(a, 44)
+                vLow = a + z0
+                vHi = b + c
+                var wLow: Long
+                var wHi: Long
+                w0 = fetch64(byteArray, base + len - 32)
+                x0 = fetch64(byteArray, base + len - 24)
+                y0 = fetch64(byteArray, base + len - 16)
+                z0 = fetch64(byteArray, base + len - 8)
+                a = y + K1 + w0
+                b = rotate(x + a + z0, 21)
+                c = a
+                a += x0
+                a += y0
+                b += rotate(a, 44)
+                wLow = a + z0
+                wHi = b + c
+                x = x * K1 + fetch64(byteArray, base)
+
+                // len > 64
+                var remaining = (len - 1) and 63.inv()
+                var pos = base
+                do {
+                    x = rotate(x + y + vLow + fetch64(byteArray, pos + 8), 37) * K1
+                    y = rotate(y + vHi + fetch64(byteArray, pos + 48), 42) * K1
+                    x = x xor wHi
+                    y += vLow + fetch64(byteArray, pos + 40)
+                    z = rotate(z + wLow, 33) * K1
+                    w0 = fetch64(byteArray, pos)
+                    x0 = fetch64(byteArray, pos + 8)
+                    y0 = fetch64(byteArray, pos + 16)
+                    z0 = fetch64(byteArray, pos + 24)
+                    a = vHi * K1 + w0
+                    b = rotate(x + wLow + a + z0, 21)
+                    c = a
+                    a += x0
+                    a += y0
+                    b += rotate(a, 44)
+                    vLow = a + z0
+                    vHi = b + c
+                    w0 = fetch64(byteArray, pos + 32)
+                    x0 = fetch64(byteArray, pos + 40)
+                    y0 = fetch64(byteArray, pos + 48)
+                    z0 = fetch64(byteArray, pos + 56)
+                    a = z + wHi + w0
+                    b = rotate(y + fetch64(byteArray, pos + 16) + a + z0, 21)
+                    c = a
+                    a += x0
+                    a += y0
+                    b += rotate(a, 44)
+                    wLow = a + z0
+                    wHi = b + c
+                    val swapValue = x
+                    x = z
+                    z = swapValue
+                    pos += 64
+                    remaining -= 64
+                } while (remaining != 0)
+                return hashLen16(hashLen16(vLow, wLow) + shiftMix(y) * K1 + z, hashLen16(vHi, wHi) + x)
+            }
         }
-
-        // For strings over 64 bytes we hash the end first, and then as we
-        // loop we keep 56 bytes of state: v, w, x, y, and z.
-        var x = fetch64(byteArray, base + len - 40)
-        var y = fetch64(byteArray, base + len - 16) + fetch64(byteArray, base + len - 56)
-        var z = hashLen16(fetch64(byteArray, base + len - 48) + len, fetch64(byteArray, base + len - 24))
-        var vLow: Long
-        var vHi: Long
-        var w0 = fetch64(byteArray, base + len - 64)
-        var x0 = fetch64(byteArray, base + len - 56)
-        var y0 = fetch64(byteArray, base + len - 48)
-        var z0 = fetch64(byteArray, base + len - 40)
-        var a = len.toLong() + w0
-        var b = rotate(z + a + z0, 21)
-        var c = a
-        a += x0
-        a += y0
-        b += rotate(a, 44)
-        vLow = a + z0
-        vHi = b + c
-        var wLow: Long
-        var wHi: Long
-        w0 = fetch64(byteArray, base + len - 32)
-        x0 = fetch64(byteArray, base + len - 24)
-        y0 = fetch64(byteArray, base + len - 16)
-        z0 = fetch64(byteArray, base + len - 8)
-        a = y + K1 + w0
-        b = rotate(x + a + z0, 21)
-        c = a
-        a += x0
-        a += y0
-        b += rotate(a, 44)
-        wLow = a + z0
-        wHi = b + c
-        x = x * K1 + fetch64(byteArray, base)
-
-        // len > 64
-        var remaining = (len - 1) and 63.inv()
-        var pos = base
-        do {
-            x = rotate(x + y + vLow + fetch64(byteArray, pos + 8), 37) * K1
-            y = rotate(y + vHi + fetch64(byteArray, pos + 48), 42) * K1
-            x = x xor wHi
-            y += vLow + fetch64(byteArray, pos + 40)
-            z = rotate(z + wLow, 33) * K1
-            w0 = fetch64(byteArray, pos)
-            x0 = fetch64(byteArray, pos + 8)
-            y0 = fetch64(byteArray, pos + 16)
-            z0 = fetch64(byteArray, pos + 24)
-            a = vHi * K1 + w0
-            b = rotate(x + wLow + a + z0, 21)
-            c = a
-            a += x0
-            a += y0
-            b += rotate(a, 44)
-            vLow = a + z0
-            vHi = b + c
-            w0 = fetch64(byteArray, pos + 32)
-            x0 = fetch64(byteArray, pos + 40)
-            y0 = fetch64(byteArray, pos + 48)
-            z0 = fetch64(byteArray, pos + 56)
-            a = z + wHi + w0
-            b = rotate(y + fetch64(byteArray, pos + 16) + a + z0, 21)
-            c = a
-            a += x0
-            a += y0
-            b += rotate(a, 44)
-            wLow = a + z0
-            wHi = b + c
-            val swapValue = x
-            x = z
-            z = swapValue
-            pos += 64
-            remaining -= 64
-        } while (remaining != 0)
-        return hashLen16(hashLen16(vLow, wLow) + shiftMix(y) * K1 + z, hashLen16(vHi, wHi) + x)
     }
 
     fun hash64WithSeeds(raw: ByteArray, seed0: Long, seed1: Long): Long {
@@ -217,9 +221,7 @@ open class CityHash {
 
     fun hash128WithSeed(byteArray: ByteArray, start: Int, seed: Number128): Number128 {
         var len = byteArray.size - start
-        if (len < 128) {
-            return cityMurmur(byteArray.copyOfRange(start, byteArray.size), seed)
-        }
+        if (len < 128) return cityMurmur(byteArray.copyOfRange(start, byteArray.size), seed)
 
         var v = Number128()
         var w = Number128()

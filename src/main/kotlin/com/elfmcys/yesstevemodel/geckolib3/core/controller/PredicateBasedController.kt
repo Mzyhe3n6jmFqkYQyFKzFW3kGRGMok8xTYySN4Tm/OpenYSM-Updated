@@ -185,32 +185,38 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
 
         override fun getRotation(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
             val point = data.rotationQueue ?: return null
-            if (point is ConstantPoint) {
-                mutableVector.set(point.getLerpPoint(evaluator))
-                mutableVector.setPercentCompleted(point.getPercentCompleted())
-                val blendWeight = data.getBlendWeight()
-                if (blendWeight != 1.0f) {
-                    mutableVector.mul(blendWeight)
+            when (point) {
+                is ConstantPoint -> {
+                    mutableVector.set(point.getLerpPoint(evaluator))
+                    mutableVector.setPercentCompleted(point.getPercentCompleted())
+                    val blendWeight = data.getBlendWeight()
+                    if (blendWeight != 1.0f) {
+                        mutableVector.mul(blendWeight)
+                    }
                 }
-            } else if (point is TransitionPoint) {
-                val vector3fMul = point.evaluateRaw(evaluator).mul(data.getBlendWeight())
-                MathUtil.nlerpEulerAngles(
-                    point.getLerpFactor(),
-                    point.getOffsetPoint(),
-                    vector3fMul,
-                    data.topLevelSnapshot.bone.getInitialRotation(),
-                    vector3fMul,
-                    rotScratch
-                )
-                mutableVector.set(vector3fMul)
-                mutableVector.setPercentCompleted(0.0f)
-            } else {
-                mutableVector.set(point.getLerpPoint(evaluator))
-                val blendWeight2 = data.getBlendWeight()
-                if (blendWeight2 != 1.0f) {
-                    mutableVector.mul(blendWeight2)
+
+                is TransitionPoint -> {
+                    val vector3fMul = point.evaluateRaw(evaluator).mul(data.getBlendWeight())
+                    MathUtil.nlerpEulerAngles(
+                        point.getLerpFactor(),
+                        point.getOffsetPoint(),
+                        vector3fMul,
+                        data.topLevelSnapshot.bone.getInitialRotation(),
+                        vector3fMul,
+                        rotScratch
+                    )
+                    mutableVector.set(vector3fMul)
+                    mutableVector.setPercentCompleted(0.0f)
                 }
-                mutableVector.setPercentCompleted(0.0f)
+
+                else -> {
+                    mutableVector.set(point.getLerpPoint(evaluator))
+                    val blendWeight2 = data.getBlendWeight()
+                    if (blendWeight2 != 1.0f) {
+                        mutableVector.mul(blendWeight2)
+                    }
+                    mutableVector.setPercentCompleted(0.0f)
+                }
             }
             return mutableVector
         }
@@ -219,13 +225,17 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
             val point = data.positionQueue ?: return null
             mutableVector.set(point.getLerpPoint(evaluator))
             var blendWeight = data.getBlendWeight()
-            if (point is ConstantPoint) {
-                mutableVector.setPercentCompleted(point.getPercentCompleted())
-            } else {
-                if (point is TransitionPoint) {
-                    blendWeight = MathUtil.lerpValues(point.getLerpFactor(), 1.0f, blendWeight)
+            when (point) {
+                is ConstantPoint -> {
+                    mutableVector.setPercentCompleted(point.getPercentCompleted())
                 }
-                mutableVector.setPercentCompleted(0.0f)
+
+                else -> {
+                    if (point is TransitionPoint) {
+                        blendWeight = MathUtil.lerpValues(point.getLerpFactor(), 1.0f, blendWeight)
+                    }
+                    mutableVector.setPercentCompleted(0.0f)
+                }
             }
             if (blendWeight != 1.0f) {
                 mutableVector.mul(blendWeight)

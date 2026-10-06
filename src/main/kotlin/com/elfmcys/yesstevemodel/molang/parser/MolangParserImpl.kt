@@ -10,15 +10,13 @@ class MolangParserImpl(
     private val lexer: MolangLexer,
     private val binding: ObjectBinding
 ) : MolangParser {
-
     private var current: Any? = UNSET_FLAG
 
     override fun lexer(): MolangLexer = lexer
 
     override fun current(): Expression {
-        if (current === UNSET_FLAG) {
+        if (current === UNSET_FLAG)
             throw IllegalStateException("No current parsed expression, call next() at least once!")
-        }
         return current as Expression
     }
 
@@ -73,15 +71,11 @@ class MolangParserImpl(
                         lexer.next()
                         return ExecutionScopeExpression(expressions)
                     }
-                    if (cur.kind == TokenKind.EOF) {
+                    if (cur.kind == TokenKind.EOF)
                         throw ParseException("Found the end before the execution scope closing token", lexer.cursor())
-                    }
-                    if (cur.kind == TokenKind.ERROR) {
+                    if (cur.kind == TokenKind.ERROR)
                         throw ParseException("Found an invalid token (error): ${cur.value}", lexer.cursor())
-                    }
-                    if (cur.kind != TokenKind.SEMICOLON) {
-                        throw ParseException("Missing semicolon", lexer.cursor())
-                    }
+                    if (cur.kind != TokenKind.SEMICOLON) throw ParseException("Missing semicolon", lexer.cursor())
                     token = lexer.next()
                 }
                 lexer.next()
@@ -158,12 +152,17 @@ class MolangParserImpl(
         while (true) {
             val compoundExpr = parseCompound(lexer, expr, lastPrecedence)
             val cur = lexer.current()
-            if (cur.kind == TokenKind.EOF || cur.kind == TokenKind.SEMICOLON) {
-                return compoundExpr
-            } else if (compoundExpr == expr) {
-                return expr
+            when {
+                cur.kind == TokenKind.EOF || cur.kind == TokenKind.SEMICOLON -> {
+                    return compoundExpr
+                }
+
+                compoundExpr == expr -> {
+                    return expr
+                }
+
+                else -> expr = compoundExpr
             }
-            expr = compoundExpr
         }
     }
 
@@ -171,9 +170,8 @@ class MolangParserImpl(
         var current = lexer.current()
         if (left is CallExpression) {
             if (current.kind == TokenKind.LPAREN) {
-                if (left.arguments() != CallExpression.EMPTY) {
+                if (left.arguments() != CallExpression.EMPTY)
                     throw ParseException("Multiple '()' after function name", lexer.cursor())
-                }
                 lexer.next()
                 val arguments = mutableListOf<Expression>()
                 current = lexer.current()
@@ -181,55 +179,51 @@ class MolangParserImpl(
                     while (true) {
                         arguments.add(parseCompoundExpression(lexer, 0))
                         current = lexer.current()
-                        if (current.kind == TokenKind.EOF) {
-                            throw ParseException("Found EOF before closing RPAREN", null)
-                        } else if (current.kind == TokenKind.RPAREN) {
-                            lexer.next()
-                            break
-                        } else {
-                            if (current.kind != TokenKind.COMMA) {
-                                throw ParseException("Expected a comma", lexer.cursor())
+                        when (current.kind) {
+                            TokenKind.EOF -> {
+                                throw ParseException("Found EOF before closing RPAREN", null)
                             }
-                            lexer.next()
+
+                            TokenKind.RPAREN -> {
+                                lexer.next()
+                                break
+                            }
+
+                            else -> {
+                                if (current.kind != TokenKind.COMMA) {
+                                    throw ParseException("Expected a comma", lexer.cursor())
+                                }
+                                lexer.next()
+                            }
                         }
                     }
-                } else {
-                    lexer.next()
-                }
+                } else lexer.next()
 
-                if (!left.function().validateArgumentSize(arguments.size)) {
+                if (!left.function().validateArgumentSize(arguments.size))
                     throw ParseException("Illegal function arguments size", lexer.cursor())
-                }
                 return CallExpression(left.function(), Function.ArgumentCollection(arguments))
             }
 
-            if (!left.function().validateArgumentSize(left.arguments().size())) {
+            if (!left.function().validateArgumentSize(left.arguments().size()))
                 throw ParseException("Illegal function arguments size", lexer.cursor())
-            }
         }
 
         when (current.kind) {
             TokenKind.RPAREN, TokenKind.EOF -> return left
             TokenKind.LPAREN -> {
-                if (lastPrecedence >= BinaryExpression.Op.MUL.precedence) {
-                    return left
-                }
+                if (lastPrecedence >= BinaryExpression.Op.MUL.precedence) return left
                 val right = parseCompoundExpression(lexer, BinaryExpression.Op.MUL.precedence)
                 return BinaryExpression(BinaryExpression.Op.MUL, left, right)
             }
 
             TokenKind.QUES -> {
-                if (lastPrecedence > PRECEDENCE_QUES) {
-                    return left
-                }
+                if (lastPrecedence > PRECEDENCE_QUES) return left
                 lexer.next()
                 val trueValue = parseCompoundExpression(lexer, PRECEDENCE_QUES)
                 return if (lexer.current().kind == TokenKind.COLON) {
                     lexer.next()
                     TernaryConditionalExpression(left, trueValue, parseCompoundExpression(lexer, PRECEDENCE_QUES))
-                } else {
-                    BinaryExpression(BinaryExpression.Op.CONDITIONAL, left, trueValue)
-                }
+                } else BinaryExpression(BinaryExpression.Op.CONDITIONAL, left, trueValue)
             }
 
             TokenKind.LBRACKET -> {
@@ -275,9 +269,7 @@ class MolangParserImpl(
         }
 
         val precedence = op.precedence
-        if (lastPrecedence >= precedence) {
-            return left
-        }
+        if (lastPrecedence >= precedence) return left
 
         lexer.next()
         return BinaryExpression(op, left, parseCompoundExpression(lexer, precedence))
@@ -285,17 +277,13 @@ class MolangParserImpl(
 
     private fun next0(): Expression? {
         var token = lexer.next()
-        if (token.kind == TokenKind.EOF) {
-            return null
-        }
-        if (token.kind == TokenKind.ERROR) {
+        if (token.kind == TokenKind.EOF) return null
+        if (token.kind == TokenKind.ERROR)
             throw ParseException("Found an invalid token (error): ${token.value}", cursor())
-        }
         val expression = parseCompoundExpression(lexer, -10)
         token = lexer.current()
-        if (token.kind != TokenKind.EOF && token.kind != TokenKind.SEMICOLON) {
+        if (token.kind != TokenKind.EOF && token.kind != TokenKind.SEMICOLON)
             throw ParseException("Expected a semicolon, but was $token", lexer.cursor())
-        }
         return expression
     }
 

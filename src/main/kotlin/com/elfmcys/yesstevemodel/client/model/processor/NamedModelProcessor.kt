@@ -18,8 +18,8 @@ open class NamedModelProcessor<T : GeoEntity<*>, TModel>(
 
     override fun process(modelData: TModel, resourceBundle: ModelResourceBundle): ControllerFactory<T> {
         var hasContent = false
-        if ((checkAnimationEntries && animationDataProvider.getAnimationEntries(modelData, resourceBundle)
-                .containsKey(animationEntryKey)) ||
+        if (checkAnimationEntries && animationDataProvider.getAnimationEntries(modelData, resourceBundle)
+                .containsKey(animationEntryKey) ||
             resourceBundle.events.containsKey(controllerKey)
         ) hasContent = true else if (requiredAnimations != null) {
             val animations = animationDataProvider.getAnimations(modelData, resourceBundle)

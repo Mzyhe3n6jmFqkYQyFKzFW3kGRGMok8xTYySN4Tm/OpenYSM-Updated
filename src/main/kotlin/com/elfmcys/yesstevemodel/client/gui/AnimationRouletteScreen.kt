@@ -511,27 +511,37 @@ class AnimationRouletteScreen : Screen {
 
     override fun mouseClicked(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
         val button = event.button()
-        if (hoveredIndex in 0 until currentProperties.size) {
-            Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
-            val key = currentProperties.getKeyAt(hoveredIndex)
-            if (key == RETURN_KEY) {
-                navigateBack()
-            } else if (key.startsWith(SUBMENU_PREFIX)) {
-                navigateToSubmenu(key)
-            } else {
-                playAnimation(key)
+        when {
+            hoveredIndex in 0 until currentProperties.size -> {
+                Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
+                val key = currentProperties.getKeyAt(hoveredIndex)
+                when {
+                    key == RETURN_KEY -> {
+                        navigateBack()
+                    }
+
+                    key.startsWith(SUBMENU_PREFIX) -> {
+                        navigateToSubmenu(key)
+                    }
+
+                    else -> {
+                        playAnimation(key)
+                    }
+                }
             }
-        } else if (hoveredConfigIndex in 0 until currentProperties.size) {
-            Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
-            val value = currentProperties.getValueAt(hoveredConfigIndex)
-            if (value.startsWith(SUBMENU_PREFIX)) {
-                val groupKey = value.substring(SUBMENU_PREFIX.length)
-                if (renderGroups.containsKey(groupKey)) {
-                    if (GeneralConfig.ROULETTE_SETTINGS_MODE.get() == GeneralConfig.RouletteSettingsMode.CLASSIC) {
-                        showConfigGroup(groupKey)
-                    } else {
-                        Minecraft.getInstance()
-                            .setScreen(ModelSettingsScreen(renderContext, animatableModel, this, groupKey))
+
+            hoveredConfigIndex in 0 until currentProperties.size -> {
+                Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
+                val value = currentProperties.getValueAt(hoveredConfigIndex)
+                if (value.startsWith(SUBMENU_PREFIX)) {
+                    val groupKey = value.substring(SUBMENU_PREFIX.length)
+                    if (renderGroups.containsKey(groupKey)) {
+                        if (GeneralConfig.ROULETTE_SETTINGS_MODE.get() == GeneralConfig.RouletteSettingsMode.CLASSIC) {
+                            showConfigGroup(groupKey)
+                        } else {
+                            Minecraft.getInstance()
+                                .setScreen(ModelSettingsScreen(renderContext, animatableModel, this, groupKey))
+                        }
                     }
                 }
             }
@@ -570,15 +580,19 @@ class AnimationRouletteScreen : Screen {
 
     private fun playAnimation(animKey: String) {
         val localPlayer = Minecraft.getInstance().player
-        if (NetworkHandler.isClientConnected()) {
-            val lastNav = navigationStack.peekLast()
-            val category = if (lastNav != null && lastNav.left.isNotBlank()) lastNav.left else StringPool.EMPTY
-            when (val entity = animatableModel.entity) {
-                is Player -> NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, category))
-                else -> NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, category, entity.id))
+        when {
+            NetworkHandler.isClientConnected() -> {
+                val lastNav = navigationStack.peekLast()
+                val category = if (lastNav != null && lastNav.left.isNotBlank()) lastNav.left else StringPool.EMPTY
+                when (val entity = animatableModel.entity) {
+                    is Player -> NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, category))
+                    else -> NetworkHandler.sendToServer(C2SPlayAnimationPacket(hoveredIndex, category, entity.id))
+                }
             }
-        } else if (localPlayer != null) {
-            PlayerCapability[localPlayer]?.requestModelSwitch(animKey)
+
+            localPlayer != null -> {
+                PlayerCapability[localPlayer]?.requestModelSwitch(animKey)
+            }
         }
         if (localPlayer != null && GeneralConfig.PRINT_ANIMATION_ROULETTE_MSG.get()) {
             localPlayer.displayClientMessage(

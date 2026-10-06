@@ -214,12 +214,16 @@ open class ModelSettingsScreen(
     override fun mouseDragged(event: MouseButtonEvent, dx: Double, dy: Double): Boolean {
         val button = event.button()
         if (draggingPreview && button == draggingButton) {
-            if (button == 0) {
-                yaw = (yaw + dx * 1.2).toFloat()
-                pitch = Mth.clamp((pitch - dy * 0.8).toFloat(), -85.0f, 85.0f)
-            } else if (button == 1) {
-                offsetX = (offsetX + dx).toFloat()
-                offsetY = (offsetY + dy).toFloat()
+            when (button) {
+                0 -> {
+                    yaw = (yaw + dx * 1.2).toFloat()
+                    pitch = Mth.clamp((pitch - dy * 0.8).toFloat(), -85.0f, 85.0f)
+                }
+
+                1 -> {
+                    offsetX = (offsetX + dx).toFloat()
+                    offsetY = (offsetY + dy).toFloat()
+                }
             }
             return true
         }
