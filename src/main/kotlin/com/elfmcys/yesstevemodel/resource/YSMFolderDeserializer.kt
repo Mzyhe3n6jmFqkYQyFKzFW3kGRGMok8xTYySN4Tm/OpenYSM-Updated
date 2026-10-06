@@ -1238,13 +1238,13 @@ class YSMFolderDeserializer : AutoCloseable {
         }
 
         if (format == 2 && data.size >= 24) {
-            val w = ((data[16].toInt() and 0xFF) shl 24) or
-                    ((data[17].toInt() and 0xFF) shl 16) or
-                    ((data[18].toInt() and 0xFF) shl 8) or
+            val w = data[16].toInt() and 0xFF shl 24 or
+                    (data[17].toInt() and 0xFF shl 16) or
+                    (data[18].toInt() and 0xFF shl 8) or
                     (data[19].toInt() and 0xFF)
-            val h = ((data[20].toInt() and 0xFF) shl 24) or
-                    ((data[21].toInt() and 0xFF) shl 16) or
-                    ((data[22].toInt() and 0xFF) shl 8) or
+            val h = data[20].toInt() and 0xFF shl 24 or
+                    (data[21].toInt() and 0xFF shl 16) or
+                    (data[22].toInt() and 0xFF shl 8) or
                     (data[23].toInt() and 0xFF)
             return ImageMeta(w, h, format)
         }
@@ -1468,8 +1468,8 @@ class YSMFolderDeserializer : AutoCloseable {
         @JvmStatic
         fun detectFormat(data: ByteArray): Int {
             if (data.size >= 2 && data[0] == 0x42.toByte() && data[1] == 0x4D.toByte()) return 1 // 'BM'
-            if (data.size >= 8 && (data[0].toInt() and 0xFF) == 0x89 && data[1] == 0x50.toByte() && data[2] == 0x4E.toByte() && data[3] == 0x47.toByte()) return 2 // PNG
-            if (data.size >= 2 && (data[0].toInt() and 0xFF) == 0xFF && (data[1].toInt() and 0xFF) == 0xD8) return 3 // JPEG
+            if (data.size >= 8 && data[0].toInt() and 0xFF == 0x89 && data[1] == 0x50.toByte() && data[2] == 0x4E.toByte() && data[3] == 0x47.toByte()) return 2 // PNG
+            if (data.size >= 2 && data[0].toInt() and 0xFF == 0xFF && data[1].toInt() and 0xFF == 0xD8) return 3 // JPEG
             if (data.size >= 12 && data[0] == 'R'.code.toByte() && data[1] == 'I'.code.toByte() && data[2] == 'F'.code.toByte() && data[3] == 'F'.code.toByte() &&
                 data[8] == 'W'.code.toByte() && data[9] == 'E'.code.toByte() && data[10] == 'B'.code.toByte() && data[11] == 'P'.code.toByte()
             ) return 4 // WEBP
@@ -1518,19 +1518,15 @@ class YSMFolderDeserializer : AutoCloseable {
         }
 
         @JvmStatic
-        fun getStr(obj: JsonObject, key: String, def: String): String {
-            return if (obj.has(key)) obj.get(key).asString else def
-        }
+        fun getStr(obj: JsonObject, key: String, def: String): String = if (obj.has(key)) obj.get(key).asString else def
 
         @JvmStatic
-        fun getBool(obj: JsonObject, key: String, def: Boolean): Boolean {
-            return if (obj.has(key)) obj.get(key).asBoolean else def
-        }
+        fun getBool(obj: JsonObject, key: String, def: Boolean): Boolean =
+            if (obj.has(key)) obj.get(key).asBoolean else def
 
         @JvmStatic
-        fun getDouble(obj: JsonObject, key: String, def: Double): Double {
-            return if (obj.has(key)) obj.get(key).asDouble else def
-        }
+        fun getDouble(obj: JsonObject, key: String, def: Double): Double =
+            if (obj.has(key)) obj.get(key).asDouble else def
 
         @JvmStatic
         fun getFloatArray(obj: JsonObject, key: String, size: Int): FloatArray {
