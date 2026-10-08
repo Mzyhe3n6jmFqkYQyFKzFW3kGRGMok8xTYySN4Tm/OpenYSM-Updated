@@ -48,8 +48,8 @@ class ModelUploadScreen(private val parentScreen: Screen?) : Screen(Component.li
             return
         }
 
-        val existing = ModelUploadSession.getInstance()
-        if (existing != null && !existing.isTerminal()) {
+        val existing = ModelUploadSession.INSTANCE
+        if (existing != null && !existing.isTerminal) {
             error = "Upload already in progress"
             return
         }
@@ -91,7 +91,7 @@ class ModelUploadScreen(private val parentScreen: Screen?) : Screen(Component.li
         }
         drawBorder(g, 0, 0, width, height, borderWidth, borderColor)
 
-        val session = ModelUploadSession.getInstance()
+        val session = ModelUploadSession.INSTANCE
         if (session == null) {
             renderEmptyState(g)
         } else {
@@ -152,7 +152,7 @@ class ModelUploadScreen(private val parentScreen: Screen?) : Screen(Component.li
         val barH = 14
         val barX = cx - barW / 2
         val barY = cy + 4
-        val target = session.getProgress()
+        val target = session.progress
         if (target < prevProgressTarget) {
             displayedProgress = target
         }
@@ -189,7 +189,7 @@ class ModelUploadScreen(private val parentScreen: Screen?) : Screen(Component.li
         guiGraphics.fill(barX + barW - 1, barY, barX + barW, barY + barH, -1)
 
         val stat =
-            "${ModelUploadSession.formatBytes(session.getSentBytes())} / ${ModelUploadSession.formatBytes(session.getTotalBytes())}"
+            "${ModelUploadSession.formatBytes(session.sentBytes)} / ${ModelUploadSession.formatBytes(session.totalBytes)}"
         val statW = font.width(stat)
         guiGraphics.drawString(font, stat, cx - statW / 2, barY + barH + 6, 0xFFAAAAAA.toInt())
     }
