@@ -14,10 +14,10 @@ import rip.ysm.compat.sbackpack.SBackpackCompat
 
 @Environment(EnvType.CLIENT)
 object RendererManager {
-    private var playerRenderer2: CustomPlayerRenderer? = null
-    private var projectileRenderer2: ProjectileRenderer? = null
-    private var handRenderer2: HandItemRenderer? = null
-    private var vehicleRenderer2: VehicleRenderer? = null
+    private var _playerRenderer: CustomPlayerRenderer? = null
+    private var _projectileRenderer: ProjectileRenderer? = null
+    private var _handRenderer: HandItemRenderer? = null
+    private var _vehicleRenderer: VehicleRenderer? = null
 
     init {
         ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(
@@ -29,10 +29,10 @@ object RendererManager {
     }
 
     private fun resetRenderers() {
-        playerRenderer2 = null
-        projectileRenderer2 = null
-        handRenderer2 = null
-        vehicleRenderer2 = null
+        _playerRenderer = null
+        _projectileRenderer = null
+        _handRenderer = null
+        _vehicleRenderer = null
     }
 
     private fun initRenderers(resourceManager: ResourceManager) {
@@ -51,46 +51,46 @@ object RendererManager {
             minecraft.font,
             minecraft.playerSkinRenderCache()
         )
-        playerRenderer2 = CustomPlayerRenderer(context)
-        projectileRenderer2 = ProjectileRenderer(context)
-        handRenderer2 = HandItemRenderer()
-        vehicleRenderer2 = VehicleRenderer(context)
+        _playerRenderer = CustomPlayerRenderer(context)
+        _projectileRenderer = ProjectileRenderer(context)
+        _handRenderer = HandItemRenderer()
+        _vehicleRenderer = VehicleRenderer(context)
         SBackpackCompat.setupRenderLayers()
     }
 
     @JvmStatic
     val playerRenderer: CustomPlayerRenderer
         get() {
-            val current = playerRenderer2
+            val current = _playerRenderer
             if (current != null) return current
             initRenderers(Minecraft.getInstance().resourceManager)
-            return playerRenderer2!!
+            return _playerRenderer!!
         }
 
     @JvmStatic
     val projectileRenderer: ProjectileRenderer
         get() {
-            val current = projectileRenderer2
+            val current = _projectileRenderer
             if (current != null) return current
             initRenderers(Minecraft.getInstance().resourceManager)
-            return projectileRenderer2!!
+            return _projectileRenderer!!
         }
 
     @JvmStatic
     val handRenderer: HandItemRenderer
         get() {
-            val current = handRenderer2
+            val current = _handRenderer
             if (current != null) return current
             initRenderers(Minecraft.getInstance().resourceManager)
-            return handRenderer2!!
+            return _handRenderer!!
         }
 
     @JvmStatic
     val vehicleRenderer: VehicleRenderer
         get() {
-            val current = vehicleRenderer2
+            val current = _vehicleRenderer
             if (current != null) return current
             initRenderers(Minecraft.getInstance().resourceManager)
-            return vehicleRenderer2!!
+            return _vehicleRenderer!!
         }
 }

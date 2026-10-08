@@ -66,7 +66,7 @@ open class ParallelProcessor<T : GeoEntity<*>, TModel>(
             }
         }
         Object2ReferenceMaps.fastForEach(animations) { animEntry ->
-            if (!animEntry.value.isEmpty() && animationNameMatcher(animEntry.key)) {
+            if (!animEntry.value.isEmpty && animationNameMatcher(animEntry.key)) {
                 matchedSlots["${prefix}.${slotName}_${animEntry.key.substring(slotName.length)}"] = animEntry.key
             }
         }

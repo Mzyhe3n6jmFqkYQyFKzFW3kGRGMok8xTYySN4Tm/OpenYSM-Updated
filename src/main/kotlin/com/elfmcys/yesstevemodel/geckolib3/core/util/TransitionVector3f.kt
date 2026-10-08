@@ -6,18 +6,14 @@ import org.joml.Vector3f
 
 class TransitionVector3f : Vector3f {
     var percentCompleted: Float = 1.0f
+        set(value) {
+            if (value >= field) return
+            field = value
+        }
 
-    constructor() : super() {
-        percentCompleted = 1.0f
-    }
-
-    constructor(x: Float, y: Float, z: Float) : super(x, y, z) {
-        percentCompleted = 1.0f
-    }
-
-    constructor(v: Vector3f) : super(v) {
-        percentCompleted = 1.0f
-    }
+    constructor() : super()
+    constructor(x: Float, y: Float, z: Float) : super(x, y, z)
+    constructor(v: Vector3f) : super(v)
 
     fun setPercentCompleted(newPercent: Float) {
         if (newPercent < percentCompleted) {
@@ -26,7 +22,7 @@ class TransitionVector3f : Vector3f {
     }
 
     fun applyLinearBlendTo(targetVec: Vector3f) {
-        val progress: Float = percentCompleted
+        val progress = percentCompleted
         if (progress == 0.0f) {
             targetVec.set(this)
         } else {
@@ -35,7 +31,7 @@ class TransitionVector3f : Vector3f {
     }
 
     fun applyRotationBlendTo(targetEuler: Vector3f, offsetEuler: Vector3f) {
-        val progress: Float = percentCompleted
+        val progress = percentCompleted
         if (progress == 0.0f) {
             targetEuler.set(this)
         } else {
@@ -44,7 +40,7 @@ class TransitionVector3f : Vector3f {
     }
 
     fun applyRotationBlendTo(targetEuler: Vector3f, offsetEuler: Vector3f, scratch: EulerNlerpScratch) {
-        val progress: Float = percentCompleted
+        val progress = percentCompleted
         if (progress == 0.0f) {
             targetEuler.set(this)
         } else {

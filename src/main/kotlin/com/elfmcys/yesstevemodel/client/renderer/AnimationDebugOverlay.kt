@@ -22,7 +22,7 @@ import java.lang.ref.WeakReference
 object AnimationDebugOverlay {
     private val MOLANG_WATCH: MolangWatchRegistry = MolangWatchRegistry()
     private val DEBUG_LINES: ReferenceArrayList<String> = ReferenceArrayList()
-    private var activeModel2: WeakReference<GeoEntity<*>>? = null
+    private var _activeModel: WeakReference<GeoEntity<*>>? = null
 
     @JvmStatic
     fun createOverlay(): HudOverlay {
@@ -81,11 +81,11 @@ object AnimationDebugOverlay {
 
     @JvmStatic
     fun clearActiveModel() {
-        val currentModel = activeModel2
+        val currentModel = _activeModel
         if (currentModel != null) {
             val geoEntity = currentModel.get()
             geoEntity?.setBoneLookup(null)
-            activeModel2 = null
+            _activeModel = null
             val localPlayer = Minecraft.getInstance().player
             localPlayer?.displayClientMessage(
                 Component.translatable("message.yes_steve_model.model.debug_animation.false"),
@@ -107,7 +107,7 @@ object AnimationDebugOverlay {
     @JvmStatic
     var activeModel: GeoEntity<*>?
         get() {
-            val currentModel = activeModel2
+            val currentModel = _activeModel
             if (currentModel != null) {
                 val geoEntity = currentModel.get()
                 if (geoEntity != null && geoEntity.isDebugMode) return geoEntity
@@ -119,7 +119,7 @@ object AnimationDebugOverlay {
         set(value) {
             if (value == null) return
             clearActiveModel()
-            activeModel2 = WeakReference(value)
+            _activeModel = WeakReference(value)
             value.setBoneLookup(MOLANG_WATCH)
             val entity = value.entity
             val localPlayer = Minecraft.getInstance().player

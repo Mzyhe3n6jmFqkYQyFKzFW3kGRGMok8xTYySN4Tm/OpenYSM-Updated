@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ServerPlayerMixin {
     @Inject(method = "startRiding", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;positionRider(Lnet/minecraft/world/entity/Entity;)V", shift = At.Shift.AFTER))
     private void onStartRiding(Entity entity, boolean bl, boolean bl2, CallbackInfoReturnable<Boolean> cir) {
-        var entity2 = (ServerPlayer) (Object) this;
-        if (YesSteveModel.isAvailable() && entity.getFirstPassenger() == entity2)
-            CapabilityEvent.syncVehicleModel(entity, entity2);
+        var self = (ServerPlayer) (Object) this;
+        if (YesSteveModel.isAvailable() && entity.getFirstPassenger() == self)
+            CapabilityEvent.syncVehicleModel(entity, self);
     }
 }
