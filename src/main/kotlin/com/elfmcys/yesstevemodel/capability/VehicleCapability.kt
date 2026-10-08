@@ -5,7 +5,6 @@ package com.elfmcys.yesstevemodel.capability
 import com.elfmcys.yesstevemodel.capability.fabric.VehicleCapabilityImpl
 import com.elfmcys.yesstevemodel.client.entity.GeckoVehicleEntity
 import com.elfmcys.yesstevemodel.molang.runtime.Int2FloatOpenHashMapStruct
-import com.elfmcys.yesstevemodel.molang.runtime.Struct
 import it.unimi.dsi.fastutil.ints.Int2FloatMap
 import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap
 import net.fabricmc.api.EnvType
@@ -17,7 +16,7 @@ class VehicleCapability(entity: Entity) : GeckoVehicleEntity(entity) {
     private var floatProperties: Int2FloatOpenHashMapStruct? = null
 
     fun setOwnerModelId(str: String) {
-        setModelId(str)
+        modelId = str
         markModelInitialized()
     }
 

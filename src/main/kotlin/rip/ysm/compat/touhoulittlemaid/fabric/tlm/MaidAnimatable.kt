@@ -19,7 +19,7 @@ open class MaidAnimatable(entityMaid: EntityMaid, isActive: Boolean) :
     private var maidModelInfo: MaidModelInfo = MaidModelInfo()
 
     override fun registerAnimationControllers() {
-        getModelAssembly()?.animationBundle?.maidControllerInstaller?.invoke(this)
+        modelAssembly?.animationBundle?.maidControllerInstaller?.invoke(this)
     }
 
     override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper {

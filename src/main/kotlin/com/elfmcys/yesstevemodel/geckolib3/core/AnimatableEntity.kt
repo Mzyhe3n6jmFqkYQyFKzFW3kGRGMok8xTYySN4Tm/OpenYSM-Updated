@@ -163,9 +163,8 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
         return ClientTickEvent.getRefreshRate()
     }
 
-    fun processAnimation(partialTick: Float): AnimationEvent<*>? {
-        return processAnimationImpl(partialTick, ModelPreviewRenderer.isFirstPersonOnRenderThread())
-    }
+    fun processAnimation(partialTick: Float): AnimationEvent<*>? =
+        processAnimationImpl(partialTick, ModelPreviewRenderer.isFirstPersonOnRenderThread())
 
     open fun processAnimationImpl(partialTick: Float, z: Boolean): AnimationEvent<*>? {
         if (currentModel2 == null) return null

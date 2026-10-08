@@ -61,7 +61,7 @@ object ExtraAnimationKey {
                 )
             ) {
                 PlayerCapability[localPlayer]?.let { cap ->
-                    val modelAssembly = cap.getModelAssembly() ?: return@let
+                    val modelAssembly = cap.modelAssembly ?: return@let
                     val index = KEY_MAPPINGS.indexOf(eventMapping)
                     val modelProperties = modelAssembly.modelData.modelProperties
                     val map = modelProperties.extraAnimation

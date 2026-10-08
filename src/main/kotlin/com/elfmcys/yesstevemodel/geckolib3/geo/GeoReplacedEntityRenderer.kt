@@ -121,7 +121,7 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
         var savedYRotO = 0.0f
         var savedXRot = 0.0f
         var savedXRotO = 0.0f
-        val syncRotationsForPreview = ModelPreviewRenderer.isPreview()
+        val syncRotationsForPreview = ModelPreviewRenderer.isPreview
         if (syncRotationsForPreview) {
             savedYBodyRot = entity.yBodyRot
             savedYBodyRotO = entity.yBodyRotO

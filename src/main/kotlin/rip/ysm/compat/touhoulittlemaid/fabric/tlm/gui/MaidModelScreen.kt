@@ -41,7 +41,7 @@ open class MaidModelScreen(private val maid: EntityMaid) : PlayerModelScreen() {
     ): Screen = ModelInfoScreen(other, resolveAssembly(modelAssembly))
 
     private fun resolveAssembly(fallback: ModelAssembly): ModelAssembly {
-        val current: ModelAssembly? = MaidRenderStore.getOrCreate(maid).getModelAssembly()
+        val current: ModelAssembly? = MaidRenderStore.getOrCreate(maid).modelAssembly
         return current ?: fallback
     }
 

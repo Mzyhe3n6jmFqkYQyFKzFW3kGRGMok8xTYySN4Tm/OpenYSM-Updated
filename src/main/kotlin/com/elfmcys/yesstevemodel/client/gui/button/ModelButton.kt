@@ -78,7 +78,7 @@ open class ModelButton(
             val cap = PlayerCapability[localPlayer] ?: return
             val currentTexture = modelIdHolder.getCurrentTextureName() ?: ""
             if (NetworkHandler.isClientConnected()) {
-                val modelAssembly = modelIdHolder.getModelAssembly()
+                val modelAssembly = modelIdHolder.modelAssembly
                 if (modelAssembly != null && cap.hasMolangVars(modelAssembly.modelData.hashId)) {
                     cap.initModelWithTexture(modelIdHolder.modelId, currentTexture)
                     NetworkHandler.sendToServer(

@@ -643,7 +643,7 @@ object ServerModelManager {
         initRateLimit()
         YSMThreadPool.launchSync {
             runCatching {
-                PlatformAPIImpl.getServer() ?: return@launchSync
+                PlatformAPIImpl.server ?: return@launchSync
 
                 for (uuid in uuids) {
                     val state = syncStates.computeIfAbsent(uuid) { PlayerSyncState() }
@@ -939,7 +939,7 @@ object ServerModelManager {
 
     @JvmStatic
     fun requestPlayerAuth(serverPlayer: ServerPlayer, consumer: ((UUIDComponentData) -> Unit)? = null) {
-        val currentServer = PlatformAPIImpl.getServer() ?: return
+        val currentServer = PlatformAPIImpl.server ?: return
         currentServer.execute {
             val players = currentServer.playerList.players
             val arrayList = ArrayList<FloatReferencePair<ServerPlayer>>()
@@ -965,7 +965,7 @@ object ServerModelManager {
     ): Boolean {
         val action: (ModelLoadResult) -> Unit = { modelLoadResult ->
             consumer?.invoke(modelLoadResult)
-            val currentServer = PlatformAPIImpl.getServer()
+            val currentServer = PlatformAPIImpl.server
             currentServer?.execute {
                 val players = currentServer.playerList.players
                 for (value in players) {
@@ -994,7 +994,7 @@ object ServerModelManager {
     }
 
     private fun onModelLoadComplete(modelLoadResult: ModelLoadResult, callback: ((ModelLoadResult) -> Unit)?) {
-        val currentServer = PlatformAPIImpl.getServer()
+        val currentServer = PlatformAPIImpl.server
         initialized = true
         if (currentServer != null) {
             currentServer.execute {
@@ -1026,7 +1026,7 @@ object ServerModelManager {
     }
 
     private fun getPlayerConnection(uuid: UUID): Connection? {
-        val currentServer = PlatformAPIImpl.getServer() ?: return null
+        val currentServer = PlatformAPIImpl.server ?: return null
         val player = currentServer.playerList.getPlayer(uuid) ?: return null
         val serverGamePacketListenerImpl = player.connection
         if (!serverGamePacketListenerImpl.isAcceptingMessages || serverGamePacketListenerImpl.javaClass != ServerGamePacketListenerImpl::class.java)

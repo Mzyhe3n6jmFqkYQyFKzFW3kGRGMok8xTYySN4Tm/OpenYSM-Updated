@@ -36,7 +36,7 @@ import rip.ysm.compat.firstperson.FirstPersonCompat
 class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is LocalPlayer, true) {
     private val molangVarsMap: Int2ReferenceOpenHashMap<MolangVarHolder> = Int2ReferenceOpenHashMap(8)
     private var currentModelHashId: Int = 0
-    private var serverVarContainer: Struct? = null
+    private var serverVarContainer2: Struct? = null
 
     override fun createPositionTracker(entity: Player): PlayerEntityFrameState =
         PlayerEntityFrameState(entity, entity is LocalPlayer)
@@ -44,11 +44,12 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     override val positionTracker: PlayerEntityFrameState
         get() = super.positionTracker as PlayerEntityFrameState
 
-    override fun getServerVarContainer(): Struct? = serverVarContainer
+    override val serverVarContainer: Struct?
+        get() = serverVarContainer2
 
     override fun onModelLoaded(modelAssembly: ModelAssembly) {
         super.onModelLoaded(modelAssembly)
-        currentModelHashId = getModelAssembly()?.modelData?.hashId ?: 0
+        currentModelHashId = modelAssembly.modelData?.hashId ?: 0
     }
 
     override fun clearModel() {
@@ -63,18 +64,18 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
             val varHolder = molangVarsMap.get(currentModelHashId)
             varHolder?.currentVars?.let {
                 if (isLocalPlayerModel) {
-                    serverVarContainer = RoamingStruct(currentModelHashId, it)
+                    serverVarContainer2 = RoamingStruct(currentModelHashId, it)
                     return
                 } else {
-                    serverVarContainer = Int2FloatOpenHashMapStruct(it)
+                    serverVarContainer2 = Int2FloatOpenHashMapStruct(it)
                     return
                 }
             }
-            serverVarContainer = null
+            serverVarContainer2 = null
         }
 
     override fun reset() {
-        serverVarContainer = null
+        serverVarContainer2 = null
         super.reset()
     }
 
@@ -113,11 +114,11 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     fun updateMolangVars(i: Int, int2FloatOpenHashMap: Int2FloatOpenHashMap) {
         val varHolder = molangVarsMap.computeIfAbsent(i) { MolangVarHolder() }
         if (isLocalPlayerModel) {
-            if (varHolder.currentVars == null || serverVarContainer == null) {
+            if (varHolder.currentVars == null || serverVarContainer2 == null) {
                 varHolder.currentVars = int2FloatOpenHashMap
                 varHolder.applyPendingDeltas()
                 if (i == currentModelHashId) {
-                    serverVarContainer = RoamingStruct(i, int2FloatOpenHashMap)
+                    serverVarContainer2 = RoamingStruct(i, int2FloatOpenHashMap)
                     clearAnimationControllers()
                     return
                 }
@@ -128,7 +129,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         varHolder.currentVars = int2FloatOpenHashMap
         varHolder.applyPendingDeltas()
         if (i == currentModelHashId) {
-            serverVarContainer = Int2FloatOpenHashMapStruct(int2FloatOpenHashMap)
+            serverVarContainer2 = Int2FloatOpenHashMapStruct(int2FloatOpenHashMap)
         }
     }
 
@@ -155,7 +156,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
 
     fun tickAnimations() {
         if (isLocalPlayerModel && currentModelHashId != 0) {
-            val struct = serverVarContainer
+            val struct = serverVarContainer2
             if (struct is RoamingStruct && struct.hasPendingChanges()) {
                 val syncBatch: RoamingSyncBatch = struct.consumePendingBoneData()
                 applyMolangDelta(syncBatch.modelHashId(), syncBatch.changedVariables())
@@ -203,7 +204,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         val holder = molangVarsMap[currentModelHashId]
         val vars = holder?.currentVars
         if (vars != null) {
-            serverVarContainer =
+            serverVarContainer2 =
                 if (isLocalPlayerModel) RoamingStruct(currentModelHashId, vars) else Int2FloatOpenHashMapStruct(vars)
         }
     }

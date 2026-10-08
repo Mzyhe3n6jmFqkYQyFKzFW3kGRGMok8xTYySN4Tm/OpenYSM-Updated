@@ -18,7 +18,7 @@ class ItemHoldAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>> {
         if (animatable is IPreviewAnimatable) return PlayState.STOP
         val playState = SpellbooksCompat.resolvePlayState(event, livingEntity)
         if (playState != null) return playState
-        val i = animatable.getModelAssembly()?.modelData?.formatVersion ?: 0
+        val i = animatable.modelAssembly?.modelData?.formatVersion ?: 0
         if (!livingEntity.isSleeping && SlashBladeCompat.isSlashBladeItem(livingEntity.getItemInHand(InteractionHand.MAIN_HAND))) {
             if (event.getController()?.isPlaying() == true) event.getController()?.stopTransition()
             val str = SlashBladeCompat.getComboAnimName(event)

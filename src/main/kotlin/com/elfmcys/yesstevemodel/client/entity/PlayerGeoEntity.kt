@@ -12,14 +12,14 @@ import net.minecraft.resources.Identifier
 
 open class PlayerGeoEntity(
     player: LocalPlayer,
-    val playerCapability: PlayerCapability
+    private val playerCapability: PlayerCapability
 ) : GeoEntity<LocalPlayer>(player, false) {
     init {
-        setModelId(playerCapability.modelId)
+        modelId = playerCapability.modelId
     }
 
     override fun registerAnimationControllers() {
-        getModelAssembly()?.animationBundle?.armControllerInstaller?.invoke(this)
+        modelAssembly?.animationBundle?.armControllerInstaller?.invoke(this)
     }
 
     override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean {
@@ -27,17 +27,16 @@ open class PlayerGeoEntity(
     }
 
     override fun tickModel() {
-        if (playerCapability.getModelAssembly() != getModelAssembly()) {
-            setModelId(playerCapability.modelId)
+        if (playerCapability.modelAssembly != modelAssembly) {
+            modelId = playerCapability.modelId
         }
     }
 
-    override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper? {
-        return playerCapability.getRenderShape()
-    }
+    override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper? =
+        playerCapability.renderShape
 
     override fun getAnimationEntries(str: String): AnimationController? {
-        return getModelAssembly()?.animationBundle?.animationEntries?.get(str)
+        return modelAssembly?.animationBundle?.animationEntries?.get(str)
     }
 
     override val textureLocation: Identifier
@@ -47,27 +46,27 @@ open class PlayerGeoEntity(
 
     override val heightScale: Float
         get() {
-            return getModelAssembly()?.modelData?.modelProperties?.heightScale ?: 1.0f
+            return modelAssembly?.modelData?.modelProperties?.heightScale ?: 1.0f
         }
 
     override val widthScale: Float
         get() {
-            return getModelAssembly()?.modelData?.modelProperties?.widthScale ?: 1.0f
+            return modelAssembly?.modelData?.modelProperties?.widthScale ?: 1.0f
         }
 
     override fun getAnimation(str: String): Animation? {
-        return getModelAssembly()?.animationBundle?.armAnimations?.get(str)
+        return modelAssembly?.animationBundle?.armAnimations?.get(str)
     }
 
     open fun getArmModelProcessor(): ArmorConditions? {
-        return getModelAssembly()?.animationBundle?.modelProcessor
+        return modelAssembly?.animationBundle?.modelProcessor
     }
 
     override fun getAnimationProcessor(): GeoModel {
-        return getModelAssembly()!!.animationBundle.armModel
+        return modelAssembly!!.animationBundle.armModel
     }
 
     override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
-        getEvaluationContext().setRoamingProperties(playerCapability.getServerVarContainer())
+        getEvaluationContext().setRoamingProperties(playerCapability.serverVarContainer)
     }
 }

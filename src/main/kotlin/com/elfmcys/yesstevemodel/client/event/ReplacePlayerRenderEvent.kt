@@ -46,7 +46,7 @@ object ReplacePlayerRenderEvent {
                     val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
                     RenderContext.enter(collector, cameraState)
                     try {
-                        val packedLight = if (ModelPreviewRenderer.isPreview()) {
+                        val packedLight = if (ModelPreviewRenderer.isPreview) {
                             LightTexture.FULL_BRIGHT
                         } else {
                             renderState.lightCoords
@@ -55,7 +55,7 @@ object ReplacePlayerRenderEvent {
                             entity,
                             renderState,
                             entity.yRot,
-                            if (ModelPreviewRenderer.isPreview()) 1.0f else partialTick,
+                            if (ModelPreviewRenderer.isPreview) 1.0f else partialTick,
                             poseStack,
                             bufferSource,
                             packedLight

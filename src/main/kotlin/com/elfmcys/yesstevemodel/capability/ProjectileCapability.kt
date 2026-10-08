@@ -16,12 +16,12 @@ class ProjectileCapability(projectile: Projectile) : GeckoProjectileEntity(proje
     private var floatProperties: Int2FloatOpenHashMapStruct? = null
 
     fun updateModelId(str: String) {
-        setModelId(str)
+        modelId = str
         markModelInitialized()
     }
 
     fun setFloatProperties(int2FloatOpenHashMap: Int2FloatOpenHashMap?) {
-        floatProperties = (if (int2FloatOpenHashMap != null) Int2FloatOpenHashMapStruct(int2FloatOpenHashMap) else null)
+        floatProperties = if (int2FloatOpenHashMap != null) Int2FloatOpenHashMapStruct(int2FloatOpenHashMap) else null
     }
 
     override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {

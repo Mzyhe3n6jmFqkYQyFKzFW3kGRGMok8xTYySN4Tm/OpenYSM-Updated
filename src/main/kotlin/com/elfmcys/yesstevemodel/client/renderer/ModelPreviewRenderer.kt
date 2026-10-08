@@ -33,14 +33,9 @@ import rip.ysm.compat.oculus.OculusCompat
 import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat
 
 object ModelPreviewRenderer {
-    @JvmField
-    var isPreviewMode: Boolean = false
-
-    @JvmField
-    var isExtraPlayerMode: Boolean = false
-
-    @JvmField
-    var isFirstPersonMode: Boolean = false
+    private var isPreviewMode: Boolean = false
+    private var isExtraPlayerMode: Boolean = false
+    private var isFirstPersonMode: Boolean = false
 
     @JvmStatic
     fun setPreviewMode(previewMode: Boolean) {
@@ -48,9 +43,11 @@ object ModelPreviewRenderer {
     }
 
     @JvmStatic
-    fun isPreview(): Boolean {
-        return isPreviewMode
-    }
+    var isPreview: Boolean
+        get() = isPreviewMode
+        set(value) {
+            isPreviewMode = value
+        }
 
     @JvmStatic
     fun setExtraPlayerMode(extraPlayerMode: Boolean) {

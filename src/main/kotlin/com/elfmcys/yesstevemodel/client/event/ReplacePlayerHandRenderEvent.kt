@@ -28,7 +28,7 @@ object ReplacePlayerHandRenderEvent {
         var cancelled = false
         PlayerCapability[player]?.let { cap ->
             if (!cap.isModelActive()) return@let
-            val context: ModelAssembly? = cap.getModelAssembly()
+            val context: ModelAssembly? = cap.modelAssembly
             if (context == null || !hasArmBone(arm, context.animationBundle.armModel)) return@let
             RendererManager.getHandRenderer().renderHandItem(
                 player,

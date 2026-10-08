@@ -46,7 +46,7 @@ open class GeckoProjectileEntity(
 
     override val textureLocation: Identifier
         get() {
-            return (getRenderShape() as ProjectileModelWrapper).textureLocatable.getResourceLocation()
+            return (renderShape as ProjectileModelWrapper).textureLocatable.getResourceLocation()
                 ?: MissingTextureAtlasSprite.getLocation()
         }
 
@@ -60,7 +60,7 @@ open class GeckoProjectileEntity(
 
     override val isModelReady: Boolean
         get() {
-            return super.isModelReady && projectileModelContext != null && (getRenderShape()?.isValid == true)
+            return super.isModelReady && projectileModelContext != null && (renderShape?.isValid == true)
         }
 
     override val heightScale: Float

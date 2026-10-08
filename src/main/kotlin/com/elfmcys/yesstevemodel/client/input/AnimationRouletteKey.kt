@@ -51,7 +51,7 @@ object AnimationRouletteKey {
                         if (player != null) {
                             PlayerCapability[player]?.let { cap ->
                                 val modelId = cap.modelId
-                                val modelAssembly = cap.getModelAssembly()
+                                val modelAssembly = cap.modelAssembly
                                 if (modelAssembly != null && modelAssembly.modelData.modelProperties.extraAnimation.isNotEmpty()) {
                                     val currentScreen = Minecraft.getInstance().screen
                                     when (currentScreen) {

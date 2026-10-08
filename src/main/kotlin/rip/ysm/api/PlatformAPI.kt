@@ -6,16 +6,16 @@ import java.nio.file.Path
 
 object PlatformAPI {
     @JvmStatic
-    fun isServer(): Boolean = PlatformAPIImpl.isServer()
+    fun isServer(): Boolean = PlatformAPIImpl.isServer
 
     @JvmStatic
-    fun getPlatformName(): String = PlatformAPIImpl.getPlatformName()
+    fun getPlatformName(): String = PlatformAPIImpl.platformName
 
     @JvmStatic
-    fun getConfigFolder(): Path = PlatformAPIImpl.getConfigFolder()
+    fun getConfigFolder(): Path = PlatformAPIImpl.configFolder
 
     @JvmStatic
-    fun getGameFolder(): Path = PlatformAPIImpl.getGameFolder()
+    fun getGameFolder(): Path = PlatformAPIImpl.gameFolder
 
     @JvmStatic
     fun isModLoaded(modId: String): Boolean = PlatformAPIImpl.isModLoaded(modId)
@@ -24,8 +24,8 @@ object PlatformAPI {
     fun getModVersion(modId: String): String = PlatformAPIImpl.getModVersion(modId)
 
     @JvmStatic
-    fun isDevelopmentEnvironment(): Boolean = PlatformAPIImpl.isDevelopmentEnvironment()
+    fun isDevelopmentEnvironment(): Boolean = PlatformAPIImpl.isDevelopmentEnvironment
 
     @JvmStatic
-    fun getServer(): MinecraftServer? = PlatformAPIImpl.getServer()
+    fun getServer(): MinecraftServer? = PlatformAPIImpl.server
 }

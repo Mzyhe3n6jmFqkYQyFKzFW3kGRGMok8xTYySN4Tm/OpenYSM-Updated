@@ -38,7 +38,7 @@ object RootClientCommand {
                 set.add("v.$str")
             }
             if (geo is RoamingPropertyHolder) {
-                val struct: Struct? = (geo as RoamingPropertyHolder).getServerVarContainer()
+                val struct: Struct? = (geo as RoamingPropertyHolder).serverVarContainer
                 if (struct is RoamingStruct) {
                     struct.forEachVar { str2 ->
                         set.add("v.roaming.$str2")
@@ -52,7 +52,7 @@ object RootClientCommand {
                     }
                 }
             }
-            geo.getModelAssembly()?.expressionCache?.functions?.let {
+            geo.modelAssembly?.expressionCache?.functions?.let {
                 for (s in it.keys) {
                     set.add("fn.$s")
                 }

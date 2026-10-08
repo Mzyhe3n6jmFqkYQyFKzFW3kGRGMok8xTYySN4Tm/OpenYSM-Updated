@@ -21,7 +21,7 @@ object MaidAnimationRoulette {
     fun openRouletteScreen() {
         val maid = lookedAtOwnedYsmMaid() ?: return
         val animatable = MaidRenderStore.get(maid) ?: return
-        val modelAssembly = animatable.getModelAssembly()
+        val modelAssembly = animatable.modelAssembly
         if (modelAssembly == null || modelAssembly.modelData.modelProperties.extraAnimation.isEmpty()) {
             return
         }
