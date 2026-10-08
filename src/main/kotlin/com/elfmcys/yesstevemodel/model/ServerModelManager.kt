@@ -553,13 +553,13 @@ object ServerModelManager {
         if (data[0].toInt() and 0xFF != 0x89 || data[1].toInt() != 0x50 || data[2].toInt() != 0x4E || data[3].toInt() != 0x47) {
             return intArrayOf(0, 0)
         }
-        val width = ((data[16].toInt() and 0xFF) shl 24) or
-                ((data[17].toInt() and 0xFF) shl 16) or
-                ((data[18].toInt() and 0xFF) shl 8) or
+        val width = data[16].toInt() and 0xFF shl 24 or
+                (data[17].toInt() and 0xFF shl 16) or
+                (data[18].toInt() and 0xFF shl 8) or
                 (data[19].toInt() and 0xFF)
-        val height = ((data[20].toInt() and 0xFF) shl 24) or
-                ((data[21].toInt() and 0xFF) shl 16) or
-                ((data[22].toInt() and 0xFF) shl 8) or
+        val height = data[20].toInt() and 0xFF shl 24 or
+                (data[21].toInt() and 0xFF shl 16) or
+                (data[22].toInt() and 0xFF shl 8) or
                 (data[23].toInt() and 0xFF)
         return intArrayOf(width, height)
     }
@@ -689,13 +689,13 @@ object ServerModelManager {
 
                 outBuf.writeVarInt(state.allowedModels.size)
                 for (model in state.allowedModels) {
-                    val sha256 = model.getLoadedModelData().modelHash
+                    val sha256 = model.loadedModelData.modelHash
                     val hashes = YsmCrypt.calculateModelHashes(sha256, currentServerKey)
                     outBuf.writeVarLong(hashes[0])
                     outBuf.writeVarLong(hashes[1])
                     outBuf.writeString(model.modelId)
-                    outBuf.writeVarInt(if (model.isAuth()) 1 else 0)
-                    outBuf.writeVarInt(if (model.isCustomSkinModel()) 1 else 0)
+                    outBuf.writeVarInt(if (model.isAuth) 1 else 0)
+                    outBuf.writeVarInt(if (model.isCustomSkinModel) 1 else 0)
                     outBuf.writeVarInt(32) // format
                 }
 
@@ -853,7 +853,7 @@ object ServerModelManager {
                     return@launch
                 }
 
-                val sha256 = modelData.getLoadedModelData().modelHash
+                val sha256 = modelData.loadedModelData.modelHash
                 val hashes = YsmCrypt.calculateModelHashes(sha256, currentServerKey)
                 val cacheFileName = String.format("%016x%016x", hashes[0], hashes[1])
                 val cacheFile = CACHE_SERVER.resolve(cacheFileName)
@@ -1001,7 +1001,7 @@ object ServerModelManager {
                 if (modelLoadResult.isSuccess) {
                     val intOpenHashSet = IntOpenHashSet(modelLoadResult.modelDefinitions.size)
                     for (data in modelLoadResult.modelDefinitions.values) {
-                        intOpenHashSet.add(data.getLoadedModelData().hashId)
+                        intOpenHashSet.add(data.loadedModelData.hashId)
                     }
                     CACHE_NAME_INFO = modelLoadResult.modelDefinitions
                     modelHashSet = intOpenHashSet
@@ -1072,8 +1072,8 @@ object ServerModelManager {
         val modelData = CACHE_NAME_INFO[defaultModelId] ?: return Pair.of("default", "default")
         if (!modelData.modelInfo.textures.contains(defaultTexture)) {
             defaultTexture = if (modelData.modelInfo.textures
-                    .contains(modelData.getLoadedModelData().modelProperties.defaultTexture)
-            ) modelData.getLoadedModelData().modelProperties.defaultTexture else if (modelData.modelInfo.textures.isEmpty()
+                    .contains(modelData.loadedModelData.modelProperties.defaultTexture)
+            ) modelData.loadedModelData.modelProperties.defaultTexture else if (modelData.modelInfo.textures.isEmpty()
             ) "" else modelData.modelInfo.textures[0]
         }
         return Pair.of(defaultModelId, defaultTexture)
@@ -1088,9 +1088,9 @@ object ServerModelManager {
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.authModels), serverPlayer)
             }
             val modelId = modelInfoCap.modelId
-            if (!getServerModelInfo().containsKey(modelId) || ((AUTH_MODELS.contains(modelId) && !authModelsCap.authModels
-                    .contains(modelInfoCap.modelId)) || !(CACHE_NAME_INFO[modelId] ?: return).modelInfo.textures
-                    .contains(modelInfoCap.selectTexture))
+            if (!getServerModelInfo().containsKey(modelId) || AUTH_MODELS.contains(modelId) && !authModelsCap.authModels
+                    .contains(modelInfoCap.modelId) || !(CACHE_NAME_INFO[modelId] ?: return).modelInfo.textures
+                    .contains(modelInfoCap.selectTexture)
             ) {
                 modelInfoCap.resetToDefault()
             }

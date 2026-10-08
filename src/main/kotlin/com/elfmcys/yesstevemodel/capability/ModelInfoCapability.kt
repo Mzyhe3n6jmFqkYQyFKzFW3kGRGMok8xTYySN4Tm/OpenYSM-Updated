@@ -86,7 +86,7 @@ class ModelInfoCapability {
     fun createSyncMessage(serverPlayer: ServerPlayer, fullSync: Boolean): S2CSetModelAndTexturePacket? =
         ServerModelManager[modelId]?.let {
             val molangVars =
-                molangStorage.computeIfAbsent(it.getLoadedModelData().hashId) { Object2FloatOpenHashMap(0) }
+                molangStorage.computeIfAbsent(it.loadedModelData.hashId) { Object2FloatOpenHashMap(0) }
 
             while (true) {
                 val callback = pendingCallbacks.poll()
@@ -99,13 +99,13 @@ class ModelInfoCapability {
                 selectTexture,
                 disabled2,
                 animSync2.buildFullSyncMessage(serverPlayer, fullSync)
-                    .setMolangVars(it.getLoadedModelData().hashId, molangVars)
+                    .setMolangVars(it.loadedModelData.hashId, molangVars)
             )
         }
 
     fun withMolangVars(consumer: (Object2FloatOpenHashMap<String>) -> Unit) {
         ServerModelManager[modelId]?.let {
-            consumer(molangStorage.computeIfAbsent(it.getLoadedModelData().hashId) {
+            consumer(molangStorage.computeIfAbsent(it.loadedModelData.hashId) {
                 Object2FloatOpenHashMap(0)
             })
         } ?: pendingCallbacks.add(consumer)
@@ -113,7 +113,7 @@ class ModelInfoCapability {
 
     val molangVars: Object2FloatOpenHashMap<String>?
         get() = ServerModelManager[modelId]?.let { serverModelData ->
-            molangStorage.computeIfAbsent(serverModelData.getLoadedModelData().hashId) {
+            molangStorage.computeIfAbsent(serverModelData.loadedModelData.hashId) {
                 Object2FloatOpenHashMap(0)
             }
         }

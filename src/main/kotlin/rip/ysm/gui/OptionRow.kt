@@ -20,7 +20,7 @@ abstract class OptionRow<T>(
     }
 
     override fun renderWidget(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        val dirty = option?.isDirty() == true
+        val dirty = option?.isDirty == true
         val bg = if (isHovered) 0x90171717.toInt() else if (dirty) 0x90060606.toInt() else 0x90000000.toInt()
         g.fill(x, y, x + width, y + height, bg)
         val label = message

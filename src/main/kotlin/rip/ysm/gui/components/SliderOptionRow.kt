@@ -43,7 +43,7 @@ open class SliderOptionRow(
         g.fill(cx, cy, cx + cw, cy + ch, blendBg(hover, 0x41000000))
         g.renderOutline(cx, cy, cw, ch, 0x90FFFFFF.toInt())
 
-        val value: Double = option?.get ?: this.min
+        val value: Double = option?.value ?: this.min
         val range: Double = this.max - this.min
         val t: Double = if (range <= 0.0) 0.0 else Mth.clamp((value - this.min) / range, 0.0, 1.0)
         val fillW: Int = (t * (cw - 2)).toInt()
@@ -86,6 +86,6 @@ open class SliderOptionRow(
         if (step > 0.0) {
             raw = step * (raw / step).roundToLong()
         }
-        option?.setPending(Mth.clamp(raw, min, max))
+        option?.value = Mth.clamp(raw, min, max)
     }
 }
