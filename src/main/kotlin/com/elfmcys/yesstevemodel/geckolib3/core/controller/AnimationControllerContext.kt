@@ -12,23 +12,24 @@ import com.elfmcys.yesstevemodel.molang.runtime.Function
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 
-open class AnimationControllerContext : IControllerVariableStorage {
-    private var audioPlayerManager: AudioPlayerManager? = null
-    private var animTime: Float = 0.0f
+class AnimationControllerContext : IControllerVariableStorage {
+    private var audioPlayerManager2: AudioPlayerManager? = null
+    private var animTime2: Float = 0.0f
     private var propertyMap: Int2ObjectOpenHashMap<Any>? = null
     private var captureCount: Int = 0
     private var capturedArgs: ReferenceArrayList<ReferenceArrayList<Any>>? = null
 
-    open fun setAnimTime(animTime: Float) {
-        this.animTime = animTime
-    }
+    var animTime: Float
+        get() = animTime2
+        set(value) {
+            animTime2 = value
+        }
 
-    open fun animTime(): Float = animTime
-
-    open fun getAudioPlayerManager(): AudioPlayerManager {
-        val manager = audioPlayerManager ?: AudioPlayerManager().also { audioPlayerManager = it }
-        return manager
-    }
+    val audioPlayerManager: AudioPlayerManager
+        get() {
+            val manager = audioPlayerManager2 ?: AudioPlayerManager().also { audioPlayerManager2 = it }
+            return manager
+        }
 
     override fun getControllerVariable(address: Int): Any? {
         return propertyMap?.get(address)
@@ -43,7 +44,12 @@ open class AnimationControllerContext : IControllerVariableStorage {
         map.put(address, value)
     }
 
-    open fun captureArguments(context: ExecutionContext<*>, controllerAddress: Int, arguments: Function.ArgumentCollection, startIndex: Int) {
+    fun captureArguments(
+        context: ExecutionContext<*>,
+        controllerAddress: Int,
+        arguments: Function.ArgumentCollection,
+        startIndex: Int
+    ) {
         val argsList = capturedArgs ?: ReferenceArrayList<ReferenceArrayList<Any>>().also { capturedArgs = it }
         val captureIndex = captureCount++
         val capturedFrame: ReferenceArrayList<Any>
@@ -59,7 +65,7 @@ open class AnimationControllerContext : IControllerVariableStorage {
         }
     }
 
-    open fun executeRenderLayers(evaluator: ExpressionEvaluator<AnimationContext<*>>) {
+    fun executeRenderLayers(evaluator: ExpressionEvaluator<AnimationContext<*>>) {
         if (captureCount > 0) {
             val context: AnimationContext<*> = evaluator.entity()
             val animatableEntity: AnimatableEntity<*> = context.geoInstance()

@@ -129,7 +129,7 @@ open class AnimationContext<TEntity>(
 
     override fun getAudioPlayerManager(global: Boolean): AudioPlayerManager? {
         if (!global) {
-            val audioPlayerManager2 = animationControllerContext?.getAudioPlayerManager()
+            val audioPlayerManager2 = animationControllerContext?.audioPlayerManager
             if (audioPlayerManager2 != null) {
                 return audioPlayerManager2
             }
