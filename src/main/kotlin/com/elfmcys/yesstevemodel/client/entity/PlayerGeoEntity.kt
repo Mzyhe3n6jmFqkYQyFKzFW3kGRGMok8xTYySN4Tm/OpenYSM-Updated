@@ -57,6 +57,6 @@ open class PlayerGeoEntity(
         }
 
     override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
-        getEvaluationContext().setRoamingProperties(playerCapability.serverVarContainer)
+        evaluationContext.setRoamingProperties(playerCapability.serverVarContainer)
     }
 }

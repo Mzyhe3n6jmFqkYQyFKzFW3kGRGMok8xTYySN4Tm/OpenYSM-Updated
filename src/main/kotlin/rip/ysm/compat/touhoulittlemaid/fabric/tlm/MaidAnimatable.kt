@@ -59,7 +59,7 @@ open class MaidAnimatable(entityMaid: EntityMaid, isActive: Boolean) :
 
     override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
         super.setupAnim(seekTime, isFirstPerson)
-        getEvaluationContext().setRoamingProperties(getPropertyContainer())
+        evaluationContext.setRoamingProperties(getPropertyContainer())
     }
 
     override fun getMaid(): IMaid = entity

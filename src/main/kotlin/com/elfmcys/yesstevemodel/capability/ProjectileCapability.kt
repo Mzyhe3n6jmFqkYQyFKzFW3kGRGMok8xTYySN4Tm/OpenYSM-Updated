@@ -26,7 +26,7 @@ class ProjectileCapability(projectile: Projectile) : GeckoProjectileEntity(proje
 
     override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
         super.setupAnim(seekTime, isFirstPerson)
-        getEvaluationContext().setRoamingProperties(floatProperties)
+        evaluationContext.setRoamingProperties(floatProperties)
     }
 
     companion object {
