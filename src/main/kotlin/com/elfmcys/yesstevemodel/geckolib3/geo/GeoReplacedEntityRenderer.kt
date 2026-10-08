@@ -49,13 +49,13 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
     @JvmField
     var rtb: MultiBufferSource? = null
 
-    private var currentModelRenderCycle: IRenderCycle = EModelRenderCycle.INITIAL
+    private var currentModelRenderCycle2: IRenderCycle = EModelRenderCycle.INITIAL
 
-    override fun getCurrentModelRenderCycle(): IRenderCycle = currentModelRenderCycle
-
-    override fun setCurrentModelRenderCycle(cycle: IRenderCycle) {
-        currentModelRenderCycle = cycle
-    }
+    override var currentModelRenderCycle: IRenderCycle
+        get() = currentModelRenderCycle2
+        set(value) {
+            currentModelRenderCycle2 = value
+        }
 
     override fun renderEarly(
         animatable: T,
@@ -164,7 +164,7 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
         if (event != null && player != null) {
             val modelData = event.getModelData()
             dispatchedMat.set(poseStack.last().pose())
-            setCurrentModelRenderCycle(EModelRenderCycle.INITIAL)
+            currentModelRenderCycle = EModelRenderCycle.INITIAL
             poseStack.pushPose()
             if (entity.pose == Pose.SLEEPING) {
                 val bedOrientation = entity.bedOrientation
@@ -317,11 +317,11 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
 
     fun addLayerRenderer(layerRenderer: GeoLayerRenderer<T>): Boolean = layerRenderers.add(layerRenderer)
 
-    override fun getCurrentRTB(): MultiBufferSource? = rtb
-
-    override fun setCurrentRTB(bufferSource: MultiBufferSource?) {
-        rtb = bufferSource
-    }
+    override var currentRTB: MultiBufferSource?
+        get() = rtb
+        set(value) {
+            rtb = value
+        }
 
     override fun extractRenderState(entity: TEntity, state: S, partialTick: Float) {
         super.extractRenderState(entity, state, partialTick)

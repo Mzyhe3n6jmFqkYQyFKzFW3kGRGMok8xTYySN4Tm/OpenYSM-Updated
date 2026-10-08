@@ -36,7 +36,7 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
     private val dispatchedMat: Matrix4f = Matrix4f()
     private val renderEarlyMat: Matrix4f = Matrix4f()
     private var rtb: MultiBufferSource? = null
-    private var currentModelRenderCycle: IRenderCycle = EModelRenderCycle.INITIAL
+    private var currentModelRenderCycle2: IRenderCycle = EModelRenderCycle.INITIAL
 
     override fun getGeoEntity(state: EntityMaidRenderState): IGeoEntity? {
         val maid = state.maid ?: return null
@@ -61,7 +61,7 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
         val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
         RenderContext.enter(collector, state.camera)
         try {
-            setCurrentRTB(bufferSource)
+            currentRTB = bufferSource
             renderMaid(animatable, state, entityYaw, partialTick, poseStack, bufferSource, collector, packedLight)
             bufferSource.endBatch()
         } finally {
@@ -135,7 +135,7 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
 
         val modelData = event.getModelData()
         dispatchedMat.set(poseStack.last().pose())
-        setCurrentModelRenderCycle(EModelRenderCycle.INITIAL)
+        currentModelRenderCycle = EModelRenderCycle.INITIAL
 
         poseStack.pushPose()
         if (vanillaState.hasPose(Pose.SLEEPING)) {
@@ -303,17 +303,17 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
         )
     }
 
-    override fun getCurrentRTB(): MultiBufferSource? = rtb
+    override var currentRTB: MultiBufferSource?
+        get() = rtb
+        set(value) {
+            rtb = value
+        }
 
-    override fun setCurrentRTB(bufferSource: MultiBufferSource?) {
-        rtb = bufferSource
-    }
-
-    override fun getCurrentModelRenderCycle(): IRenderCycle = currentModelRenderCycle
-
-    override fun setCurrentModelRenderCycle(cycle: IRenderCycle) {
-        currentModelRenderCycle = cycle
-    }
+    override var currentModelRenderCycle: IRenderCycle
+        get() = currentModelRenderCycle2
+        set(value) {
+            currentModelRenderCycle2 = value
+        }
 
     companion object {
         private const val FLIP_DEGREES: Float = 90.0f

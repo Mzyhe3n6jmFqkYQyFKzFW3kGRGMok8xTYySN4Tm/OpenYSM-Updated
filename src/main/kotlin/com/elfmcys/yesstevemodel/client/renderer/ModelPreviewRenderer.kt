@@ -493,7 +493,7 @@ object ModelPreviewRenderer {
         } else {
             savedEquipment = null
         }
-        val renderer = RendererManager.getPlayerRenderer()
+        val renderer = RendererManager.playerRenderer
         val state = AvatarRenderState()
         renderer.extractRenderState(entity as Player, state, partialTick)
         state.lightCoords = LightTexture.FULL_BRIGHT
@@ -546,7 +546,7 @@ object ModelPreviewRenderer {
         val x1 = cx.toInt() + halfW
         val y0 = cy.toInt() - halfH
         val y1 = cy.toInt() + halfH
-        val renderer = RendererManager.getPlayerRenderer()
+        val renderer = RendererManager.playerRenderer
         val state = AvatarRenderState()
         renderer.extractRenderState(localPlayer, state, partialTick)
         state.lightCoords = LightTexture.FULL_BRIGHT
@@ -614,7 +614,7 @@ object ModelPreviewRenderer {
         if (poseChanged) {
             entity.pose = newPose
         }
-        val renderer = RendererManager.getPlayerRenderer()
+        val renderer = RendererManager.playerRenderer
         val state = AvatarRenderState()
         renderer.extractRenderState(entity as Player, state, partialTick)
         state.lightCoords = LightTexture.FULL_BRIGHT

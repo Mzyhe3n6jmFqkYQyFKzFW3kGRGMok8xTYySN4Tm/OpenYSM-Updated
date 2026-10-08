@@ -30,7 +30,7 @@ object ReplacePlayerHandRenderEvent {
             if (!cap.isModelActive) return@let
             val context: ModelAssembly? = cap.modelAssembly
             if (context == null || !hasArmBone(arm, context.animationBundle.armModel)) return@let
-            RendererManager.getHandRenderer().renderHandItem(
+            RendererManager.handRenderer.renderHandItem(
                 player,
                 context,
                 cap,

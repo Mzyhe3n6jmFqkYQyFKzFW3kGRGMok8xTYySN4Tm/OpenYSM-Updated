@@ -27,7 +27,7 @@ object YesSteveModel {
             )
         }
         if (!NativeLibLoader.isAvailable) {
-            Constants.LOGGER.error(getErrorMessage())
+            Constants.LOGGER.error(errorMessage)
         } else {
             initConfig()
         }
@@ -61,12 +61,14 @@ object YesSteveModel {
     @JvmStatic
     fun sendUnavailableMessage() {
         val localPlayer = Minecraft.getInstance().player
-        getUnavailableComponent()?.let { localPlayer?.displayClientMessage(it, false) }
+        unavailableComponent?.let { localPlayer?.displayClientMessage(it, false) }
     }
 
     @JvmStatic
-    fun getUnavailableComponent(): Component? = NativeLibLoader.errorComponent
+    val unavailableComponent: Component?
+        get() = NativeLibLoader.errorComponent
 
     @JvmStatic
-    fun getErrorMessage(): String? = NativeLibLoader.errorMessage
+    val errorMessage: String?
+        get() = NativeLibLoader.errorMessage
 }

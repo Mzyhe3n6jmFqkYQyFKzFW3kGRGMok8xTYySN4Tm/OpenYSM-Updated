@@ -22,10 +22,10 @@ abstract class RangedSliderWidget(
     y: Int,
     width: Int,
     height: Int,
-    val prefix: Component,
-    val suffix: Component,
-    val minValue: Double,
-    val maxValue: Double,
+    private val prefix: Component,
+    private val suffix: Component,
+    private val minValue: Double,
+    private val maxValue: Double,
     currentValue: Double,
     stepSize: Double,
     precision: Int,
@@ -51,20 +51,7 @@ abstract class RangedSliderWidget(
         updateMessage()
     }
 
-    constructor(
-        x: Int,
-        y: Int,
-        width: Int,
-        height: Int,
-        prefix: Component,
-        suffix: Component,
-        minValue: Double,
-        maxValue: Double,
-        currentValue: Double,
-        drawString: Boolean
-    ) : this(x, y, width, height, prefix, suffix, minValue, maxValue, currentValue, 1.0, 0, drawString)
-
-    fun getValue(): Double = (value * (maxValue - minValue)) + minValue
+    fun getValue(): Double = value * (maxValue - minValue) + minValue
 
     override fun setValue(newValue: Double) {
         val oldValue = value
@@ -73,7 +60,8 @@ abstract class RangedSliderWidget(
         updateMessage()
     }
 
-    open fun getValueString(): String = format.format(getValue())
+    open val valueString: String
+        get() = format.format(getValue())
 
     override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) = setValueFromMouse(event.x())
 
@@ -100,7 +88,7 @@ abstract class RangedSliderWidget(
         if (leftDir || keyCode == GLFW.GLFW_KEY_RIGHT) {
             if (minValue > maxValue) leftDir = !leftDir
             val dir = if (leftDir) -1f else 1f
-            if (stepSize <= 0.0) setSliderValue(value + (dir / (width - 8))) else setValue(getValue() + (dir * stepSize))
+            if (stepSize <= 0.0) setSliderValue(value + dir / (width - 8)) else setValue(getValue() + dir * stepSize)
         }
         return false
     }
@@ -126,7 +114,7 @@ abstract class RangedSliderWidget(
     }
 
     override fun updateMessage() {
-        message = if (drawString) Component.literal("").append(prefix).append(getValueString())
+        message = if (drawString) Component.literal("").append(prefix).append(valueString)
             .append(suffix) else Component.empty()
     }
 
@@ -137,9 +125,10 @@ abstract class RangedSliderWidget(
         val handleX = x + (value * (width - 8)).toInt()
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, handleTexture, handleX, y, 0.0f, 0.0f, 8, height, 8, height)
         val color = 0x00FFFFFF or (Mth.ceil(alpha * 255.0f) shl 24)
-        guiGraphics.drawCenteredString(mc.font, message, x + (width / 2), y + ((height - 8) / 2), color)
+        guiGraphics.drawCenteredString(mc.font, message, x + width / 2, y + (height - 8) / 2, color)
     }
 
+    @Suppress("unused")
     companion object {
         val SLIDER_TEXTURE: Identifier = Identifier.parse("textures/gui/sprites/widget/slider.png")
         val SLIDER_HIGHLIGHTED_TEXTURE: Identifier =

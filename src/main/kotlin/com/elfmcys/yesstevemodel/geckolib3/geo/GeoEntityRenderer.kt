@@ -58,7 +58,7 @@ abstract class GeoEntityRenderer<TEntity : Entity, T : AnimatableEntity<TEntity>
             if (renderType != null && (z || zShouldEntityAppearGlowing)) {
                 val color: Color = getRenderColor(t, f2, poseStack, multiBufferSource, null, i)
                 worldMatrix = Matrix4f(poseStack.last().pose())
-                setCurrentModelRenderCycle(EModelRenderCycle.INITIAL)
+                currentModelRenderCycle = EModelRenderCycle.INITIAL
                 poseStack.pushPose()
                 poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - f))
                 renderWithBoneAndRenderType(
@@ -113,19 +113,17 @@ abstract class GeoEntityRenderer<TEntity : Entity, T : AnimatableEntity<TEntity>
         )
     }
 
-    override fun getCurrentModelRenderCycle(): IRenderCycle {
-        return renderState
-    }
+    override var currentModelRenderCycle: IRenderCycle
+        get() = renderState
+        set(value) {
+            renderState = value
+        }
 
-    override fun setCurrentModelRenderCycle(cycle: IRenderCycle) {
-        renderState = cycle
-    }
-
-    override fun setCurrentRTB(bufferSource: MultiBufferSource?) {
-        this.bufferSource = bufferSource
-    }
-
-    override fun getCurrentRTB(): MultiBufferSource? = bufferSource
+    override var currentRTB: MultiBufferSource?
+        get() = bufferSource
+        set(value) {
+            bufferSource = value
+        }
 
     companion object {
         @JvmStatic

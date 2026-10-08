@@ -31,7 +31,7 @@ object CustomFishingHookRenderer {
         if (cap != null && cap.isModelInitialized && cap.isModelReady) {
             fishingHook.xRot = 0.0f
             fishingHook.xRotO = 0.0f
-            RendererManager.getProjectileRenderer()
+            RendererManager.projectileRenderer
                 .render(cap.entity, state, partialTick, poseStack, bufferSource, packedLight)
             val playerOwner: Player? = fishingHook.playerOwner
             if (playerOwner != null) {

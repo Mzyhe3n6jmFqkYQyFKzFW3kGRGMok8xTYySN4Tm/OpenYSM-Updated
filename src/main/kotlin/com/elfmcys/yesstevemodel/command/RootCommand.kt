@@ -29,10 +29,10 @@ object RootCommand {
         val root: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(ROOT_NAME)
         root.then(Commands.argument("any", StringArgumentType.greedyString()).executes { commandContext ->
             if (commandContext.source.isPlayer) {
-                YesSteveModel.getUnavailableComponent()?.let { commandContext.source.sendSystemMessage(it) }
+                YesSteveModel.unavailableComponent?.let { commandContext.source.sendSystemMessage(it) }
                 return@executes 1
             }
-            YesSteveModel.getErrorMessage()?.let { commandContext.source.sendSystemMessage(Component.literal(it)) }
+            YesSteveModel.errorMessage?.let { commandContext.source.sendSystemMessage(Component.literal(it)) }
             1
         })
         dispatcher.register(root)

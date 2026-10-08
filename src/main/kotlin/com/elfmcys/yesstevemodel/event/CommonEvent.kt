@@ -13,7 +13,7 @@ object CommonEvent {
 
     private fun register() {
         if (!YesSteveModel.isAvailable) {
-            Constants.LOGGER.error(YesSteveModel.getErrorMessage())
+            Constants.LOGGER.error(YesSteveModel.errorMessage)
             return
         }
         Constants.doNothing(NetworkHandler, TouhouMaidCompat)
