@@ -16,7 +16,7 @@ class InteractionHandAnimationPredicate : IAnimationPredicate<LivingAnimatable<*
         if (animatable is IPreviewAnimatable) return PlayState.STOP
         val i = animatable.getModelAssembly()?.modelData?.formatVersion ?: 0
         if (livingEntity.isUsingItem && !livingEntity.isSleeping) {
-            if (livingEntity.ticksUsingItem == 1 && animatable.getPositionTracker().markProcessed(2))
+            if (livingEntity.ticksUsingItem == 1 && animatable.positionTracker.markProcessed(2))
                 event.getController()?.stopTransition()
             val conditionManager = animatable.getModelConfig() ?: return PlayState.STOP
             if (livingEntity.usedItemHand == InteractionHand.MAIN_HAND) {

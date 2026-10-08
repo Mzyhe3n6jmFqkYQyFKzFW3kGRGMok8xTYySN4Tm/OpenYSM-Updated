@@ -34,6 +34,6 @@ open class VehicleRenderer(context: EntityRendererProvider.Context) :
     }
 
     open fun getTextureLocation(entity: Entity): Identifier {
-        return VehicleCapability[entity]?.getTextureLocation() ?: MissingTextureAtlasSprite.getLocation()
+        return VehicleCapability[entity]?.textureLocation ?: MissingTextureAtlasSprite.getLocation()
     }
 }

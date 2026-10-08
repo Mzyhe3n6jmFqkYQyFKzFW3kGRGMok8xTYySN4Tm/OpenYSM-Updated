@@ -36,7 +36,7 @@ object EntityRenderCache {
 
                 else -> {
                     geoEntity.tickModel()
-                    if (geoEntity.supportsAsync() && geoEntity.isModelInitialized && geoEntity.isModelReady()) {
+                    if (geoEntity.supportsAsync() && geoEntity.isModelInitialized && geoEntity.isModelReady) {
                         val entity = geoEntity.entity
                         when {
                             entity is AbstractClientPlayer -> {

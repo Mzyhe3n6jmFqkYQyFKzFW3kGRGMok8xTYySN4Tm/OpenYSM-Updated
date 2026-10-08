@@ -35,7 +35,7 @@ open class CustomPlayerArmorLayer(context: EntityRendererProvider.Context) : Geo
         headPitch: Float
     ) {
         val player = entityLivingBaseIn.entity
-        val model = entityLivingBaseIn.getCurrentModel()
+        val model = entityLivingBaseIn.currentModel
         if (model != null && model.headBones().isNotEmpty()) {
             val itemBySlot = player.getItemBySlot(EquipmentSlot.HEAD)
             if (!itemBySlot.isEmpty && !isArmorItem(itemBySlot))

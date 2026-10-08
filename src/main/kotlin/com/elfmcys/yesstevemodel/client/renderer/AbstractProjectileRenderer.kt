@@ -41,13 +41,13 @@ abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEn
         val event: AnimationEvent<*>? = animatable.processAnimation(partialTick)
         val minecraft = Minecraft.getInstance()
         val player = minecraft.player
-        val model: AnimatedGeoModel? = animatable.getCurrentModel()
+        val model: AnimatedGeoModel? = animatable.currentModel
         if (event != null && player != null && model != null) {
             val projectile = animatable.entity
             val isVisible = !projectile.isInvisibleTo(player)
             val zShouldEntityAppearGlowing = minecraft.shouldEntityAppearGlowing(projectile)
             val renderType: RenderType? = getRenderType(
-                animatable.getTextureLocation(),
+                animatable.textureLocation,
                 isVisible,
                 zShouldEntityAppearGlowing,
                 model.getGeoModel().isTranslucentTexture(0)
@@ -57,8 +57,8 @@ abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEn
                 modelViewMatrix = Matrix4f(poseStack.last().pose())
                 setCurrentModelRenderCycle(EModelRenderCycle.INITIAL)
                 poseStack.pushPose()
-                poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, projectile.yRotO, projectile.getYRot()) - 90.0f))
-                poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, projectile.xRotO, projectile.getXRot())))
+                poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, projectile.yRotO, projectile.yRot) - 90.0f))
+                poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, projectile.xRotO, projectile.xRot)))
                 renderWithBoneAndRenderType(
                     model,
                     animatable,
@@ -82,10 +82,6 @@ abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEn
 
     abstract override fun createRenderState(): S
 
-    override fun extractRenderState(entity: TEntity, state: S, partialTick: Float) {
-        super.extractRenderState(entity, state, partialTick)
-    }
-
     override fun renderEarly(
         animatable: T,
         poseStack: PoseStack,
@@ -100,7 +96,7 @@ abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEn
         alpha: Float
     ) {
         projectionMatrix = Matrix4f(poseStack.last().pose())
-        super<IGeoRenderer>.renderEarly(animatable, poseStack, partialTick, bufferSource, buffer, packedLight, packedOverlayIn, red, green, blue, alpha)
+        super.renderEarly(animatable, poseStack, partialTick, bufferSource, buffer, packedLight, packedOverlayIn, red, green, blue, alpha)
     }
 
     override fun getCurrentModelRenderCycle(): IRenderCycle {

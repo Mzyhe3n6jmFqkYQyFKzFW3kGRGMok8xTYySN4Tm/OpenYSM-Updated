@@ -37,7 +37,7 @@ open class CustomPlayerParrotLayer(context: EntityRendererProvider.Context) : Ge
         headPitch: Float
     ) {
         val player = entityLivingBaseIn.entity
-        val model = entityLivingBaseIn.getCurrentModel() ?: return
+        val model = entityLivingBaseIn.currentModel ?: return
         if (model.leftShoulderBones().isNotEmpty()) {
             renderParrot(
                 poseStack,

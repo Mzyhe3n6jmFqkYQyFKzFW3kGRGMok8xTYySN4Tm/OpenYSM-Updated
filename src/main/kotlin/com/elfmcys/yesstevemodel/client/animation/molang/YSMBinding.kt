@@ -339,7 +339,7 @@ object YSMBinding : ContextBinding() {
     fun getGroundSpeed2(context: IContext<Entity>): Float {
         val tracker = context.geoInstance().positionTracker
         val delta = tracker.positionDelta
-        return (20.0f * Mth.sqrt((delta.x * delta.x + delta.z * delta.z).toFloat())) / tracker.timeDelta
+        return 20.0f * Mth.sqrt((delta.x * delta.x + delta.z * delta.z).toFloat()) / tracker.timeDelta
     }
 
     @JvmStatic
@@ -347,7 +347,7 @@ object YSMBinding : ContextBinding() {
         val animatable = context.geoInstance()
         if (animatable is PlayerCapability) {
             if (!animatable.isLocalPlayerModel) {
-                return animatable.getPositionTracker().strafeInput
+                return animatable.positionTracker.strafeInput
             }
         }
         return context.entity().xxa
@@ -358,7 +358,7 @@ object YSMBinding : ContextBinding() {
         val animatable = context.geoInstance()
         if (animatable is PlayerCapability) {
             if (!animatable.isLocalPlayerModel) {
-                return animatable.getPositionTracker().verticalInput
+                return animatable.positionTracker.verticalInput
             }
         }
         return context.entity().yya
@@ -369,7 +369,7 @@ object YSMBinding : ContextBinding() {
         val animatable = context.geoInstance()
         if (animatable is PlayerCapability) {
             if (!animatable.isLocalPlayerModel) {
-                return animatable.getPositionTracker().forwardInput
+                return animatable.positionTracker.forwardInput
             }
         }
         return context.entity().zza
@@ -378,7 +378,7 @@ object YSMBinding : ContextBinding() {
     @JvmStatic
     fun isInShieldBlockCooldown(context: IContext<Player>): Boolean {
         val animatable = context.geoInstance()
-        return animatable is PlayerCapability && animatable.getPositionTracker().isShieldBlocking
+        return animatable is PlayerCapability && animatable.positionTracker.isShieldBlocking
     }
 
     @JvmStatic
@@ -408,7 +408,7 @@ object YSMBinding : ContextBinding() {
     @JvmStatic
     fun getFoodLevel(context: IContext<LivingEntity>): Any {
         val animatable = context.geoInstance()
-        if (animatable is PlayerCapability && !animatable.isLocalPlayerModel) return animatable.getPositionTracker().foodLevel
+        if (animatable is PlayerCapability && !animatable.isLocalPlayerModel) return animatable.positionTracker.foodLevel
         val livingEntity = context.entity()
         if (livingEntity is Player) return livingEntity.foodData.foodLevel
         return 20
@@ -416,8 +416,8 @@ object YSMBinding : ContextBinding() {
 
     @JvmStatic
     fun isCloseEyes(event: AnimationEvent<*>, livingEntity: LivingEntity): Boolean {
-        val blinkPhase = (event.currentTick + (abs(livingEntity.uuid.leastSignificantBits) % 10)) % 90.0f
-        return livingEntity.isSleeping || (blinkPhase in 85.0f..90.0f)
+        val blinkPhase = (event.currentTick + abs(livingEntity.uuid.leastSignificantBits) % 10) % 90.0f
+        return livingEntity.isSleeping || blinkPhase in 85.0f..90.0f
     }
 
     @JvmStatic

@@ -37,7 +37,7 @@ open class CustomPlayerItemInHandLayer(
         headPitch: Float
     ) {
         val entity: LivingEntity = entityLivingBaseIn.entity
-        val animatedGeoModel: AnimatedGeoModel = entityLivingBaseIn.getCurrentModel() ?: return
+        val animatedGeoModel: AnimatedGeoModel = entityLivingBaseIn.currentModel ?: return
         val offhandItem: ItemStack = entity.offhandItem
         val mainHandItem: ItemStack = entity.mainHandItem
         if (!offhandItem.isEmpty || !mainHandItem.isEmpty) {

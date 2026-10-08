@@ -33,7 +33,7 @@ class EffectLevel : ContextFunction<Entity>() {
                 if (mobEffectHolder != null) {
                     val geoInstance = context.entity().geoInstance()
                     if (geoInstance is PlayerCapability && !geoInstance.isLocalPlayerModel) {
-                        effects += geoInstance.getPositionTracker().getEffectAmplifier(mobEffectHolder)
+                        effects += geoInstance.positionTracker.getEffectAmplifier(mobEffectHolder)
                     } else {
                         when (val entity = context.entity().entity()) {
                             is LivingEntity -> {
