@@ -12,10 +12,10 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.player.AbstractClientPlayer
 import net.minecraft.world.entity.player.Player
-import java.util.UUID
+import java.util.*
 
 class PlayerPreviewEntity : CustomPlayerEntity(DummyPlayer(), false, false), IPreviewAnimatable {
-    private val animationStateMachine: AnimationTracker = AnimationTracker()
+    override val animationStateMachine: AnimationTracker = AnimationTracker()
     private var customAnimationActive: Boolean = false
 
     override fun resetModel() {
@@ -24,10 +24,6 @@ class PlayerPreviewEntity : CustomPlayerEntity(DummyPlayer(), false, false), IPr
         animationStateMachine.previousAnimation = StringPool.EMPTY
         customAnimationActive = false
         super.resetModel()
-    }
-
-    override fun getAnimationStateMachine(): AnimationTracker {
-        return animationStateMachine
     }
 
     override fun getPhysicsManager(): PhysicsManager {
@@ -50,41 +46,27 @@ class PlayerPreviewEntity : CustomPlayerEntity(DummyPlayer(), false, false), IPr
         return ClientTickEvent.getRefreshRate()
     }
 
-    override fun hasCustomTexture(): Boolean {
-        return true
+    override fun hasCustomTexture(): Boolean = true
+
+    override fun processAnimationImpl(partialTick: Float, z: Boolean): AnimationEvent<*>? {
+        if (entity is DummyPlayer && !entity.ensureLevel()) return null
+        return super.processAnimationImpl(partialTick, z)
     }
 
-    override fun processAnimationImpl(partialTick: Float, isFirstPerson: Boolean): AnimationEvent<*>? {
-        val dummy = entity
-        if (dummy is DummyPlayer && !dummy.ensureLevel()) {
-            return null
-        }
-        return super.processAnimationImpl(partialTick, isFirstPerson)
-    }
+    override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean = true
 
-    override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean {
-        return true
-    }
+    override fun getLogger(): ILogger? = null
 
-    override fun getLogger(): ILogger? {
-        return null
-    }
-
-    override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper? {
-        return TexturedModelWrapper(modelAssembly, isDefault, false, true, 300)
-    }
+    override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper =
+        TexturedModelWrapper(modelAssembly, isDefault, false, true, 300)
 
     private class DummyPlayer : AbstractClientPlayer(
         Minecraft.getInstance().level!!,
         createGameProfile()
     ) {
-        override fun isSpectator(): Boolean {
-            return false
-        }
+        override fun isSpectator(): Boolean = false
 
-        override fun isCreative(): Boolean {
-            return false
-        }
+        override fun isCreative(): Boolean = false
 
         fun ensureLevel(): Boolean {
             val clientLevel: ClientLevel? = Minecraft.getInstance().level
@@ -104,10 +86,9 @@ class PlayerPreviewEntity : CustomPlayerEntity(DummyPlayer(), false, false), IPr
         }
     }
 
+    @Suppress("unused")
     companion object {
         @JvmStatic
-        fun isPreviewPlayer(player: Player): Boolean {
-            return player is DummyPlayer
-        }
+        fun isPreviewPlayer(player: Player): Boolean = player is DummyPlayer
     }
 }

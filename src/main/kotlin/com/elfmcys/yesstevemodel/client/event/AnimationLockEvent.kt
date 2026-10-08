@@ -32,7 +32,7 @@ object AnimationLockEvent {
         val localPlayer = client.player
         if (YesSteveModel.isAvailable() && !animationLocked && localPlayer != null && isPlayerMoving(localPlayer)) {
             PlayerCapability[localPlayer]?.let { cap ->
-                if (cap.isModelSwitching()) {
+                if (cap.isModelSwitching) {
                     cap.clearModelSwitch()
                     if (NetworkHandler.isClientConnected()) {
                         NetworkHandler.sendToServer(C2SPlayAnimationPacket.createDefault())

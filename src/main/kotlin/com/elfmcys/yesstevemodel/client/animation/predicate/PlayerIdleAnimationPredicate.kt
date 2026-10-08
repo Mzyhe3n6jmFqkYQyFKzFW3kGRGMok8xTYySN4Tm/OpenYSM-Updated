@@ -10,7 +10,7 @@ import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 class PlayerIdleAnimationPredicate : IAnimationPredicate<CustomPlayerEntity> {
     override fun predicate(event: AnimationEvent<CustomPlayerEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
         val preview = event.getAnimatable() as? IPreviewAnimatable ?: return PlayState.STOP
-        val str: String = preview.getAnimationStateMachine().queuedAnimation
+        val str: String = preview.animationStateMachine.queuedAnimation
         if (str.isNotBlank()) {
             return IAnimationPredicate.playLoopAnimation(event, str)
         }

@@ -346,7 +346,7 @@ object YSMBinding : ContextBinding() {
     fun getXxa(context: IContext<LivingEntity>): Float {
         val animatable = context.geoInstance()
         if (animatable is PlayerCapability) {
-            if (!animatable.isLocalPlayerModel()) {
+            if (!animatable.isLocalPlayerModel) {
                 return animatable.getPositionTracker().strafeInput
             }
         }
@@ -357,7 +357,7 @@ object YSMBinding : ContextBinding() {
     fun getYya(context: IContext<LivingEntity>): Float {
         val animatable = context.geoInstance()
         if (animatable is PlayerCapability) {
-            if (!animatable.isLocalPlayerModel()) {
+            if (!animatable.isLocalPlayerModel) {
                 return animatable.getPositionTracker().verticalInput
             }
         }
@@ -368,7 +368,7 @@ object YSMBinding : ContextBinding() {
     fun getZza(context: IContext<LivingEntity>): Float {
         val animatable = context.geoInstance()
         if (animatable is PlayerCapability) {
-            if (!animatable.isLocalPlayerModel()) {
+            if (!animatable.isLocalPlayerModel) {
                 return animatable.getPositionTracker().forwardInput
             }
         }
@@ -408,7 +408,7 @@ object YSMBinding : ContextBinding() {
     @JvmStatic
     fun getFoodLevel(context: IContext<LivingEntity>): Any {
         val animatable = context.geoInstance()
-        if (animatable is PlayerCapability && !animatable.isLocalPlayerModel()) return animatable.getPositionTracker().foodLevel
+        if (animatable is PlayerCapability && !animatable.isLocalPlayerModel) return animatable.getPositionTracker().foodLevel
         val livingEntity = context.entity()
         if (livingEntity is Player) return livingEntity.foodData.foodLevel
         return 20

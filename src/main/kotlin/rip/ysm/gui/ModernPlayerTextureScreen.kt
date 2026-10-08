@@ -202,8 +202,8 @@ open class ModernPlayerTextureScreen(
 
     fun selectAnimation(name: String) {
         currentAnimation = name
-        if (!modelHolder.getAnimationStateMachine().isCurrentAnimation(name)) {
-            modelHolder.getAnimationStateMachine().setCurrentAnimation(name)
+        if (!modelHolder.animationStateMachine.isCurrentAnimation(name)) {
+            modelHolder.animationStateMachine.setCurrentAnimation(name)
         }
     }
 
@@ -340,8 +340,8 @@ open class ModernPlayerTextureScreen(
     private fun renderPreview(g: GuiGraphics, partialTick: Float) {
         val mc = minecraft
         val player = mc.player ?: return
-        if (!modelHolder.getAnimationStateMachine().isCurrentAnimation(currentAnimation)) {
-            modelHolder.getAnimationStateMachine().setCurrentAnimation(currentAnimation)
+        if (!modelHolder.animationStateMachine.isCurrentAnimation(currentAnimation)) {
+            modelHolder.animationStateMachine.setCurrentAnimation(currentAnimation)
         }
         val cap = PlayerCapability[player]
         if (cap != null) {

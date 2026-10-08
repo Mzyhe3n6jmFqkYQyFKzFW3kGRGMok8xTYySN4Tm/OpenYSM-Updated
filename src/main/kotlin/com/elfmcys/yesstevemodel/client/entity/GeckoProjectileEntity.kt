@@ -58,7 +58,7 @@ open class GeckoProjectileEntity(
     }
 
     override fun isModelReady(): Boolean {
-        return super.isModelReady() && projectileModelContext != null && (getRenderShape()?.isValid() == true)
+        return super.isModelReady() && projectileModelContext != null && (getRenderShape()?.isValid == true)
     }
 
     override fun getHeightScale(): Float {
@@ -76,6 +76,7 @@ open class GeckoProjectileEntity(
     ) : ModelWrapper(modelAssembly, isDefault) {
         val textureLocatable = UploadManager.getOrCreateLocatable(modelBundle.texture, true)
 
-        override fun isValid(): Boolean = textureLocatable.getResourceLocation() != null
+        override val isValid: Boolean
+            get() = textureLocatable.getResourceLocation() != null
     }
 }

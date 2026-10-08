@@ -32,7 +32,7 @@ class EffectLevel : ContextFunction<Entity>() {
                     BuiltInRegistries.MOB_EFFECT.get(ResourceKey.create(Registries.MOB_EFFECT, effectId)).orElse(null)
                 if (mobEffectHolder != null) {
                     val geoInstance = context.entity().geoInstance()
-                    if (geoInstance is PlayerCapability && !geoInstance.isLocalPlayerModel()) {
+                    if (geoInstance is PlayerCapability && !geoInstance.isLocalPlayerModel) {
                         effects += geoInstance.getPositionTracker().getEffectAmplifier(mobEffectHolder)
                     } else {
                         when (val entity = context.entity().entity()) {

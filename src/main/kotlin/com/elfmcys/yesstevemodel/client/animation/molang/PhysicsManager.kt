@@ -4,8 +4,8 @@ import com.elfmcys.yesstevemodel.client.animation.molang.functions.physics.IPhys
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap
 
 class PhysicsManager {
-    val physicsValues: Int2ReferenceOpenHashMap<IPhysics> = Int2ReferenceOpenHashMap(16)
-    var lastRenderTicks: Float = 0.0f
+    private val physicsValues: Int2ReferenceOpenHashMap<IPhysics> = Int2ReferenceOpenHashMap(16)
+    private var lastRenderTicks: Float = 0.0f
 
     fun update(renderTicks: Float) {
         if (lastRenderTicks > 0) {
@@ -23,7 +23,11 @@ class PhysicsManager {
         physicsValues.put(key, physics)
     }
 
-    fun get(key: Int): IPhysics? {
+    operator fun set(key: Int, physics: IPhysics) {
+        physicsValues.put(key, physics)
+    }
+
+    operator fun get(key: Int): IPhysics? {
         return physicsValues.get(key)
     }
 

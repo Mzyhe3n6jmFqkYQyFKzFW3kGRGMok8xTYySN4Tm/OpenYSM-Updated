@@ -45,7 +45,7 @@ object CapabilityEvent {
         if (!YesSteveModel.isAvailable()) return
         if (entity is ServerPlayer) {
             getModelInfoCap(entity)?.let { modelInfoCap ->
-                if (!NetworkHandler.isPlayerConnected(entity) && !modelInfoCap.isMandatory()) {
+                if (!NetworkHandler.isPlayerConnected(entity) && !modelInfoCap.isMandatory) {
                     modelInfoCap.markDirty()
                     return@let
                 }
@@ -75,14 +75,14 @@ object CapabilityEvent {
         val lowBandwidth = ServerConfig.LOW_BANDWIDTH_USAGE.get()
         for (serverPlayer in players) {
             getModelInfoCap(serverPlayer)?.let { cap ->
-                if (!NetworkHandler.isPlayerConnected(serverPlayer) && !cap.isMandatory()) {
+                if (!NetworkHandler.isPlayerConnected(serverPlayer) && !cap.isMandatory) {
                     if (serverPlayer.tickCount == 200 || serverPlayer.tickCount == 600 || serverPlayer.tickCount == 1800) {
                         NetworkHandler.sendToClientPlayer(S2CVersionCheckPacket(), serverPlayer)
                     }
                     return@let
                 }
-                if (cap.isDirty()) {
-                    cap.getAnimSync().updateAndSync(serverPlayer, false, lowBandwidth)
+                if (cap.isDirty) {
+                    cap.animSync.updateAndSync(serverPlayer, false, lowBandwidth)
                     cap.createSyncMessage(serverPlayer, true)?.let { message ->
                         cap.clearDirty()
                         NetworkHandler.sendToTrackingEntityAndSelf(message, serverPlayer)
@@ -92,7 +92,7 @@ object CapabilityEvent {
                         }
                     }
                 } else {
-                    cap.getAnimSync().updateAndSync(serverPlayer, true, lowBandwidth)
+                    cap.animSync.updateAndSync(serverPlayer, true, lowBandwidth)
                 }
             }
         }
@@ -101,7 +101,7 @@ object CapabilityEvent {
     @JvmStatic
     fun syncProjectileModel(projectile: Projectile, serverPlayer: ServerPlayer) {
         ModelInfoCapability[serverPlayer]?.let { modelInfoCap ->
-            if (!NetworkHandler.isPlayerConnected(serverPlayer) && !modelInfoCap.isMandatory()) {
+            if (!NetworkHandler.isPlayerConnected(serverPlayer) && !modelInfoCap.isMandatory) {
                 return
             }
             ProjectileModelCapability[projectile]?.let { projectileModelCap ->
@@ -119,7 +119,7 @@ object CapabilityEvent {
     @JvmStatic
     fun syncVehicleModel(entity: Entity, serverPlayer: ServerPlayer) {
         ModelInfoCapability[serverPlayer]?.let { modelInfoCap ->
-            if (!NetworkHandler.isPlayerConnected(serverPlayer) && !modelInfoCap.isMandatory()) {
+            if (!NetworkHandler.isPlayerConnected(serverPlayer) && !modelInfoCap.isMandatory) {
                 return
             }
             VehicleModelCapability[entity]?.let { vehicleModelCap ->

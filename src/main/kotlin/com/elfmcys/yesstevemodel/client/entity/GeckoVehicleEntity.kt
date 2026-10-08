@@ -60,7 +60,7 @@ open class GeckoVehicleEntity(
     override fun getAnimationEntries(str: String): AnimationController? = vehicleModel?.animationControllers?.get(str)
 
     override fun isModelReady(): Boolean =
-        super.isModelReady() && vehicleModel != null && (getRenderShape()?.isValid() == true)
+        super.isModelReady() && vehicleModel != null && (getRenderShape()?.isValid == true)
 
     override fun getHeightScale(): Float = 0.7f
 
@@ -73,6 +73,7 @@ open class GeckoVehicleEntity(
     ) : ModelWrapper(modelAssembly, isDefault) {
         val textureLocatable: IResourceLocatable = UploadManager.getOrCreateLocatable(modelBundle.texture, true)
 
-        override fun isValid(): Boolean = textureLocatable.getResourceLocation() != null
+        override val isValid: Boolean
+            get() = textureLocatable.getResourceLocation() != null
     }
 }

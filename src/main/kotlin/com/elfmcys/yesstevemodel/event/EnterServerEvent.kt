@@ -20,7 +20,7 @@ object EnterServerEvent {
             val player = handler.player
             NetworkHandler.sendToClientPlayer(S2CVersionCheckPacket(), player)
             ModelInfoCapability[player]?.let { modelInfoCap ->
-                if (!NetworkHandler.isPlayerConnected(player) && !modelInfoCap.isMandatory()) {
+                if (!NetworkHandler.isPlayerConnected(player) && !modelInfoCap.isMandatory) {
                     modelInfoCap.markDirty()
                     return@let
                 }

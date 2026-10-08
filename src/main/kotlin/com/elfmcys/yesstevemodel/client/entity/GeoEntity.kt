@@ -116,7 +116,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
 
         val shape = renderShape
         if (shape != null) {
-            if ((shape.context != modelAssembly || shape.isDefault != loaded) && shape.isValid()) {
+            if ((shape.context != modelAssembly || shape.isDefault != loaded) && shape.isValid) {
                 modelAssembly = shape.context
                 loaded = shape.isDefault
                 modelAssembly?.let { onModelLoaded(it) }
@@ -161,7 +161,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
 
     override fun isModelReady(): Boolean {
         val shape = renderShape
-        return shape != null && !shape.isDefault && shape.isValid()
+        return shape != null && !shape.isDefault && shape.isValid
     }
 
     override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean =
@@ -226,6 +226,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
         @JvmField
         var audioProvider: IAudioStreamProvider? = null
 
-        open fun isValid(): Boolean = true
+        open val isValid: Boolean
+            get() = true
     }
 }

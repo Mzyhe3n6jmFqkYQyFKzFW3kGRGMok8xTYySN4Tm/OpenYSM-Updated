@@ -2,7 +2,6 @@ package com.elfmcys.yesstevemodel.geckolib3.core.molang.builtin
 
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
 import com.elfmcys.yesstevemodel.client.entity.PlayerEntityFrameState
-import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
 import com.elfmcys.yesstevemodel.geckolib3.core.EntityFrameStateTracker
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.binding.ContextBinding
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.builtin.query.*
@@ -98,7 +97,7 @@ object QueryBinding : ContextBinding() {
     fun isFlying(context: IContext<Player>): Boolean {
         val geoInstance = context.geoInstance()
         if (geoInstance is PlayerCapability) {
-            if (!geoInstance.isLocalPlayerModel()) {
+            if (!geoInstance.isLocalPlayerModel) {
                 return geoInstance.getPositionTracker().isFlying()
             }
         }
@@ -109,7 +108,7 @@ object QueryBinding : ContextBinding() {
     fun getPlayerLevel(context: IContext<Player>): Int {
         val geoInstance = context.geoInstance()
         if (geoInstance is PlayerCapability) {
-            if (!geoInstance.isLocalPlayerModel()) {
+            if (!geoInstance.isLocalPlayerModel) {
                 return geoInstance.getPositionTracker().experienceLevel
             }
         }
@@ -120,7 +119,7 @@ object QueryBinding : ContextBinding() {
     fun getHealth(context: IContext<LivingEntity>): Any {
         val geoInstance = context.geoInstance()
         if (geoInstance is PlayerCapability) {
-            if (!geoInstance.isLocalPlayerModel()) {
+            if (!geoInstance.isLocalPlayerModel) {
                 return geoInstance.getPositionTracker().health
             }
         }
@@ -131,7 +130,7 @@ object QueryBinding : ContextBinding() {
     fun getMaxHealth(context: IContext<LivingEntity>): Any {
         val geoInstance = context.geoInstance()
         if (geoInstance is PlayerCapability) {
-            if (!geoInstance.isLocalPlayerModel()) {
+            if (!geoInstance.isLocalPlayerModel) {
                 return geoInstance.getPositionTracker().maxHealth
             }
         }
