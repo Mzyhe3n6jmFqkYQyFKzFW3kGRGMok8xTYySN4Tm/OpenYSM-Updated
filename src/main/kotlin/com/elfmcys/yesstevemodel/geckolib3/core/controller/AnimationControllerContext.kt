@@ -15,7 +15,6 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 class AnimationControllerContext : IControllerVariableStorage {
     private var _audioPlayerManager: AudioPlayerManager? = null
     var animTime: Float = 0.0f
-        private set
     private var propertyMap: Int2ObjectOpenHashMap<Any>? = null
     private var captureCount: Int = 0
     private var capturedArgs: ReferenceArrayList<ReferenceArrayList<Any>>? = null
