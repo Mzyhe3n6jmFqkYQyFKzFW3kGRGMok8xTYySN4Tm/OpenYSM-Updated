@@ -26,10 +26,10 @@ object WatchCommand {
 
     @JvmStatic
     fun register(): LiteralArgumentBuilder<CommandSourceStack> {
-        val watch: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(WATCH_NAME)
-        val varLiteral: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(VAR_NAME)
-        val state: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(STATE_NAME)
-        val clear: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(CLEAR_NAME)
+        val watch = Commands.literal(WATCH_NAME)
+        val varLiteral = Commands.literal(VAR_NAME)
+        val state = Commands.literal(STATE_NAME)
+        val clear = Commands.literal(CLEAR_NAME)
 
         val exp = {
             Commands.argument(EXP_NAME, StringArgumentType.greedyString())
@@ -50,8 +50,8 @@ object WatchCommand {
         if (!isClientSide()) {
             return Command.SINGLE_SUCCESS
         }
-        val minecraft: Minecraft = Minecraft.getInstance()
-        val string: String = StringArgumentType.getString(context, EXP_NAME)
+        val minecraft = Minecraft.getInstance()
+        val string = StringArgumentType.getString(context, EXP_NAME)
         runCatching {
             GeckoLibCache.parseSimpleExpression(string)
         }.onSuccess { value: IValue ->
@@ -82,7 +82,7 @@ object WatchCommand {
         if (!isClientSide()) {
             return Command.SINGLE_SUCCESS
         }
-        val minecraft: Minecraft = Minecraft.getInstance()
+        val minecraft = Minecraft.getInstance()
         minecraft.execute {
             val player = minecraft.player ?: return@execute
             PlayerCapability[player]?.let {

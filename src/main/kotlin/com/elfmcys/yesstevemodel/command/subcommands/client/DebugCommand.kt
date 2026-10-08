@@ -11,8 +11,8 @@ import net.minecraft.commands.Commands
 import net.minecraft.commands.arguments.EntityArgument
 
 object DebugCommand {
-    const val DEBUG_NAME: String = "debug"
-    const val ARG_NAME: String = "target"
+    private const val DEBUG_NAME: String = "debug"
+    private const val ARG_NAME: String = "target"
 
     @JvmStatic
     fun register(): LiteralArgumentBuilder<CommandSourceStack> {
