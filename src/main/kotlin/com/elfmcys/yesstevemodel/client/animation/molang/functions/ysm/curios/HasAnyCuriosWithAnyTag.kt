@@ -25,7 +25,7 @@ class HasAnyCuriosWithAnyTag : LivingEntityFunction() {
             val tag: Identifier = arguments.getResourceLocation(context, i) ?: return null
             referenceArrayList[i - 1] = TagKey.create(Registries.ITEM, tag)
         }
-        return CuriosCompat.hasTaggedItemInSlot(context.entity().entity(), type, referenceArrayList)
+        return CuriosCompat.hasTaggedItemInSlot(context.entity.entity, type, referenceArrayList)
     }
 
     override fun validateArgumentSize(size: Int): Boolean {

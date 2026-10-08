@@ -6,6 +6,6 @@ import net.minecraft.world.entity.projectile.Projectile
 
 abstract class AbstractProjectileFunction : ContextFunction<Projectile>() {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is Projectile
+        return context.entity is Projectile
     }
 }

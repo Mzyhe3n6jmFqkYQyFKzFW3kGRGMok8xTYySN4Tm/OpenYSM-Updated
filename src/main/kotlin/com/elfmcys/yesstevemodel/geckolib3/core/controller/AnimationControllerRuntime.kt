@@ -52,8 +52,8 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         isSomething: Boolean
     ) {
         if (animationEntries == null) return
-        evaluator.entity().setAnimationControllerContext(null)
-        evaluator.entity().setPlaybackFlags(playbackFlags)
+        evaluator.entity.setAnimationControllerContext(null)
+        evaluator.entity.setPlaybackFlags(playbackFlags)
         val currentTick = event.currentTick
         visitedEntries.clear()
         var transitioned = false
@@ -199,7 +199,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         val curr = currentEntry2
         if (nextState == null && curr == null) return
         playbackFlags.audioPlayerManager?.stopAll()
-        evaluator.entity().setIsClientSide(true)
+        evaluator.entity.setIsClientSide(true)
         if (curr != null) {
             if (curr.subName != null && childController != null) {
                 childController?.transitionToEntry(null, evaluator)
@@ -215,11 +215,11 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             for (str in nextState.soundEffects) {
                 if (StringUtils.isNotBlank(str)) {
                     playbackFlags.audioPlayerManager
-                        ?.playSound(evaluator.entity().geoInstance(), 0, str, false, null)
+                        ?.playSound(evaluator.entity.geoInstance, 0, str, false, null)
                 }
             }
         }
-        evaluator.entity().setIsClientSide(false)
+        evaluator.entity.setIsClientSide(false)
         currentEntry2 = nextState
         for (activeBoneTransform in activeBoneTransforms) {
             activeBoneTransform.resetAndClear()

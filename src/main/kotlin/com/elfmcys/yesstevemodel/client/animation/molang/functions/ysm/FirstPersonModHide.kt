@@ -9,9 +9,6 @@ import rip.ysm.compat.firstperson.FirstPersonCompat
 
 class FirstPersonModHide : IValueEvaluator<Boolean, IContext<Player>> {
     override fun eval(ctx: IContext<Player>): Boolean {
-        if (!ctx.animationEvent().isFirstPerson && FirstPersonCompat.isModLoaded && CameraUtil.getCameraType(ctx) == CameraType.FIRST_PERSON.ordinal) {
-            return FirstPersonCompat.shouldHideHead()
-        }
-        return false
+        return !ctx.animationEvent.isFirstPerson && FirstPersonCompat.isModLoaded && CameraUtil.getCameraType(ctx) == CameraType.FIRST_PERSON.ordinal && FirstPersonCompat.shouldHideHead()
     }
 }

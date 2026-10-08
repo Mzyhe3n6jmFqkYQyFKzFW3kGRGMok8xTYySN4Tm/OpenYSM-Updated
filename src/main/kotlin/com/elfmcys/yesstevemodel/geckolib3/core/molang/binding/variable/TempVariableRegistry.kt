@@ -25,11 +25,11 @@ class TempVariableRegistry : ObjectBinding, CloseVariable {
 
     private class TempVariable(private val address: Int) : AssignableVariable {
         override fun evaluate(context: ExecutionContext<*>): Any? {
-            return (context.entity() as? IContext<*>)?.tempStorage()?.getElement(address)
+            return (context.entity as? IContext<*>)?.tempStorage()?.getElement(address)
         }
 
         override fun assign(context: ExecutionContext<*>, value: Any?) {
-            (context.entity() as? IContext<*>)?.tempStorage()?.setElement(address, value)
+            (context.entity as? IContext<*>)?.tempStorage()?.setElement(address, value)
         }
     }
 }

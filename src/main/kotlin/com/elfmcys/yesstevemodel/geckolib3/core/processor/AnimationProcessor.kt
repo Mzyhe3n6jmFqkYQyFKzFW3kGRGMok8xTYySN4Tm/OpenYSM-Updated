@@ -149,7 +149,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
                 iterator.remove()
             }
         }
-        context.setPlaybackFlags(null)
+        context.playbackFlags = null
         context.setAnimationControllerContext(null)
         postProcess(evaluator)
     }
@@ -271,7 +271,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
 
     private fun postProcess(value: PendingExpression, evaluator: ExpressionEvaluator<AnimationContext<*>>) {
         try {
-            evaluator.entity().setIsClientSide(value.isClientPlayer)
+            evaluator.entity.setIsClientSide(value.isClientPlayer)
             val result = runCatching {
                 value.value.evalSafe(evaluator)
             }.fold(
@@ -284,7 +284,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
             )
             value.callback?.invoke(result)
         } finally {
-            evaluator.entity().setIsClientSide(false)
+            evaluator.entity.setIsClientSide(false)
         }
     }
 

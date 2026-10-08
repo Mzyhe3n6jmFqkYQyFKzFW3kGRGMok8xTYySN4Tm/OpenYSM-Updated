@@ -6,6 +6,6 @@ import net.minecraft.world.item.ItemStack
 
 abstract class ItemStackFunction : ContextFunction<ItemStack>() {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is ItemStack
+        return context.entity is ItemStack
     }
 }

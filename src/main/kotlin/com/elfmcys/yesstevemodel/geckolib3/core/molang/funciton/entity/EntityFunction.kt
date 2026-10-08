@@ -6,6 +6,6 @@ import net.minecraft.world.entity.Entity
 
 abstract class EntityFunction : ContextFunction<Entity>() {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is Entity
+        return context.entity is Entity
     }
 }

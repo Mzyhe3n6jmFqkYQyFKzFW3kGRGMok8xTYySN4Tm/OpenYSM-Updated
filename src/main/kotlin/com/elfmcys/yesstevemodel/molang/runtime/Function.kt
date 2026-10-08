@@ -74,7 +74,7 @@ fun interface Function {
                     obj = obj2
                 }
             }
-            ctx.entity().logWarning("Illegal resource location: ", obj ?: "null")
+            ctx.entity.logWarning("Illegal resource location: ", obj ?: "null")
             return null
         }
 

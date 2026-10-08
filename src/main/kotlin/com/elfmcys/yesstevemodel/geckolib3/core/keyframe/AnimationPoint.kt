@@ -17,7 +17,7 @@ abstract class AnimationPoint(
         get() = if (totalTick == 0.0f) 1.0f else currentTick / totalTick
 
     open fun setupControllerContext(evaluator: ExpressionEvaluator<AnimationContext<*>>) =
-        evaluator.entity().setAnimationControllerContext(context)
+        evaluator.entity.setAnimationControllerContext(context)
 
     abstract fun getLerpPoint(evaluator: ExpressionEvaluator<AnimationContext<*>>): Vector3f
 }

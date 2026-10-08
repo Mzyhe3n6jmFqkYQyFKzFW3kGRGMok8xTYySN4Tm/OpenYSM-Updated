@@ -11,7 +11,7 @@ abstract class ContextVariable<TEntity> : Variable {
 
     @Suppress("UNCHECKED_CAST")
     override fun evaluate(context: ExecutionContext<*>): Any? {
-        val entity = context.entity()
+        val entity = context.entity
         if (entity is IContext<*> && validateContext(entity)) return evaluate(entity as IContext<TEntity>)
         return null
     }

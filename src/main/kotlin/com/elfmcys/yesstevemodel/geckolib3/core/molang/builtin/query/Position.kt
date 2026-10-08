@@ -10,8 +10,8 @@ import net.minecraft.world.entity.Entity
 class Position : EntityFunction() {
     override fun eval(context: ExecutionContext<IContext<Entity>>, arguments: Function.ArgumentCollection): Any? {
         val value: Int = arguments.getAsInt(context, 0)
-        val partialTicks: Float = context.entity().animationEvent().frameTime
-        val entity: Entity = context.entity().entity()
+        val partialTicks: Float = context.entity.animationEvent.frameTime
+        val entity: Entity = context.entity.entity
         return when (value) {
             0 -> Mth.lerp(partialTicks.toDouble(), entity.xo, entity.x)
             1 -> Mth.lerp(partialTicks.toDouble(), entity.yo, entity.y)

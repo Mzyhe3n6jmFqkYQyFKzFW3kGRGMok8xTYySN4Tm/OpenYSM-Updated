@@ -23,7 +23,7 @@ object CarryOnCompatImpl : ModCompat("carryon") {
     @JvmStatic
     fun registerBindings(binding: CtrlBinding) {
         binding.livingEntityVar("carryon_type") {
-            val entity = it.entity()
+            val entity = it.entity
             if (entity is Player)
                 when (CarryOnDataHelper.getCarryType(entity)) {
                     CarryOnDataHelper.CarryType.BLOCK -> "block"
@@ -33,7 +33,7 @@ object CarryOnCompatImpl : ModCompat("carryon") {
                 } else StringPool.EMPTY
         }
         binding.livingEntityVar("carryon_is_princess") {
-            val entity = it.entity()
+            val entity = it.entity
             entity is Player && CarryOnDataHelper.isPrincess(entity)
         }
     }

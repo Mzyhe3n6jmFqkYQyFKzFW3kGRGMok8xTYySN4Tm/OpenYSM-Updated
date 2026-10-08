@@ -6,6 +6,6 @@ import net.minecraft.world.item.Item
 
 abstract class ItemFunction : ContextFunction<Item>() {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is Item
+        return context.entity is Item
     }
 }

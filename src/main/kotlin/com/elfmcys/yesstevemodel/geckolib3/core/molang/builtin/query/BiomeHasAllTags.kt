@@ -13,7 +13,7 @@ import net.minecraft.world.level.biome.Biome
 
 class BiomeHasAllTags : EntityFunction() {
     override fun eval(context: ExecutionContext<IContext<Entity>>, arguments: Function.ArgumentCollection): Any? {
-        val entity: Entity = context.entity().entity()
+        val entity: Entity = context.entity.entity
         val biome: Holder<Biome> = entity.level().getBiome(entity.blockPosition())
         for (i in 0 until arguments.size()) {
             val id: Identifier = arguments.getResourceLocation(context, i) ?: return null

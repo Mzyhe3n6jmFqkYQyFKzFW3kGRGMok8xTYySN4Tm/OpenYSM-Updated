@@ -7,5 +7,5 @@ import net.minecraft.world.item.ItemStack
 
 open class ItemStackVariable(evaluator: IValueEvaluator<*, IContext<ItemStack>>) :
     LambdaVariable<ItemStack>(evaluator) {
-    override fun validateContext(context: IContext<*>): Boolean = context.entity() is ItemStack
+    override fun validateContext(context: IContext<*>): Boolean = context.entity is ItemStack
 }

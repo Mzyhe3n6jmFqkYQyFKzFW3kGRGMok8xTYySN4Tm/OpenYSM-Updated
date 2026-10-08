@@ -8,6 +8,6 @@ import net.minecraft.world.entity.projectile.FishingHook
 open class FishingHookEntityVariable(evaluator: IValueEvaluator<*, IContext<FishingHook>>) :
     LambdaVariable<FishingHook>(evaluator) {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is FishingHook
+        return context.entity is FishingHook
     }
 }

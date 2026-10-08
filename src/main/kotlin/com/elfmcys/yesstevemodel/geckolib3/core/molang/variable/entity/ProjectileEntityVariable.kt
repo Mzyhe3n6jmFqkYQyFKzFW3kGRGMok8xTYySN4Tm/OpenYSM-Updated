@@ -8,6 +8,6 @@ import net.minecraft.world.entity.projectile.Projectile
 open class ProjectileEntityVariable(evaluator: IValueEvaluator<*, IContext<Projectile>>) :
     LambdaVariable<Projectile>(evaluator) {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is Projectile
+        return context.entity is Projectile
     }
 }

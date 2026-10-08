@@ -21,7 +21,7 @@ abstract class BoneParamFunction : EntityFunction() {
         if (name == StringPool.EMPTY_ID) {
             return null
         }
-        val bone: IBone = context.entity().geoInstance().getBone(name) ?: return null
+        val bone: IBone = context.entity.geoInstance.getBone(name) ?: return null
         return getParam(bone)
     }
 }

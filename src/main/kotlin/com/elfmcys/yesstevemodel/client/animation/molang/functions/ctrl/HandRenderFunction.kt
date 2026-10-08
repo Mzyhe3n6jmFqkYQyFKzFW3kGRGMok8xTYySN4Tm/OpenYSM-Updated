@@ -20,7 +20,7 @@ class HandRenderFunction(private val handItemPredicate: HandItemPredicate) : Liv
         val slotType = MolangUtils.parseSlotType(context, arguments, 0)
         if (slotType == null || slotType.isArmor) return 0
         val id = arguments.getAsString(context, 1) ?: return 0
-        val entity = context.entity().entity()
+        val entity = context.entity.entity
         if (id.isBlank()) return 0
         val itemBySlot = entity.getItemBySlot(slotType)
         if (!handItemPredicate.test(

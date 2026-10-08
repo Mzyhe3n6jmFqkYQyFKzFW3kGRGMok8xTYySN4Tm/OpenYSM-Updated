@@ -19,7 +19,7 @@ import rip.ysm.compat.cosmeticarmorreworked.CosmeticArmorHelper
 class EquippedEnchantmentLevel : LivingEntityFunction() {
     override fun eval(context: ExecutionContext<IContext<LivingEntity>>, arguments: ArgumentCollection): Any? {
         val slotType: EquipmentSlot = MolangUtils.parseSlotType(context, arguments, 0) ?: return null
-        val stack: ItemStack = CosmeticArmorHelper.getArmorItem(context.entity().entity(), slotType)
+        val stack: ItemStack = CosmeticArmorHelper.getArmorItem(context.entity.entity, slotType)
         if (stack.isEmpty) {
             return 0
         }
@@ -27,7 +27,7 @@ class EquippedEnchantmentLevel : LivingEntityFunction() {
         for (i in 1 until arguments.size()) {
             val id: Identifier? = arguments.getResourceLocation(context, i)
             if (id != null) {
-                val holder: Holder<Enchantment>? = context.entity().entity().level().registryAccess()
+                val holder: Holder<Enchantment>? = context.entity.entity.level().registryAccess()
                     .lookupOrThrow(Registries.ENCHANTMENT)
                     .get(ResourceKey.create(Registries.ENCHANTMENT, id))
                     .orElse(null)

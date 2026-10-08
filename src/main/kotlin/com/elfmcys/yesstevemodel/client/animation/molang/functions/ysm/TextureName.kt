@@ -8,7 +8,7 @@ import net.minecraft.world.entity.player.Player
 
 class TextureName : IValueEvaluator<String?, IContext<Player>> {
     override fun eval(ctx: IContext<Player>): String? {
-        val animatableEntity: AnimatableEntity<*> = ctx.geoInstance()
+        val animatableEntity: AnimatableEntity<*> = ctx.geoInstance
         if (animatableEntity is CustomPlayerEntity) {
             return animatableEntity.currentTextureName
         }

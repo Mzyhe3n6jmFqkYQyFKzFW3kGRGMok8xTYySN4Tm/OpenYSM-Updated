@@ -67,8 +67,8 @@ class AnimationControllerContext : IControllerVariableStorage {
 
     fun executeRenderLayers(evaluator: ExpressionEvaluator<AnimationContext<*>>) {
         if (captureCount > 0) {
-            val context: AnimationContext<*> = evaluator.entity()
-            val animatableEntity: AnimatableEntity<*> = context.geoInstance()
+            val context: AnimationContext<*> = evaluator.entity
+            val animatableEntity: AnimatableEntity<*> = context.geoInstance
             if (animatableEntity is GeoEntity) {
                 val values: List<IValue>? = animatableEntity.renderLayers
                 if (values != null) {

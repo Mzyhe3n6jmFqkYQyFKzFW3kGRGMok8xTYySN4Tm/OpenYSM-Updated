@@ -26,7 +26,7 @@ object MolangEventDispatcher {
     @JvmStatic
     fun createUpdateExpression(list: List<IValue>, list2: List<*>): IValue {
         return IValue { evaluator: ExpressionEvaluator<*> ->
-            val entity = evaluator.entity()
+            val entity = evaluator.entity
             if (entity is IContext<*>) {
                 val mutableList = (list2 as? MutableList<*>) ?: ArrayList(list2)
                 for (value in list) {

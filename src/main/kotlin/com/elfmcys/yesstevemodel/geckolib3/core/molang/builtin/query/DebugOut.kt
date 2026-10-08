@@ -7,7 +7,7 @@ import com.elfmcys.yesstevemodel.molang.runtime.Function
 
 class DebugOut : ContextFunction<Any>() {
     override fun eval(context: ExecutionContext<IContext<Any>>, arguments: Function.ArgumentCollection): Any? {
-        if (!context.entity().isDebugMode()) {
+        if (!context.entity.isDebugMode) {
             return null
         }
         val sb = StringBuilder()
@@ -15,7 +15,7 @@ class DebugOut : ContextFunction<Any>() {
             val value: Any? = arguments.getValue(context, i)
             sb.append(value ?: "null")
         }
-        context.entity().logWarning(sb.toString())
+        context.entity.logWarning(sb.toString())
         return null
     }
 

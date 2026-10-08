@@ -31,11 +31,11 @@ class EffectLevel : ContextFunction<Entity>() {
                 val mobEffectHolder: Holder<MobEffect>? =
                     BuiltInRegistries.MOB_EFFECT.get(ResourceKey.create(Registries.MOB_EFFECT, effectId)).orElse(null)
                 if (mobEffectHolder != null) {
-                    val geoInstance = context.entity().geoInstance()
+                    val geoInstance = context.entity.geoInstance
                     if (geoInstance is PlayerCapability && !geoInstance.isLocalPlayerModel) {
                         effects += geoInstance.positionTracker.getEffectAmplifier(mobEffectHolder)
                     } else {
-                        when (val entity = context.entity().entity()) {
+                        when (val entity = context.entity.entity) {
                             is LivingEntity -> {
                                 val mobEffectInstance: MobEffectInstance? = entity.getEffect(mobEffectHolder)
                                 if (mobEffectInstance != null) {

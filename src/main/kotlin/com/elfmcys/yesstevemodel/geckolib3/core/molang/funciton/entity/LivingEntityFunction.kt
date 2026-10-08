@@ -6,6 +6,6 @@ import net.minecraft.world.entity.LivingEntity
 
 abstract class LivingEntityFunction : ContextFunction<LivingEntity>() {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is LivingEntity
+        return context.entity is LivingEntity
     }
 }

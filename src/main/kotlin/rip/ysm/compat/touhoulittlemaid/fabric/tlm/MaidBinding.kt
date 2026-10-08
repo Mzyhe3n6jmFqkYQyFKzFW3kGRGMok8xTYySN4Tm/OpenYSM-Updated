@@ -45,7 +45,7 @@ object MaidBinding {
 
     private fun createMaidEvaluable(function: (EntityMaid) -> Any): IValueEvaluator<Any, IContext<LivingEntity>> {
         return IValueEvaluator { ctx ->
-            val entity = ctx.entity()
+            val entity = ctx.entity
             if (entity is EntityMaid) {
                 function(entity)
             } else {
