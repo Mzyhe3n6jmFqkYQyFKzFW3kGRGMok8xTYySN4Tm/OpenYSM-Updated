@@ -42,9 +42,7 @@ open class CustomPlayerRenderer(context: EntityRendererProvider.Context) :
         bufferSource: MultiBufferSource,
         packedLight: Int
     ) {
-        if (SWarfareCompat.isPlayerAiming(player)) {
-            return
-        }
+        if (SWarfareCompat.isPlayerAiming(player)) return
         val capability = PlayerCapability[player] ?: return
         currentPlayer = player
         capability.tickModel()

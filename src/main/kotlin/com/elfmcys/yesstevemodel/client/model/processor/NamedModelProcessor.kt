@@ -25,7 +25,7 @@ open class NamedModelProcessor<T : GeoEntity<*>, TModel>(
             val animations = animationDataProvider.getAnimations(modelData, resourceBundle)
             for (requiredAnimation in requiredAnimations) {
                 val animation = animations[requiredAnimation]
-                if (animation != null && !animation.isEmpty()) {
+                if (animation != null && !animation.isEmpty) {
                     hasContent = true
                     break
                 }
