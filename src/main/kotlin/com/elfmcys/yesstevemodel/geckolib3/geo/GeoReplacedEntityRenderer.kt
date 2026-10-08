@@ -49,13 +49,7 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
     @JvmField
     var rtb: MultiBufferSource? = null
 
-    private var currentModelRenderCycle2: IRenderCycle = EModelRenderCycle.INITIAL
-
-    override var currentModelRenderCycle: IRenderCycle
-        get() = currentModelRenderCycle2
-        set(value) {
-            currentModelRenderCycle2 = value
-        }
+    override var currentModelRenderCycle: IRenderCycle = EModelRenderCycle.INITIAL
 
     override fun renderEarly(
         animatable: T,
