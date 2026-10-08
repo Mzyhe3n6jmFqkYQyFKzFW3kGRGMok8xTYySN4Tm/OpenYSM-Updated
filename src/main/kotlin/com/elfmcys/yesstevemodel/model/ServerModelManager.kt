@@ -877,7 +877,7 @@ object ServerModelManager {
                 val coreDataLength: Int
                 YSMBinaryDeserializer(clearText, 32).use { deserializer ->
                     deserializer.deserializeKeepOpen()
-                    coreDataLength = deserializer.reader.getOffset()
+                    coreDataLength = deserializer.reader.offset
                 }
 
                 YSMByteBuf(Unpooled.buffer()).use { outBuf ->
