@@ -49,7 +49,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
     protected var needsReset: Boolean = false
     protected var modelInitialized: Boolean = false
     protected var animationStates: MutableMap<String, AnimationState> = Maps.newHashMap()
-    protected val animationProcessor2: AnimationProcessor<TEntity> = AnimationProcessor(this)
+    open val animationProcessor: AnimationProcessor<TEntity> = AnimationProcessor(this)
     protected val rateLimiter: RateLimiter = RateLimiter().apply { setRefreshRate(refreshRate) }
     protected val defaultPhysicsManager: PhysicsManager = PhysicsManager()
 
@@ -63,7 +63,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
     open fun reset() {
         currentModel = null
         animationMap = null
-        animationProcessor2.reset()
+        animationProcessor.reset()
         defaultPhysicsManager.clear()
         rateLimiter.reset()
         manager.clear()
@@ -113,7 +113,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
 
     open fun hasCustomTexture(): Boolean = false
 
-    open fun getBone(i: Int): IBone? = animationProcessor2.getBone(i)
+    open fun getBone(i: Int): IBone? = animationProcessor.getBone(i)
 
     open fun shouldRenderOverlay(): Boolean = true
 
@@ -222,7 +222,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
             }
         }
         event.currentTick = seekTime
-        if (!animationProcessor2.isDisabled) {
+        if (!animationProcessor.isDisabled) {
             isTickTriggered = isTickTriggered or rateLimiter.request(seekTime / 20.0f)
             val z2 = isTickTriggered && !hasUpdatedThisTick || wasAnimationActiveLastTick || z
             val z3 =
@@ -248,7 +248,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
     open fun resetHeadTracking(wasAnimEvaluated: Boolean) {}
 
     open val evaluationContext: AnimationProcessor<TEntity>
-        get() = animationProcessor2
+        get() = animationProcessor
 
     open fun initAnimationControllers(
         model: GeoModel,
@@ -259,7 +259,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
         currentModel = animModel
         animationMap = object2ReferenceMap
         registerAnimationControllers()
-        animationProcessor2.initBones(animModel, object2ReferenceMap)
+        animationProcessor.initBones(animModel, object2ReferenceMap)
         currentModel = animModel
     }
 
@@ -285,14 +285,14 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
         func: ((String) -> Unit)?
     ) {
         if (func != null) {
-            animationProcessor2.execute(value, isClientPlayer, executeBeforeAnimation, func)
+            animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, func)
         } else {
-            animationProcessor2.execute(value, isClientPlayer, executeBeforeAnimation, null)
+            animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, null)
         }
     }
 
     open val propertyGetter: IForeignVariableStorage
-        get() = animationProcessor2.publicVariableStorage
+        get() = animationProcessor.publicVariableStorage
 
     open fun markModelInitialized() {
         modelInitialized = true
