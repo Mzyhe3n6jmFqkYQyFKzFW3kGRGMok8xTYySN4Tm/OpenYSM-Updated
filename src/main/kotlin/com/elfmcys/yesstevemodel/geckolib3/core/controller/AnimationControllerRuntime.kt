@@ -368,7 +368,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             var animationPoint: AnimationPoint?
             val transitionVector3f = rotationOut
             transitionVector3f.set(0.0f, 0.0f, 0.0f)
-            transitionVector3f.percentCompleted = 1.0f
+            transitionVector3f.rawPercentCompleted = 1.0f
             var hasData = false
             var isFirst = true
             var isTransition = false
@@ -441,7 +441,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             var point: AnimationPoint?
             val result = positionOut
             result.set(0.0f, 0.0f, 0.0f)
-            result.percentCompleted = 1.0f
+            result.rawPercentCompleted = 1.0f
             var hasData = false
             var isFirst = true
             var isTransition = false
@@ -505,7 +505,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             var point: AnimationPoint?
             val result = scaleOut
             result.set(1.0f, 1.0f, 1.0f)
-            result.percentCompleted = 1.0f
+            result.rawPercentCompleted = 1.0f
             val tmp = scaleLerpTmp
             var hasData = false
             var isFirst = true
