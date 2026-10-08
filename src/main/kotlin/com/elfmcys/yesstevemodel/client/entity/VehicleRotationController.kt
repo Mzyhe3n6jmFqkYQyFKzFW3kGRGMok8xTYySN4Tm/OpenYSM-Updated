@@ -19,7 +19,7 @@ open class VehicleRotationController(
 ) : IAnimationController<GeckoVehicleEntity> {
     private val transformProvider: ExpressionTransformProvider = ExpressionTransformProvider()
     private var boneTarget: BoneTopLevelSnapshot? = null
-    private var vehicleRotation: TransitionVector3f? = null
+    private var vehicleRotation2: TransitionVector3f? = null
 
     override val name: String
         get() = modelId
@@ -27,9 +27,8 @@ open class VehicleRotationController(
     override val currentAnimation: String
         get() = "[Coded]"
 
-    open fun getVehicleRotation(): Vector3f? {
-        return vehicleRotation
-    }
+    open val vehicleRotation: Vector3f?
+        get() = vehicleRotation2
 
     override fun init(
         list: MutableList<BoneTopLevelSnapshot>,
@@ -46,19 +45,19 @@ open class VehicleRotationController(
         val rot = ImmersiveAirCraftCompat.getAircraftRotation(event)
             ?: SimplePlanesCompat.getSimplePlanesRotation(event)
         if (rot != null) {
-            vehicleRotation = TransitionVector3f(rot).apply {
+            vehicleRotation2 = TransitionVector3f(rot).apply {
                 setPercentCompleted(0.0f)
             }
         }
     }
 
     override fun forEachTransform(consumer: (BoneTransformProvider) -> Unit) {
-        if (boneTarget != null && vehicleRotation != null) consumer(transformProvider)
+        if (boneTarget != null && vehicleRotation2 != null) consumer(transformProvider)
     }
 
     override fun reset() {
         boneTarget = null
-        vehicleRotation = null
+        vehicleRotation2 = null
     }
 
     private inner class ExpressionTransformProvider : BoneTransformProvider {
@@ -67,7 +66,7 @@ open class VehicleRotationController(
         }
 
         override fun getRotation(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
-            return this@VehicleRotationController.vehicleRotation
+            return this@VehicleRotationController.vehicleRotation2
         }
 
         override fun getPosition(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {

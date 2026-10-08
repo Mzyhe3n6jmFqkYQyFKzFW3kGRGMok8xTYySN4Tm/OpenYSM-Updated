@@ -58,7 +58,7 @@ object WatchCommand {
             minecraft.execute {
                 val player = minecraft.player ?: return@execute
                 PlayerCapability[player]?.let {
-                    AnimationDebugOverlay.getMolangWatch()
+                    AnimationDebugOverlay.molangWatch
                         .addWatch(MolangWatchRegistry.EvaluationPhase.POST_ANIMATION, string, value)
                     if (!AnimationDebugOverlay.isDebugActive()) {
                         AnimationDebugOverlay.tryUpdateFromLocalPlayer()
@@ -86,7 +86,7 @@ object WatchCommand {
         minecraft.execute {
             val player = minecraft.player ?: return@execute
             PlayerCapability[player]?.let {
-                AnimationDebugOverlay.getMolangWatch().clearAll()
+                AnimationDebugOverlay.molangWatch.clearAll()
             }
         }
         AnimationDebugOverlay.clearDebugLines()

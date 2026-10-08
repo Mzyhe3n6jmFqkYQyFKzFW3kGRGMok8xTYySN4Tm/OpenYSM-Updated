@@ -8,34 +8,37 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.entity.Entity
 
 class VehicleModelCapability {
-    private var ownerModelId: String = "default"
-    private var initialized: Boolean = false
-    private var molangVars: Object2FloatOpenHashMap<String> = Object2FloatOpenHashMap()
+    private var ownerModelId2: String = "default"
+    private var initialized2: Boolean = false
+    private var molangVars2: Object2FloatOpenHashMap<String> = Object2FloatOpenHashMap()
 
     fun setModel(str: String, object2FloatOpenHashMap: Object2FloatOpenHashMap<String>) {
-        ownerModelId = str
-        initialized = true
-        molangVars = object2FloatOpenHashMap
+        ownerModelId2 = str
+        initialized2 = true
+        molangVars2 = object2FloatOpenHashMap
     }
 
     fun copyFrom(other: VehicleModelCapability) {
-        ownerModelId = other.ownerModelId
-        initialized = other.initialized
-        molangVars = other.molangVars
+        ownerModelId2 = other.ownerModelId2
+        initialized2 = other.initialized2
+        molangVars2 = other.molangVars2
     }
 
-    fun getOwnerModelId(): String = ownerModelId
+    val ownerModelId: String
+        get() = ownerModelId2
 
-    fun isInitialized(): Boolean = initialized
+    val isInitialized: Boolean
+        get() = initialized2
 
-    fun getMolangVars(): Object2FloatOpenHashMap<String> = molangVars
+    val molangVars: Object2FloatOpenHashMap<String>
+        get() = molangVars2
 
     fun serializeNBT(): CompoundTag {
         val compoundTag = CompoundTag()
-        compoundTag.putString("owner_model_id", ownerModelId)
-        compoundTag.putBoolean("initialized", initialized)
+        compoundTag.putString("owner_model_id", ownerModelId2)
+        compoundTag.putBoolean("initialized", initialized2)
         val compoundTag2 = CompoundTag()
-        molangVars.object2FloatEntrySet().fastForEach { entry ->
+        molangVars2.object2FloatEntrySet().fastForEach { entry ->
             compoundTag2.putFloat(entry.key, entry.floatValue)
         }
         compoundTag.put("molang_vars_server_bound", compoundTag2)
@@ -43,12 +46,12 @@ class VehicleModelCapability {
     }
 
     fun deserializeNBT(compoundTag: CompoundTag) {
-        ownerModelId = compoundTag.getStringOr("owner_model_id", "default")
-        initialized = compoundTag.getBooleanOr("initialized", false)
-        molangVars.clear()
+        ownerModelId2 = compoundTag.getStringOr("owner_model_id", "default")
+        initialized2 = compoundTag.getBooleanOr("initialized", false)
+        molangVars2.clear()
         val compound = compoundTag.getCompoundOrEmpty("molang_vars_server_bound")
         for (str in compound.keySet()) {
-            molangVars.put(str, compound.getFloatOr(str, 0.0f))
+            molangVars2.put(str, compound.getFloatOr(str, 0.0f))
         }
     }
 

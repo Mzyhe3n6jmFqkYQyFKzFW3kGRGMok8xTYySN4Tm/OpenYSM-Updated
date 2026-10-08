@@ -85,7 +85,7 @@ object MoLangCommand {
             Minecraft.getInstance().execute {
                 val player = Minecraft.getInstance().player ?: return@execute
                 PlayerCapability[player]?.let {
-                    AnimationDebugOverlay.getMolangWatch().addWatch(watchRegistry, string, value)
+                    AnimationDebugOverlay.molangWatch.addWatch(watchRegistry, string, value)
                 }
             }
         }.onFailure { e ->
@@ -107,7 +107,7 @@ object MoLangCommand {
         Minecraft.getInstance().execute {
             val player = Minecraft.getInstance().player ?: return@execute
             PlayerCapability[player]?.let {
-                AnimationDebugOverlay.getMolangWatch().removeWatch(string)
+                AnimationDebugOverlay.molangWatch.removeWatch(string)
             }
         }
         return Command.SINGLE_SUCCESS
@@ -118,7 +118,7 @@ object MoLangCommand {
         Minecraft.getInstance().execute {
             val player = Minecraft.getInstance().player ?: return@execute
             PlayerCapability[player]?.let {
-                AnimationDebugOverlay.getMolangWatch().clearAll()
+                AnimationDebugOverlay.molangWatch.clearAll()
             }
         }
         return Command.SINGLE_SUCCESS
@@ -129,7 +129,7 @@ object MoLangCommand {
         runCatching {
             GeckoLibCache.parseSimpleExpression(StringArgumentType.getString(context, EXP_NAME))
         }.onSuccess { value: IValue ->
-            var geoEntity = AnimationDebugOverlay.getActiveModel()
+            var geoEntity = AnimationDebugOverlay.activeModel
             if (geoEntity == null) {
                 val player = Minecraft.getInstance().player
                 if (player != null) {

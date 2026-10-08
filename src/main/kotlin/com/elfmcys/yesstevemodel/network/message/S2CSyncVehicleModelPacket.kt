@@ -32,7 +32,7 @@ class S2CSyncVehicleModelPacket(
             if (nbt != null) {
                 cap.deserializeNBT(nbt)
             }
-            val objectMap: Object2FloatOpenHashMap<String> = cap.getMolangVars()
+            val objectMap: Object2FloatOpenHashMap<String> = cap.molangVars
             val floatMap = Int2FloatOpenHashMap()
             objectMap.object2FloatEntrySet().fastForEach { entry ->
                 floatMap.put(StringPool.computeIfAbsent(entry.key), entry.floatValue)
@@ -53,7 +53,7 @@ class S2CSyncVehicleModelPacket(
         @Environment(EnvType.CLIENT)
         fun handleCapability(entity: Entity, capability: VehicleModelCapability, floatMap: Int2FloatOpenHashMap) {
             VehicleCapability[entity]?.let { vehicleCapability ->
-                vehicleCapability.setOwnerModelId(capability.getOwnerModelId())
+                vehicleCapability.setOwnerModelId(capability.ownerModelId)
                 vehicleCapability.setFloatMap(floatMap)
             }
         }
