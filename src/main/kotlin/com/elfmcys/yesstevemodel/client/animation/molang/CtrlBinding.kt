@@ -189,7 +189,7 @@ object CtrlBinding : ContextBinding() {
         val animatableEntity: AnimatableEntity<*> = context.geoInstance()
         if (animatableEntity is PlayerCapability) {
             if (!animatableEntity.isLocalPlayerModel) {
-                return animatableEntity.positionTracker.isFlying()
+                return animatableEntity.positionTracker.isFlying
             }
         }
         val entity: Entity = context.entity()
