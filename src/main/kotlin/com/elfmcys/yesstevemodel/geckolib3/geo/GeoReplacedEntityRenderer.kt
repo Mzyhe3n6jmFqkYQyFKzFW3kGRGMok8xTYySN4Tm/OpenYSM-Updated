@@ -204,10 +204,10 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
                 null,
                 packedLight,
                 packOverlayCoords(entity, getHurtOverlayProgress(entity, partialTick)),
-                color.getRed() / 255.0f,
-                color.getGreen() / 255.0f,
-                color.getBlue() / 255.0f,
-                color.getAlpha() / 255.0f
+                color.red / 255.0f,
+                color.green / 255.0f,
+                color.blue / 255.0f,
+                color.alpha / 255.0f
             )
             if (useExtraPlayer && !entity.isSpectator) {
                 render(t, state, partialTick, poseStack, multiBufferSource, packedLight, event, modelData)
@@ -224,10 +224,10 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
                     null,
                     packedLight,
                     packOverlayCoords(entity, getHurtOverlayProgress(entity, partialTick)),
-                    color.getRed() / 255.0f,
-                    color.getGreen() / 255.0f,
-                    color.getBlue() / 255.0f,
-                    color.getAlpha() / 255.0f
+                    color.red / 255.0f,
+                    color.green / 255.0f,
+                    color.blue / 255.0f,
+                    color.alpha / 255.0f
                 )
             }
             if (!useExtraPlayer && !entity.isSpectator) {

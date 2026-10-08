@@ -1,16 +1,20 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.core.util
 
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 
-@Suppress("unused")
-class Color(private val color: Int) {
-    fun getColor(): Int = color
-    fun getAlpha(): Int = color shr 24 and 0xFF
-    fun getRed(): Int = color shr 16 and 0xFF
-    fun getGreen(): Int = color shr 8 and 0xFF
-    fun getBlue(): Int = color and 0xFF
+class Color(val color: Int) {
+    val alpha: Int
+        get() = color shr 24 and 0xFF
+    val red: Int
+        get() = color shr 16 and 0xFF
+    val green: Int
+        get() = color shr 8 and 0xFF
+    val blue: Int
+        get() = color and 0xFF
 
     /**
      * 返回更加明亮的颜色
@@ -19,13 +23,11 @@ class Color(private val color: Int) {
      * @return 更加明亮的颜色
      */
     fun brighter(factor: Double): Color {
-        var r: Int = getRed()
-        var g: Int = getGreen()
-        var b: Int = getBlue()
-        val i: Int = (1.0 / (1.0 - 1.0 / factor)).toInt()
-        if (r == 0 && g == 0 && b == 0) {
-            return ofRGBA(i, i, i, getAlpha())
-        }
+        var r = red
+        var g = green
+        var b = blue
+        val i = (1.0 / (1.0 - 1.0 / factor)).toInt()
+        if (r == 0 && g == 0 && b == 0) return ofRGBA(i, i, i, alpha)
         if (r in 1..<i) {
             r = i
         }
@@ -40,7 +42,7 @@ class Color(private val color: Int) {
             min((r / scale).toInt(), 255),
             min((g / scale).toInt(), 255),
             min((b / scale).toInt(), 255),
-            getAlpha()
+            alpha
         )
     }
 
@@ -53,10 +55,10 @@ class Color(private val color: Int) {
     fun darker(factor: Double): Color {
         val scale = 1.0 / factor
         return ofRGBA(
-            max((getRed() * scale).toInt(), 0),
-            max((getGreen() * scale).toInt(), 0),
-            max((getBlue() * scale).toInt(), 0),
-            getAlpha()
+            max((red * scale).toInt(), 0),
+            max((green * scale).toInt(), 0),
+            max((blue * scale).toInt(), 0),
+            alpha
         )
     }
 
