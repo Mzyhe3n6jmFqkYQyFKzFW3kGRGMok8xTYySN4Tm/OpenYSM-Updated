@@ -466,7 +466,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         if (renderer == "SIMD" && GpuCapability.isAvailable && GeneralConfig.USE_GPU_RENDERER.get()) {
             renderer = "GPU"
         }
-        val versionStr = PlatformAPI.getModVersion(NameSpaces.MOD.invoke())
+        val versionStr = PlatformAPI.getModVersion(NameSpaces.MOD())
         guiGraphics.pose().pushMatrix()
         guiGraphics.pose().translate(0.0f, 0.0f)
         val darkGrayColor = ChatFormatting.DARK_GRAY.color ?: 0x555555

@@ -27,7 +27,7 @@ object PingCommand {
         playerOrException.sendSystemMessage(
             Component.translatable(
                 "message.yes_steve_model.client.ping_result",
-                PlatformAPI.getModVersion(NameSpaces.MOD.invoke())
+                PlatformAPI.getModVersion(NameSpaces.MOD())
             )
         )
         if (!NetworkHandler.isPlayerConnected(playerOrException)) {

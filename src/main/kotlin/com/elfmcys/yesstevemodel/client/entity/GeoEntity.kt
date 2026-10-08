@@ -16,11 +16,11 @@ import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.value.IValue
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
-import com.elfmcys.yesstevemodel.util.UnsafeUtil
 import com.elfmcys.yesstevemodel.util.YSMThreadPool
 import com.elfmcys.yesstevemodel.util.log.ChatLogger
 import com.elfmcys.yesstevemodel.util.log.ILogger
 import com.mojang.blaze3d.systems.RenderSystem
+import java.lang.invoke.VarHandle
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
@@ -184,16 +184,15 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
             return null
         }
 
-    // TODO: 'fun storeFence(): Unit' is deprecated. Deprecated in Java.
     open fun submitAsyncUpdate(partialTick: Float) {
-        UnsafeUtil.getUnsafe().storeFence()
+        VarHandle.storeStoreFence()
         modelDeferred = YSMThreadPool.async {
             runCatching {
                 val event = super.processAnimationImpl(partialTick, true)
-                UnsafeUtil.getUnsafe().storeFence()
+                VarHandle.storeStoreFence()
                 event
             }.onFailure {
-                UnsafeUtil.getUnsafe().storeFence()
+                VarHandle.storeStoreFence()
             }.getOrThrow()
         }
     }
@@ -205,13 +204,12 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
         return super.processAnimationImpl(partialTick, z)
     }
 
-    // TODO: 'fun loadFence(): Unit' is deprecated. Deprecated in Java.
     open fun awaitAsyncResult(): AnimationEvent<*>? {
         val future = modelDeferred ?: return null
         modelDeferred = null
         return runCatching {
             runBlocking { future.await() }.also {
-                UnsafeUtil.getUnsafe().loadFence()
+                VarHandle.loadLoadFence()
             }
         }.onFailure {
             if (it is InterruptedException || it is CancellationException) return@onFailure

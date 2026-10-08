@@ -432,12 +432,8 @@ object YSMBinding : ContextBinding() {
         else -> 0
     }
 
-    // TODO: What
-    @Deprecated("")
     @JvmStatic
-    fun getBiomeCategory(entity: Entity): String? {
-        return null
-    }
+    fun getBiomeCategory(entity: Entity): String? = null
 
     // TODO: Always null don't know why
     @JvmStatic

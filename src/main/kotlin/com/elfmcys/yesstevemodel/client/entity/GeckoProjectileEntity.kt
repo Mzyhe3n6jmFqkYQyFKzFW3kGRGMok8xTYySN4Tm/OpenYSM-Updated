@@ -7,6 +7,7 @@ import com.elfmcys.yesstevemodel.geckolib3.core.builder.Animation
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.projectile.Projectile
 
@@ -19,10 +20,9 @@ open class GeckoProjectileEntity(
         projectileModelContext?.controllerInitializer(this)
     }
 
-    // TODO: fun builtInRegistryHolder(): Holder.Reference<EntityType<*>>' is deprecated. Deprecated in Java.
     override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper? {
         if (!isDefault) {
-            val key = entity.type.builtInRegistryHolder().key().identifier()
+            val key = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
             val modelBundle = modelAssembly.projectileModels[key]
             if (modelBundle != null) return ProjectileModelWrapper(modelAssembly, false, modelBundle)
         }
@@ -31,7 +31,7 @@ open class GeckoProjectileEntity(
 
     override fun onModelLoaded(modelAssembly: ModelAssembly) {
         super.onModelLoaded(modelAssembly)
-        val key = entity.type.builtInRegistryHolder().key().identifier()
+        val key = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
         projectileModelContext = modelAssembly.projectileModels[key]
     }
 
