@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package com.elfmcys.yesstevemodel.geckolib3.geo.render.built
 
