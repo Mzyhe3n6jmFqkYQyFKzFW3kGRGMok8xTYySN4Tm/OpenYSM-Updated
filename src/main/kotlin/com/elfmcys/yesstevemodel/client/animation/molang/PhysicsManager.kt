@@ -27,9 +27,7 @@ class PhysicsManager {
         physicsValues.put(key, physics)
     }
 
-    operator fun get(key: Int): IPhysics? {
-        return physicsValues.get(key)
-    }
+    operator fun get(key: Int): IPhysics? = physicsValues.get(key)
 
     fun clear() {
         lastRenderTicks = 0.0f
