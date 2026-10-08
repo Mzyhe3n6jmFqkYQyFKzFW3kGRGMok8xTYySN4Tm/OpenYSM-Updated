@@ -13,7 +13,7 @@ import org.joml.Vector3f
 import rip.ysm.compat.immersiveaircraft.ImmersiveAirCraftCompat
 import rip.ysm.compat.simpleplanes.SimplePlanesCompat
 
-open class VehicleRotationController(
+class VehicleRotationController(
     val entity: GeckoVehicleEntity,
     private val modelId: String
 ) : IAnimationController<GeckoVehicleEntity> {
@@ -27,7 +27,7 @@ open class VehicleRotationController(
     override val currentAnimation: String
         get() = "[Coded]"
 
-    open val vehicleRotation: Vector3f?
+    val vehicleRotation: Vector3f?
         get() = vehicleRotation2
 
     override fun init(

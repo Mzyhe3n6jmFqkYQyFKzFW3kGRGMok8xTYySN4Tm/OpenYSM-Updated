@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 import java.util.*
 
 @Suppress("unused")
-open class PredicateBasedController<T : AnimatableEntity<*>>(
+class PredicateBasedController<T : AnimatableEntity<*>>(
     animatable: T,
     override val name: String,
     private val transitionLengthTicks: Float,
@@ -116,25 +116,25 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
             return "Coded -> " + (transitionInterpolator.currentAnimation?.animationName ?: "")
         }
 
-    open fun setAnimation(animationName: String?) {
+    fun setAnimation(animationName: String?) {
         transitionInterpolator.setAnimation(animationName, null)
     }
 
-    open fun setAnimation(animation: String?, loopType: ILoopType?) {
+    fun setAnimation(animation: String?, loopType: ILoopType?) {
         transitionInterpolator.setAnimation(animation, loopType)
     }
 
-    open fun setTransitionLengthTicks(ticks: Float) {
+    fun setTransitionLengthTicks(ticks: Float) {
         if (transitionInterpolator.getInterpolated() != ticks) {
             transitionInterpolator.setTransitionInterpolator(TicksInterpolator(ticks))
         }
     }
 
-    open fun setInterpolator(interpolator: IInterpolable) {
+    fun setInterpolator(interpolator: IInterpolable) {
         transitionInterpolator.setTransitionInterpolator(interpolator)
     }
 
-    open fun evaluateExpressions(evaluator: ExpressionEvaluator<AnimationContext<*>>) {
+    fun evaluateExpressions(evaluator: ExpressionEvaluator<AnimationContext<*>>) {
         transitionInterpolator.executeRenderLayers(evaluator)
     }
 
@@ -148,7 +148,7 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
         }
     }
 
-    open fun clearAnimation() {
+    fun clearAnimation() {
         transitionInterpolator.cancelAnimation()
     }
 
@@ -157,17 +157,17 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
         soundIValue = null
     }
 
-    open fun stopTransition() {
+    fun stopTransition() {
         transitionInterpolator.resetRequestedAnimation()
     }
 
-    open fun beginEndTransition(currentTick: Float) {
+    fun beginEndTransition(currentTick: Float) {
         transitionInterpolator.beginEndingTransition(currentTick)
     }
 
-    open fun isPlaying(): Boolean = transitionInterpolator.isAnimationFinished
+    fun isPlaying(): Boolean = transitionInterpolator.isAnimationFinished
 
-    open fun markDirty() {
+    fun markDirty() {
         transitionInterpolator.stopSound()
     }
 
