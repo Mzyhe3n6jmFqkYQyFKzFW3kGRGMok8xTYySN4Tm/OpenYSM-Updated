@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package rip.ysm.compat.touhoulittlemaid.fabric.tlm
 
 import com.elfmcys.yesstevemodel.Constants
@@ -16,7 +18,8 @@ import java.util.*
 
 @Environment(EnvType.CLIENT)
 object MaidClientSetup {
-    private var maidRenderer: MaidGeoRenderer? = null
+    var maidRenderer: MaidGeoRenderer? = null
+        private set
 
     @JvmStatic
     fun init() {
@@ -48,7 +51,4 @@ object MaidClientSetup {
             }
         }
     }
-
-    @JvmStatic
-    fun getMaidRenderer(): MaidGeoRenderer? = maidRenderer
 }
