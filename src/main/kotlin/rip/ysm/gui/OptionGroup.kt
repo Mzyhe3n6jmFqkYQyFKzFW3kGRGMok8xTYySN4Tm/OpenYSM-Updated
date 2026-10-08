@@ -6,8 +6,8 @@ open class OptionGroup(val translationKey: String) {
     @JvmField
     val rows: MutableList<OptionRow<*>> = ArrayList()
 
-    open fun getTitle(): Component =
-        Component.translatable("gui.yes_steve_model.config.group.$translationKey")
+    open val title: Component
+        get() = Component.translatable("gui.yes_steve_model.config.group.$translationKey")
 
     open fun add(row: OptionRow<*>): OptionGroup {
         rows.add(row)
