@@ -16,7 +16,7 @@ class ArmorPredicate(private val slot: EquipmentSlot) : IAnimationPredicate<Livi
         val entity = animatable.entity
         if (animatable is IPreviewAnimatable) return PlayState.STOP
         if (CosmeticArmorHelper.getArmorItem(entity, slot).isEmpty) return PlayState.STOP
-        val conditionArmor = animatable.getModelConfig()?.armor
+        val conditionArmor = animatable.modelConfig?.armor
         if (conditionArmor != null) {
             val name = conditionArmor.doTest(entity, slot)
             if (name.isNotBlank())

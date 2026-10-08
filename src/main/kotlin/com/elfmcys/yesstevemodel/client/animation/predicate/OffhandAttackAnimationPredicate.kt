@@ -15,7 +15,7 @@ class OffhandAttackAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>>
         if (animatable is IPreviewAnimatable) return PlayState.STOP
         val firstPassenger = livingEntity.firstPassenger
         if (firstPassenger == null || !firstPassenger.isAlive) return PlayState.STOP
-        val conditionPassenger = animatable.getModelConfig()?.passenger ?: return PlayState.STOP
+        val conditionPassenger = animatable.modelConfig?.passenger ?: return PlayState.STOP
         val str = conditionPassenger.doTest(livingEntity)
         if (str.isNotBlank())
             return IAnimationPredicate.playAnimationWithLoop(event, str, ILoopType.EDefaultLoopTypes.LOOP)

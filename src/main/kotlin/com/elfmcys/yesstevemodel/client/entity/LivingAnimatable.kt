@@ -130,9 +130,8 @@ abstract class LivingAnimatable<T : LivingEntity>(
         }
     }
 
-    open fun getModelConfig(): ConditionManager? {
-        return modelAssembly?.animationBundle?.conditionManager
-    }
+    open val modelConfig: ConditionManager?
+        get() = modelAssembly?.animationBundle?.conditionManager
 
     private fun updateCurrentTexture() {
         if (isModelReady) {

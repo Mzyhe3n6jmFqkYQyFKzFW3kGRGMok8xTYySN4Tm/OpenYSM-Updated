@@ -62,7 +62,7 @@ class MainHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
             frameState.setHandItemsForAnimation(mainHandItem, InteractionHand.MAIN_HAND)
             event.getController()?.stopTransition()
         }
-        val conditionHold: ConditionHold? = animatable.getModelConfig()?.holdMainhand
+        val conditionHold: ConditionHold? = animatable.modelConfig?.holdMainhand
         val str: String? = conditionHold?.doTest(entity, InteractionHand.MAIN_HAND)
         if (!str.isNullOrBlank()) {
             return IAnimationPredicate.playAnimationWithValid(event, str, ILoopType.EDefaultLoopTypes.LOOP, i)

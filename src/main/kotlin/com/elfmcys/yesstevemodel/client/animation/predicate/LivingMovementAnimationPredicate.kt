@@ -29,7 +29,7 @@ class LivingMovementAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>
         val str = SWEMCompat.getHorseGaitName(livingEntity)
         if (str.isNotBlank())
             return IAnimationPredicate.playAnimationWithLoop(event, str, ILoopType.EDefaultLoopTypes.LOOP)
-        val conditionManager = animatable.getModelConfig() ?: return null
+        val conditionManager = animatable.modelConfig ?: return null
         if (TouhouLittleMaidCompat.isModLoaded) {
             val conditionChair = conditionManager.chair
             val str2 = conditionChair.doTest(livingEntity)
