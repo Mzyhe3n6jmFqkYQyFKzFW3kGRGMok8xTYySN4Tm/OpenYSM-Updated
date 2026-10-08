@@ -134,9 +134,7 @@ object AnimationDebugOverlay {
         val currentModel = activeModel
         if (currentModel != null) {
             val geoEntity = currentModel.get()
-            if (geoEntity != null && geoEntity.isDebugMode) {
-                return geoEntity
-            }
+            if (geoEntity != null && geoEntity.isDebugMode) return geoEntity
             clearActiveModel()
             return null
         }
