@@ -7,49 +7,30 @@ import com.elfmcys.yesstevemodel.geckolib3.core.snapshot.BoneTopLevelSnapshot
 import com.elfmcys.yesstevemodel.geckolib3.util.InterpolationLookup
 import org.joml.Vector3f
 
-open class BoneAnimationQueue(
-    @JvmField val topLevelSnapshot: BoneTopLevelSnapshot
+data class BoneAnimationQueue(
+    val topLevelSnapshot: BoneTopLevelSnapshot
 ) {
-    @JvmField
-    val controllerSnapshot: BoneSnapshot = BoneSnapshot(topLevelSnapshot.bone)
-
-    @JvmField
+    private val controllerSnapshot: BoneSnapshot = BoneSnapshot(topLevelSnapshot.bone)
     var rotationTimeline: InterpolationLookup<BoneKeyFrame>? = null
-
-    @JvmField
+        private set
     var positionTimeline: InterpolationLookup<BoneKeyFrame>? = null
-
-    @JvmField
+        private set
     var scaleTimeline: InterpolationLookup<BoneKeyFrame>? = null
+        private set
     private var animationActive: Boolean = false
-    private var blendWeight: Float = 1.0f
-
-    @JvmField
+    private var blendWeight2: Float = 1.0f
     var positionOutput: Vector3f? = null
-
-    @JvmField
     var rotationOutput: Vector3f? = null
-
-    @JvmField
     var scaleOutput: Vector3f? = null
-
-    @JvmField
     var overrideMode: Boolean = false
-
-    @JvmField
+        private set
     var rotationQueue: AnimationPoint? = null
-
-    @JvmField
     var positionQueue: AnimationPoint? = null
-
-    @JvmField
     var scaleQueue: AnimationPoint? = null
-
-    @JvmField
     val transformProviderRecord: PredicateBasedController.TransformProviderRecord =
         PredicateBasedController.TransformProviderRecord(this)
 
-    open fun applyAnimation(animation: BoneAnimation, z: Boolean) {
+    fun applyAnimation(animation: BoneAnimation, z: Boolean) {
         rotationTimeline = if (animation.rotationKeyFrames.isNotEmpty())
             InterpolationLookup(animation.rotationKeyFrames, 0.0f, BoneKeyFrame::endTick) else null
         positionTimeline = if (animation.positionKeyFrames.isNotEmpty())
@@ -62,13 +43,12 @@ open class BoneAnimationQueue(
         resetQueues()
     }
 
-    open fun snapshot(): BoneSnapshot = controllerSnapshot
-    open fun rotationQueue(): AnimationPoint? = rotationQueue
-    open fun positionQueue(): AnimationPoint? = positionQueue
-    open fun scaleQueue(): AnimationPoint? = scaleQueue
-    open fun isActive(): Boolean = animationActive
+    val snapshot: BoneSnapshot
+        get() = controllerSnapshot
+    val isActive: Boolean
+        get() = animationActive
 
-    open fun clear() {
+    fun clear() {
         rotationTimeline = null
         positionTimeline = null
         scaleTimeline = null
@@ -79,13 +59,13 @@ open class BoneAnimationQueue(
         resetQueues()
     }
 
-    open fun getBlendWeight(): Float = blendWeight
+    var blendWeight: Float
+        get() = blendWeight2
+        set(value) {
+            blendWeight2 = value.coerceAtLeast(0.0f)
+        }
 
-    open fun setBlendWeight(blendWeight: Float) {
-        this.blendWeight = if (blendWeight > 0.0f) blendWeight else 0.0f
-    }
-
-    open fun resetQueues() {
+    fun resetQueues() {
         rotationQueue = null
         positionQueue = null
         scaleQueue = null

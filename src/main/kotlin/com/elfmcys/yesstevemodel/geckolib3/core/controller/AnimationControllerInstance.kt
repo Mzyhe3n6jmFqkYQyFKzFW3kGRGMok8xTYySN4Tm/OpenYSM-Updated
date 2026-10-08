@@ -210,8 +210,8 @@ class AnimationControllerInstance(
         val blendWeight: Float = anim.blendWeight?.evalAsFloat(evaluator) ?: 1.0f
         val lerpFactor: Float = transitionInterpolator.interpolate(tick)
         for (boneAnimationQueue in activeBoneAnimationQueues) {
-            boneAnimationQueue.setBlendWeight(blendWeight)
-            val boneSnapshot: BoneSnapshot = boneAnimationQueue.snapshot()
+            boneAnimationQueue.blendWeight = blendWeight
+            val boneSnapshot: BoneSnapshot = boneAnimationQueue.snapshot
             val rotTimeline = boneAnimationQueue.rotationTimeline
             if (rotTimeline != null) {
                 boneAnimationQueue.rotationQueue =
@@ -243,7 +243,7 @@ class AnimationControllerInstance(
         val anim = currentAnimation ?: return
         val blendWeight: Float = anim.blendWeight?.evalAsFloat(evaluator) ?: 1.0f
         for (boneAnimationQueue in activeBoneAnimationQueues) {
-            boneAnimationQueue.setBlendWeight(blendWeight)
+            boneAnimationQueue.blendWeight = blendWeight
             val rotTimeline = boneAnimationQueue.rotationTimeline
             if (rotTimeline != null) {
                 boneAnimationQueue.rotationQueue = getKeyFramePointAtTick(rotTimeline, tick)
@@ -263,7 +263,7 @@ class AnimationControllerInstance(
         val anim = currentAnimation ?: return
         val blendWeight: Float = anim.blendWeight?.evalAsFloat(evaluator) ?: 1.0f
         for (boneAnimationQueue in activeBoneAnimationQueues) {
-            boneAnimationQueue.setBlendWeight(blendWeight)
+            boneAnimationQueue.blendWeight = blendWeight
             val posOut = boneAnimationQueue.positionOutput
             if (posOut != null) {
                 boneAnimationQueue.positionQueue = getConstantPointAtTick(f, posOut, boneAnimationQueue.overrideMode)

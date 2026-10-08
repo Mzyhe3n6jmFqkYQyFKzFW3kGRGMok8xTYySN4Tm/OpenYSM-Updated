@@ -187,14 +187,14 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
                 is ConstantPoint -> {
                     mutableVector.set(point.getLerpPoint(evaluator))
                     mutableVector.setPercentCompleted(point.percentCompleted)
-                    val blendWeight = data.getBlendWeight()
+                    val blendWeight = data.blendWeight
                     if (blendWeight != 1.0f) {
                         mutableVector.mul(blendWeight)
                     }
                 }
 
                 is TransitionPoint -> {
-                    val vector3fMul = point.evaluateRaw(evaluator).mul(data.getBlendWeight())
+                    val vector3fMul = point.evaluateRaw(evaluator).mul(data.blendWeight)
                     MathUtil.nlerpEulerAngles(
                         point.lerpFactor,
                         point.offsetPoint,
@@ -209,7 +209,7 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
 
                 else -> {
                     mutableVector.set(point.getLerpPoint(evaluator))
-                    val blendWeight2 = data.getBlendWeight()
+                    val blendWeight2 = data.blendWeight
                     if (blendWeight2 != 1.0f) {
                         mutableVector.mul(blendWeight2)
                     }
@@ -222,7 +222,7 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
         override fun getPosition(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
             val point = data.positionQueue ?: return null
             mutableVector.set(point.getLerpPoint(evaluator))
-            var blendWeight = data.getBlendWeight()
+            var blendWeight = data.blendWeight
             when (point) {
                 is ConstantPoint -> {
                     mutableVector.setPercentCompleted(point.percentCompleted)
@@ -244,7 +244,7 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
         override fun getScale(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
             val point = data.scaleQueue ?: return null
             mutableVector.set(point.getLerpPoint(evaluator))
-            var blendWeight = data.getBlendWeight()
+            var blendWeight = data.blendWeight
             if (point is ConstantPoint) {
                 mutableVector.setPercentCompleted(point.percentCompleted)
             } else {
