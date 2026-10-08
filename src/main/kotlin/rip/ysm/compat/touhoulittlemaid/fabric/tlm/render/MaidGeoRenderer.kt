@@ -175,7 +175,7 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
             geoModel.getGeoModel().isTranslucentTexture(textureIndex)
         )
 
-        val layersFirst = animatable.isRenderLayersFirst()
+        val layersFirst = animatable.isRenderLayersFirst
         val color = getRenderColor(animatable, partialTick, poseStack, bufferSource, null, packedLight)
         val overlay = packOverlayCoords(state)
 

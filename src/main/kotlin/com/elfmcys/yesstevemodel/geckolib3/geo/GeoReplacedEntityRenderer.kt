@@ -193,7 +193,7 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
                 minecraft.shouldEntityAppearGlowing(entity),
                 animatedGeoModel.getGeoModel().isTranslucentTexture(textureIndex)
             )
-            val useExtraPlayer = t.isRenderLayersFirst()
+            val useExtraPlayer = t.isRenderLayersFirst
             val color = getRenderColor(t, partialTick, poseStack, multiBufferSource, null, packedLight)
             renderWithBone(
                 animatedGeoModel,

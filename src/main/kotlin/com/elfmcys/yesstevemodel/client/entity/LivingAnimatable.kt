@@ -26,8 +26,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     t: T,
     isActive: Boolean
 ) : GeoEntity<T>(t, isActive) {
-    @JvmField
-    var currentTextureName: String? = null
+    private var currentTextureName2: String? = null
     private var textureIndex: Int = 0
     private val armorBoneOffset: Vector2f = Vector2f()
     private var needsInit: Boolean = false
@@ -40,9 +39,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
         val model = currentModel2
         if (model != null && model.headBones().isNotEmpty()) {
             val bone = model.headBones()[model.headBones().size - 1]
-            if (z) {
-                armorBoneOffset.set(bone.rotationX, bone.rotationY)
-            }
+            if (z) armorBoneOffset.set(bone.rotationX, bone.rotationY)
             val data = event.modelData
             bone.rotationX = armorBoneOffset.x + Math.toRadians(data.headPitch.toDouble()).toFloat()
             bone.rotationY = armorBoneOffset.y + Math.toRadians(data.netHeadYaw.toDouble()).toFloat()
@@ -63,20 +60,22 @@ abstract class LivingAnimatable<T : LivingEntity>(
     override val positionTracker: LivingEntityFrameState<T>
         get() = super.positionTracker as LivingEntityFrameState<T>
 
-    open fun setCurrentTexture(str: String?) {
-        currentTextureName = str
-        updateCurrentTexture()
-    }
+    open var currentTexture: String?
+        get() = currentTextureName2
+        set(value) {
+            currentTextureName2 = value
+            updateCurrentTexture()
+        }
 
     open fun initModelWithTexture(str: String, str2: String?) {
         markModelInitialized()
-        currentTextureName = str2
+        currentTextureName2 = str2
         modelId = str
         updateCurrentTexture()
     }
 
     open fun setForceDisabled(forceDisabled: Boolean) {
-        this.forceDisabled2 = forceDisabled
+        forceDisabled2 = forceDisabled
     }
 
     open fun isForceDisabled(): Boolean = forceDisabled2
@@ -103,7 +102,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
 
     override fun resetModel() {
         super.resetModel()
-        currentTextureName = null
+        currentTextureName2 = null
         textureIndex = 0
         forceDisabled2 = false
     }
@@ -140,7 +139,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
             val map =
                 modelAssembly?.animationBundle?.textures
             if (map != null) {
-                val abstractTexture = map[currentTextureName]
+                val abstractTexture = map[currentTextureName2]
                 when {
                     abstractTexture != null -> {
                         (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(abstractTexture)
@@ -148,7 +147,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
                     }
 
                     !map.isEmpty() -> {
-                        currentTextureName = map.getKeyAt(0)
+                        currentTextureName2 = map.getKeyAt(0)
                         map.getValueAt(0)
                             .let { (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(it) }
                         textureIndex = 0
@@ -166,14 +165,14 @@ abstract class LivingAnimatable<T : LivingEntity>(
         modelAssembly?.animationBundle?.animationEntries?.get(str)
 
     open fun getCurrentTextureName(): String? {
-        return if (isModelReady) currentTextureName else modelAssembly?.animationBundle?.textures
+        return if (isModelReady) currentTextureName2 else modelAssembly?.animationBundle?.textures
             ?.getKeyAt(0)
     }
 
     override val textureLocation: Identifier
         get() {
             return if (isModelReady) {
-                (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.currentTexture?.getResourceLocation()
+                (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.texture?.getResourceLocation()
                     ?: ClientModelManager.getDefaultTexture()
             } else {
                 ClientModelManager.getDefaultTexture()
@@ -191,9 +190,11 @@ abstract class LivingAnimatable<T : LivingEntity>(
     override val heightScale: Float
         get() = modelAssembly?.modelData?.modelProperties?.heightScale ?: 1.0f
 
-    open fun isRenderLayersFirst(): Boolean = modelAssembly?.modelData?.modelProperties?.renderLayersFirst ?: false
+    open val isRenderLayersFirst: Boolean
+        get() = modelAssembly?.modelData?.modelProperties?.renderLayersFirst ?: false
 
-    open fun isExtraRenderFlag(): Boolean = extraRenderFlag
+    open val isExtraRenderFlag: Boolean
+        get() = extraRenderFlag
 
     open fun setExtraRenderFlag(extraRenderFlag: Boolean) {
         this.extraRenderFlag = extraRenderFlag
@@ -207,13 +208,12 @@ abstract class LivingAnimatable<T : LivingEntity>(
         registerImmediately: Boolean,
         private val textureResolution: Int
     ) : ModelWrapper(modelAssembly, isActive) {
-        @JvmField
-        var currentTexture: IResourceLocatable?
-        val allTextures: MutableList<IResourceLocatable>?
+        private var currentTexture: IResourceLocatable?
+        private val allTextures: MutableList<IResourceLocatable>?
 
         init {
             val abstractTexture =
-                modelAssembly.animationBundle.textures[this@LivingAnimatable.currentTextureName]
+                modelAssembly.animationBundle.textures[this@LivingAnimatable.currentTextureName2]
                     ?: modelAssembly.animationBundle.defaultTexture
             currentTexture = if (abstractTexture != null)
                 UploadManager.getOrCreateLocatableWithSize(
@@ -234,6 +234,9 @@ abstract class LivingAnimatable<T : LivingEntity>(
                 allTextures = null
             }
         }
+
+        val texture: IResourceLocatable?
+            get() = currentTexture
 
         fun setTexture(abstractTexture: AbstractTexture) {
             currentTexture = UploadManager.getOrCreateLocatableWithSize(abstractTexture, true, textureResolution)
