@@ -13,7 +13,7 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import it.unimi.dsi.fastutil.objects.ReferenceLists
 import rip.ysm.compat.touhoulittlemaid.TouhouMaidBoneProcessor
 
-class AnimatedGeoModel(@JvmField val geoModel: GeoModel) {
+class AnimatedGeoModel(private val geoModel: GeoModel) {
     private val boneIdsMap: Int2ReferenceMap<IBone>
     private val matrixData: FloatArray
     private val absPivotData: FloatArray

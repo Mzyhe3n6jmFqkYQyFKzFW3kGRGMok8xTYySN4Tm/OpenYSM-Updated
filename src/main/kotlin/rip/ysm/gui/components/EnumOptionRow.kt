@@ -34,7 +34,7 @@ open class EnumOptionRow<E : Enum<E>>(
         g.fill(cx, cy, cx + cw, cy + ch, blendBg(hover, 0x3EC8C8C8))
         g.renderOutline(cx, cy, cw, ch, 0x60FFFFFF)
 
-        val text = Component.literal(prettify(option?.get?.name ?: ""))
+        val text = Component.literal(prettify(option?.value?.name ?: ""))
         g.drawString(Minecraft.getInstance().font, text, cx + 6, cy + (ch - 8) / 2, 0xFFFFFFFF.toInt(), false)
 
         val arrowX = cx + cw - 10
@@ -70,12 +70,11 @@ open class EnumOptionRow<E : Enum<E>>(
         val ch = controlHeight()
         val visible = min(8, values.size)
         val listH = visible * 14 + 2
-        val listX = cx
         val listY = cy + ch
 
         g.nextStratum()
         g.pose().pushMatrix()
-        g.fill(listX, listY, listX + cw, listY + listH, 0xFF111111.toInt())
+        g.fill(cx, listY, cx + cw, listY + listH, 0xFF111111.toInt())
 
         val first = max(0, min((listScroll / 14).toInt(), max(0, values.size - visible)))
 
@@ -83,16 +82,16 @@ open class EnumOptionRow<E : Enum<E>>(
             val idx = first + i
             if (idx >= values.size) break
             val itemY = listY + 1 + i * 14
-            val hover = mouseX >= listX && mouseX < listX + cw && mouseY >= itemY && mouseY < itemY + 14
+            val hover = mouseX >= cx && mouseX < cx + cw && mouseY >= itemY && mouseY < itemY + 14
             val selected = idx == currentIndex()
             val bg = if (selected) 0x3CFFFFFF else if (hover) 0xFF333333.toInt() else 0
             if (bg != 0) {
-                g.fill(listX + 1, itemY, listX + cw - 1, itemY + 14, bg)
+                g.fill(cx + 1, itemY, cx + cw - 1, itemY + 14, bg)
             }
             g.drawString(
                 Minecraft.getInstance().font,
                 Component.literal(prettify(values[idx].name)),
-                listX + 6,
+                cx + 6,
                 itemY + (14 - 8) / 2,
                 -1,
                 true
@@ -100,7 +99,7 @@ open class EnumOptionRow<E : Enum<E>>(
         }
 
         if (values.size > visible) {
-            val trackX = listX + cw - 3
+            val trackX = cx + cw - 3
             val trackTop = listY + 1
             val trackBot = listY + listH - 1
             val trackH = trackBot - trackTop
@@ -120,16 +119,15 @@ open class EnumOptionRow<E : Enum<E>>(
         val ch = controlHeight()
         val visible = min(8, values.size)
         val listH = visible * 14 + 2
-        val listX = cx
         val listY = cy + ch
-        if (mouseX < listX || mouseX >= listX + cw || mouseY < listY || mouseY >= listY + listH) {
+        if (mouseX < cx || mouseX >= cx + cw || mouseY < listY || mouseY >= listY + listH) {
             return false
         }
         val first = max(0, min((listScroll / 14).toInt(), max(0, values.size - visible)))
         val slot = ((mouseY - listY - 1) / 14).toInt()
         val idx = first + slot
         if (idx in values.indices) {
-            option?.setPending(values[idx])
+            option?.value = values[idx]
             open = false
         }
         return true
@@ -143,9 +141,8 @@ open class EnumOptionRow<E : Enum<E>>(
         val ch = controlHeight()
         val visible = min(8, values.size)
         val listH = visible * 14 + 2
-        val listX = cx
         val listY = cy + ch
-        if (mouseX < listX || mouseX >= listX + cw || mouseY < listY || mouseY >= listY + listH) {
+        if (mouseX < cx || mouseX >= cx + cw || mouseY < listY || mouseY >= listY + listH) {
             return false
         }
         val maxScroll = max(0, (values.size - visible) * 14)
@@ -154,11 +151,9 @@ open class EnumOptionRow<E : Enum<E>>(
     }
 
     private fun currentIndex(): Int {
-        val current = option?.get
+        val current = option?.value
         for (i in values.indices) {
-            if (values[i] == current) {
-                return i
-            }
+            if (values[i] == current) return i
         }
         return 0
     }

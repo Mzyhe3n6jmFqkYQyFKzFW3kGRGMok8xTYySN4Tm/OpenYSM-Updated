@@ -14,10 +14,8 @@ open class OptionGroup(val translationKey: String) {
         return this
     }
 
-    open fun getRows(): List<OptionRow<*>> = rows
-
     open fun isDirty(): Boolean =
-        rows.any { it.option?.isDirty() == true }
+        rows.any { it.option?.isDirty == true }
 
     open fun apply() {
         for (row in rows) {

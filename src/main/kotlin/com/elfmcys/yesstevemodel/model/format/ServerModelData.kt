@@ -5,44 +5,43 @@ package com.elfmcys.yesstevemodel.model.format
 import com.elfmcys.yesstevemodel.util.FileTypeUtil
 import net.minecraft.resources.Identifier
 
-class ServerModelData(
+data class ServerModelData(
     val modelId: String,
-    val serverAnimationInfo: ServerAnimationInfo,
+    private val serverAnimationInfo: ServerAnimationInfo,
     private var projectiles: List<Array<String>>?,
     private var vehicles: List<Array<String>>?,
     private val info: ServerModelInfo,
     // TODO: Custom skin support
-    private val isCustomSkinModel: Boolean,
-    private val isAuth: Boolean
+    val isCustomSkinModel: Boolean,
+    val isAuth: Boolean
 ) {
-    private val entityTypes: MutableSet<Identifier> = HashSet()
-    private val excludedEntityTypes: MutableSet<Identifier> = HashSet()
+    private val entityTypes2: MutableSet<Identifier> = HashSet()
+    private val excludedEntityTypes2: MutableSet<Identifier> = HashSet()
 
     val modelInfo: ServerAnimationInfo = serverAnimationInfo
 
-    fun getEntityTypes(): Set<Identifier> {
-        projectiles?.let { list ->
-            for (arr in list) {
-                entityTypes.addAll(FileTypeUtil.resolveEntityTypes(arr))
+    val entityTypes: Set<Identifier>
+        get() {
+            projectiles?.let { list ->
+                for (arr in list) {
+                    entityTypes2.addAll(FileTypeUtil.resolveEntityTypes(arr))
+                }
+                projectiles = null
             }
-            projectiles = null
+            return entityTypes2
         }
-        return entityTypes
-    }
 
-    fun getExcludedEntityTypes(): Set<Identifier> {
-        vehicles?.let { list ->
-            for (arr in list) {
-                excludedEntityTypes.addAll(FileTypeUtil.resolveEntityTypes(arr))
+    val excludedEntityTypes: Set<Identifier>
+        get() {
+            vehicles?.let { list ->
+                for (arr in list) {
+                    excludedEntityTypes2.addAll(FileTypeUtil.resolveEntityTypes(arr))
+                }
+                vehicles = null
             }
-            vehicles = null
+            return excludedEntityTypes2
         }
-        return excludedEntityTypes
-    }
 
-    fun getLoadedModelData(): ServerModelInfo = info
-
-    fun isCustomSkinModel(): Boolean = isCustomSkinModel
-
-    fun isAuth(): Boolean = isAuth
+    val loadedModelData: ServerModelInfo
+        get() = info
 }

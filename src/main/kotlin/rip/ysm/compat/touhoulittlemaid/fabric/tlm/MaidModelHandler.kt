@@ -30,7 +30,7 @@ object MaidModelHandler {
             return
         }
         ServerModelManager[entity.ysmModelId]?.let {
-            val modelProperties = it.getLoadedModelData().modelProperties
+            val modelProperties = it.loadedModelData.modelProperties
             val classified = modelProperties.extraAnimationClassify
             val rouletteAnims = if (StringUtils.isNotBlank(classify) && classified.containsKey(classify))
                 classified[classify]!! else modelProperties.extraAnimation

@@ -61,7 +61,7 @@ class C2SPlayAnimationPacket(
                     modelInfoCap.stopAnimation(sender)
                 } else {
                     ServerModelManager[modelInfoCap.modelId]?.let { serverModelCap ->
-                        val modelProperties = serverModelCap.getLoadedModelData().modelProperties
+                        val modelProperties = serverModelCap.loadedModelData.modelProperties
                         val extraAnimationClassify = modelProperties.extraAnimationClassify
                         val extraAnimations =
                             if (StringUtils.isNotBlank(message.category) && extraAnimationClassify.containsKey(message.category)) {

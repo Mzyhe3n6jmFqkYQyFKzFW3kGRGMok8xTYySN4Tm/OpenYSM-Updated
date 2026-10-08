@@ -126,7 +126,7 @@ open class RadioOptionRow(
         val slot = ((mouseY - listY - 1) / 14).toInt()
         val idx = first + slot
         if (idx in labels.indices) {
-            option?.setPending(idx)
+            option?.value = idx
             open = false
         }
         return true
@@ -153,7 +153,7 @@ open class RadioOptionRow(
     }
 
     private fun currentIndex(): Int {
-        val cur = option?.get ?: return 0
+        val cur = option?.value ?: return 0
         return Mth.clamp(cur, 0, max(0, labels.size - 1))
     }
 }

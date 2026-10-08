@@ -95,7 +95,7 @@ object ModelCommand {
             return Command.SINGLE_SUCCESS
         }
         if (textureName == "-") {
-            textureName = info.getLoadedModelData().modelProperties.defaultTexture
+            textureName = info.loadedModelData.modelProperties.defaultTexture
             if (StringUtils.isBlank(textureName) || !info.modelInfo.textures.contains(textureName)) {
                 textureName = if (info.modelInfo.textures.isEmpty()) "" else info.modelInfo.textures[0]
             }

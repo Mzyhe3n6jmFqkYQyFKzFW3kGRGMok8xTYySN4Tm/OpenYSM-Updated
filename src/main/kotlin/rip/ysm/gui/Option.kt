@@ -21,17 +21,15 @@ open class Option<T>(
     open val description: Component
         get() = Component.translatable("gui.yes_steve_model.config.$translationKey.desc")
 
-    open val get: T
+    open var value: T
         get() = pendingValue
+        set(value) {
+            pendingValue = value
+            dirty = !Objects.equals(value, getter())
+        }
 
-    open fun setPending(value: T) {
-        pendingValue = value
-        dirty = !Objects.equals(value, getter())
-    }
-
-    open fun isDirty(): Boolean {
-        return dirty
-    }
+    open val isDirty: Boolean
+        get() = dirty
 
     open fun apply() {
         if (dirty) {
