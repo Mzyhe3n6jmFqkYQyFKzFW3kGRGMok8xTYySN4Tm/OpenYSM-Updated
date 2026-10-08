@@ -19,85 +19,38 @@ import java.nio.ByteOrder
 /**
  * Bedrock的.geo模型文件
  */
-open class GeoModel(
+class GeoModel(
     geoBones: Array<GeoBone>,
     strArr: Array<Array<String>>,
     zArr: BooleanArray,
-    @JvmField val properties: GeometryDescription,
+    val properties: GeometryDescription,
     zArr2: BooleanArray,
 ) {
-    @JvmField
     val bones: List<GeoBone> = ObjectLists.unmodifiable(ObjectArrayList.wrap(geoBones))
-
-    @JvmField
     val leftHandIds: IntList = resolveBoneIds(strArr[0])
-
-    @JvmField
     val rightHandIds: IntList = resolveBoneIds(strArr[1])
-
-    @JvmField
     val elytraIds: IntList = resolveBoneIds(strArr[2])
-
-    @JvmField
     val tacPistolIds: IntList = resolveBoneIds(strArr[3])
-
-    @JvmField
     val tacRifleIds: IntList = resolveBoneIds(strArr[4])
-
-    @JvmField
     val leftWaistIds: IntList = resolveBoneIds(strArr[5])
-
-    @JvmField
     val rightWaistIds: IntList = resolveBoneIds(strArr[6])
-
-    @JvmField
     val leftShoulderIds: IntList = resolveBoneIds(strArr[7])
-
-    @JvmField
     val rightShoulderIds: IntList = resolveBoneIds(strArr[8])
-
-    @JvmField
     val bladeIds: IntList = resolveBoneIds(strArr[9])
-
-    @JvmField
     val sheathIds: IntList = resolveBoneIds(strArr[10])
-
-    @JvmField
     val headIds: IntList = resolveBoneIds(strArr[11])
-
-    @JvmField
     val backpackIds: IntList = resolveBoneIds(strArr[12])
-
-    @JvmField
     val hasCustomLeftHand: Boolean = zArr[0]
-
-    @JvmField
     val hasCustomRightHand: Boolean = zArr[1]
-
-    @JvmField
     val hasCustomLimbs: Boolean = zArr[2]
-
-    @JvmField
     val boneTransformData: FloatArray
 
     private var translucentTexture: BooleanArray = zArr2
-
-    @JvmField
     val extraLeftHandGroups: MutableList<IntList> = ObjectArrayList()
-
-    @JvmField
     val extraRightHandGroups: MutableList<IntList> = ObjectArrayList()
-
-    @JvmField
     val passengerGroups: MutableList<IntList> = ObjectArrayList()
-
-    @JvmField
     var bakedBones: MutableList<BakedBone>? = null
-
-    @JvmField
     var nativeModelHandle: Long = 0L
-
-    @JvmField
     var gpuMeshHandle: Long = 0L
 
     init {
@@ -122,7 +75,7 @@ open class GeoModel(
         boneTransformData = AnimatedGeoModel(this).matrixData
     }
 
-    open fun buildNativeCache() {
+    fun buildNativeCache() {
         val bones = bakedBones
         if (bones.isNullOrEmpty()) return
 
@@ -137,7 +90,7 @@ open class GeoModel(
             }
         }
 
-        val initBufferSize = 4 + (totalBones * 25) + (totalCubes * 5) + (totalQuads * 92)
+        val initBufferSize = 4 + totalBones * 25 + totalCubes * 5 + totalQuads * 92
         val buffer = ByteBuffer.allocateDirect(initBufferSize).order(ByteOrder.nativeOrder())
 
         buffer.putInt(bones.size)
@@ -179,7 +132,7 @@ open class GeoModel(
         nativeModelHandle = nInitModelCache(buffer)
     }
 
-    open fun freeNativeCache() {
+    fun freeNativeCache() {
         if (nativeModelHandle != 0L) {
             nDestroyModelCache(nativeModelHandle)
             nativeModelHandle = 0L
@@ -189,17 +142,14 @@ open class GeoModel(
         }
     }
 
-    open fun topLevelBones(): List<GeoBone> = bones
+    val topLevelBones: List<GeoBone>
+        get() = bones
 
-    open fun getBoneTransformData(): FloatArray = boneTransformData
-
-    open fun getProperties(): GeometryDescription = properties
-
-    open fun isTranslucentTexture(i: Int): Boolean {
+    fun isTranslucentTexture(i: Int): Boolean {
         return !(i < 0 || i >= translucentTexture.size) && translucentTexture[i]
     }
 
-    open fun setTranslucentTexture(i: Int, translucent: Boolean) {
+    fun setTranslucentTexture(i: Int, translucent: Boolean) {
         ensureTranslucentTextureCapacity(i)
         translucentTexture[i] = translucent
     }
@@ -212,57 +162,28 @@ open class GeoModel(
         }
     }
 
-    open class BakedBone {
-        @JvmField
+    class BakedBone {
         var name: String = ""
-
-        @JvmField
         var glow: Boolean = false
-
-        @JvmField
         var parentIdx: Int = -1
-
-        @JvmField
         var pivotX: Float = 0f
-
-        @JvmField
         var pivotY: Float = 0f
-
-        @JvmField
         var pivotZ: Float = 0f
-
-        @JvmField
         var rotX: Float = 0f
-
-        @JvmField
         var rotY: Float = 0f
-
-        @JvmField
         var rotZ: Float = 0f
-
-        @JvmField
         var cubes: MutableList<BakedCube> = ObjectArrayList()
-
-        @JvmField
         var partMask: Int = 0
     }
 
-    open class BakedCube {
-        @JvmField
+    class BakedCube {
         var cullable: Boolean = false
-
-        @JvmField
         var quads: MutableList<BakedQuad> = ObjectArrayList()
     }
 
-    open class BakedQuad {
-        @JvmField
+    class BakedQuad {
         var positions: Array<Vector3f> = Array(4) { Vector3f() }
-
-        @JvmField
         var uvs: Array<Vector2f> = Array(4) { Vector2f() }
-
-        @JvmField
         var normal: Vector3f = Vector3f()
     }
 

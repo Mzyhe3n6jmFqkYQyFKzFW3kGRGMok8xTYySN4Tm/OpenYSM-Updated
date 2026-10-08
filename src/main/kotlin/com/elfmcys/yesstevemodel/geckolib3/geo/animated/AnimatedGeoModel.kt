@@ -43,7 +43,7 @@ class AnimatedGeoModel(val geoModel: GeoModel) {
     internal var rawTouhouMaidData: Any? = null
 
     init {
-        val bones = geoModel.topLevelBones()
+        val bones = geoModel.topLevelBones
         matrixData = FloatArray(MATRIX_STRIDE * bones.size)
         absPivotData = FloatArray(ABS_PIVOT_DATA_STRIDE * bones.size)
         val map = Int2ReferenceOpenHashMap<IBone>(bones.size)
