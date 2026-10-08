@@ -30,7 +30,7 @@ object RootClientCommand {
         NameSpaces.MOD.path("vars")
     ) { context, builder ->
         if (context.source is SharedSuggestionProvider && !PlatformAPI.isServer) {
-            val geo = getActiveGeoModel() ?: return@register Suggestions.empty()
+            val geo = activeGeoModel ?: return@register Suggestions.empty()
             val set = HashSet<String>()
             geo.getEvaluationContext().forEachPropertyName { str ->
                 set.add("v.$str")
@@ -65,7 +65,7 @@ object RootClientCommand {
         NameSpaces.MOD.path("controllers")
     ) { commandContext, suggestionsBuilder ->
         if (commandContext.source is SharedSuggestionProvider && !PlatformAPI.isServer) {
-            val geo = getActiveGeoModel() ?: return@register Suggestions.empty()
+            val geo = activeGeoModel ?: return@register Suggestions.empty()
             val controllers = HashSet<String>()
             for (controller in geo.animationData.getAnimationControllers()) {
                 controllers.add(controller.name)
@@ -86,14 +86,15 @@ object RootClientCommand {
     }
 
     @JvmStatic
-    fun getActiveGeoModel(): GeoEntity<*>? {
-        var geoEntity = AnimationDebugOverlay.activeModel
-        if (geoEntity == null) {
-            val localPlayer = Minecraft.getInstance().player
-            if (localPlayer != null) {
-                geoEntity = PlayerCapability[localPlayer]
+    val activeGeoModel: GeoEntity<*>?
+        get() {
+            var geoEntity = AnimationDebugOverlay.activeModel
+            if (geoEntity == null) {
+                val localPlayer = Minecraft.getInstance().player
+                if (localPlayer != null) {
+                    geoEntity = PlayerCapability[localPlayer]
+                }
             }
+            return geoEntity
         }
-        return geoEntity
-    }
 }
