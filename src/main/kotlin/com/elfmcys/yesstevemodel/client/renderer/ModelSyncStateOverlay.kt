@@ -70,12 +70,12 @@ class ModelSyncStateOverlay : HudOverlay {
             }
         }
 
-        val syncStatus = ClientModelManager.getSyncStatus()
+        val syncStatus = ClientModelManager.syncStatus
 
         if (syncStatus.currentState == ClientModelManager.SyncState.IDLE) {
-            val pendingModelCount = ClientModelManager.getPendingModelCount()
+            val pendingModelCount = ClientModelManager.pendingModelCount
             if (pendingModelCount > 0) {
-                val loadedModelCount = ClientModelManager.getModelAssemblyMap().size
+                val loadedModelCount = ClientModelManager.modelAssemblyMap.size
                 val totalModelCount = loadedModelCount + pendingModelCount
                 val loadingText: MutableComponent = Component.translatable("gui.yes_steve_model.sync_hint.title")
                     .append(

@@ -62,7 +62,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             hiddenModels.addAll(ServerConfig.CLIENT_NOT_DISPLAY_MODELS.get())
         }
         ClientModelManager.registerGuiWidget(this)
-        modelPackMap = Object2ReferenceOpenHashMap(ClientModelManager.getModelPackMap())
+        modelPackMap = Object2ReferenceOpenHashMap(ClientModelManager.modelPackMap)
     }
 
     open fun createModelButton(
@@ -90,9 +90,9 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
     private fun buildFilteredModelMap(): MutableMap<String, ModelAssembly> {
         val map = HashMap<String, ModelAssembly>()
         if (currentPath.isBlank()) {
-            map.putAll(ClientModelManager.getModelAssemblyMap())
+            map.putAll(ClientModelManager.modelAssemblyMap)
         }
-        ClientModelManager.getModelAssemblyMap().forEach { (str, modelAssembly) ->
+        ClientModelManager.modelAssemblyMap.forEach { (str, modelAssembly) ->
             if (str.startsWith(currentPath)) {
                 map[str] = modelAssembly
             }
@@ -131,7 +131,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             Category.AUTH -> {
                 val authCap = AuthModelsCapability[localPlayer]
                 if (authCap != null) {
-                    for ((key, value) in ClientModelManager.getModelAssemblyMap()) {
+                    for ((key, value) in ClientModelManager.modelAssemblyMap) {
                         if (authCap.containsModel(key) || !value.textureRegistry.isAuthModel) {
                             filteredModels[key] = value
                         }
@@ -142,7 +142,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             Category.STAR -> {
                 val starCap = StarModelsCapability[localPlayer]
                 if (starCap != null) {
-                    for ((key, value) in ClientModelManager.getModelAssemblyMap()) {
+                    for ((key, value) in ClientModelManager.modelAssemblyMap) {
                         if (starCap.containsModel(key)) {
                             filteredModels[key] = value
                         }
@@ -171,7 +171,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
 
         sortedModelKeys = filteredModels.keys.toMutableList().apply { sort() }
         sortedPackKeys = filteredPacks.keys.toMutableList().apply { sort() }
-        maxPage = ((filteredModels.size + filteredPacks.size) - 1) / 10
+        maxPage = (filteredModels.size + filteredPacks.size - 1) / 10
     }
 
     private fun isDirectChild(str: String, str2: String): Boolean {
@@ -394,9 +394,9 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         val player = minecraft.player ?: return
         val capability = AuthModelsCapability[player]
         for (i in 0 until 10) {
-            val slotIndex = i + (getCurrentPage() * 10)
-            val slotX = guiLeft + 143 + (55 * (i % 5))
-            val slotY = guiTop + 28 + (93 * (i / 5))
+            val slotIndex = i + getCurrentPage() * 10
+            val slotX = guiLeft + 143 + 55 * (i % 5)
+            val slotY = guiTop + 28 + 93 * (i / 5)
 
             if (slotIndex < sortedPackKeys.size) {
                 val str = sortedPackKeys[slotIndex]
@@ -457,9 +457,9 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         }
 
         val pageStr = "${getCurrentPage() + 1}/${maxPage + 1}"
-        val pageX = guiLeft + 138 + ((282 - font.width(pageStr)) / 2)
+        val pageX = guiLeft + 138 + (282 - font.width(pageStr)) / 2
         val pageY = guiTop + 223
-        guiGraphics.drawString(font, pageStr, pageX, pageY - (9 / 2), 0xFFF3F0E0.toInt())
+        guiGraphics.drawString(font, pageStr, pageX, pageY - 9 / 2, 0xFFF3F0E0.toInt())
 
         var renderer =
             if (NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get()) "SIMD" else "Fallback"
@@ -486,7 +486,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                     font,
                     line,
                     guiLeft + 142,
-                    guiTop + ((-(listSplit.size - lineIndex) * 10) - 2),
+                    guiTop + (-(listSplit.size - lineIndex) * 10 - 2),
                     0xFFF3F0E0.toInt()
                 )
             }
@@ -513,7 +513,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
     }
 
     private fun renderSyncStatus(guiGraphics: GuiGraphics) {
-        val currentState = ClientModelManager.getSyncStatus()
+        val currentState = ClientModelManager.syncStatus
         val text = when (currentState.currentState) {
             ClientModelManager.SyncState.WAITING -> Component.translatable("gui.yes_steve_model.sync_hint.waiting")
             ClientModelManager.SyncState.LOADING -> Component.translatable("gui.yes_steve_model.sync_hint.loading")
@@ -528,7 +528,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
 
             else -> return
         }
-        val textX = (guiLeft + 414) - font.width(text)
+        val textX = guiLeft + 414 - font.width(text)
         val textY = guiTop + 215
         val darkGrayColor = ChatFormatting.DARK_GRAY.color ?: 0x555555
         guiGraphics.drawString(
@@ -571,7 +571,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         )
         var lineY = guiTop + 205
         for (line in lines) {
-            guiGraphics.drawString(font, line, guiLeft + ((135 - font.width(line)) / 2), lineY, 0xFFF3F0E0.toInt())
+            guiGraphics.drawString(font, line, guiLeft + (135 - font.width(line)) / 2, lineY, 0xFFF3F0E0.toInt())
             lineY += 10
         }
     }
@@ -620,7 +620,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         val prev = box?.value ?: ""
         if (hasNumeric) return true
         if (box == null || !box.keyPressed(event)) {
-            return (box != null && box.isFocused && box.isVisible && event.key() != 256) || super.keyPressed(event)
+            return box != null && box.isFocused && box.isVisible && event.key() != 256 || super.keyPressed(event)
         }
         if (prev != box.value) {
             resetCurrentPage()
@@ -655,7 +655,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
     }
 
     private fun isInModelArea(mouseX: Double, mouseY: Double): Boolean {
-        return mouseX > (guiLeft + 143) && mouseX < (guiLeft + 430) && mouseY > (guiTop + 25) && mouseY < (guiTop + 235)
+        return mouseX > guiLeft + 143 && mouseX < guiLeft + 430 && mouseY > guiTop + 25 && mouseY < guiTop + 235
     }
 
     private fun navigateUp() {
