@@ -20,14 +20,9 @@ import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat
 import java.lang.ref.WeakReference
 
 object AnimationDebugOverlay {
-    @JvmField
-    val MOLANG_WATCH: MolangWatchRegistry = MolangWatchRegistry()
-
-    @JvmField
-    val DEBUG_LINES: ReferenceArrayList<String> = ReferenceArrayList()
-
-    @JvmField
-    var activeModel: WeakReference<GeoEntity<*>>? = null
+    private val MOLANG_WATCH: MolangWatchRegistry = MolangWatchRegistry()
+    private val DEBUG_LINES: ReferenceArrayList<String> = ReferenceArrayList()
+    private var activeModel2: WeakReference<GeoEntity<*>>? = null
 
     @JvmStatic
     fun createOverlay(): HudOverlay {
@@ -37,13 +32,12 @@ object AnimationDebugOverlay {
     }
 
     @JvmStatic
-    fun getMolangWatch(): MolangWatchRegistry {
-        return MOLANG_WATCH
-    }
+    val molangWatch: MolangWatchRegistry
+        get() = MOLANG_WATCH
 
     @JvmStatic
     fun isDebugActive(): Boolean {
-        return getActiveModel() != null
+        return activeModel != null
     }
 
     @JvmStatic
@@ -61,7 +55,7 @@ object AnimationDebugOverlay {
         if (localPlayer != null) {
             val cap = PlayerCapability[localPlayer]
             if (cap != null) {
-                setActiveModel(cap)
+                activeModel = cap
                 return true
             }
         }
@@ -78,7 +72,7 @@ object AnimationDebugOverlay {
             else -> VehicleCapability[entity]
         }
         if (capability is GeoEntity<*>) {
-            setActiveModel(capability)
+            activeModel = capability
             return true
         }
         clearActiveModel()
@@ -86,31 +80,12 @@ object AnimationDebugOverlay {
     }
 
     @JvmStatic
-    fun setActiveModel(geoEntity: GeoEntity<*>) {
-        clearActiveModel()
-        activeModel = WeakReference(geoEntity)
-        geoEntity.setBoneLookup(MOLANG_WATCH)
-        val entity = geoEntity.entity
-        val localPlayer = Minecraft.getInstance().player
-        if (localPlayer != null) {
-            val mutableComponentAppend =
-                Component.translatable("message.yes_steve_model.model.debug_animation.true").append(" -> ")
-            val customName = entity.customName
-            val displayName = customName ?: entity.displayName
-            localPlayer.displayClientMessage(
-                mutableComponentAppend.append(displayName),
-                false
-            )
-        }
-    }
-
-    @JvmStatic
     fun clearActiveModel() {
-        val currentModel = activeModel
+        val currentModel = activeModel2
         if (currentModel != null) {
             val geoEntity = currentModel.get()
             geoEntity?.setBoneLookup(null)
-            activeModel = null
+            activeModel2 = null
             val localPlayer = Minecraft.getInstance().player
             localPlayer?.displayClientMessage(
                 Component.translatable("message.yes_steve_model.model.debug_animation.false"),
@@ -130,20 +105,39 @@ object AnimationDebugOverlay {
     }
 
     @JvmStatic
-    fun getActiveModel(): GeoEntity<*>? {
-        val currentModel = activeModel
-        if (currentModel != null) {
-            val geoEntity = currentModel.get()
-            if (geoEntity != null && geoEntity.isDebugMode) return geoEntity
-            clearActiveModel()
+    var activeModel: GeoEntity<*>?
+        get() {
+            val currentModel = activeModel2
+            if (currentModel != null) {
+                val geoEntity = currentModel.get()
+                if (geoEntity != null && geoEntity.isDebugMode) return geoEntity
+                clearActiveModel()
+                return null
+            }
             return null
         }
-        return null
-    }
+        set(value) {
+            if (value == null) return
+            clearActiveModel()
+            activeModel2 = WeakReference(value)
+            value.setBoneLookup(MOLANG_WATCH)
+            val entity = value.entity
+            val localPlayer = Minecraft.getInstance().player
+            if (localPlayer != null) {
+                val mutableComponentAppend =
+                    Component.translatable("message.yes_steve_model.model.debug_animation.true").append(" -> ")
+                val customName = entity.customName
+                val displayName = customName ?: entity.displayName
+                localPlayer.displayClientMessage(
+                    mutableComponentAppend.append(displayName),
+                    false
+                )
+            }
+        }
 
     @JvmStatic
     fun renderOverlay(font: Font, guiGraphics: GuiGraphics, screenWidth: Int, screenHeight: Int) {
-        val geoEntity = getActiveModel() ?: return
+        val geoEntity = activeModel ?: return
         val currentY = intArrayOf(5)
         MOLANG_WATCH.forEachEntry { molangKey, molangValue ->
             renderDebugOverlay(font, guiGraphics, currentY, molangKey, molangValue, screenWidth, screenHeight)

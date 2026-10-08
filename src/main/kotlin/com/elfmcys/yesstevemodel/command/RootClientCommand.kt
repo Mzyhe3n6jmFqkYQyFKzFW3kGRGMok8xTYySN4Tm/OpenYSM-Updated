@@ -87,7 +87,7 @@ object RootClientCommand {
 
     @JvmStatic
     fun getActiveGeoModel(): GeoEntity<*>? {
-        var geoEntity = AnimationDebugOverlay.getActiveModel()
+        var geoEntity = AnimationDebugOverlay.activeModel
         if (geoEntity == null) {
             val localPlayer = Minecraft.getInstance().player
             if (localPlayer != null) {

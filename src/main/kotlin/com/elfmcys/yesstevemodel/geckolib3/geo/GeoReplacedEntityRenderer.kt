@@ -177,7 +177,7 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
             val vehicle = entity.vehicle
             if (vehicle != null) {
                 val cap = VehicleCapability[vehicle]
-                val vector3f = cap?.getExpressionOffset()
+                val vector3f = cap?.expressionOffset
                 if (vector3f != null) {
                     poseStack.mulPose(Quaternionf().rotateZYX(vector3f.z, 0.0f, vector3f.x).invert())
                 }

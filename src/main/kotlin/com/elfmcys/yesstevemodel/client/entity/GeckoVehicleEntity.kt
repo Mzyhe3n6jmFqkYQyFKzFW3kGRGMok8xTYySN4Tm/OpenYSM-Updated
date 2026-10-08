@@ -27,7 +27,8 @@ open class GeckoVehicleEntity(
         }
     }
 
-    open fun getExpressionOffset(): Vector3f? = expressionBuilder?.getVehicleRotation()
+    open val expressionOffset: Vector3f?
+        get() = expressionBuilder?.vehicleRotation
 
     // TODO: 'fun builtInRegistryHolder(): Holder.Reference<EntityType<*>>' is deprecated. Deprecated in Java.
     override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper? {
@@ -60,7 +61,7 @@ open class GeckoVehicleEntity(
     override fun getAnimationEntries(str: String): AnimationController? = vehicleModel?.animationControllers?.get(str)
 
     override val isModelReady: Boolean
-        get() = super.isModelReady && vehicleModel != null && (renderShape?.isValid == true)
+        get() = super.isModelReady && vehicleModel != null && renderShape?.isValid == true
 
     override val heightScale: Float
         get() = 0.7f
