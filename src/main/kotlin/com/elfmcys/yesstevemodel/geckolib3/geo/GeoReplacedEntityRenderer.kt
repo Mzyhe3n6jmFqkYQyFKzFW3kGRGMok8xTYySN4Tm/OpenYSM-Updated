@@ -185,7 +185,7 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
             preRenderCallback(entity, poseStack, partialTick)
             poseStack.translate(0.0f, 0.01f, 0.0f)
             val animatedGeoModel = t.currentModel ?: return
-            val textureIndex = if (identifier == null) t.getTextureIndex() else 0
+            val textureIndex = if (identifier == null) t.textureIndex else 0
             val textureLocation = identifier ?: t.textureLocation
             val renderType = getRenderType(
                 textureLocation,

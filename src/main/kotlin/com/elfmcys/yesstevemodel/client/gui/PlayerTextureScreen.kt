@@ -212,7 +212,7 @@ open class PlayerTextureScreen(
     open fun renderTexturePreview(guiGraphics: GuiGraphics, partialTick: Float) {
         val player = minecraft.player ?: return
         val cap = PlayerCapability[player] ?: return
-        modelHolder.initModelWithTexture(modelId, cap.getCurrentTextureName())
+        modelHolder.initModelWithTexture(modelId, cap.currentTextureName)
         val x0 = guiLeft + 93
         val y0 = guiTop
         val x1 = guiLeft + 299

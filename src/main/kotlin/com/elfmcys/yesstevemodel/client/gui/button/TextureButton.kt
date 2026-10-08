@@ -22,7 +22,7 @@ open class TextureButton(
     override fun onPress(input: InputWithModifiers) {
         val localPlayer = Minecraft.getInstance().player ?: return
         val cap = PlayerCapability[localPlayer] ?: return
-        val textureName = previewEntity.getCurrentTextureName() ?: ""
+        val textureName = previewEntity.currentTextureName ?: ""
         cap.currentTexture = textureName
         NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(previewEntity.modelId, textureName))
     }
@@ -32,7 +32,7 @@ open class TextureButton(
         val font = minecraft.font
         guiGraphics.fillGradient(x, y, x + width, y + height, -12369342, -12369342)
         renderPlayerPreview(guiGraphics, minecraft.deltaTracker.getGameTimeDeltaPartialTick(false))
-        val str = previewEntity.getCurrentTextureName() ?: ""
+        val str = previewEntity.currentTextureName ?: ""
         val component = Component.literal(
             ModelMetadataPresenter.getLocalizedModelString(
                 modelAssembly,

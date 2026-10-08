@@ -35,7 +35,7 @@ object ReplacePlayerRenderEvent {
         if ((entity != localPlayer && GeneralConfig.DISABLE_OTHER_MODEL.get()) || entity.isSpectator) return false
         var cancelled = false
         PlayerCapability[entity]?.let { cap ->
-            if (cap.isModelActive()) {
+            if (cap.isModelActive) {
                 if (!CameraUtil.isFirstPerson(cap) ||
                     FirstPersonCompat.isFirstPersonActive() ||
                     RealCameraCompat.isActive() ||
