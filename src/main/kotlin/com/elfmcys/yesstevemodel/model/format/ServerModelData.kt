@@ -15,8 +15,8 @@ data class ServerModelData(
     val isCustomSkinModel: Boolean,
     val isAuth: Boolean
 ) {
-    private val entityTypes2: MutableSet<Identifier> = HashSet()
-    private val excludedEntityTypes2: MutableSet<Identifier> = HashSet()
+    private val _entityTypes: MutableSet<Identifier> = HashSet()
+    private val _excludedEntityTypes: MutableSet<Identifier> = HashSet()
 
     val modelInfo: ServerAnimationInfo = serverAnimationInfo
 
@@ -24,22 +24,22 @@ data class ServerModelData(
         get() {
             projectiles?.let { list ->
                 for (arr in list) {
-                    entityTypes2.addAll(FileTypeUtil.resolveEntityTypes(arr))
+                    _entityTypes.addAll(FileTypeUtil.resolveEntityTypes(arr))
                 }
                 projectiles = null
             }
-            return entityTypes2
+            return _entityTypes
         }
 
     val excludedEntityTypes: Set<Identifier>
         get() {
             vehicles?.let { list ->
                 for (arr in list) {
-                    excludedEntityTypes2.addAll(FileTypeUtil.resolveEntityTypes(arr))
+                    _excludedEntityTypes.addAll(FileTypeUtil.resolveEntityTypes(arr))
                 }
                 vehicles = null
             }
-            return excludedEntityTypes2
+            return _excludedEntityTypes
         }
 
     val loadedModelData: ServerModelInfo
