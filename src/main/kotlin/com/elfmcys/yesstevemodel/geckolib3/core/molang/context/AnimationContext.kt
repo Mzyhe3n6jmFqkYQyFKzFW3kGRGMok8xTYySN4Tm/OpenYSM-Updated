@@ -26,10 +26,10 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 
 class AnimationContext<TEntity>(
-    private val entity2: TEntity,
+    override val entity: TEntity,
     private val instance: AnimatableEntity<*>,
-    private val animationEvent2: AnimationEvent<*>,
-    private val data2: EntityModelData
+    override val animationEvent: AnimationEvent<*>,
+    override val data: EntityModelData
 ) : IContext<TEntity> {
     private var animationControllerContext2: AnimationControllerContext? = null
     override var playbackFlags: PlaybackFlags? = null
@@ -51,8 +51,8 @@ class AnimationContext<TEntity>(
     constructor(entity: TEntity, context: AnimationContext<*>) : this(
         entity,
         context.instance,
-        context.animationEvent2,
-        context.data2
+        context.animationEvent,
+        context.data
     ) {
         animationControllerContext2 = context.animationControllerContext2
         random = context.random
@@ -66,18 +66,10 @@ class AnimationContext<TEntity>(
         }
     }
 
-    override val animationEvent: AnimationEvent<*>
-        get() = animationEvent2
     override val geoInstance: AnimatableEntity<*>
         get() = instance
-
-    override val data: EntityModelData
-        get() = data2
     override val animationControllerContext: AnimationControllerContext?
         get() = animationControllerContext2
-
-    override val entity: TEntity
-        get() = entity2
     override val mc: Minecraft
         get() = Minecraft.getInstance()
     override val level: ClientLevel?
