@@ -195,7 +195,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
             entry.value.currentVars?.let { holder.currentVars = Int2FloatOpenHashMap(it) }
             molangVarsMap.put(entry.intKey, holder)
         }
-        initModelWithTexture(playerCapability.getModelId(), playerCapability.currentTextureName)
+        initModelWithTexture(playerCapability.modelId, playerCapability.currentTextureName)
         setForceDisabled(playerCapability.isForceDisabled())
         val holder = molangVarsMap[currentModelHashId]
         val vars = holder?.currentVars

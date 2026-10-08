@@ -41,11 +41,11 @@ open class HandItemRenderer {
             return
         }
         val model: AnimatedGeoModel = currentOrNewGeoModel.getCurrentModel() ?: return
-        val event = SpecialPlayerRenderEvent(localPlayer, capability, capability.getModelId())
+        val event = SpecialPlayerRenderEvent(localPlayer, capability, capability.modelId)
         if (SpecialPlayerRenderEvent.post(event).isFalse()) {
             return
         }
-        val textureLocation: Identifier = event.textureLocation ?: capability.getTextureLocation()
+        val textureLocation: Identifier = event.textureLocation ?: capability.textureLocation
         val textureIndex: Int = if (event.textureLocation == null) capability.getTextureIndex() else 0
         val buffer: VertexConsumer = bufferSource.getBuffer(CustomEntityTranslucentRenderType.get(textureLocation))
         val renderPartMask: Int =

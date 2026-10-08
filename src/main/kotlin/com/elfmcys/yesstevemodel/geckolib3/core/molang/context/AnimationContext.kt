@@ -51,10 +51,10 @@ open class AnimationContext<TEntity>(
         storage = context.storage
         audioPlayerManager = context.audioPlayerManager
         when (entity) {
-            is Player -> PlayerCapability[entity]?.let { cap -> foreignStorage = cap.getPropertyGetter() }
-            is Projectile -> ProjectileCapability[entity]?.let { cap -> foreignStorage = cap.getPropertyGetter() }
+            is Player -> PlayerCapability[entity]?.let { cap -> foreignStorage = cap.propertyGetter }
+            is Projectile -> ProjectileCapability[entity]?.let { cap -> foreignStorage = cap.propertyGetter }
             is Entity ->
-                VehicleCapability[entity]?.let { cap -> foreignStorage = cap.getPropertyGetter() }
+                VehicleCapability[entity]?.let { cap -> foreignStorage = cap.propertyGetter }
         }
     }
 

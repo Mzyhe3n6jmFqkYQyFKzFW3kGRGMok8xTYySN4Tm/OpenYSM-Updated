@@ -25,7 +25,7 @@ open class TextureButton(
         val cap = PlayerCapability[localPlayer] ?: return
         val textureName = previewEntity.getCurrentTextureName() ?: ""
         cap.setCurrentTexture(textureName)
-        NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(previewEntity.getModelId(), textureName))
+        NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(previewEntity.modelId, textureName))
     }
 
     override fun renderContents(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {

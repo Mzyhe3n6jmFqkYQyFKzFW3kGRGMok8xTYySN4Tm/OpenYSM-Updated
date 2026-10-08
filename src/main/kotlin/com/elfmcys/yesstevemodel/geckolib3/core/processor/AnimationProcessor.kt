@@ -34,7 +34,6 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
     private var initExpressions: Object2ReferenceMap<String, MutableList<IValue>> = Object2ReferenceMaps.emptyMap()
     private val boneById: Int2ReferenceOpenHashMap<BoneTopLevelSnapshot> = Int2ReferenceOpenHashMap()
     private val modelRendererList: ArrayDeque<BoneTopLevelSnapshot> = ArrayDeque()
-    private val animationStorage: VariableStorage = VariableStorage()
     private val audioPlayerManager: AudioPlayerManager = AudioPlayerManager()
     private val random: RandomSource = XoroshiroRandomSource(RandomSupport.generateUniqueSeed())
     private val pendingExpressions: ConcurrentLinkedQueue<PendingExpression> = ConcurrentLinkedQueue()
@@ -52,7 +51,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
         z: Boolean,
         z2: Boolean
     ) {
-        context.setStorage(animationStorage)
+        context.setStorage(publicVariableStorage)
         context.setRandom(random)
         context.setAudioPlayerManager(audioPlayerManager)
         val evaluator = ExpressionEvaluator.evaluator(context)
@@ -209,7 +208,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
         boneById.clear()
         modelRendererList.clear()
         bones.clear()
-        animationStorage.initialize(null)
+        publicVariableStorage.initialize(null)
         initExpressions = Object2ReferenceMaps.emptyMap()
         pendingExpressions.clear()
         audioPlayerManager.stopAll()
@@ -241,7 +240,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
 
     fun setRoamingProperties(struct: Struct?) {
         if (struct != null) {
-            animationStorage.setScoped(ROAMING_STRUCT_NAME, struct)
+            publicVariableStorage.setScoped(ROAMING_STRUCT_NAME, struct)
         }
     }
 
@@ -297,10 +296,11 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
         pendingExpressions.add(PendingExpression(value, isClientPlayer, executeBeforeAnimation, resultFunc))
     }
 
-    fun getPublicVariableStorage(): IForeignVariableStorage = animationStorage
+    val publicVariableStorage: IForeignVariableStorage
+        field: VariableStorage = VariableStorage()
 
     fun forEachPropertyName(func: (String) -> Unit) {
-        animationStorage.forEachPropertyName(func)
+        publicVariableStorage.forEachPropertyName(func)
     }
 
     private data class PendingExpression(

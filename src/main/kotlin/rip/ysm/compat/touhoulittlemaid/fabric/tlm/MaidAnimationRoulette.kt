@@ -28,7 +28,7 @@ object MaidAnimationRoulette {
         val minecraft = Minecraft.getInstance()
         when (minecraft.screen) {
             null -> {
-                minecraft.setScreen(AnimationRouletteScreen(animatable.getModelId(), modelAssembly, animatable))
+                minecraft.setScreen(AnimationRouletteScreen(animatable.modelId, modelAssembly, animatable))
             }
 
             is AnimationRouletteScreen -> {

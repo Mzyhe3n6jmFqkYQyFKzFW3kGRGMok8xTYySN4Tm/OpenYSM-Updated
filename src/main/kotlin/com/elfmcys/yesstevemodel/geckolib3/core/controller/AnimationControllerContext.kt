@@ -64,7 +64,7 @@ open class AnimationControllerContext : IControllerVariableStorage {
             val context: AnimationContext<*> = evaluator.entity()
             val animatableEntity: AnimatableEntity<*> = context.geoInstance()
             if (animatableEntity is GeoEntity) {
-                val values: List<IValue>? = animatableEntity.getRenderLayers()
+                val values: List<IValue>? = animatableEntity.renderLayers
                 if (values != null) {
                     context.setIsClientSide(true)
                     val argsList = capturedArgs

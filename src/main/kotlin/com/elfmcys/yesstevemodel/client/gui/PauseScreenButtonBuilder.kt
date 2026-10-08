@@ -35,7 +35,7 @@ object PauseScreenButtonBuilder {
         val rouletteButton = Button.builder(Component.literal("😄")) {
             val player = minecraft.player ?: return@builder
             val cap = PlayerCapability[player] ?: return@builder
-            val modelId = cap.getModelId()
+            val modelId = cap.modelId
             val modelAssembly = cap.getModelAssembly()
             if (modelAssembly != null && modelAssembly.modelData.modelProperties.extraAnimation.isNotEmpty()) {
                 minecraft.setScreen(AnimationRouletteScreen(modelId, modelAssembly, cap))

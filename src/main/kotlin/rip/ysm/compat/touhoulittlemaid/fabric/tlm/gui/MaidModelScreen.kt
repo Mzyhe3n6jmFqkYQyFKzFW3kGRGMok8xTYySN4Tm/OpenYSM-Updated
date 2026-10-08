@@ -62,7 +62,7 @@ open class MaidModelScreen(private val maid: EntityMaid) : PlayerModelScreen() {
         val animatable: MaidAnimatable = MaidRenderStore.getOrCreate(maid)
         val lines = font.split(
             FormattedText.of(
-                ClientModelManager.getModelContext(animatable.getModelId())?.let { context ->
+                ClientModelManager.getModelContext(animatable.modelId)?.let { context ->
                     val metadata = context.modelData.metadata
                     if (metadata != null)
                         return@let ModelMetadataPresenter.getLocalizedModelString(
@@ -72,7 +72,7 @@ open class MaidModelScreen(private val maid: EntityMaid) : PlayerModelScreen() {
                         )
                     StringPool.EMPTY
                 }?.takeIf { it.isNotBlank() }
-                    ?: FileTypeUtil.getNameWithoutArchiveExtension(animatable.getModelId())
+                    ?: FileTypeUtil.getNameWithoutArchiveExtension(animatable.modelId)
             ), 125
         )
 

@@ -81,7 +81,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
 
     open fun isForceDisabled(): Boolean = forceDisabled
 
-    open fun isModelActive(): Boolean = isModelInitialized() && !forceDisabled
+    open fun isModelActive(): Boolean = isModelInitialized && !forceDisabled
 
     override fun onModelLoaded(modelAssembly: ModelAssembly) {
         super.onModelLoaded(modelAssembly)
@@ -168,14 +168,15 @@ abstract class LivingAnimatable<T : LivingEntity>(
             ?.getKeyAt(0)
     }
 
-    override fun getTextureLocation(): Identifier {
-        return if (isModelReady()) {
-            (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.currentTexture?.getResourceLocation()
-                ?: ClientModelManager.getDefaultTexture()
-        } else {
-            ClientModelManager.getDefaultTexture()
+    override val textureLocation: Identifier
+        get() {
+            return if (isModelReady()) {
+                (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.currentTexture?.getResourceLocation()
+                    ?: ClientModelManager.getDefaultTexture()
+            } else {
+                ClientModelManager.getDefaultTexture()
+            }
         }
-    }
 
     override fun getTextureIndex(): Int {
         if (isModelReady()) {

@@ -15,7 +15,7 @@ open class PlayerGeoEntity(
     val playerCapability: PlayerCapability
 ) : GeoEntity<LocalPlayer>(player, false) {
     init {
-        setModelId(playerCapability.getModelId())
+        setModelId(playerCapability.modelId)
     }
 
     override fun registerAnimationControllers() {
@@ -28,7 +28,7 @@ open class PlayerGeoEntity(
 
     override fun tickModel() {
         if (playerCapability.getModelAssembly() != getModelAssembly()) {
-            setModelId(playerCapability.getModelId())
+            setModelId(playerCapability.modelId)
         }
     }
 
@@ -40,9 +40,10 @@ open class PlayerGeoEntity(
         return getModelAssembly()?.animationBundle?.animationEntries?.get(str)
     }
 
-    override fun getTextureLocation(): Identifier {
-        return playerCapability.getTextureLocation()
-    }
+    override val textureLocation: Identifier
+        get() {
+            return playerCapability.textureLocation
+        }
 
     override fun getHeightScale(): Float {
         return getModelAssembly()?.modelData?.modelProperties?.heightScale ?: 1.0f

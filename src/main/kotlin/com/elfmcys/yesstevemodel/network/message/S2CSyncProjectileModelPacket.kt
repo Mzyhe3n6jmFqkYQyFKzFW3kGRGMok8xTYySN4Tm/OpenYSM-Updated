@@ -32,7 +32,7 @@ class S2CSyncProjectileModelPacket(
             if (nbt != null) {
                 cap.deserializeNBT(nbt)
             }
-            val objectMap: Object2FloatOpenHashMap<String> = cap.getMolangVars()
+            val objectMap: Object2FloatOpenHashMap<String> = cap.molangVars
             val floatMap = Int2FloatOpenHashMap()
             objectMap.object2FloatEntrySet().fastForEach { entry ->
                 floatMap.put(StringPool.computeIfAbsent(entry.key), entry.floatValue)

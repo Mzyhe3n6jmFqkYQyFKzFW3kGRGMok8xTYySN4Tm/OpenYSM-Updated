@@ -26,17 +26,19 @@ class PlayerPreviewEntity : CustomPlayerEntity(DummyPlayer(), false, false), IPr
         super.resetModel()
     }
 
-    override fun getPhysicsManager(): PhysicsManager {
-        return defaultPhysicsManager
-    }
+    override val physicsManager: PhysicsManager
+        get() {
+            return defaultPhysicsManager
+        }
 
     override fun setCustomAnimationActive(active: Boolean) {
         customAnimationActive = active
     }
 
-    override fun isDebugMode(): Boolean {
-        return true
-    }
+    override val isDebugMode: Boolean
+        get() {
+            return true
+        }
 
     override fun shouldRenderOverlay(): Boolean {
         return customAnimationActive
@@ -55,7 +57,8 @@ class PlayerPreviewEntity : CustomPlayerEntity(DummyPlayer(), false, false), IPr
 
     override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean = true
 
-    override fun getLogger(): ILogger? = null
+    override val logger: ILogger?
+        get() = null
 
     override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper =
         TexturedModelWrapper(modelAssembly, isDefault, false, true, 300)
