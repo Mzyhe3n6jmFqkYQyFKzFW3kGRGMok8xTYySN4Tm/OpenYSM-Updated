@@ -172,9 +172,9 @@ abstract class LivingAnimatable<T : LivingEntity>(
         get() {
             return if (isModelReady) {
                 (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.texture?.getResourceLocation()
-                    ?: ClientModelManager.getDefaultTexture()
+                    ?: ClientModelManager.defaultTexture
             } else {
-                ClientModelManager.getDefaultTexture()
+                ClientModelManager.defaultTexture
             }
         }
 

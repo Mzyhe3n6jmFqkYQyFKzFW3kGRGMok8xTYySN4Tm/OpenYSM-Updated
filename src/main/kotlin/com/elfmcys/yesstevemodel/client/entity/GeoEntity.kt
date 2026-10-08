@@ -100,7 +100,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
                 renderShape2 = buildRenderShape(assembly, false)
             }
         } ?: run {
-            val localAssembly = ClientModelManager.getLocalModelContext()
+            val localAssembly = ClientModelManager.localModelContext
             val shape = renderShape2
             if (shape == null || !shape.isDefault || localAssembly != shape.context) {
                 renderShape2 = buildRenderShape(localAssembly, true)

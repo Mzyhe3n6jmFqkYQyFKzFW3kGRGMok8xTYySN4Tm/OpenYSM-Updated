@@ -29,7 +29,7 @@ object CommandRegistry {
                     )
                 }
                 return@register SharedSuggestionProvider.suggest(
-                    ClientModelManager.getModelAssemblyMap().keys.map(::escapeIfRequired),
+                    ClientModelManager.modelAssemblyMap.keys.map(::escapeIfRequired),
                     suggestionsBuilder
                 )
             }
@@ -43,7 +43,7 @@ object CommandRegistry {
                 if (PlatformAPI.isServer) {
                     return@register Suggestions.empty()
                 }
-                val map = ClientModelManager.getLocalModelContext().animationBundle.mainAnimations
+                val map = ClientModelManager.localModelContext.animationBundle.mainAnimations
                 val set = (map.keys.map(::escapeIfRequired) + "stop").toSet()
                 return@register SharedSuggestionProvider.suggest(set, suggestionsBuilder)
             }
@@ -65,7 +65,7 @@ object CommandRegistry {
                         }
                     }
 
-                    ClientModelManager.getModelAssemblyMap().containsKey(str) -> {
+                    ClientModelManager.modelAssemblyMap.containsKey(str) -> {
                         val list = mutableListOf("-")
                         ClientModelManager.getModelContext(str)?.let { context ->
                             list.addAll(context.animationBundle.textures.keys.map(::escapeIfRequired))

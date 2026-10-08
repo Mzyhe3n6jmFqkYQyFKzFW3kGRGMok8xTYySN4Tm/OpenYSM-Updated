@@ -72,23 +72,23 @@ object ClientModelManager {
     private val SECURE_RANDOM: SecureRandom = SecureRandom()
 
     @Volatile
-    private var localModelContext: ModelAssembly? = null
+    private var localModelContext2: ModelAssembly? = null
 
     @Volatile
     private var pendingModelCallback: Runnable? = null
 
-    private var defaultTexture: IResourceLocatable? = null
+    private var defaultTexture2: IResourceLocatable? = null
 
     @Volatile
     private var serverConnection: Connection? = null
 
     @Volatile
-    private var modelAssemblyMap: Map<String, ModelAssembly> = Object2ReferenceMaps.emptyMap()
+    private var modelAssemblyMap2: Map<String, ModelAssembly> = Object2ReferenceMaps.emptyMap()
 
     @Volatile
-    private var modelPackMap: Map<String, ModelPackData> = Object2ReferenceOpenHashMap()
+    private var modelPackMap2: Map<String, ModelPackData> = Object2ReferenceOpenHashMap()
 
-    private val pendingModelQueue: ConcurrentLinkedQueue<Pair<ModelAssembly, String>> = ConcurrentLinkedQueue()
+    private val pendingModelQueue2: ConcurrentLinkedQueue<Pair<ModelAssembly, String>> = ConcurrentLinkedQueue()
     private val guiWidgets: WeakHashMap<IGuiWidget, Any?> = WeakHashMap()
     private val syncState: SyncStatus = SyncStatus()
 
@@ -298,7 +298,7 @@ object ClientModelManager {
             val cachedFile = localCacheMap[ctx.uuid]
             val isFileValid = cachedFile != null && YSMClientCache.verifyFileContent(cachedFile, hash1, hash2)
 
-            val alreadyInMemory = modelAssemblyMap.containsKey(modelId)
+            val alreadyInMemory = modelAssemblyMap2.containsKey(modelId)
 
             if (isFileValid) {
                 Constants.LOGGER.info("Cache HIT & Validated: {}", ctx.uuid)
@@ -373,7 +373,7 @@ object ClientModelManager {
         }
 
         val modelsToRemove = ArrayList<String>()
-        for (loadedId in modelAssemblyMap.keys) {
+        for (loadedId in modelAssemblyMap2.keys) {
             if ("default" == loadedId) continue
 
             when {
@@ -553,7 +553,7 @@ object ClientModelManager {
 
         serverModels.clear()
 
-        val oldPreviews = modelPackMap
+        val oldPreviews = modelPackMap2
         if (oldPreviews.isNotEmpty()) {
             for ((path, _, _, texture) in oldPreviews.values) {
                 if (texture != null) {
@@ -565,11 +565,11 @@ object ClientModelManager {
             }
         }
 
-        modelPackMap = Object2ReferenceOpenHashMap()
-        localModelContext = null
-        defaultTexture = null
+        modelPackMap2 = Object2ReferenceOpenHashMap()
+        localModelContext2 = null
+        defaultTexture2 = null
         pendingModelCallback = null
-        pendingModelQueue.clear()
+        pendingModelQueue2.clear()
         loadDefaultModel()
 
         forEachGuiWidget { widget ->
@@ -582,53 +582,56 @@ object ClientModelManager {
     }
 
     @JvmStatic
-    fun getSyncStatus(): SyncStatus {
-        RenderSystem.assertOnRenderThread()
-        return syncState
-    }
+    val syncStatus: SyncStatus
+        get() {
+            RenderSystem.assertOnRenderThread()
+            return syncState
+        }
 
     @JvmStatic
-    fun getModelAssemblyMap(): Map<String, ModelAssembly> = modelAssemblyMap
+    val modelAssemblyMap: Map<String, ModelAssembly>
+        get() = modelAssemblyMap2
 
     @JvmStatic
-    fun getModelPackMap(): Map<String, ModelPackData> = modelPackMap
+    val modelPackMap: Map<String, ModelPackData>
+        get() = modelPackMap2
 
     @JvmStatic
-    fun getModelContext(str: String): ModelAssembly? = modelAssemblyMap[str]
+    fun getModelContext(str: String): ModelAssembly? = modelAssemblyMap2[str]
 
-    fun findModelContext(str: String): ModelAssembly? = modelAssemblyMap[str]
+    fun findModelContext(str: String): ModelAssembly? = modelAssemblyMap2[str]
 
     @JvmStatic
-    fun getLocalModelContext(): ModelAssembly {
-        runPendingModelCallback()
-        flushPendingModels()
+    val localModelContext: ModelAssembly
+        get() {
+            runPendingModelCallback()
+            flushPendingModels()
 
-        localModelContext?.let { return it }
+            localModelContext2?.let { return it }
 
-        loadDefaultModel()
-        localModelContext?.let { return it }
+            loadDefaultModel()
+            localModelContext2?.let { return it }
 
-        val reg = modelAssemblyMap
-        if (reg.isNotEmpty()) {
-            var model = reg["default"]
-            if (model == null) {
-                for (v in reg.values) {
-                    model = v
-                    break
+            val reg = modelAssemblyMap2
+            if (reg.isNotEmpty()) {
+                var model = reg["default"]
+                if (model == null) {
+                    for (v in reg.values) {
+                        model = v
+                        break
+                    }
+                }
+                if (model != null) {
+                    localModelContext2 = model
+                    return model
                 }
             }
-            if (model != null) {
-                localModelContext = model
-                return model
-            }
+            throw IllegalStateException("No default model context available")
         }
-        throw IllegalStateException("No default model context available")
-    }
 
     @JvmStatic
-    fun getDefaultTexture(): Identifier {
-        return defaultTexture?.getResourceLocation() ?: Identifier.parse("minecraft:missingno")
-    }
+    val defaultTexture: Identifier
+        get() = defaultTexture2?.getResourceLocation() ?: Identifier.parse("minecraft:missingno")
 
     @JvmStatic
     fun <T : IGuiWidget> registerGuiWidget(widget: T): T {
@@ -748,13 +751,13 @@ object ClientModelManager {
             }
         }
 
-        for ((path, _, _, texture) in modelPackMap.values) {
+        for ((path, _, _, texture) in modelPackMap2.values) {
             if (!newPackMap.containsKey(path) && texture != null) {
                 val location = FileTypeUtil.getPackIconLocation(path)
                 Minecraft.getInstance().submit { Minecraft.getInstance().textureManager.release(location) }
             }
         }
-        modelPackMap = newPackMap
+        modelPackMap2 = newPackMap
     }
 
     private fun onModelContextsUpdated(
@@ -764,7 +767,7 @@ object ClientModelManager {
         isModelReady: BooleanArray
     ) {
         Minecraft.getInstance().execute {
-            val map = Object2ReferenceOpenHashMap(modelAssemblyMap)
+            val map = Object2ReferenceOpenHashMap(modelAssemblyMap2)
             if (removedModelIds != null) {
                 val removed = ArrayList<ModelAssembly>(removedModelIds.size)
                 for (str in removedModelIds) {
@@ -798,7 +801,7 @@ object ClientModelManager {
                     }
                 }
             }
-            modelAssemblyMap = map
+            modelAssemblyMap2 = map
             if (!removedModelIds.isNullOrEmpty() || !previousModelIds.isNullOrEmpty()) {
                 forEachGuiWidget { guiWidget ->
                     guiWidget.onModelsLoaded(map)
@@ -840,14 +843,14 @@ object ClientModelManager {
         if (parsedBundle != null) {
             runCatching {
                 val runtimeModel = ModelAssemblyFactory.buildAssembly(parsedBundle, isPrimary, isAuth)
-                pendingModelQueue.add(Pair.of(runtimeModel, modelId))
+                pendingModelQueue2.add(Pair.of(runtimeModel, modelId))
                 if (isPrimary) {
-                    localModelContext = runtimeModel
+                    localModelContext2 = runtimeModel
 
                     Minecraft.getInstance().execute {
                         val textures = runtimeModel.animationBundle.textures
                         if (!textures.isEmpty()) {
-                            defaultTexture = UploadManager.getOrCreateLocatable(textures.getValueAt(0), true)
+                            defaultTexture2 = UploadManager.getOrCreateLocatable(textures.getValueAt(0), true)
                         }
                     }
                     return
@@ -906,14 +909,14 @@ object ClientModelManager {
 
     @JvmStatic
     fun flushPendingModels() {
-        if (pendingModelQueue.isEmpty()) return
-        val object2ReferenceOpenHashMap = Object2ReferenceOpenHashMap(modelAssemblyMap)
+        if (pendingModelQueue2.isEmpty()) return
+        val object2ReferenceOpenHashMap = Object2ReferenceOpenHashMap(modelAssemblyMap2)
         while (true) {
-            val pairPoll = pendingModelQueue.poll()
+            val pairPoll = pendingModelQueue2.poll()
             if (pairPoll != null) {
                 object2ReferenceOpenHashMap[pairPoll.right] = pairPoll.left
             } else {
-                modelAssemblyMap = object2ReferenceOpenHashMap
+                modelAssemblyMap2 = object2ReferenceOpenHashMap
                 forEachGuiWidget { guiWidget -> guiWidget.onModelsUpdated(object2ReferenceOpenHashMap) }
                 return
             }
@@ -921,7 +924,8 @@ object ClientModelManager {
     }
 
     @JvmStatic
-    fun getPendingModelCount(): Int = pendingModelQueue.size
+    val pendingModelCount: Int
+        get() = pendingModelQueue2.size
 
     fun exportAllCachedModels(extra: String? = null, callback: ((ExportResult) -> Unit)?) {
         YSMThreadPool.launch {
