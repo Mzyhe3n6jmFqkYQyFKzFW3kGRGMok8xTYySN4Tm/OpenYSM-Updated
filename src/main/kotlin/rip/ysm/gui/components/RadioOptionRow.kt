@@ -18,7 +18,6 @@ open class RadioOptionRow(
     option: Option<Int>,
     private val labels: List<String>
 ) : OptionRow<Int>(x, y, width, height, option) {
-
     private var open: Boolean = false
     private var listScroll: Float = 0.0f
 
@@ -70,12 +69,11 @@ open class RadioOptionRow(
         val ch = controlHeight()
         val visible = min(8, labels.size)
         val listH = visible * 14 + 2
-        val listX = cx
         val listY = cy + ch
 
         g.nextStratum()
         g.pose().pushMatrix()
-        g.fill(listX, listY, listX + cw, listY + listH, 0xFF111111.toInt())
+        g.fill(cx, listY, cx + cw, listY + listH, 0xFF111111.toInt())
 
         val first = max(0, min((listScroll / 14).toInt(), max(0, labels.size - visible)))
 
@@ -83,16 +81,16 @@ open class RadioOptionRow(
             val idx = first + i
             if (idx >= labels.size) break
             val itemY = listY + 1 + i * 14
-            val hover = mouseX >= listX && mouseX < listX + cw && mouseY >= itemY && mouseY < itemY + 14
+            val hover = mouseX >= cx && mouseX < cx + cw && mouseY >= itemY && mouseY < itemY + 14
             val selected = idx == currentIndex()
             val bg = if (selected) 0x3CFFFFFF else if (hover) 0xFF333333.toInt() else 0
             if (bg != 0) {
-                g.fill(listX + 1, itemY, listX + cw - 1, itemY + 14, bg)
+                g.fill(cx + 1, itemY, cx + cw - 1, itemY + 14, bg)
             }
             g.drawString(
                 Minecraft.getInstance().font,
                 Component.literal(labelAt(idx)),
-                listX + 6,
+                cx + 6,
                 itemY + (14 - 8) / 2,
                 -1,
                 true
@@ -100,7 +98,7 @@ open class RadioOptionRow(
         }
 
         if (labels.size > visible) {
-            val trackX = listX + cw - 3
+            val trackX = cx + cw - 3
             val trackTop = listY + 1
             val trackBot = listY + listH - 1
             val trackH = trackBot - trackTop
@@ -120,9 +118,8 @@ open class RadioOptionRow(
         val ch = controlHeight()
         val visible = min(8, labels.size)
         val listH = visible * 14 + 2
-        val listX = cx
         val listY = cy + ch
-        if (mouseX < listX || mouseX >= listX + cw || mouseY < listY || mouseY >= listY + listH) {
+        if (mouseX < cx || mouseX >= cx + cw || mouseY < listY || mouseY >= listY + listH) {
             return false
         }
         val first = max(0, min((listScroll / 14).toInt(), max(0, labels.size - visible)))
@@ -143,23 +140,20 @@ open class RadioOptionRow(
         val ch = controlHeight()
         val visible = min(8, labels.size)
         val listH = visible * 14 + 2
-        val listX = cx
         val listY = cy + ch
-        if (mouseX < listX || mouseX >= listX + cw || mouseY < listY || mouseY >= listY + listH) {
-            return false
-        }
+        if (mouseX < cx || mouseX >= cx + cw || mouseY < listY || mouseY >= listY + listH) return false
         val maxScroll = max(0, (labels.size - visible) * 14)
         listScroll = max(0.0, min(maxScroll.toDouble(), listScroll - delta * 14)).toFloat()
         return true
     }
 
-    fun labelAt(idx: Int): String {
+    private fun labelAt(idx: Int): String {
         if (idx !in labels.indices) return ""
         return labels[idx]
     }
 
-    fun currentIndex(): Int {
-        val cur = option?.get() ?: return 0
+    private fun currentIndex(): Int {
+        val cur = option?.get ?: return 0
         return Mth.clamp(cur, 0, max(0, labels.size - 1))
     }
 }

@@ -15,11 +15,14 @@ open class Option<T>(
     protected var pendingValue: T = getter()
     protected var dirty: Boolean = false
 
-    open fun getLabel(): Component = Component.translatable("gui.yes_steve_model.config.$translationKey")
+    open val label: Component
+        get() = Component.translatable("gui.yes_steve_model.config.$translationKey")
 
-    open fun getDescription(): Component = Component.translatable("gui.yes_steve_model.config.$translationKey.desc")
+    open val description: Component
+        get() = Component.translatable("gui.yes_steve_model.config.$translationKey.desc")
 
-    open fun get(): T = pendingValue
+    open val get: T
+        get() = pendingValue
 
     open fun setPending(value: T) {
         pendingValue = value

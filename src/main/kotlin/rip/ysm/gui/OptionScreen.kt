@@ -497,9 +497,9 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
         val row = hoveredRow ?: return
         val opt = row.option ?: return
         g.fill(panelLeft, descY, panelRight, descY + 28, 0x80000000.toInt())
-        val title = opt.getLabel()
+        val title = opt.label
         g.drawString(font, title, panelLeft + 6, descY + 4, -1, false)
-        val desc = opt.getDescription()
+        val desc = opt.description
         val maxWidth = panelRight - panelLeft - 6 * 2
         val lines = font.split(desc, maxWidth)
         var lineY = descY + 16

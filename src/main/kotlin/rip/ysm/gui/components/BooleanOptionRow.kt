@@ -18,7 +18,7 @@ open class BooleanOptionRow(
         val size = min(controlHeight(), 14)
         val cx = controlX() + controlWidth() - size
         val cy = controlY() + (controlHeight() - size) / 2
-        val value = option?.get() ?: false
+        val value = option?.get ?: false
         val hover = isMouseOverControl(mouseX.toDouble(), mouseY.toDouble())
         g.fill(cx, cy, cx + size, cy + size, blendBg(hover, 0xFF1A1A1A.toInt()))
         g.renderOutline(cx, cy, size, size, -1)
@@ -30,7 +30,7 @@ open class BooleanOptionRow(
     override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
         if (isMouseOverControl(event.x(), event.y())) {
             option?.let {
-                it.setPending(!it.get())
+                it.setPending(!it.get)
             }
         }
     }

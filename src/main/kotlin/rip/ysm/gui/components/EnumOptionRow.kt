@@ -34,7 +34,7 @@ open class EnumOptionRow<E : Enum<E>>(
         g.fill(cx, cy, cx + cw, cy + ch, blendBg(hover, 0x3EC8C8C8))
         g.renderOutline(cx, cy, cw, ch, 0x60FFFFFF)
 
-        val text = Component.literal(prettify(option?.get()?.name ?: ""))
+        val text = Component.literal(prettify(option?.get?.name ?: ""))
         g.drawString(Minecraft.getInstance().font, text, cx + 6, cy + (ch - 8) / 2, 0xFFFFFFFF.toInt(), false)
 
         val arrowX = cx + cw - 10
@@ -154,7 +154,7 @@ open class EnumOptionRow<E : Enum<E>>(
     }
 
     private fun currentIndex(): Int {
-        val current = option?.get()
+        val current = option?.get
         for (i in values.indices) {
             if (values[i] == current) {
                 return i
