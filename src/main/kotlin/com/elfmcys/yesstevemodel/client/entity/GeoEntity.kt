@@ -45,7 +45,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     }
 
     abstract fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper?
-    abstract val animationProcessor: GeoModel?
+    abstract val model: GeoModel?
 
     override val physicsManager: PhysicsManager
         get() {
@@ -113,7 +113,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
                 modelAssembly2 = shape.context
                 loaded = shape.isDefault
                 modelAssembly2?.let { onModelLoaded(it) }
-                animationProcessor?.let { initAnimationControllers(it, shape.context.expressionCache.events) }
+                model?.let { initAnimationControllers(it, shape.context.expressionCache.events) }
                 return
             }
             return
@@ -222,10 +222,9 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     open fun supportsAsync(): Boolean = true
 
     open class ModelWrapper(
-        @JvmField val context: ModelAssembly,
-        @JvmField val isDefault: Boolean
+        val context: ModelAssembly,
+        val isDefault: Boolean
     ) {
-        @JvmField
         var audioProvider: IAudioStreamProvider? = null
 
         open val isValid: Boolean

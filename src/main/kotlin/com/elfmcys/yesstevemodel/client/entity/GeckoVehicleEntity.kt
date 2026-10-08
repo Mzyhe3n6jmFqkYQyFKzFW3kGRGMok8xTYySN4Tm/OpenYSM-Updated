@@ -50,7 +50,7 @@ open class GeckoVehicleEntity(
         expressionBuilder = null
     }
 
-    override val animationProcessor: GeoModel
+    override val model: GeoModel
         get() = vehicleModel!!.model
 
     override val textureLocation: Identifier

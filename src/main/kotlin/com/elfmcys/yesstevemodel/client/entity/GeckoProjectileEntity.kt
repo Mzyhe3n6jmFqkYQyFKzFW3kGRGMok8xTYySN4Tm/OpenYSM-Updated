@@ -40,7 +40,7 @@ open class GeckoProjectileEntity(
         projectileModelContext = null
     }
 
-    override val animationProcessor: GeoModel?
+    override val model: GeoModel?
         get() = projectileModelContext?.model
 
     override val textureLocation: Identifier
