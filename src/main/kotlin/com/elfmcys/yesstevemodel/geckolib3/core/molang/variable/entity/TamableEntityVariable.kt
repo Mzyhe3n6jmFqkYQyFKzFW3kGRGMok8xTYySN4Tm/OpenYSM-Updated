@@ -8,6 +8,6 @@ import net.minecraft.world.entity.TamableAnimal
 open class TamableEntityVariable(evaluator: IValueEvaluator<*, IContext<TamableAnimal>>) :
     LambdaVariable<TamableAnimal>(evaluator) {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is TamableAnimal
+        return context.entity is TamableAnimal
     }
 }

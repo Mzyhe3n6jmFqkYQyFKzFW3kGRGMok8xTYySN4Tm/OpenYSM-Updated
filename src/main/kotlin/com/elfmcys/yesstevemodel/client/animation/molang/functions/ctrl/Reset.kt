@@ -8,7 +8,7 @@ import com.elfmcys.yesstevemodel.molang.runtime.Function.ArgumentCollection
 
 class Reset : ContextFunction<Any>() {
     override fun eval(context: ExecutionContext<IContext<Any>>, arguments: ArgumentCollection): Any? {
-        val animationController: PredicateBasedController<*>? = context.entity().animationEvent().controller
+        val animationController: PredicateBasedController<*>? = context.entity.animationEvent.controller
         animationController?.clearAnimation()
         return null
     }

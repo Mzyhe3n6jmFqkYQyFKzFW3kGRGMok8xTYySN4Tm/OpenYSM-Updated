@@ -80,13 +80,13 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
         val soundExpr = soundIValue ?: return null
         playbackFlags.setStopped(transitionInterpolator.isAnimationFinished)
         playbackFlags.setPaused(transitionInterpolator.isAnimationFinished)
-        expressionEvaluator.entity().setPlaybackFlags(playbackFlags)
-        expressionEvaluator.entity().setAnimationControllerContext(transitionInterpolator.context)
-        expressionEvaluator.entity().setIsClientSide(true)
+        expressionEvaluator.entity.playbackFlags = playbackFlags
+        expressionEvaluator.entity.setAnimationControllerContext(transitionInterpolator.context)
+        expressionEvaluator.entity.setIsClientSide(true)
         val state = soundExpr.evalAsInt(expressionEvaluator)
-        expressionEvaluator.entity().setIsClientSide(false)
-        expressionEvaluator.entity().setAnimationControllerContext(null)
-        expressionEvaluator.entity().setPlaybackFlags(null)
+        expressionEvaluator.entity.setIsClientSide(false)
+        expressionEvaluator.entity.setAnimationControllerContext(null)
+        expressionEvaluator.entity.playbackFlags = null
         return when (state) {
             2 -> PlayState.CONTINUE
             3 -> PlayState.STOP

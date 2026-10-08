@@ -26,27 +26,27 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 
 class AnimationContext<TEntity>(
-    val entity: TEntity,
+    private val entity2: TEntity,
     val instance: AnimatableEntity<*>,
-    val animationEvent: AnimationEvent<*>,
-    val data: EntityModelData
+    private val animationEvent2: AnimationEvent<*>,
+    private val data2: EntityModelData
 ) : IContext<TEntity> {
-    var animationControllerContext: AnimationControllerContext? = null
-    var playbackFlags: PlaybackFlags? = null
+    private var animationControllerContext2: AnimationControllerContext? = null
+    private var playbackFlags2: PlaybackFlags? = null
     var audioPlayerManager: AudioPlayerManager? = null
     var random: RandomSource? = null
     var storage: VariableStorage? = null
     var foreignStorage: IForeignVariableStorage? = null
     var logger: ILogger? = null
-    var isClientSide: Boolean = false
+    private var isClientSide2: Boolean = false
 
     constructor(entity: TEntity, context: AnimationContext<*>) : this(
         entity,
         context.instance,
-        context.animationEvent,
-        context.data
+        context.animationEvent2,
+        context.data2
     ) {
-        animationControllerContext = context.animationControllerContext
+        animationControllerContext2 = context.animationControllerContext2
         random = context.random
         storage = context.storage
         audioPlayerManager = context.audioPlayerManager
@@ -58,15 +58,31 @@ class AnimationContext<TEntity>(
         }
     }
 
-    override fun animationEvent(): AnimationEvent<*> = animationEvent
-    override fun geoInstance(): AnimatableEntity<*> = instance
-    override fun data(): EntityModelData = data
-    override fun animationControllerContext(): AnimationControllerContext? = animationControllerContext
-    override fun getPlaybackFlags(): PlaybackFlags? = playbackFlags
+    override val animationEvent: AnimationEvent<*>
+        get() = animationEvent2
+    override val geoInstance: AnimatableEntity<*>
+        get() = instance
+
+    override val data: EntityModelData
+        get() = data2
+    override var animationControllerContext: AnimationControllerContext?
+        get() = animationControllerContext2
+        set(value) {
+            animationControllerContext2 = value
+        }
+    override var playbackFlags: PlaybackFlags?
+        get() = playbackFlags2
+        set(value) {
+            playbackFlags2 = value
+        }
+
     override fun random(): RandomSource? = random
-    override fun entity(): TEntity = entity
-    override fun mc(): Minecraft = Minecraft.getInstance()
-    override fun level(): ClientLevel? = mc().level
+    override val entity: TEntity
+        get() = entity2
+    override val mc: Minecraft
+        get() = Minecraft.getInstance()
+    override val level: ClientLevel?
+        get() = mc.level
 
     override fun <TChild> createChild(child: TChild): IContext<TChild> {
         return AnimationContext(child, this)
@@ -75,7 +91,7 @@ class AnimationContext<TEntity>(
     override fun tempStorage(): ITempVariableStorage? = storage?.localVariables
     override fun scopedStorage(): IScopedVariableStorage? = storage
     override fun foreignStorage(): IForeignVariableStorage? = foreignStorage
-    override fun controllerStorage(): IControllerVariableStorage? = animationControllerContext
+    override fun controllerStorage(): IControllerVariableStorage? = animationControllerContext2
 
     override fun resolveExpression(str: String): IValue? = instance.resolveExpression(str)
 
@@ -109,31 +125,34 @@ class AnimationContext<TEntity>(
 
     override fun getAnimationLayers(): List<*>? = storage?.localVariables?.asList()
 
-    override fun isDebugMode(): Boolean = logger != null
-    override fun isClientSide(): Boolean = isClientSide
+    override val isDebugMode: Boolean
+        get() = logger != null
+    override val isClientSide: Boolean
+        get() = isClientSide2
+
     fun setIsClientSide(z: Boolean) {
-        isClientSide = z
+        isClientSide2 = z
     }
 
     override fun logWarning(str: String, vararg objArr: Any) {
-        if (isDebugMode()) {
+        if (isDebugMode) {
             logger?.logFormatted(str, *objArr)
         }
     }
 
     override fun logWarningComponent(component: Component) {
-        if (isDebugMode()) {
+        if (isDebugMode) {
             logger?.logComponent(component)
         }
     }
 
     override fun getAudioPlayerManager(global: Boolean): AudioPlayerManager? {
         if (!global) {
-            val audioPlayerManager2 = animationControllerContext?.audioPlayerManager
+            val audioPlayerManager2 = animationControllerContext2?.audioPlayerManager
             if (audioPlayerManager2 != null) {
                 return audioPlayerManager2
             }
-            val audioPlayerManager1 = playbackFlags?.audioPlayerManager
+            val audioPlayerManager1 = playbackFlags2?.audioPlayerManager
             if (audioPlayerManager1 != null) {
                 return audioPlayerManager1
             }
@@ -146,11 +165,7 @@ class AnimationContext<TEntity>(
     }
 
     fun setAnimationControllerContext(context: AnimationControllerContext?) {
-        animationControllerContext = context
-    }
-
-    fun setPlaybackFlags(playbackFlags2: PlaybackFlags?) {
-        playbackFlags = playbackFlags2
+        animationControllerContext2 = context
     }
 
     fun setStorage(variableStorage: VariableStorage?) {

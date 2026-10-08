@@ -6,6 +6,6 @@ import net.minecraft.world.entity.projectile.arrow.Arrow
 
 abstract class ArrowEntityFunction : ContextFunction<Arrow>() {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is Arrow
+        return context.entity is Arrow
     }
 }

@@ -14,7 +14,7 @@ class Ride : LivingEntityFunction() {
     override fun eval(context: ExecutionContext<IContext<LivingEntity>>, arguments: ArgumentCollection): Any {
         val type = arguments.getAsString(context, 0) ?: return 0
         val id = arguments.getAsString(context, 1) ?: return 0
-        val entity = context.entity().entity()
+        val entity = context.entity.entity
         if (id.isBlank()) return 0
         val targetEntity = when (type) {
             VEHICLE_KEY -> entity.vehicle

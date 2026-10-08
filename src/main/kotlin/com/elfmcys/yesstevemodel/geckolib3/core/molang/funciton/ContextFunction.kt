@@ -12,7 +12,7 @@ abstract class ContextFunction<TEntity> : Function {
     // TODO: Remove Suppress
     @Suppress("UNCHECKED_CAST")
     final override fun evaluate(context: ExecutionContext<*>, arguments: Function.ArgumentCollection): Any? {
-        val entity = context.entity()
+        val entity = context.entity
         if (entity is IContext<*> && validateContext(entity)) {
             return eval(context as ExecutionContext<IContext<TEntity>>, arguments)
         }

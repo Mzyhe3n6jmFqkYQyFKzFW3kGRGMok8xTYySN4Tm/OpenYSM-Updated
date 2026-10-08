@@ -14,7 +14,7 @@ class FirstOrderFunction : EntityFunction() {
         if (name == StringPool.EMPTY_ID) return 0
         val input = arguments.getAsFloat(context, 1)
         val response = if (arguments.size() >= 3) arguments.getAsFloat(context, 2) else 1.0f
-        val physicsManager = context.entity().geoInstance().physicsManager
+        val physicsManager = context.entity.geoInstance.physicsManager
         val physics = physicsManager[name]
         if (physics == null) {
             physicsManager[name] = FirstOrder(input, response)

@@ -8,6 +8,6 @@ import net.minecraft.world.entity.projectile.arrow.AbstractArrow
 open class AbstractArrowEntityVariable(evaluator: IValueEvaluator<*, IContext<AbstractArrow>>) :
     LambdaVariable<AbstractArrow>(evaluator) {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is AbstractArrow
+        return context.entity is AbstractArrow
     }
 }

@@ -15,7 +15,7 @@ import rip.ysm.compat.cosmeticarmorreworked.CosmeticArmorHelper
 class IsItemNameAny : LivingEntityFunction() {
     override fun eval(context: ExecutionContext<IContext<LivingEntity>>, arguments: Function.ArgumentCollection): Any? {
         val slotType: EquipmentSlot = MolangUtils.parseSlotType(context, arguments, 0) ?: return null
-        val stack: ItemStack = CosmeticArmorHelper.getArmorItem(context.entity().entity(), slotType)
+        val stack: ItemStack = CosmeticArmorHelper.getArmorItem(context.entity.entity, slotType)
         if (stack.isEmpty) {
             return false
         }

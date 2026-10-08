@@ -16,19 +16,19 @@ import rip.ysm.compat.cosmeticarmorreworked.CosmeticArmorHelper
 
 class DumpEquippedItem : LivingEntityFunction() {
     override fun eval(context: ExecutionContext<IContext<LivingEntity>>, arguments: ArgumentCollection): Any? {
-        if (!context.entity().isDebugMode()) return null
+        if (!context.entity.isDebugMode) return null
         val slot = MolangUtils.parseSlotType(context, arguments, 0) ?: return null
-        val stack = CosmeticArmorHelper.getArmorItem(context.entity().entity(), slot)
+        val stack = CosmeticArmorHelper.getArmorItem(context.entity.entity, slot)
         if (stack.isEmpty) return null
         val key = BuiltInRegistries.ITEM.getKey(stack.item)
-        context.entity().logWarningComponent(
+        context.entity.logWarningComponent(
             Component.literal("Display ")
                 .append(ComponentUtils.copyOnClickText(stack.item.getName(stack).getString(99)))
         )
-        context.entity()
+        context.entity
             .logWarningComponent(Component.literal("Name ").append(ComponentUtils.copyOnClickText(key.toString())))
         stack.tags.forEach { tagKey ->
-            context.entity().logWarningComponent(
+            context.entity.logWarningComponent(
                 Component.literal("Tag ").append(ComponentUtils.copyOnClickText(tagKey.location().toString()))
             )
         }
@@ -38,7 +38,7 @@ class DumpEquippedItem : LivingEntityFunction() {
             val lvl = entry.intValue
             val name = holder.unwrapKey().map { it.identifier() }.orElse(null)
             if (name != null) {
-                context.entity().logWarningComponent(
+                context.entity.logWarningComponent(
                     Component.literal("Enchantment: display ")
                         .append(ComponentUtils.copyOnClickText(Enchantment.getFullname(holder, lvl).getString(99)))
                         .append(Component.literal("  name "))

@@ -8,6 +8,6 @@ import net.minecraft.client.player.AbstractClientPlayer
 open class ClientPlayerEntityVariable(evaluator: IValueEvaluator<*, IContext<AbstractClientPlayer>>) :
     LambdaVariable<AbstractClientPlayer>(evaluator) {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is AbstractClientPlayer
+        return context.entity is AbstractClientPlayer
     }
 }

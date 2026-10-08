@@ -6,6 +6,6 @@ import net.minecraft.client.player.LocalPlayer
 
 abstract class LocalPlayerEntityFunction : ContextFunction<LocalPlayer>() {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is LocalPlayer
+        return context.entity is LocalPlayer
     }
 }

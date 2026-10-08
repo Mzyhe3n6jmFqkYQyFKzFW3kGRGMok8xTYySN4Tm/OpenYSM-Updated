@@ -10,7 +10,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.level.block.state.BlockState
-import java.util.Locale
+import java.util.*
 import kotlin.math.abs
 import kotlin.math.roundToLong
 
@@ -43,7 +43,7 @@ object MolangUtils {
         if (abs(deltaX) > 5.0 || abs(deltaY) > 5.0 || abs(deltaZ) > 5.0) {
             return null
         }
-        val entity = context.entity().entity()
+        val entity = context.entity.entity
         val x = ((entity.x + deltaX) - 0.5).roundToLong().toInt()
         val y = ((entity.y + deltaY) - 0.5).roundToLong().toInt()
         val z = ((entity.z + deltaZ) - 0.5).roundToLong().toInt()
@@ -72,11 +72,11 @@ object MolangUtils {
             val name = expr.name
             val slot = SLOT_MAP[name.lowercase(Locale.ENGLISH)]
             if (slot == null) {
-                ctx.entity().logWarning("Illegal slot type: %s.", name)
+                ctx.entity.logWarning("Illegal slot type: %s.", name)
             }
             expr.cachedSlot = slot
             return slot
         }
-        return parseSlotType(ctx.entity(), args.getAsString(ctx, index))
+        return parseSlotType(ctx.entity, args.getAsString(ctx, index))
     }
 }

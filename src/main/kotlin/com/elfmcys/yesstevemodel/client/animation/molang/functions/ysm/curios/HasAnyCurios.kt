@@ -28,7 +28,7 @@ class HasAnyCurios : LivingEntityFunction() {
                 referenceOpenHashSet.add(item)
             }
         }
-        return CuriosCompat.hasItemInSlot(context.entity().entity(), type, referenceOpenHashSet)
+        return CuriosCompat.hasItemInSlot(context.entity.entity, type, referenceOpenHashSet)
     }
 
     override fun validateArgumentSize(size: Int): Boolean {

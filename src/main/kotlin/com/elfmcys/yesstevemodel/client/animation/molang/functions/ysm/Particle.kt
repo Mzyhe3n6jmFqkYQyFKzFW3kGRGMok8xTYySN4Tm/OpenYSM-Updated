@@ -9,7 +9,7 @@ import net.minecraft.world.entity.Entity
 
 class Particle(private val abs: Boolean) : EntityFunction() {
     override fun eval(context: ExecutionContext<IContext<Entity>>, arguments: ArgumentCollection): Any? {
-        if (!context.entity().isClientSide() || context.entity().geoInstance().hasCustomTexture()) {
+        if (!context.entity.isClientSide || context.entity.geoInstance.hasCustomTexture()) {
             return null
         }
         return runCatching {

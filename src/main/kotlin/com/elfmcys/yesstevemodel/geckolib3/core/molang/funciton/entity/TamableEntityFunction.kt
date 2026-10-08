@@ -6,6 +6,6 @@ import net.minecraft.world.entity.TamableAnimal
 
 abstract class TamableEntityFunction : ContextFunction<TamableAnimal>() {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is TamableAnimal
+        return context.entity is TamableAnimal
     }
 }

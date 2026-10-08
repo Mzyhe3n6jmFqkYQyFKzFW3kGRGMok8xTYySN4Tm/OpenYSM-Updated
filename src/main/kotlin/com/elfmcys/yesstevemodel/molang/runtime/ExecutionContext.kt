@@ -4,7 +4,7 @@ import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.molang.parser.ast.Expression
 
 interface ExecutionContext<TEntity> {
-    fun entity(): TEntity
+    val entity: TEntity
 
     fun eval(expression: Expression): Any?
 

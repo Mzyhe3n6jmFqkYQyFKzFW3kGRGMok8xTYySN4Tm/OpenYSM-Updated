@@ -15,17 +15,17 @@ import net.minecraft.client.player.LocalPlayer
 
 class Sync : AbstractClientPlayerFunction() {
     override fun eval(context: ExecutionContext<IContext<AbstractClientPlayer>>, arguments: ArgumentCollection): Any? {
-        if (!context.entity().isClientSide()) {
+        if (!context.entity.isClientSide) {
             return null
         }
-        if (context.entity().geoInstance() is PlayerCapability && NetworkHandler.isClientConnected()) {
-            if (context.entity().entity() is LocalPlayer) {
+        if (context.entity.geoInstance is PlayerCapability && NetworkHandler.isClientConnected()) {
+            if (context.entity.entity is LocalPlayer) {
                 NetworkHandler.sendToServer(C2SSyncAnimationExpressionPacket(collectArgs(context, arguments)))
                 return null
             }
             return null
         }
-        val animatableEntity: AnimatableEntity<*> = context.entity().geoInstance()
+        val animatableEntity: AnimatableEntity<*> = context.entity.geoInstance
         if (animatableEntity is CustomPlayerEntity) {
             animatableEntity.executeAnimationExpression(collectArgs(context, arguments))
             return null

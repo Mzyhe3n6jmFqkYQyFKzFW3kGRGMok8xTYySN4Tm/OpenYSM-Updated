@@ -124,7 +124,7 @@ object CtrlBinding : ContextBinding() {
     private fun interface EntityCondition : Predicate<IContext<LivingEntity>> {
         fun check(entity: LivingEntity): Boolean
         override fun test(context: IContext<LivingEntity>): Boolean {
-            return check(context.entity())
+            return check(context.entity)
         }
     }
 
@@ -132,7 +132,7 @@ object CtrlBinding : ContextBinding() {
 
     @JvmStatic
     fun isPlayingExtraAnimation(context: IContext<Any>): Boolean {
-        val animatableEntity = context.geoInstance()
+        val animatableEntity = context.geoInstance
         return animatableEntity is CustomPlayerEntity && animatableEntity.isModelSwitching && animatableEntity.getAnimationState(
             PlayerAnimationController.CAP_CONTROLLER_KEY
         ) != AnimationState.IDLE
@@ -140,12 +140,12 @@ object CtrlBinding : ContextBinding() {
 
     @JvmStatic
     fun evaluateState(name: String, context: IContext<LivingEntity>): Boolean {
-        val livingEntity: LivingEntity = context.entity()
-        val positionTracker: EntityFrameStateTracker<*> = context.geoInstance().positionTracker
+        val livingEntity: LivingEntity = context.entity
+        val positionTracker: EntityFrameStateTracker<*> = context.geoInstance.positionTracker
         if (positionTracker.getCachedModelId() != null) {
             return name == positionTracker.getCachedModelId()
         }
-        if (context.geoInstance() is IPreviewAnimatable) {
+        if (context.geoInstance is IPreviewAnimatable) {
             positionTracker.setCachedModelId(StringPool.EMPTY)
             return false
         }
@@ -186,13 +186,13 @@ object CtrlBinding : ContextBinding() {
 
     @JvmStatic
     fun isFlying(context: IContext<LivingEntity>): Boolean {
-        val animatableEntity: AnimatableEntity<*> = context.geoInstance()
+        val animatableEntity: AnimatableEntity<*> = context.geoInstance
         if (animatableEntity is PlayerCapability) {
             if (!animatableEntity.isLocalPlayerModel) {
                 return animatableEntity.positionTracker.isFlying
             }
         }
-        val entity: Entity = context.entity()
+        val entity: Entity = context.entity
         return entity is Player && entity.abilities.flying
     }
 }

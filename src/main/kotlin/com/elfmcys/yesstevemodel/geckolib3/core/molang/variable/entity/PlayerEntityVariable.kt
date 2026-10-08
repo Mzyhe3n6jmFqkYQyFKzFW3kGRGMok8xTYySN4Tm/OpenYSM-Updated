@@ -8,6 +8,6 @@ import net.minecraft.world.entity.player.Player
 open class PlayerEntityVariable(evaluator: IValueEvaluator<*, IContext<Player>>) :
     LambdaVariable<Player>(evaluator) {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is Player
+        return context.entity is Player
     }
 }

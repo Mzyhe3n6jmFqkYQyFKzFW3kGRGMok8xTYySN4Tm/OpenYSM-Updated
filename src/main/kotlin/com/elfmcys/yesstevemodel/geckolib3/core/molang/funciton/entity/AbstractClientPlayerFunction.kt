@@ -6,6 +6,6 @@ import net.minecraft.client.player.AbstractClientPlayer
 
 abstract class AbstractClientPlayerFunction : ContextFunction<AbstractClientPlayer>() {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is AbstractClientPlayer
+        return context.entity is AbstractClientPlayer
     }
 }

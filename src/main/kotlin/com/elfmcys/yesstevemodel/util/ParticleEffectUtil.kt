@@ -56,9 +56,9 @@ object ParticleEffectUtil {
         if (argCount > 8) count = max(arguments.getAsInt(context, 8), 0)
         if (argCount > 9) lifetime = max(arguments.getAsInt(context, 9), 1)
 
-        context.entity().random()?.let {
+        context.entity.random()?.let {
             spawnParticles(
-                context.entity().entity(),
+                context.entity.entity,
                 particleId,
                 offset,
                 delta,

@@ -12,8 +12,8 @@ import rip.ysm.compat.oculus.OculusCompat
 object CameraUtil {
     @JvmStatic
     fun getCameraType(ctx: IContext<out Entity>): Int {
-        if (ctx.entity() == Minecraft.getInstance().player && ModelPreviewRenderer.isFirstPerson()) {
-            return ctx.mc().options.cameraType.ordinal
+        if (ctx.entity == Minecraft.getInstance().player && ModelPreviewRenderer.isFirstPerson()) {
+            return ctx.mc.options.cameraType.ordinal
         }
         return CameraType.THIRD_PERSON_FRONT.ordinal
     }
@@ -28,7 +28,7 @@ object CameraUtil {
 
     @JvmStatic
     fun isThirdPerson(ctx: IContext<out Entity>): Boolean {
-        return isThirdPersonModel(ctx.geoInstance())
+        return isThirdPersonModel(ctx.geoInstance)
     }
 
     @JvmStatic

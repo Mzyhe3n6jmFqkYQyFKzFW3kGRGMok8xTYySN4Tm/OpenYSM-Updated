@@ -23,7 +23,7 @@ class FnBinding : ObjectBinding, ResetVariable {
         private var cachedIValue: IValue? = null
 
         override fun evaluate(context: ExecutionContext<*>, arguments: Function.ArgumentCollection): Any? {
-            val entity: Any? = context.entity()
+            val entity: Any? = context.entity
             if (entity is IContext<*>) {
                 var value = cachedIValue
                 if (value == null) {

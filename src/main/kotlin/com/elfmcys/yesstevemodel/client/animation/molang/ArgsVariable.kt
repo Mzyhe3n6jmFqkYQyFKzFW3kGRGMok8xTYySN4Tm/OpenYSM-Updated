@@ -6,7 +6,7 @@ import com.elfmcys.yesstevemodel.molang.runtime.Variable
 
 object ArgsVariable : Variable {
     override fun evaluate(context: ExecutionContext<*>): Any? {
-        val entity = context.entity()
+        val entity = context.entity
         if (entity is IContext<*>) {
             return entity.getAnimationLayers()
         }

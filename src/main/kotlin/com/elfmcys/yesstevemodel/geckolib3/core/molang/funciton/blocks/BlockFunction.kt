@@ -6,6 +6,6 @@ import net.minecraft.world.level.block.Block
 
 abstract class BlockFunction : ContextFunction<Block>() {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is Block
+        return context.entity is Block
     }
 }

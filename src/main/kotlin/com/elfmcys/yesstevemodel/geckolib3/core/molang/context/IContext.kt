@@ -19,14 +19,14 @@ import net.minecraft.network.chat.Component
 import net.minecraft.util.RandomSource
 
 interface IContext<TEntity> {
-    fun entity(): TEntity
-    fun geoInstance(): AnimatableEntity<*>
-    fun mc(): Minecraft
-    fun level(): ClientLevel?
-    fun animationEvent(): AnimationEvent<*>
-    fun data(): EntityModelData
-    fun animationControllerContext(): AnimationControllerContext?
-    fun getPlaybackFlags(): PlaybackFlags?
+    val entity: TEntity
+    val geoInstance: AnimatableEntity<*>
+    val mc: Minecraft
+    val level: ClientLevel?
+    val animationEvent: AnimationEvent<*>
+    val data: EntityModelData
+    val animationControllerContext: AnimationControllerContext?
+    val playbackFlags: PlaybackFlags?
     fun random(): RandomSource?
     fun <TChild> createChild(child: TChild): IContext<TChild>
     fun tempStorage(): ITempVariableStorage?
@@ -37,8 +37,8 @@ interface IContext<TEntity> {
     fun callFunction(context: ExecutionContext<*>, value: IValue, list: List<*>): Any?
     fun callFunctionWithArgs(context: ExecutionContext<*>, value: IValue, arguments: Function.ArgumentCollection): Any?
     fun getAnimationLayers(): List<*>?
-    fun isDebugMode(): Boolean
-    fun isClientSide(): Boolean
+    val isDebugMode: Boolean
+    val isClientSide: Boolean
     fun logWarning(str: String, vararg objArr: Any)
     fun logWarningComponent(component: Component)
     fun getAudioPlayerManager(global: Boolean): AudioPlayerManager?

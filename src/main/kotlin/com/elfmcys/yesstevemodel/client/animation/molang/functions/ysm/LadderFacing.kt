@@ -7,9 +7,9 @@ import net.minecraft.world.level.block.HorizontalDirectionalBlock
 
 class LadderFacing : IValueEvaluator<Int, IContext<LivingEntity>> {
     override fun eval(ctx: IContext<LivingEntity>): Int {
-        val lastClimbablePos = ctx.entity().lastClimbablePos
+        val lastClimbablePos = ctx.entity.lastClimbablePos
         if (lastClimbablePos.isPresent) {
-            val optionalValue = ctx.entity().level().getBlockState(lastClimbablePos.get())
+            val optionalValue = ctx.entity.level().getBlockState(lastClimbablePos.get())
                 .getOptionalValue(HorizontalDirectionalBlock.FACING)
             if (optionalValue.isPresent) {
                 return optionalValue.get().get2DDataValue()

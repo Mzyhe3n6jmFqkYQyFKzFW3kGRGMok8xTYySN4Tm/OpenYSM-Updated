@@ -11,9 +11,9 @@ import kotlin.math.sqrt
 object MathInterpolation {
     @JvmStatic
     fun getYawInterpolation(context: IContext<Entity>): Double {
-        val entity = context.entity()
-        val frameTime = context.animationEvent().frameTime
-        val positionDelta = context.geoInstance().positionTracker.positionDelta
+        val entity = context.entity
+        val frameTime = context.animationEvent.frameTime
+        val positionDelta = context.geoInstance.positionTracker.positionDelta
         val d = positionDelta.x
         val d2 = positionDelta.z
         if (sqrt(d * d + d2 * d2) < 1.0E-4) return 0.0
@@ -26,9 +26,9 @@ object MathInterpolation {
 
     @JvmStatic
     fun getPitchInterpolation(context: IContext<Entity>): Double {
-        val entity = context.entity()
-        val frameTime = context.animationEvent().frameTime
-        val positionDelta = context.geoInstance().positionTracker.positionDelta
+        val entity = context.entity
+        val frameTime = context.animationEvent.frameTime
+        val positionDelta = context.geoInstance.positionTracker.positionDelta
         val d = positionDelta.x
         val d2 = positionDelta.z
         if (sqrt(d * d + d2 * d2) < 1.0E-4) return 0.0

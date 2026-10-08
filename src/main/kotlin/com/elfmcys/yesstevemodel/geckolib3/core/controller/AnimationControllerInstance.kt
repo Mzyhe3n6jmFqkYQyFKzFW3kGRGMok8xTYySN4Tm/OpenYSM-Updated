@@ -78,7 +78,7 @@ class AnimationControllerInstance(
     }
 
     fun process(tick: Float, evaluator: ExpressionEvaluator<AnimationContext<*>>, z: Boolean) {
-        evaluator.entity().setAnimationControllerContext(context)
+        evaluator.entity.setAnimationControllerContext(context)
         var adjustedTick: Float = adjustTick(tick)
         if (animationState == AnimationState.ENDING_TRANSITION && adjustedTick >= defaultTransitionTick) {
             clearAnimation()
@@ -159,9 +159,9 @@ class AnimationControllerInstance(
     }
 
     fun executeRenderLayers(evaluator: ExpressionEvaluator<AnimationContext<*>>) {
-        evaluator.entity().setAnimationControllerContext(context)
+        evaluator.entity.setAnimationControllerContext(context)
         context.executeRenderLayers(evaluator)
-        evaluator.entity().setAnimationControllerContext(null)
+        evaluator.entity.setAnimationControllerContext(null)
     }
 
     fun executeTimelineEvents(

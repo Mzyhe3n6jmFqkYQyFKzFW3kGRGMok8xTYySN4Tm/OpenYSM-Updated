@@ -8,6 +8,6 @@ import net.minecraft.world.entity.Mob
 open class MobEntityVariable(evaluator: IValueEvaluator<*, IContext<Mob>>) :
     LambdaVariable<Mob>(evaluator) {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is Mob
+        return context.entity is Mob
     }
 }

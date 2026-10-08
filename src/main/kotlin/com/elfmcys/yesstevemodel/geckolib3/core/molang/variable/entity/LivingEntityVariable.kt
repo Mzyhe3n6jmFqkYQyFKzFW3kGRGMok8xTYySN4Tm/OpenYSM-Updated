@@ -8,6 +8,6 @@ import net.minecraft.world.entity.LivingEntity
 open class LivingEntityVariable(evaluator: IValueEvaluator<*, IContext<LivingEntity>>) :
     LambdaVariable<LivingEntity>(evaluator) {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is LivingEntity
+        return context.entity is LivingEntity
     }
 }

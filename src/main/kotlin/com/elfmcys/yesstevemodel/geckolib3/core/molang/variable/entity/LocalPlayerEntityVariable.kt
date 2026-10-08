@@ -8,6 +8,6 @@ import net.minecraft.client.player.LocalPlayer
 open class LocalPlayerEntityVariable(evaluator: IValueEvaluator<*, IContext<LocalPlayer>>) :
     LambdaVariable<LocalPlayer>(evaluator) {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is LocalPlayer
+        return context.entity is LocalPlayer
     }
 }

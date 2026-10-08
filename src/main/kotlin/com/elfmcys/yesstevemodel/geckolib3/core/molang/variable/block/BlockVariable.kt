@@ -8,6 +8,6 @@ import net.minecraft.world.level.block.Block
 open class BlockVariable(evaluator: IValueEvaluator<*, IContext<Block>>) :
     LambdaVariable<Block>(evaluator) {
     override fun validateContext(context: IContext<*>): Boolean {
-        return context.entity() is Block
+        return context.entity is Block
     }
 }
