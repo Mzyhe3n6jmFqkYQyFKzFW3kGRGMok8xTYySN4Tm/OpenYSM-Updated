@@ -387,8 +387,8 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                             isFirst = false
                             if (animationPoint is TransitionPoint) {
                                 isTransition = true
-                                offsetPoint = animationPoint.getOffsetPoint()
-                                lerpFactor = animationPoint.getLerpFactor()
+                                offsetPoint = animationPoint.offsetPoint
+                                lerpFactor = animationPoint.lerpFactor
                                 transitionVector3f.setPercentCompleted(0.0f)
                                 initialRotation = boneQueue.topLevelSnapshot.bone.initialRotation
                             }
@@ -459,8 +459,8 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                             isFirst = false
                             if (point is TransitionPoint) {
                                 isTransition = true
-                                offsetPoint = point.getOffsetPoint()
-                                lerpFactor = point.getLerpFactor()
+                                offsetPoint = point.offsetPoint
+                                lerpFactor = point.lerpFactor
                                 result.setPercentCompleted(0.0f)
                             }
                         }
@@ -524,8 +524,8 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                             isFirst = false
                             if (point is TransitionPoint) {
                                 isTransition = true
-                                offsetPoint = point.getOffsetPoint()
-                                lerpFactor = point.getLerpFactor()
+                                offsetPoint = point.offsetPoint
+                                lerpFactor = point.lerpFactor
                                 result.setPercentCompleted(0.0f)
                             }
                         }
