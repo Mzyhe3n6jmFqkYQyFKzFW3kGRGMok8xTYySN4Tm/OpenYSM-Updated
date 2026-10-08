@@ -10,9 +10,8 @@ class C2SSyncAnimationExpressionPacket(val floatData: FloatArrayList) {
         @JvmStatic
         fun encode(message: C2SSyncAnimationExpressionPacket, buf: FriendlyByteBuf) {
             buf.writeByte(message.floatData.size)
-            // TODO: 'fun next(): Float!' is deprecated. Deprecated in Java.
-            for (floatDatum in message.floatData) {
-                buf.writeFloat(floatDatum)
+            for (i in message.floatData.indices) {
+                buf.writeFloat(message.floatData.getFloat(i))
             }
         }
 
@@ -20,7 +19,7 @@ class C2SSyncAnimationExpressionPacket(val floatData: FloatArrayList) {
         fun decode(buf: FriendlyByteBuf): C2SSyncAnimationExpressionPacket {
             val size = buf.readByte().toInt()
             val floatArrayList = FloatArrayList(size)
-            for (i in 0 until size) {
+            repeat(size) {
                 floatArrayList.add(buf.readFloat())
             }
             return C2SSyncAnimationExpressionPacket(floatArrayList)

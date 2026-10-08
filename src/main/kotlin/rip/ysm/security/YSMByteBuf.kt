@@ -3,13 +3,9 @@
 package rip.ysm.security
 
 import io.netty.buffer.ByteBuf
-import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
 
-class YSMByteBuf(buf: ByteBuf) : AutoCloseable {
-    // TODO: 'fun order(p0: ByteOrder!): ByteBuf!' is deprecated. Deprecated in Java.
-    private val buf: ByteBuf = buf.order(ByteOrder.LITTLE_ENDIAN)
-
+class YSMByteBuf(private val buf: ByteBuf) : AutoCloseable {
     val rawBuf: ByteBuf
         get() = buf
 
@@ -34,12 +30,12 @@ class YSMByteBuf(buf: ByteBuf) : AutoCloseable {
 
     fun readByte(): Byte = buf.readByte()
 
-    fun readFloat(): Float = buf.readFloat()
+    fun readFloat(): Float = buf.readFloatLE()
 
-    fun readDword(): Long = buf.readUnsignedInt()
+    fun readDword(): Long = buf.readUnsignedIntLE()
 
     fun writeDword(format: Int) {
-        buf.writeInt(format)
+        buf.writeIntLE(format)
     }
 
     fun readVarInt(): Int {
@@ -131,7 +127,7 @@ class YSMByteBuf(buf: ByteBuf) : AutoCloseable {
     }
 
     fun writeFloat(value: Float) {
-        buf.writeFloat(value)
+        buf.writeFloatLE(value)
     }
 
     fun writeByteArray(data: ByteArray?) {

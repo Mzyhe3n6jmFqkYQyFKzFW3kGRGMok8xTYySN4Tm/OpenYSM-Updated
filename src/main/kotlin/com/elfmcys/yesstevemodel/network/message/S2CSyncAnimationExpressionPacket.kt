@@ -15,8 +15,8 @@ class S2CSyncAnimationExpressionPacket(
         fun encode(message: S2CSyncAnimationExpressionPacket, buf: FriendlyByteBuf) {
             buf.writeVarInt(message.entityId)
             buf.writeByte(message.floatData.size)
-            for (floatDatum in message.floatData) {
-                buf.writeFloat(floatDatum)
+            for (i in message.floatData.indices) {
+                buf.writeFloat(message.floatData.getFloat(i))
             }
         }
 
@@ -25,7 +25,7 @@ class S2CSyncAnimationExpressionPacket(
             val entityId = buf.readVarInt()
             val count = buf.readByte().toInt()
             val floatArrayList = FloatArrayList(count)
-            for (i in 0 until count) {
+            repeat(count) {
                 floatArrayList.add(buf.readFloat())
             }
             return S2CSyncAnimationExpressionPacket(entityId, floatArrayList)

@@ -9,6 +9,7 @@ import com.elfmcys.yesstevemodel.geckolib3.core.builder.AnimationController
 import com.elfmcys.yesstevemodel.geckolib3.core.controller.controllers.VehicleAnimationController
 import com.elfmcys.yesstevemodel.geckolib3.geo.render.built.GeoModel
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.Entity
 import org.joml.Vector3f
@@ -30,9 +31,8 @@ open class GeckoVehicleEntity(
     open val expressionOffset: Vector3f?
         get() = expressionBuilder?.vehicleRotation
 
-    // TODO: 'fun builtInRegistryHolder(): Holder.Reference<EntityType<*>>' is deprecated. Deprecated in Java.
     override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper? {
-        val key = entity.type.builtInRegistryHolder().key().identifier()
+        val key = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
         val modelBundle = modelAssembly.vehicleModels[key]
         if (modelBundle != null) return EntityModelWrapper(modelAssembly, isDefault, modelBundle)
         return null
@@ -40,7 +40,7 @@ open class GeckoVehicleEntity(
 
     override fun onModelLoaded(modelAssembly: ModelAssembly) {
         super.onModelLoaded(modelAssembly)
-        val key = entity.type.builtInRegistryHolder().key().identifier()
+        val key = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
         vehicleModel = modelAssembly.vehicleModels[key]
     }
 
