@@ -32,5 +32,6 @@ open class LivingEntityFrameState<T : LivingEntity>(entity: T) : EntityFrameStat
     open fun setHandItemsForAnimation(itemStack: ItemStack, interactionHand: InteractionHand) =
         if (interactionHand == InteractionHand.MAIN_HAND) mainHandItem = itemStack else offHandItem = itemStack
 
-    open fun getImmersiveMelodiesData(): ImmersiveMelodiesCompat.ImmersiveMelodiesData = imData
+    open val immersiveMelodiesData: ImmersiveMelodiesCompat.ImmersiveMelodiesData
+        get() = imData
 }

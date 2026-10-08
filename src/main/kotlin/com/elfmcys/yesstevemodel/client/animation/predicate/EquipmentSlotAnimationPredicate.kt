@@ -15,14 +15,14 @@ import rip.ysm.compat.cosmeticarmorreworked.CosmeticArmorHelper
 class EquipmentSlotAnimationPredicate(private val slot: EquipmentSlot) : IAnimationPredicate<PlayerGeoEntity> {
     override fun predicate(event: AnimationEvent<PlayerGeoEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
         val animatable = event.getAnimatable()
-        val entity: LivingEntity? = animatable.entity
+        val entity: LivingEntity = animatable.entity
         if (entity == null || animatable is IPreviewAnimatable) {
             return PlayState.STOP
         }
         if (CosmeticArmorHelper.getArmorItem(entity, slot).isEmpty) {
             return PlayState.STOP
         }
-        val conditionArmor: ConditionArmor? = animatable.getArmModelProcessor()?.conditionArmor
+        val conditionArmor: ConditionArmor? = animatable.armModelProcessor?.conditionArmor
         if (conditionArmor != null) {
             val name: String = conditionArmor.doTest(entity, slot)
             if (name.isNotBlank()) {

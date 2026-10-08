@@ -143,7 +143,7 @@ object AnimationDebugOverlay {
             renderDebugOverlay(font, guiGraphics, currentY, molangKey, molangValue, screenWidth, screenHeight)
         }
         DEBUG_LINES.forEach { str3 ->
-            val controller = geoEntity.getAnimationData().getAnimationControllerByName(str3)
+            val controller = geoEntity.animationData.getAnimationControllerByName(str3)
             renderDebugOverlay(
                 font,
                 guiGraphics,

@@ -23,7 +23,7 @@ open class GeckoVehicleEntity(
         vehicleModel?.let {
             it.controllerInitializer(this)
             expressionBuilder =
-                getAnimationData().getAnimationControllerByName(VehicleAnimationController.ORIGIN_CONTROLLER_KEY) as? VehicleRotationController
+                animationData.getAnimationControllerByName(VehicleAnimationController.ORIGIN_CONTROLLER_KEY) as? VehicleRotationController
         }
     }
 
@@ -50,7 +50,8 @@ open class GeckoVehicleEntity(
         expressionBuilder = null
     }
 
-    override fun getAnimationProcessor(): GeoModel = vehicleModel!!.model
+    override val animationProcessor: GeoModel
+        get() = vehicleModel!!.model
 
     override val textureLocation: Identifier
         get() = (renderShape as EntityModelWrapper).textureLocatable.getResourceLocation()

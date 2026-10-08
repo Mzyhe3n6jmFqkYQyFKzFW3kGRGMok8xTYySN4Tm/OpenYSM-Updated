@@ -67,7 +67,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
             }
         }
         preProcess(evaluator)
-        val manager = animatable.getAnimationData()
+        val manager = animatable.animationData
         currentEvaluator = evaluator
         currentSeekTime = seekTime
         for (controller in manager.getAnimationControllers()) {
@@ -244,7 +244,8 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
         }
     }
 
-    fun isDisabled(): Boolean = bones.isEmpty
+    val isDisabled: Boolean
+        get() = bones.isEmpty
 
     private fun preProcess(evaluator: ExpressionEvaluator<AnimationContext<*>>) {
         val it = pendingExpressions.iterator()

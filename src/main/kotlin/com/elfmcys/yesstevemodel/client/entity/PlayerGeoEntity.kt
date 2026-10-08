@@ -22,49 +22,39 @@ open class PlayerGeoEntity(
         modelAssembly?.animationBundle?.armControllerInstaller?.invoke(this)
     }
 
-    override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean {
-        return true
-    }
+    override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean = true
 
     override fun tickModel() {
-        if (playerCapability.modelAssembly != modelAssembly) {
-            modelId = playerCapability.modelId
-        }
+        if (playerCapability.modelAssembly == modelAssembly) return
+        modelId = playerCapability.modelId
     }
 
     override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper? =
         playerCapability.renderShape
 
-    override fun getAnimationEntries(str: String): AnimationController? {
-        return modelAssembly?.animationBundle?.animationEntries?.get(str)
-    }
+    override fun getAnimationEntries(str: String): AnimationController? =
+        modelAssembly?.animationBundle?.animationEntries?.get(str)
 
     override val textureLocation: Identifier
-        get() {
-            return playerCapability.textureLocation
-        }
+        get() = playerCapability.textureLocation
 
     override val heightScale: Float
-        get() {
-            return modelAssembly?.modelData?.modelProperties?.heightScale ?: 1.0f
-        }
+        get() = modelAssembly?.modelData?.modelProperties?.heightScale ?: 1.0f
 
     override val widthScale: Float
-        get() {
-            return modelAssembly?.modelData?.modelProperties?.widthScale ?: 1.0f
-        }
+        get() = modelAssembly?.modelData?.modelProperties?.widthScale ?: 1.0f
 
     override fun getAnimation(str: String): Animation? {
         return modelAssembly?.animationBundle?.armAnimations?.get(str)
     }
 
-    open fun getArmModelProcessor(): ArmorConditions? {
-        return modelAssembly?.animationBundle?.modelProcessor
-    }
+    open val armModelProcessor: ArmorConditions?
+        get() = modelAssembly?.animationBundle?.modelProcessor
 
-    override fun getAnimationProcessor(): GeoModel {
-        return modelAssembly!!.animationBundle.armModel
-    }
+    override val animationProcessor: GeoModel
+        get() {
+            return modelAssembly!!.animationBundle.armModel
+        }
 
     override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
         getEvaluationContext().setRoamingProperties(playerCapability.serverVarContainer)

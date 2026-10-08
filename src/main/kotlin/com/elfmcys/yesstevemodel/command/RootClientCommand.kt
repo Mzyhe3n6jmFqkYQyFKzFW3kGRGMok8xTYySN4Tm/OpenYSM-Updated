@@ -67,7 +67,7 @@ object RootClientCommand {
         if (commandContext.source is SharedSuggestionProvider && !PlatformAPI.isServer) {
             val geo = getActiveGeoModel() ?: return@register Suggestions.empty()
             val controllers = HashSet<String>()
-            for (controller in geo.getAnimationData().getAnimationControllers()) {
+            for (controller in geo.animationData.getAnimationControllers()) {
                 controllers.add(controller.name)
             }
             return@register SharedSuggestionProvider.suggest(controllers, suggestionsBuilder)
