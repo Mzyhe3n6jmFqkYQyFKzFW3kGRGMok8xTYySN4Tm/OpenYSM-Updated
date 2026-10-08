@@ -49,7 +49,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
     protected var needsReset: Boolean = false
     protected var modelInitialized: Boolean = false
     protected var animationStates: MutableMap<String, AnimationState> = Maps.newHashMap()
-    open val animationProcessor: AnimationProcessor<TEntity> = AnimationProcessor(this)
+    protected val animationProcessor: AnimationProcessor<TEntity> = AnimationProcessor(this)
     protected val rateLimiter: RateLimiter = RateLimiter().apply { setRefreshRate(refreshRate) }
     protected val defaultPhysicsManager: PhysicsManager = PhysicsManager()
 
