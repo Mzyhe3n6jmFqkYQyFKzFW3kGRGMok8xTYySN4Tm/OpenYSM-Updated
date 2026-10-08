@@ -36,16 +36,14 @@ import rip.ysm.compat.firstperson.FirstPersonCompat
 class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is LocalPlayer, true) {
     private val molangVarsMap: Int2ReferenceOpenHashMap<MolangVarHolder> = Int2ReferenceOpenHashMap(8)
     private var currentModelHashId: Int = 0
-    private var serverVarContainer2: Struct? = null
+    override var serverVarContainer: Struct? = null
+        private set
 
     override fun createPositionTracker(entity: Player): PlayerEntityFrameState =
         PlayerEntityFrameState(entity, entity is LocalPlayer)
 
     override val positionTracker: PlayerEntityFrameState
         get() = super.positionTracker as PlayerEntityFrameState
-
-    override val serverVarContainer: Struct?
-        get() = serverVarContainer2
 
     override fun onModelLoaded(modelAssembly: ModelAssembly) {
         super.onModelLoaded(modelAssembly)
@@ -64,18 +62,18 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
             val varHolder = molangVarsMap.get(currentModelHashId)
             varHolder?.currentVars?.let {
                 if (isLocalPlayerModel) {
-                    serverVarContainer2 = RoamingStruct(currentModelHashId, it)
+                    serverVarContainer = RoamingStruct(currentModelHashId, it)
                     return
                 } else {
-                    serverVarContainer2 = Int2FloatOpenHashMapStruct(it)
+                    serverVarContainer = Int2FloatOpenHashMapStruct(it)
                     return
                 }
             }
-            serverVarContainer2 = null
+            serverVarContainer = null
         }
 
     override fun reset() {
-        serverVarContainer2 = null
+        serverVarContainer = null
         super.reset()
     }
 
@@ -83,9 +81,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         super.applyHeadTracking(event, z)
         val model2 = currentModel
         if (model2 != null && isLocalPlayerModel && !event.isFirstPerson && FirstPersonCompat.isModLoaded) {
-            if (model2.allHeadBone != null) {
-                model2.allHeadBone.setHidden(FirstPersonCompat.shouldHideHead())
-            }
+            model2.allHeadBone?.setHidden(FirstPersonCompat.shouldHideHead())
             when {
                 model2.viewLocatorBone != null -> {
                     FirstPersonCompat.setCameraDistance(
@@ -114,11 +110,11 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     fun updateMolangVars(i: Int, int2FloatOpenHashMap: Int2FloatOpenHashMap) {
         val varHolder = molangVarsMap.computeIfAbsent(i) { MolangVarHolder() }
         if (isLocalPlayerModel) {
-            if (varHolder.currentVars == null || serverVarContainer2 == null) {
+            if (varHolder.currentVars == null || serverVarContainer == null) {
                 varHolder.currentVars = int2FloatOpenHashMap
                 varHolder.applyPendingDeltas()
                 if (i == currentModelHashId) {
-                    serverVarContainer2 = RoamingStruct(i, int2FloatOpenHashMap)
+                    serverVarContainer = RoamingStruct(i, int2FloatOpenHashMap)
                     clearAnimationControllers()
                     return
                 }
@@ -129,7 +125,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         varHolder.currentVars = int2FloatOpenHashMap
         varHolder.applyPendingDeltas()
         if (i == currentModelHashId) {
-            serverVarContainer2 = Int2FloatOpenHashMapStruct(int2FloatOpenHashMap)
+            serverVarContainer = Int2FloatOpenHashMapStruct(int2FloatOpenHashMap)
         }
     }
 
@@ -156,7 +152,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
 
     fun tickAnimations() {
         if (isLocalPlayerModel && currentModelHashId != 0) {
-            val struct = serverVarContainer2
+            val struct = serverVarContainer
             if (struct is RoamingStruct && struct.hasPendingChanges()) {
                 val syncBatch: RoamingSyncBatch = struct.consumePendingBoneData()
                 applyMolangDelta(syncBatch.modelHashId(), syncBatch.changedVariables())
@@ -204,7 +200,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         val holder = molangVarsMap[currentModelHashId]
         val vars = holder?.currentVars
         if (vars != null) {
-            serverVarContainer2 =
+            serverVarContainer =
                 if (isLocalPlayerModel) RoamingStruct(currentModelHashId, vars) else Int2FloatOpenHashMapStruct(vars)
         }
     }
