@@ -28,7 +28,7 @@ import org.joml.Vector3f
 @Suppress("unused")
 open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     private val animatable: T,
-    private val name: String,
+    override val name: String,
     private val transitionLengthTicks: Float
 ) : IAnimationController<T> {
     private var boneTargets: MutableList<BoneTopLevelSnapshot>? = null
@@ -103,18 +103,16 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         }
     }
 
-    override fun getName(): String = name
-
-    override fun getCurrentAnimation(): String {
-        val currEntry = currentEntry
-        if (currEntry != null) {
-            if (currEntry.subName != null && childController != null) {
-                return childController?.getCurrentAnimation() ?: "(null)"
+    override val currentAnimation: String
+        get() {
+            val currEntry = currentEntry
+            if (currEntry != null) {
+                if (currEntry.subName != null && childController != null)
+                    return childController?.currentAnimation ?: "(null)"
+                return displayName ?: "(null)"
             }
-            return displayName ?: "(null)"
+            return "(null)"
         }
-        return "(null)"
-    }
 
     private fun updateDisplayName(stateName: String) {
         displayName = if (depth > 1) "[$parentName] $stateName" else stateName
@@ -339,7 +337,8 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         private val scaleLerpTmp: Vector3f = Vector3f()
         private val rotScratch: EulerNlerpScratch = EulerNlerpScratch()
 
-        fun getBoneId(): Int = boneTarget.boneId
+        val boneId: Int
+            get() = boneTarget.boneId
 
         fun addBlendSource(evaluator: ConditionalEvaluator, queue: BoneAnimationQueue) {
             blendSources.add(Pair.of(evaluator, queue))
@@ -393,7 +392,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                                 offsetPoint = animationPoint.getOffsetPoint()
                                 lerpFactor = animationPoint.getLerpFactor()
                                 transitionVector3f.setPercentCompleted(0.0f)
-                                initialRotation = boneQueue.topLevelSnapshot.bone.getInitialRotation()
+                                initialRotation = boneQueue.topLevelSnapshot.bone.initialRotation
                             }
                         }
                         if (!isTransition) {

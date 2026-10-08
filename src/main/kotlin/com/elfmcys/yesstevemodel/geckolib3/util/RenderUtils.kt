@@ -11,33 +11,33 @@ import org.joml.Quaternionf
 object RenderUtils {
     @JvmStatic
     fun translateMatrixToBone(poseStack: PoseStack, bone: IBone) {
-        poseStack.translate(-bone.getPositionX() / 16.0f, bone.getPositionY() / 16.0f, bone.getPositionZ() / 16.0f)
+        poseStack.translate(-bone.positionX / 16.0f, bone.positionY / 16.0f, bone.positionZ / 16.0f)
     }
 
     @JvmStatic
     fun rotateMatrixAroundBone(poseStack: PoseStack, bone: IBone) {
-        if (bone.getRotationZ() != 0.0f || bone.getRotationY() != 0.0f || bone.getRotationX() != 0.0f) {
-            poseStack.mulPose(Quaternionf().rotateZYX(bone.getRotationZ(), bone.getRotationY(), bone.getRotationX()))
+        if (bone.rotationZ != 0.0f || bone.rotationY != 0.0f || bone.rotationX != 0.0f) {
+            poseStack.mulPose(Quaternionf().rotateZYX(bone.rotationZ, bone.rotationY, bone.rotationX))
         }
     }
 
     @JvmStatic
     fun scaleMatrixForBone(poseStack: PoseStack, bone: IBone): Boolean {
-        val scaleX = bone.getScaleX()
-        val scaleY = bone.getScaleY()
-        val scaleZ = bone.getScaleZ()
+        val scaleX = bone.scaleX
+        val scaleY = bone.scaleY
+        val scaleZ = bone.scaleZ
         poseStack.scale(scaleX, scaleY, scaleZ)
         return scaleX == 0.0f && scaleY == 0.0f && scaleZ == 0.0f
     }
 
     @JvmStatic
     fun translateToPivotPoint(poseStack: PoseStack, bone: IBone) {
-        poseStack.translate(bone.getPivotX() / 16.0f, bone.getPivotY() / 16.0f, bone.getPivotZ() / 16.0f)
+        poseStack.translate(bone.pivotX / 16.0f, bone.pivotY / 16.0f, bone.pivotZ / 16.0f)
     }
 
     @JvmStatic
     fun translateAwayFromPivotPoint(poseStack: PoseStack, bone: IBone) {
-        poseStack.translate(-bone.getPivotX() / 16.0f, -bone.getPivotY() / 16.0f, -bone.getPivotZ() / 16.0f)
+        poseStack.translate(-bone.pivotX / 16.0f, -bone.pivotY / 16.0f, -bone.pivotZ / 16.0f)
     }
 
     @JvmStatic

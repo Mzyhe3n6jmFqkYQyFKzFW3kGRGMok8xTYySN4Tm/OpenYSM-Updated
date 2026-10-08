@@ -14,21 +14,21 @@ object MaidBoneBridge {
     @JvmStatic
     fun createLocationBone(bone: AnimatedGeoBone): ILocationBone {
         return object : ILocationBone {
-            override fun getRotationX(): Float = bone.getRotationX()
-            override fun getRotationY(): Float = bone.getRotationY()
-            override fun getRotationZ(): Float = bone.getRotationZ()
+            override fun getRotationX(): Float = bone.rotationX
+            override fun getRotationY(): Float = bone.rotationY
+            override fun getRotationZ(): Float = bone.rotationZ
 
-            override fun getPositionX(): Float = bone.getPositionX()
-            override fun getPositionY(): Float = bone.getPositionY()
-            override fun getPositionZ(): Float = bone.getPositionZ()
+            override fun getPositionX(): Float = bone.positionX
+            override fun getPositionY(): Float = bone.positionY
+            override fun getPositionZ(): Float = bone.positionZ
 
-            override fun getScaleX(): Float = bone.getScaleX()
-            override fun getScaleY(): Float = bone.getScaleY()
-            override fun getScaleZ(): Float = bone.getScaleZ()
+            override fun getScaleX(): Float = bone.scaleX
+            override fun getScaleY(): Float = bone.scaleY
+            override fun getScaleZ(): Float = bone.scaleZ
 
-            override fun getPivotX(): Float = bone.getPivotX()
-            override fun getPivotY(): Float = bone.getPivotY()
-            override fun getPivotZ(): Float = bone.getPivotZ()
+            override fun getPivotX(): Float = bone.pivotX
+            override fun getPivotY(): Float = bone.pivotY
+            override fun getPivotZ(): Float = bone.pivotZ
         }
     }
 

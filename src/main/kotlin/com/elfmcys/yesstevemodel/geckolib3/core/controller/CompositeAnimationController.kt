@@ -11,7 +11,7 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 
 open class CompositeAnimationController<T : AnimatableEntity<*>>(
     private val animatable: T,
-    private val name: String,
+    override val name: String,
     transitionLengthTicks: Float,
     predicate: IAnimationPredicate<*>,
     deprecatedMode: Boolean = false
@@ -23,14 +23,12 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
     private var initialized: Boolean = false
     private var activeController: IAnimationController<T> = controller
 
-    override fun getName(): String = name
-
-    override fun getCurrentAnimation(): String {
-        if (initialized) {
-            return if (animationRuntime.isBuiltinAnimation()) "[builtin] " + controller.getCurrentAnimation() else animationRuntime.getCurrentAnimation()
+    override val currentAnimation: String
+        get() {
+            if (initialized)
+                return if (animationRuntime.isBuiltinAnimation()) "[builtin] " + controller.currentAnimation else animationRuntime.currentAnimation
+            return controller.currentAnimation
         }
-        return controller.getCurrentAnimation()
-    }
 
     override fun init(
         list: MutableList<BoneTopLevelSnapshot>,
@@ -82,7 +80,8 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
         activeController.forEachTransform(consumer)
     }
 
-    override fun isDeprecatedMode(): Boolean = activeController.isDeprecatedMode()
+    override val isDeprecatedMode: Boolean
+        get() = activeController.isDeprecatedMode
 
     override fun reset() {
         if (initialized) {

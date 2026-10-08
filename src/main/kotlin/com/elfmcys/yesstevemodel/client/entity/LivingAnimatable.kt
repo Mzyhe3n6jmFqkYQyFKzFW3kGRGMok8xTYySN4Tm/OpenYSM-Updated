@@ -36,16 +36,16 @@ abstract class LivingAnimatable<T : LivingEntity>(
     private var forceDisabled: Boolean = false
     private var extraRenderFlag: Boolean = false
 
-    override fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<T>>, wasAnimEvaluated: Boolean) {
+    override fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<T>>, z: Boolean) {
         val model = currentModel
         if (model != null && model.headBones().isNotEmpty()) {
             val bone = model.headBones()[model.headBones().size - 1]
-            if (wasAnimEvaluated) {
-                armorBoneOffset.set(bone.getRotationX(), bone.getRotationY())
+            if (z) {
+                armorBoneOffset.set(bone.rotationX, bone.rotationY)
             }
             val data = event.modelData
-            bone.setRotationX(armorBoneOffset.x + Math.toRadians(data.headPitch.toDouble()).toFloat())
-            bone.setRotationY(armorBoneOffset.y + Math.toRadians(data.netHeadYaw.toDouble()).toFloat())
+            bone.rotationX = armorBoneOffset.x + Math.toRadians(data.headPitch.toDouble()).toFloat()
+            bone.rotationY = armorBoneOffset.y + Math.toRadians(data.netHeadYaw.toDouble()).toFloat()
         }
     }
 
@@ -53,8 +53,8 @@ abstract class LivingAnimatable<T : LivingEntity>(
         val model = currentModel
         if (model != null && model.headBones().isNotEmpty()) {
             val bone = model.headBones()[model.headBones().size - 1]
-            bone.setRotationX(armorBoneOffset.x)
-            bone.setRotationY(armorBoneOffset.y)
+            bone.rotationX = armorBoneOffset.x
+            bone.rotationY = armorBoneOffset.y
         }
     }
 
@@ -83,10 +83,10 @@ abstract class LivingAnimatable<T : LivingEntity>(
 
     open fun isModelActive(): Boolean = isModelInitialized() && !forceDisabled
 
-    override fun onModelLoaded(context: ModelAssembly) {
-        super.onModelLoaded(context)
+    override fun onModelLoaded(modelAssembly: ModelAssembly) {
+        super.onModelLoaded(modelAssembly)
         updateCurrentTexture()
-        val values = context.expressionCache.events[MolangEventDispatcher.PLAYER_UPDATE]
+        val values = modelAssembly.expressionCache.events[MolangEventDispatcher.PLAYER_UPDATE]
         playerUpdateIValue =
             if (values != null) MolangEventDispatcher.createUpdateExpression(values, updateExpressionArgs) else null
     }
@@ -95,7 +95,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
         super.setCurrentModel(model)
         if (model != null && model.headBones().isNotEmpty()) {
             val bone = model.headBones()[model.headBones().size - 1]
-            armorBoneOffset.set(bone.getRotationX(), bone.getRotationY())
+            armorBoneOffset.set(bone.rotationX, bone.rotationY)
         }
     }
 
@@ -202,6 +202,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
         this.extraRenderFlag = extraRenderFlag
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     open inner class TexturedModelWrapper(
         modelAssembly: ModelAssembly,
         isActive: Boolean,
@@ -217,12 +218,12 @@ abstract class LivingAnimatable<T : LivingEntity>(
             val abstractTexture =
                 modelAssembly.animationBundle.textures[this@LivingAnimatable.currentTextureName]
                     ?: modelAssembly.animationBundle.defaultTexture
-            currentTexture = (if (abstractTexture != null)
+            currentTexture = if (abstractTexture != null)
                 UploadManager.getOrCreateLocatableWithSize(
                     abstractTexture,
                     registerImmediately,
                     textureResolution
-                ) else null)
+                ) else null
             if (collectAllTextures) {
                 val list = ArrayList<IResourceLocatable>()
                 for (texture in modelAssembly.animationBundle.textures.values)

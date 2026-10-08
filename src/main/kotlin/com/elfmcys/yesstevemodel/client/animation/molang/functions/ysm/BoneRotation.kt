@@ -9,8 +9,8 @@ class BoneRotation : BoneParamFunction() {
     }
 
     class BoneRotationStruct(private val boneTransform: IBone) : Vec3fStruct() {
-        override fun getX(): Float = -Math.toDegrees(boneTransform.getRotationX().toDouble()).toFloat()
-        override fun getY(): Float = -Math.toDegrees(boneTransform.getRotationY().toDouble()).toFloat()
-        override fun getZ(): Float = Math.toDegrees(boneTransform.getRotationZ().toDouble()).toFloat()
+        override fun getX(): Float = -Math.toDegrees(boneTransform.rotationX.toDouble()).toFloat()
+        override fun getY(): Float = -Math.toDegrees(boneTransform.rotationY.toDouble()).toFloat()
+        override fun getZ(): Float = Math.toDegrees(boneTransform.rotationZ.toDouble()).toFloat()
     }
 }

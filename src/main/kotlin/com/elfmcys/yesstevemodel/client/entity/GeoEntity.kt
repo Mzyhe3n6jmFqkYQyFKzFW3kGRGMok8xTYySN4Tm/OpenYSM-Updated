@@ -197,11 +197,11 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
         }
     }
 
-    override fun processAnimationImpl(partialTick: Float, isFirstPerson: Boolean): AnimationEvent<*>? {
+    override fun processAnimationImpl(partialTick: Float, z: Boolean): AnimationEvent<*>? {
         RenderSystem.assertOnRenderThread()
-        if (isFirstPerson && modelDeferred != null) return awaitAsyncResult()
+        if (z && modelDeferred != null) return awaitAsyncResult()
         awaitAsyncResult()
-        return super.processAnimationImpl(partialTick, isFirstPerson)
+        return super.processAnimationImpl(partialTick, z)
     }
 
     open fun awaitAsyncResult(): AnimationEvent<*>? {

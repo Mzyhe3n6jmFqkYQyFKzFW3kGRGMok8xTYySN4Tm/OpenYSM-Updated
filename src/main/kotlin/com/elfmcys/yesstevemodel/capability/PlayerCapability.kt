@@ -38,7 +38,8 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     private var currentModelHashId: Int = 0
     private var serverVarContainer: Struct? = null
 
-    override fun createPositionTracker(t: Player): PlayerEntityFrameState = PlayerEntityFrameState(t, t is LocalPlayer)
+    override fun createPositionTracker(entity: Player): PlayerEntityFrameState =
+        PlayerEntityFrameState(entity, entity is LocalPlayer)
 
     override fun getPositionTracker(): PlayerEntityFrameState = super.getPositionTracker() as PlayerEntityFrameState
 
@@ -84,13 +85,13 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
             when {
                 model2.viewLocatorBone() != null -> {
                     FirstPersonCompat.setCameraDistance(
-                        (model2.viewLocatorBone() ?: return).getPivotY() * getWidthScale()
+                        (model2.viewLocatorBone() ?: return).pivotY * getWidthScale()
                     )
                 }
 
                 wasAnimEvaluated && model2.headBones().isNotEmpty() -> {
                     val bone = model2.headBones()[model2.headBones().size - 1]
-                    FirstPersonCompat.setCameraDistance(bone.getPivotY() * getWidthScale())
+                    FirstPersonCompat.setCameraDistance(bone.pivotY * getWidthScale())
                 }
             }
         }

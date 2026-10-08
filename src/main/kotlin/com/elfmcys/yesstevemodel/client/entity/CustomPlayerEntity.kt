@@ -63,9 +63,9 @@ abstract class CustomPlayerEntity(
         return isLocalPlayer
     }
 
-    override fun onModelLoaded(context: ModelAssembly) {
-        super.onModelLoaded(context)
-        syncIValues = context.expressionCache.events[MolangEventDispatcher.SYNC]
+    override fun onModelLoaded(modelAssembly: ModelAssembly) {
+        super.onModelLoaded(modelAssembly)
+        syncIValues = modelAssembly.expressionCache.events[MolangEventDispatcher.SYNC]
     }
 
     open fun requestModelSwitch(str: String) {

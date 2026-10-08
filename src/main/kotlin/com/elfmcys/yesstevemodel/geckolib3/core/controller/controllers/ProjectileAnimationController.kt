@@ -23,17 +23,17 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 object ProjectileAnimationController {
     object ProjectileAnimationDataProvider : AnimationDataProvider<ProjectileModelBundle> {
         override fun getAnimationEntries(
-            modelBundle: ProjectileModelBundle,
+            t: ProjectileModelBundle,
             resourceBundle: ModelResourceBundle
-        ): Object2ReferenceMap<String, AnimationController> = modelBundle.animationControllers
+        ): Object2ReferenceMap<String, AnimationController> = t.animationControllers
 
         override fun getAnimations(
-            modelBundle: ProjectileModelBundle,
+            t: ProjectileModelBundle,
             resourceBundle: ModelResourceBundle
-        ): Object2ReferenceMap<String, Animation> = modelBundle.animations
+        ): Object2ReferenceMap<String, Animation> = t.animations
 
         override fun getConditionArmor(
-            modelBundle: ProjectileModelBundle,
+            t: ProjectileModelBundle,
             resourceBundle: ModelResourceBundle
         ): ConditionArmor? = null
     }
