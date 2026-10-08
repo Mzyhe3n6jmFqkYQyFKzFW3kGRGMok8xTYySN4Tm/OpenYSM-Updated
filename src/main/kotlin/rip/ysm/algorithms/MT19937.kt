@@ -45,9 +45,7 @@ class MT19937(seed: Long = System.currentTimeMillis()) {
         return y
     }
 
-    fun random(): Double {
-        return (extract_number() ushr 1).toDouble() / Long.MAX_VALUE.toDouble()
-    }
+    fun random(): Double = (extract_number() ushr 1).toDouble() / Long.MAX_VALUE.toDouble()
 
     fun randint(x: Int): Int {
         require(x > 0) { "n debe ser mayor a 0" }
@@ -75,9 +73,8 @@ class MT19937(seed: Long = System.currentTimeMillis()) {
         return randint(max - min) + min
     }
 
-    fun getSeed(): Long {
-        return mt[0]
-    }
+    val seed: Long
+        get() = mt[0]
 
     @Suppress("ConstPropertyName")
     companion object {
