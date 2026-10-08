@@ -57,7 +57,7 @@ class MainHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
                 i
             )
         }
-        val frameState: LivingEntityFrameState<*> = animatable.getPositionTracker()
+        val frameState: LivingEntityFrameState<*> = animatable.positionTracker
         if (!isSameItem(mainHandItem, frameState, InteractionHand.MAIN_HAND)) {
             frameState.setHandItemsForAnimation(mainHandItem, InteractionHand.MAIN_HAND)
             event.getController()?.stopTransition()

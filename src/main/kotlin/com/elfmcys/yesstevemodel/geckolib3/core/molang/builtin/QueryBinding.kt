@@ -49,7 +49,7 @@ object QueryBinding : ContextBinding() {
         `var`("moon_phase", { ctx -> (((ctx.level()?.dayTime ?: 0L) / 24000L % 8L).toInt()) })
         `var`("time_of_day", { ctx -> MolangUtils.normalizeTime(ctx.level()?.dayTime ?: 0L) })
         `var`("time_stamp", { ctx -> ctx.level()?.dayTime ?: 0L })
-        `var`("delta_time", { ctx -> ctx.geoInstance().getPositionTracker().getTimeDelta() / 20.0f })
+        `var`("delta_time", { ctx -> ctx.geoInstance().positionTracker.getTimeDelta() / 20.0f })
 
         entityVar("yaw_speed", QueryBinding::getYawSpeed)
         entityVar("cardinal_facing_2d", { ctx -> ctx.entity().direction.get3DDataValue() })
@@ -98,7 +98,7 @@ object QueryBinding : ContextBinding() {
         val geoInstance = context.geoInstance()
         if (geoInstance is PlayerCapability) {
             if (!geoInstance.isLocalPlayerModel) {
-                return geoInstance.getPositionTracker().isFlying()
+                return geoInstance.positionTracker.isFlying()
             }
         }
         return context.entity().abilities.flying
@@ -109,7 +109,7 @@ object QueryBinding : ContextBinding() {
         val geoInstance = context.geoInstance()
         if (geoInstance is PlayerCapability) {
             if (!geoInstance.isLocalPlayerModel) {
-                return geoInstance.getPositionTracker().experienceLevel
+                return geoInstance.positionTracker.experienceLevel
             }
         }
         return context.entity().experienceLevel
@@ -120,7 +120,7 @@ object QueryBinding : ContextBinding() {
         val geoInstance = context.geoInstance()
         if (geoInstance is PlayerCapability) {
             if (!geoInstance.isLocalPlayerModel) {
-                return geoInstance.getPositionTracker().health
+                return geoInstance.positionTracker.health
             }
         }
         return context.entity().health
@@ -131,7 +131,7 @@ object QueryBinding : ContextBinding() {
         val geoInstance = context.geoInstance()
         if (geoInstance is PlayerCapability) {
             if (!geoInstance.isLocalPlayerModel) {
-                return geoInstance.getPositionTracker().maxHealth
+                return geoInstance.positionTracker.maxHealth
             }
         }
         return context.entity().maxHealth
@@ -178,7 +178,7 @@ object QueryBinding : ContextBinding() {
 
     @JvmStatic
     fun getVerticalSpeed(context: IContext<Entity>): Float {
-        val positionTracker: EntityFrameStateTracker<*> = context.geoInstance().getPositionTracker()
+        val positionTracker: EntityFrameStateTracker<*> = context.geoInstance().positionTracker
         return 20.0f * positionTracker.getPositionDelta().y.toFloat() / positionTracker.getTimeDelta()
     }
 

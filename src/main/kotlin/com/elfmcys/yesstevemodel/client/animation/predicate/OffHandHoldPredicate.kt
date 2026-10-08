@@ -30,7 +30,7 @@ class OffHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
                 ILoopType.EDefaultLoopTypes.LOOP,
                 i
             )
-        val frameState: LivingEntityFrameState<*> = animatable.getPositionTracker()
+        val frameState: LivingEntityFrameState<*> = animatable.positionTracker
         if (!isSameItem(itemInHand, frameState, InteractionHand.OFF_HAND)) {
             frameState.setHandItemsForAnimation(itemInHand, InteractionHand.OFF_HAND)
             event.getController()?.stopTransition()

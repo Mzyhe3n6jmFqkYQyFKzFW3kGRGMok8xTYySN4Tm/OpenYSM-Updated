@@ -41,7 +41,8 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     override fun createPositionTracker(entity: Player): PlayerEntityFrameState =
         PlayerEntityFrameState(entity, entity is LocalPlayer)
 
-    override fun getPositionTracker(): PlayerEntityFrameState = super.getPositionTracker() as PlayerEntityFrameState
+    override val positionTracker: PlayerEntityFrameState
+        get() = super.positionTracker as PlayerEntityFrameState
 
     override fun getServerVarContainer(): Struct? = serverVarContainer
 
@@ -55,29 +56,31 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         super.clearModel()
     }
 
-    override fun setCurrentModel(model: AnimatedGeoModel?) {
-        super.setCurrentModel(model)
-        val varHolder = molangVarsMap.get(currentModelHashId)
-        varHolder?.currentVars?.let {
-            if (isLocalPlayerModel) {
-                serverVarContainer = RoamingStruct(currentModelHashId, it)
-                return
-            } else {
-                serverVarContainer = Int2FloatOpenHashMapStruct(it)
-                return
+    override var currentModel: AnimatedGeoModel?
+        get() = super.currentModel
+        set(value) {
+            super.currentModel = value
+            val varHolder = molangVarsMap.get(currentModelHashId)
+            varHolder?.currentVars?.let {
+                if (isLocalPlayerModel) {
+                    serverVarContainer = RoamingStruct(currentModelHashId, it)
+                    return
+                } else {
+                    serverVarContainer = Int2FloatOpenHashMapStruct(it)
+                    return
+                }
             }
+            serverVarContainer = null
         }
-        serverVarContainer = null
-    }
 
     override fun reset() {
         serverVarContainer = null
         super.reset()
     }
 
-    override fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<Player>>, wasAnimEvaluated: Boolean) {
-        super.applyHeadTracking(event, wasAnimEvaluated)
-        val model2 = getCurrentModel()
+    override fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<Player>>, z: Boolean) {
+        super.applyHeadTracking(event, z)
+        val model2 = currentModel
         if (model2 != null && isLocalPlayerModel && !event.isFirstPerson() && FirstPersonCompat.isModLoaded) {
             if (model2.allHeadBone() != null) {
                 model2.allHeadBone()?.setHidden(FirstPersonCompat.shouldHideHead())
@@ -85,13 +88,13 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
             when {
                 model2.viewLocatorBone() != null -> {
                     FirstPersonCompat.setCameraDistance(
-                        (model2.viewLocatorBone() ?: return).pivotY * getWidthScale()
+                        (model2.viewLocatorBone() ?: return).pivotY * widthScale
                     )
                 }
 
-                wasAnimEvaluated && model2.headBones().isNotEmpty() -> {
+                z && model2.headBones().isNotEmpty() -> {
                     val bone = model2.headBones()[model2.headBones().size - 1]
-                    FirstPersonCompat.setCameraDistance(bone.pivotY * getWidthScale())
+                    FirstPersonCompat.setCameraDistance(bone.pivotY * widthScale)
                 }
             }
         }
@@ -99,7 +102,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
 
     override fun resetHeadTracking(wasAnimEvaluated: Boolean) {
         super.resetHeadTracking(wasAnimEvaluated)
-        val model2 = getCurrentModel()
+        val model2 = currentModel
         if (model2 != null && isLocalPlayerModel) {
             if ((FirstPersonCompat.isModLoaded || BetterCombatCompat.isModLoaded) && model2.allHeadBone() != null) {
                 model2.allHeadBone()?.setHidden(false)

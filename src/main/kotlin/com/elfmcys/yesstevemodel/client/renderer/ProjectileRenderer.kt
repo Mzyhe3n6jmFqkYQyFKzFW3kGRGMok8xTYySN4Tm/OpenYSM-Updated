@@ -34,6 +34,6 @@ open class ProjectileRenderer(context: EntityRendererProvider.Context) :
     }
 
     open fun getTextureLocation(projectile: Projectile): Identifier {
-        return ProjectileCapability[projectile]?.getTextureLocation() ?: MissingTextureAtlasSprite.getLocation()
+        return ProjectileCapability[projectile]?.textureLocation ?: MissingTextureAtlasSprite.getLocation()
     }
 }

@@ -161,12 +161,12 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
         preRenderCallback(poseStack)
         poseStack.translate(0.0f, 0.01f, 0.0f)
 
-        val geoModel = animatable.getCurrentModel() ?: run {
+        val geoModel = animatable.currentModel ?: run {
             poseStack.popPose()
             return
         }
         val textureIndex = animatable.getTextureIndex()
-        val texture = animatable.getTextureLocation()
+        val texture = animatable.textureLocation
         val bodyVisible = !vanillaState.isInvisible
         val renderType = getRenderType(
             texture,
