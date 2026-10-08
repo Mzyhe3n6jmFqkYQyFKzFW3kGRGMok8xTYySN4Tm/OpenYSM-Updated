@@ -165,7 +165,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
         }
 
     override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean =
-        event.isFirstPerson() || OculusCompat.isPBRActive()
+        event.isFirstPerson || OculusCompat.isPBRActive()
 
     override fun resolveExpression(str: String): IValue? = modelAssembly?.expressionCache?.functions?.get(str)
 

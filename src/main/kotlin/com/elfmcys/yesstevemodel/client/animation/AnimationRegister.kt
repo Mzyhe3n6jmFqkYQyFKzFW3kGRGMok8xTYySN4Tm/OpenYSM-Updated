@@ -33,7 +33,7 @@ object AnimationRegister {
             Priority.HIGHEST
         ) { player, _ -> player.onClimbable() && getVerticalSpeed(player) < 0.0f }
         register("fly", Priority.HIGH) { player, event ->
-            val animatable = event.getAnimatable()
+            val animatable = event.animatable
             if (animatable is PlayerCapability) {
                 if (!animatable.isLocalPlayerModel) {
                     return@register animatable.positionTracker.isFlying

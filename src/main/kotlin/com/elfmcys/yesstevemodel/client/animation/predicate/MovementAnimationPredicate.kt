@@ -9,7 +9,7 @@ import kotlin.math.sqrt
 
 class MovementAnimationPredicate : IAnimationPredicate<GeckoVehicleEntity> {
     override fun predicate(event: AnimationEvent<GeckoVehicleEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val entity = event.getAnimatable().entity
+        val entity = event.animatable.entity
         val deltaMovement = entity.deltaMovement
         if (sqrt(deltaMovement.x * deltaMovement.x + deltaMovement.z * deltaMovement.z) > 0.05) {
             return IAnimationPredicate.predicate(event, "forward")

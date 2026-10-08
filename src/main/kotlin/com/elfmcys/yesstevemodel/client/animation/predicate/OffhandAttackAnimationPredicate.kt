@@ -10,7 +10,7 @@ import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 
 class OffhandAttackAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>> {
     override fun predicate(event: AnimationEvent<LivingAnimatable<*>>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val animatable = event.getAnimatable()
+        val animatable = event.animatable
         val livingEntity = animatable.entity
         if (animatable is IPreviewAnimatable) return PlayState.STOP
         val firstPassenger = livingEntity.firstPassenger

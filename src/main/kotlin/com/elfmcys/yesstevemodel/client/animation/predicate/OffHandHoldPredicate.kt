@@ -17,7 +17,7 @@ import net.minecraft.world.item.Items
 
 class OffHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
     override fun predicate(event: AnimationEvent<LivingAnimatable<*>>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val animatable = event.getAnimatable()
+        val animatable = event.animatable
         val entity: LivingEntity = animatable.entity
         if (animatable is IPreviewAnimatable) return PlayState.STOP
         if (!checkSwingAndUse(entity, InteractionHand.OFF_HAND)) return PlayState.PAUSE
@@ -33,7 +33,7 @@ class OffHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
         val frameState: LivingEntityFrameState<*> = animatable.positionTracker
         if (!isSameItem(itemInHand, frameState, InteractionHand.OFF_HAND)) {
             frameState.setHandItemsForAnimation(itemInHand, InteractionHand.OFF_HAND)
-            event.getController()?.stopTransition()
+            event.controller?.stopTransition()
         }
         val conditionHold: ConditionHold? = animatable.modelConfig?.holdOffhand
         val str: String? = conditionHold?.doTest(entity, InteractionHand.OFF_HAND)

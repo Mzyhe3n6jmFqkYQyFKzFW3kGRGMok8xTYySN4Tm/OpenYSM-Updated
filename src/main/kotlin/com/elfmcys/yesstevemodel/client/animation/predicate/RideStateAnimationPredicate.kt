@@ -8,7 +8,7 @@ import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 
 class RideStateAnimationPredicate : IAnimationPredicate<GeckoVehicleEntity> {
     override fun predicate(event: AnimationEvent<GeckoVehicleEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val entity = event.getAnimatable().entity
+        val entity = event.animatable.entity
         if (entity.passengers.isNotEmpty()) return IAnimationPredicate.predicate(event, "has_ride")
         return IAnimationPredicate.predicate(event, "not_ride")
     }

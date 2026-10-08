@@ -47,7 +47,7 @@ abstract class CustomPlayerEntity(
     }
 
     override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean =
-        event.isFirstPerson() || !isLocalPlayer && OculusCompat.isPBRActive()
+        event.isFirstPerson || !isLocalPlayer && OculusCompat.isPBRActive()
 
     override val serverVarContainer: Struct?
         get() = null

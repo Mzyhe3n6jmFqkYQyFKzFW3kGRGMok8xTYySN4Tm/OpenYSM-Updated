@@ -56,8 +56,8 @@ object QueryBinding : ContextBinding() {
         entityVar("distance_from_camera") { ctx ->
             ctx.mc().gameRenderer.mainCamera.position().distanceTo(ctx.entity().position())
         }
-        entityVar("eye_target_x_rotation") { ctx -> ctx.entity().getViewXRot(ctx.animationEvent().getPartialTick()) }
-        entityVar("eye_target_y_rotation") { ctx -> ctx.entity().getViewYRot(ctx.animationEvent().getPartialTick()) }
+        entityVar("eye_target_x_rotation") { ctx -> ctx.entity().getViewXRot(ctx.animationEvent().partialTick) }
+        entityVar("eye_target_y_rotation") { ctx -> ctx.entity().getViewYRot(ctx.animationEvent().partialTick) }
         entityVar("ground_speed") { ctx -> getGroundSpeed(ctx.entity()) }
         entityVar("modified_distance_moved") { ctx -> ctx.entity().moveDist }
         entityVar("vertical_speed", QueryBinding::getVerticalSpeed)
@@ -76,7 +76,7 @@ object QueryBinding : ContextBinding() {
 
         livingEntityVar("body_x_rotation") { ctx ->
             Mth.lerp(
-                ctx.animationEvent().getFrameTime(),
+                ctx.animationEvent().frameTime,
                 ctx.entity().xRotO,
                 ctx.entity().xRot
             )
@@ -84,7 +84,7 @@ object QueryBinding : ContextBinding() {
         livingEntityVar("body_y_rotation") { ctx ->
             Mth.wrapDegrees(
                 Mth.lerp(
-                    ctx.animationEvent().getPartialTick(),
+                    ctx.animationEvent().partialTick,
                     ctx.entity().yBodyRotO,
                     ctx.entity().yBodyRot
                 )
@@ -189,7 +189,7 @@ object QueryBinding : ContextBinding() {
 
     @JvmStatic
     fun getCapeFlapAmount(context: IContext<Player>): Float {
-        val gameTime: Float = context.animationEvent().getFrameTime()
+        val gameTime: Float = context.animationEvent().frameTime
         val player: Player = context.entity()
         val ap: AbstractClientPlayer = player as AbstractClientPlayer
         val fLerp: Float = (ap.avatarState().getInterpolatedCloakX(gameTime) - Mth.lerp(

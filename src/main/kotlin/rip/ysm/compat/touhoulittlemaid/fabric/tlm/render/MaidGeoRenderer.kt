@@ -133,7 +133,7 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
             return
         }
 
-        val modelData = event.getModelData()
+        val modelData = event.modelData
         dispatchedMat.set(poseStack.last().pose())
         currentModelRenderCycle = EModelRenderCycle.INITIAL
 

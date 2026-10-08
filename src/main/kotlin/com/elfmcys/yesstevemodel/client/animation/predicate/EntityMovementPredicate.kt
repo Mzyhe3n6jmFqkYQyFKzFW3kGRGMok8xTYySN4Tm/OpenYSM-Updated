@@ -9,7 +9,7 @@ import net.minecraft.world.entity.Entity
 
 class EntityMovementPredicate : IAnimationPredicate<GeckoVehicleEntity> {
     override fun predicate(event: AnimationEvent<GeckoVehicleEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val entity: Entity? = event.getAnimatable().entity
+        val entity: Entity = event.animatable.entity
         if (entity == null) {
             return PlayState.STOP
         }

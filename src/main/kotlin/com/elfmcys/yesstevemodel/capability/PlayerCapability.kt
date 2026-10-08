@@ -82,7 +82,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     override fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<Player>>, z: Boolean) {
         super.applyHeadTracking(event, z)
         val model2 = currentModel
-        if (model2 != null && isLocalPlayerModel && !event.isFirstPerson() && FirstPersonCompat.isModLoaded) {
+        if (model2 != null && isLocalPlayerModel && !event.isFirstPerson && FirstPersonCompat.isModLoaded) {
             if (model2.allHeadBone() != null) {
                 model2.allHeadBone()?.setHidden(FirstPersonCompat.shouldHideHead())
             }

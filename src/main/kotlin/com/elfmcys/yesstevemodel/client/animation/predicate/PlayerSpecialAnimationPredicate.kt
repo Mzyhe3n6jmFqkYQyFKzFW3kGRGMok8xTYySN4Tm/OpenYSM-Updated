@@ -12,7 +12,7 @@ import rip.ysm.compat.parcool.ParcoolCompat
 
 class PlayerSpecialAnimationPredicate : IAnimationPredicate<CustomPlayerEntity> {
     override fun predicate(event: AnimationEvent<CustomPlayerEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val animatable = event.getAnimatable()
+        val animatable = event.animatable
         val player = animatable.entity
         if (animatable is IPreviewAnimatable) return PlayState.STOP
         val str = ParcoolCompat.getActionName(player)

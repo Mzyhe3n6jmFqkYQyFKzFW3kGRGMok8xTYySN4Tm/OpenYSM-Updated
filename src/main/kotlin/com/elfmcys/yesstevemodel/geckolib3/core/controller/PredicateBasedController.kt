@@ -43,12 +43,12 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
         evaluator: ExpressionEvaluator<AnimationContext<*>>,
         isSomething: Boolean
     ) {
-        event.setController(this)
+        event.controller = this
         var playState = handleSoundExpression(evaluator)
         if (playState == null) {
             playState = predicate.predicate(event, evaluator)
         }
-        event.setController(null)
+        event.controller = null
         when (playState) {
             PlayState.CONTINUE -> {
                 transitionInterpolator.process(event.currentTick, evaluator, isSomething)
@@ -73,7 +73,7 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
                 needsReset = true
             }
         }
-        event.getAnimatable().setAnimationState(name, transitionInterpolator.animationState)
+        event.animatable.setAnimationState(name, transitionInterpolator.animationState)
     }
 
     private fun handleSoundExpression(expressionEvaluator: ExpressionEvaluator<AnimationContext<*>>): PlayState? {
@@ -125,7 +125,7 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
     }
 
     fun setTransitionLengthTicks(ticks: Float) {
-        if (transitionInterpolator.getInterpolated() != ticks) {
+        if (transitionInterpolator.interpolated != ticks) {
             transitionInterpolator.setTransitionInterpolator(TicksInterpolator(ticks))
         }
     }

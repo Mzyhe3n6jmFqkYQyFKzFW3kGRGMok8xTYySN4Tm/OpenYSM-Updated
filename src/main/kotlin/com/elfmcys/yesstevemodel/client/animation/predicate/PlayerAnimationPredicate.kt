@@ -12,9 +12,9 @@ import rip.ysm.compat.carryon.CarryOnDataHelper
 
 class PlayerAnimationPredicate : IAnimationPredicate<CustomPlayerEntity> {
     override fun predicate(event: AnimationEvent<CustomPlayerEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val player: Player = event.getAnimatable().entity
+        val player: Player = event.animatable.entity
         return when {
-            event.getAnimatable() is IPreviewAnimatable -> PlayState.STOP
+            event.animatable is IPreviewAnimatable -> PlayState.STOP
             player.pose == Pose.SWIMMING -> PlayState.STOP
             player.pose == Pose.FALL_FLYING && player.isFallFlying -> PlayState.STOP
             CarryOnDataHelper.isPrincess(player) -> IAnimationPredicate.playLoopAnimation(event, "carryon:princess")

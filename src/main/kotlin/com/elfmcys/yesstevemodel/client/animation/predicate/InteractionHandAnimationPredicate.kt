@@ -11,13 +11,13 @@ import net.minecraft.world.InteractionHand
 
 class InteractionHandAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>> {
     override fun predicate(event: AnimationEvent<LivingAnimatable<*>>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val animatable = event.getAnimatable()
+        val animatable = event.animatable
         val livingEntity = animatable.entity
         if (animatable is IPreviewAnimatable) return PlayState.STOP
         val i = animatable.modelAssembly?.modelData?.formatVersion ?: 0
         if (livingEntity.isUsingItem && !livingEntity.isSleeping) {
             if (livingEntity.ticksUsingItem == 1 && animatable.positionTracker.markProcessed(2))
-                event.getController()?.stopTransition()
+                event.controller?.stopTransition()
             val conditionManager = animatable.modelConfig ?: return PlayState.STOP
             if (livingEntity.usedItemHand == InteractionHand.MAIN_HAND) {
                 val conditionUse = conditionManager.useMainhand

@@ -21,7 +21,7 @@ import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat
 
 class MainHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
     override fun predicate(event: AnimationEvent<LivingAnimatable<*>>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val animatable = event.getAnimatable()
+        val animatable = event.animatable
         val entity: LivingEntity = animatable.entity
         if (animatable is IPreviewAnimatable) {
             return PlayState.STOP
@@ -60,7 +60,7 @@ class MainHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
         val frameState: LivingEntityFrameState<*> = animatable.positionTracker
         if (!isSameItem(mainHandItem, frameState, InteractionHand.MAIN_HAND)) {
             frameState.setHandItemsForAnimation(mainHandItem, InteractionHand.MAIN_HAND)
-            event.getController()?.stopTransition()
+            event.controller?.stopTransition()
         }
         val conditionHold: ConditionHold? = animatable.modelConfig?.holdMainhand
         val str: String? = conditionHold?.doTest(entity, InteractionHand.MAIN_HAND)
