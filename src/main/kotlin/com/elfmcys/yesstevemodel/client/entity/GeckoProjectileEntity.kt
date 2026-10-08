@@ -44,18 +44,13 @@ open class GeckoProjectileEntity(
         get() = projectileModelContext?.model
 
     override val textureLocation: Identifier
-        get() {
-            return (renderShape as ProjectileModelWrapper).textureLocatable.getResourceLocation()
-                ?: MissingTextureAtlasSprite.getLocation()
-        }
+        get() = (renderShape as ProjectileModelWrapper).textureLocatable.getResourceLocation()
+            ?: MissingTextureAtlasSprite.getLocation()
 
-    override fun getAnimation(str: String): Animation? {
-        return projectileModelContext?.animations?.get(str)
-    }
+    override fun getAnimation(str: String): Animation? = projectileModelContext?.animations?.get(str)
 
-    override fun getAnimationEntries(str: String): AnimationController? {
-        return projectileModelContext?.animationControllers?.get(str)
-    }
+    override fun getAnimationEntries(str: String): AnimationController? =
+        projectileModelContext?.animationControllers?.get(str)
 
     override val isModelReady: Boolean
         get() = super.isModelReady && projectileModelContext != null && renderShape?.isValid == true
