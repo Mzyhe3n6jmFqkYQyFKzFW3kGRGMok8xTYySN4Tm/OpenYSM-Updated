@@ -15,7 +15,7 @@ open class TabButton(
     height: Int,
     val group: OptionGroup,
     private val onSelect: (OptionGroup) -> Unit
-) : AbstractWidget(x, y, width, height, group.getTitle()) {
+) : AbstractWidget(x, y, width, height, group.title) {
 
     var selected: Boolean = false
     var horizontal: Boolean = false

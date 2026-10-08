@@ -118,7 +118,7 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
             tabs && compactTabs -> {
                 var tabX = tabAreaLeft
                 for (g in groups) {
-                    val textW = font.width(g.getTitle())
+                    val textW = font.width(g.title)
                     val w = Mth.clamp(textW + 16, 60, 140)
                     val tb = TabButton(tabX, tabAreaTop, w, 22, g, ::selectGroup)
                     tb.horizontal = true
