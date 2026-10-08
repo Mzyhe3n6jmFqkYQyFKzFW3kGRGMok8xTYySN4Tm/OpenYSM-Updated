@@ -44,14 +44,14 @@ object FirstPersonArmAnimationController {
     @JvmStatic
     fun registerDefaultProcessors() {
         registerNamedProcessor("misc", null, true) { animationEntryKey, entity ->
-            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate())
+            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate)
         }
         registerParallelProcessor("parallel") { animationEntryKey, entity, linkedAnimationName ->
             CompositeAnimationController(
                 entity,
                 animationEntryKey,
                 0.0f,
-                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.getInstance(),
+                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate,
                 true
             )
         }

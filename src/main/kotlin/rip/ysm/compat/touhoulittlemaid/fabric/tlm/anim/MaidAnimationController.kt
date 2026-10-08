@@ -38,7 +38,7 @@ object MaidAnimationController {
         registerParallelController("pre_parallel") { key, animatable, linkedName ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                if (linkedName != null) NamedAnimationPredicate(linkedName) else StopAnimationPredicate.getInstance()
+                if (linkedName != null) NamedAnimationPredicate(linkedName) else StopAnimationPredicate
             )
         }
 
@@ -52,7 +52,7 @@ object MaidAnimationController {
         registerSlotController("pre_main") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
 
@@ -63,14 +63,14 @@ object MaidAnimationController {
         registerSlotController("post_main") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
 
         registerSlotController("pre_hold") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
 
@@ -91,14 +91,14 @@ object MaidAnimationController {
         registerSlotController("post_hold") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
 
         registerSlotController("pre_swing") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
 
@@ -112,14 +112,14 @@ object MaidAnimationController {
         registerSlotController("post_swing") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
 
         registerSlotController("pre_use") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
 
@@ -133,7 +133,7 @@ object MaidAnimationController {
         registerSlotController("post_use") { key, animatable ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
 
@@ -159,7 +159,7 @@ object MaidAnimationController {
         registerParallelController("parallel") { key, animatable, linkedName ->
             CompositeAnimationController(
                 animatable, key, 0.0f,
-                if (linkedName != null) NamedAnimationPredicate(linkedName) else StopAnimationPredicate.getInstance(),
+                if (linkedName != null) NamedAnimationPredicate(linkedName) else StopAnimationPredicate,
                 true
             )
         }
