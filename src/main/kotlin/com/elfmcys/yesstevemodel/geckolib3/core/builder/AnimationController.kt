@@ -5,20 +5,18 @@ import it.unimi.dsi.fastutil.ints.Int2ReferenceMap
 import it.unimi.dsi.fastutil.ints.Int2ReferenceMaps
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap
 
-open class AnimationController(initialState: String, animationStates: Array<AnimationState>) {
+class AnimationController(initialState: String, animationStates: Array<AnimationState>) {
     @JvmField
     val stateId: Int = StringPool.computeIfAbsent(initialState)
+
     @JvmField
     val states: Int2ReferenceMap<AnimationState>
 
     init {
         val map = Int2ReferenceOpenHashMap<AnimationState>()
         for (state in animationStates) {
-            map.put(state.hashId, state)
+            map[state.hashId] = state
         }
         states = Int2ReferenceMaps.unmodifiable(map)
     }
-
-    open fun getStateId(): Int = stateId
-    open fun getStates(): Int2ReferenceMap<AnimationState> = states
 }
