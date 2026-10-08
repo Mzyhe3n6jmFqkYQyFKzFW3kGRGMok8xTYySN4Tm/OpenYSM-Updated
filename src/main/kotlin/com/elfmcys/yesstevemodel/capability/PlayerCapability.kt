@@ -79,18 +79,18 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
 
     override fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<Player>>, z: Boolean) {
         super.applyHeadTracking(event, z)
-        val model2 = currentModel
-        if (model2 != null && isLocalPlayerModel && !event.isFirstPerson && FirstPersonCompat.isModLoaded) {
-            model2.allHeadBone?.setHidden(FirstPersonCompat.shouldHideHead())
+        val model = currentModel
+        if (model != null && isLocalPlayerModel && !event.isFirstPerson && FirstPersonCompat.isModLoaded) {
+            model.allHeadBone?.setHidden(FirstPersonCompat.shouldHideHead())
             when {
-                model2.viewLocatorBone != null -> {
+                model.viewLocatorBone != null -> {
                     FirstPersonCompat.setCameraDistance(
-                        model2.viewLocatorBone.pivotY * widthScale
+                        model.viewLocatorBone.pivotY * widthScale
                     )
                 }
 
-                z && model2.headBones.isNotEmpty() -> {
-                    val bone = model2.headBones[model2.headBones.size - 1]
+                z && model.headBones.isNotEmpty() -> {
+                    val bone = model.headBones[model.headBones.size - 1]
                     FirstPersonCompat.setCameraDistance(bone.pivotY * widthScale)
                 }
             }

@@ -28,7 +28,7 @@ import rip.ysm.compat.oculus.OculusCompat
 import java.lang.invoke.VarHandle
 
 abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : AnimatableEntity<T>(t) {
-    private var modelId2: String = "default"
+    private var _modelId: String = "default"
     var modelAssembly: ModelAssembly? = null
         private set
     var renderShape: ModelWrapper? = null
@@ -91,7 +91,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     }
 
     private fun refreshModel() {
-        ClientModelManager.getModelContext(modelId2)?.let { assembly ->
+        ClientModelManager.getModelContext(_modelId)?.let { assembly ->
             val shape = renderShape
             if (shape == null || shape.isDefault || assembly != shape.context) {
                 renderShape = buildRenderShape(assembly, false)
@@ -140,15 +140,15 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     }
 
     open fun resetModel() {
-        modelId2 = "default"
+        _modelId = "default"
         modelInitialized = false
         clearModel()
     }
 
     var modelId: String
-        get() = modelId2
+        get() = _modelId
         set(value) {
-            modelId2 = value
+            _modelId = value
             refreshModel()
         }
 

@@ -19,8 +19,8 @@ import net.minecraft.world.entity.player.Player
 import java.util.*
 
 class ModelInfoCapability {
-    private var modelId2: String? = null
-    private var selectTexture2: String? = null
+    private var _modelId: String? = null
+    private var _selectTexture: String? = null
     private var mandatory: Boolean = false
     private var molangStorage: Int2ReferenceOpenHashMap<Object2FloatOpenHashMap<String>> = Int2ReferenceOpenHashMap()
     var animSync: PlayerStateSynchronizer = PlayerStateSynchronizer()
@@ -32,34 +32,34 @@ class ModelInfoCapability {
     var modelId: String
         get() {
             val ret = ServerModelManager.getDefaultModelConfig().getLeft()
-            if (modelId2 == null)
-                modelId2 = ret
-            return modelId2!!
+            if (_modelId == null)
+                _modelId = ret
+            return _modelId!!
         }
         set(value) {
-            if (modelId2 == value) return
-            modelId2 = value
+            if (_modelId == value) return
+            _modelId = value
             markDirty()
         }
 
     val selectTexture: String
         get() {
             val ret = ServerModelManager.getDefaultModelConfig().getRight()
-            if (selectTexture2 == null)
-                selectTexture2 = ret
-            return selectTexture2!!
+            if (_selectTexture == null)
+                _selectTexture = ret
+            return _selectTexture!!
         }
 
     fun setSelectTexture(str: String) {
-        if (selectTexture2 == str) return
-        selectTexture2 = str
+        if (_selectTexture == str) return
+        _selectTexture = str
         markDirty()
     }
 
     fun setModelAndTexture(str: String, str2: String) {
         if (modelId == str && selectTexture == str2) return
-        modelId2 = str
-        selectTexture2 = str2
+        _modelId = str
+        _selectTexture = str2
         markDirty()
     }
 
@@ -70,8 +70,8 @@ class ModelInfoCapability {
 
     fun copyFrom(source: ModelInfoCapability) {
         molangStorage = source.molangStorage
-        modelId2 = source.modelId2
-        selectTexture2 = source.selectTexture2
+        _modelId = source._modelId
+        _selectTexture = source._selectTexture
         mandatory = source.mandatory
         animSync = source.animSync
         pendingCallbacks.addAll(source.pendingCallbacks)

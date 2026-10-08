@@ -21,24 +21,29 @@ class ConditionArmor {
         Reference2ReferenceOpenHashMap()
 
     fun addTest(str: String) {
-        val matcher = ID_PRE_REG.matcher(str)
-        if (matcher.find()) {
-            val slot2 = getType(matcher.group(1))
-            if (slot2 != null) {
-                val strGroup = matcher.group(2)
-                if (Identifier.tryParse(strGroup) != null) {
-                    idTest.computeIfAbsent(slot2) { ObjectOpenHashSet() }.add(Identifier.parse(strGroup))
+        run {
+            val matcher = ID_PRE_REG.matcher(str)
+            if (matcher.find()) {
+                val slot = getType(matcher.group(1))
+                if (slot != null) {
+                    val strGroup = matcher.group(2)
+                    if (Identifier.tryParse(strGroup) != null) {
+                        idTest.computeIfAbsent(slot) { ObjectOpenHashSet() }.add(Identifier.parse(strGroup))
+                    }
                 }
             }
         }
-        val matcher2 = TAG_PRE_REG.matcher(str)
-        if (matcher2.find()) {
-            val slot = getType(matcher2.group(1))
-            if (slot != null) {
-                val strGroup2 = matcher2.group(2)
-                if (Identifier.tryParse(strGroup2) != null) {
-                    tagTest.computeIfAbsent(slot) { ReferenceArrayList() }
-                        .add(TagKey.create(Registries.ITEM, Identifier.parse(strGroup2)))
+
+        run {
+            val matcher = TAG_PRE_REG.matcher(str)
+            if (matcher.find()) {
+                val slot = getType(matcher.group(1))
+                if (slot != null) {
+                    val strGroup2 = matcher.group(2)
+                    if (Identifier.tryParse(strGroup2) != null) {
+                        tagTest.computeIfAbsent(slot) { ReferenceArrayList() }
+                            .add(TagKey.create(Registries.ITEM, Identifier.parse(strGroup2)))
+                    }
                 }
             }
         }
