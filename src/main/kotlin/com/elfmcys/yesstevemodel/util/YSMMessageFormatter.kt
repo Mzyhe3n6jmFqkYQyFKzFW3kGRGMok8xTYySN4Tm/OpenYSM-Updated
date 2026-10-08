@@ -23,7 +23,7 @@ object YSMMessageFormatter {
 
     @JvmStatic
     fun isCurrentClientPlayer(entity: Entity?): Boolean =
-        entity != null && !PlatformAPI.isServer() && entity.uuid == Minecraft.getInstance().user.profileId
+        entity != null && !PlatformAPI.isServer && entity.uuid == Minecraft.getInstance().user.profileId
 
     private fun permissionFor(level: Int): Permission? {
         return when (level) {
@@ -52,7 +52,7 @@ object YSMMessageFormatter {
 
     @JvmStatic
     fun sendServerMessage(commandSourceStack: CommandSourceStack?, component: Component, broadcastToOps: Boolean) {
-        val currentServer: MinecraftServer = PlatformAPI.getServer() ?: return
+        val currentServer: MinecraftServer = PlatformAPI.server ?: return
         currentServer.execute {
             var sourceStack: CommandSourceStack? = null
             val entity = commandSourceStack?.entity

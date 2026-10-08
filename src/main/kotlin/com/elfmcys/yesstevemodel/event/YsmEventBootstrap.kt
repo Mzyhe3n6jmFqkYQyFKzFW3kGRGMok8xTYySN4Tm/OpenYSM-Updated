@@ -17,7 +17,7 @@ object YsmEventBootstrap {
             CapabilityEvent
         )
 
-        if (PlatformAPI.isServer()) return
+        if (PlatformAPI.isServer) return
 
         Constants.doNothing(
             EntityJoinCallbackEvent,

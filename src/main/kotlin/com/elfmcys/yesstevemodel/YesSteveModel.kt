@@ -20,7 +20,7 @@ object YesSteveModel {
     val GSON: Gson = GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create()
 
     init {
-        Constants.LOGGER.info("Initializing YesSteveModel, platform: {}", PlatformAPI.getPlatformName())
+        Constants.LOGGER.info("Initializing YesSteveModel, platform: {}", PlatformAPI.platformName)
         runCatching { NativeLibLoader.init() }.onFailure {
             Constants.LOGGER.error(
                 "Failed to initialize native lib",
@@ -47,7 +47,7 @@ object YesSteveModel {
         }
         ConfigRegistration.register(NameSpaces.MOD(), ModConfig.Type.CLIENT, GeneralConfig.buildSpec())
         ConfigRegistration.register(NameSpaces.MOD(), ModConfig.Type.SERVER, ServerConfig.buildSpec())
-        if (!PlatformAPI.isServer()) ModSoundEvents.register()
+        if (!PlatformAPI.isServer) ModSoundEvents.register()
     }
 
     @Keep
