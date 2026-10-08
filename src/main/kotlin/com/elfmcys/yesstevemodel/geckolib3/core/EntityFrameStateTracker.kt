@@ -7,21 +7,15 @@ import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 
-open class EntityFrameStateTracker<T : Entity>(@JvmField var entity: T) {
+open class EntityFrameStateTracker<T : Entity>(var entity: T) {
     private var currentTick: Int = 0
     private var lastPosition: Vec3? = null
-
-    @JvmField
-    var cachedModelId: String? = null
-
-    @JvmField
-    var currentTime: Float = 0.0f
-
-    @JvmField
+    open var cachedModelId: String? = null
+    private var currentTime: Float = 0.0f
     var timeDelta: Float = 0.0f
-
-    @JvmField
-    var positionDelta: Vec3 = Vec3.ZERO
+        protected set
+    open var positionDelta: Vec3 = Vec3.ZERO
+        protected set
     private val animatedEntities: IntOpenHashSet = IntOpenHashSet()
 
     open fun reset() {
@@ -43,10 +37,6 @@ open class EntityFrameStateTracker<T : Entity>(@JvmField var entity: T) {
             onTimeUpdate(seekTime, currentTime, frameTime)
             currentTime = seekTime
         }
-    }
-
-    open fun setEntity(t: T) {
-        entity = t
     }
 
     open fun onTimeUpdate(currentTick: Float, deltaTick: Float, partialTick: Float) {
@@ -75,14 +65,4 @@ open class EntityFrameStateTracker<T : Entity>(@JvmField var entity: T) {
     open fun markProcessed(i: Int): Boolean = animatedEntities.add(i)
 
     open fun isProcessed(i: Int): Boolean = animatedEntities.contains(i)
-
-    open fun getPositionDelta(): Vec3 = positionDelta
-
-    open fun getCachedModelId(): String? = cachedModelId
-
-    open fun setCachedModelId(str: String?) {
-        cachedModelId = str
-    }
-
-    open fun getTimeDelta(): Float = timeDelta
 }

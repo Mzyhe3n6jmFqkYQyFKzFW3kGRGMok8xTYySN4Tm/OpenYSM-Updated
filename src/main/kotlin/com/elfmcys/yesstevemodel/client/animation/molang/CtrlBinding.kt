@@ -142,32 +142,32 @@ object CtrlBinding : ContextBinding() {
     fun evaluateState(name: String, context: IContext<LivingEntity>): Boolean {
         val livingEntity: LivingEntity = context.entity
         val positionTracker: EntityFrameStateTracker<*> = context.geoInstance.positionTracker
-        if (positionTracker.getCachedModelId() != null) {
-            return name == positionTracker.getCachedModelId()
+        if (positionTracker.cachedModelId != null) {
+            return name == positionTracker.cachedModelId
         }
         if (context.geoInstance is IPreviewAnimatable) {
-            positionTracker.setCachedModelId(StringPool.EMPTY)
+            positionTracker.cachedModelId = StringPool.EMPTY
             return false
         }
         if (livingEntity is Player && ParcoolCompat.isPlayerParcooling(livingEntity)) {
-            positionTracker.setCachedModelId(StringPool.EMPTY)
+            positionTracker.cachedModelId = StringPool.EMPTY
             return false
         }
         val vehicle: Entity? = livingEntity.vehicle
         if (vehicle != null && vehicle.isAlive) {
-            positionTracker.setCachedModelId(StringPool.EMPTY)
+            positionTracker.cachedModelId = StringPool.EMPTY
             return false
         }
         val stateData = data ?: return false
         for (i in 0..4) {
             for ((name1, _, predicate) in stateData[i]) {
                 if (predicate.test(context)) {
-                    positionTracker.setCachedModelId(name1)
+                    positionTracker.cachedModelId = name1
                     return name1 == name
                 }
             }
         }
-        positionTracker.setCachedModelId(StringPool.EMPTY)
+        positionTracker.cachedModelId = StringPool.EMPTY
         return false
     }
 

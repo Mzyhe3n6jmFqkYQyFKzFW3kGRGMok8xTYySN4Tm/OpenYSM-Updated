@@ -49,7 +49,7 @@ object QueryBinding : ContextBinding() {
         `var`("moon_phase") { ctx -> ((ctx.level?.dayTime ?: 0L) / 24000L % 8L).toInt() }
         `var`("time_of_day") { ctx -> MolangUtils.normalizeTime(ctx.level?.dayTime ?: 0L) }
         `var`("time_stamp") { ctx -> ctx.level?.dayTime ?: 0L }
-        `var`("delta_time") { ctx -> ctx.geoInstance.positionTracker.getTimeDelta() / 20.0f }
+        `var`("delta_time") { ctx -> ctx.geoInstance.positionTracker.timeDelta / 20.0f }
 
         entityVar("yaw_speed", QueryBinding::getYawSpeed)
         entityVar("cardinal_facing_2d") { ctx -> ctx.entity.direction.get3DDataValue() }
@@ -111,8 +111,7 @@ object QueryBinding : ContextBinding() {
         clientPlayerEntityVar("has_cape") { ctx -> hasCape(ctx.entity) }
     }
 
-    @JvmStatic
-    fun isFlying(context: IContext<Player>): Boolean {
+    private fun isFlying(context: IContext<Player>): Boolean {
         val geoInstance = context.geoInstance
         if (geoInstance is PlayerCapability) {
             if (!geoInstance.isLocalPlayerModel) return geoInstance.positionTracker.isFlying
@@ -120,8 +119,7 @@ object QueryBinding : ContextBinding() {
         return context.entity.abilities.flying
     }
 
-    @JvmStatic
-    fun getPlayerLevel(context: IContext<Player>): Int {
+    private fun getPlayerLevel(context: IContext<Player>): Int {
         val geoInstance = context.geoInstance
         if (geoInstance is PlayerCapability) {
             if (!geoInstance.isLocalPlayerModel) return geoInstance.positionTracker.experienceLevel
@@ -129,8 +127,7 @@ object QueryBinding : ContextBinding() {
         return context.entity.experienceLevel
     }
 
-    @JvmStatic
-    fun getHealth(context: IContext<LivingEntity>): Any {
+    private fun getHealth(context: IContext<LivingEntity>): Any {
         val geoInstance = context.geoInstance
         if (geoInstance is PlayerCapability) {
             if (!geoInstance.isLocalPlayerModel) return geoInstance.positionTracker.health
@@ -138,8 +135,7 @@ object QueryBinding : ContextBinding() {
         return context.entity.health
     }
 
-    @JvmStatic
-    fun getMaxHealth(context: IContext<LivingEntity>): Any {
+    private fun getMaxHealth(context: IContext<LivingEntity>): Any {
         val geoInstance = context.geoInstance
         if (geoInstance is PlayerCapability) {
             if (!geoInstance.isLocalPlayerModel) return geoInstance.positionTracker.maxHealth
@@ -147,12 +143,10 @@ object QueryBinding : ContextBinding() {
         return context.entity.maxHealth
     }
 
-    @JvmStatic
-    fun hasCape(abstractClientPlayer: AbstractClientPlayer): Boolean =
+    private fun hasCape(abstractClientPlayer: AbstractClientPlayer): Boolean =
         !abstractClientPlayer.isInvisible && abstractClientPlayer.isModelPartShown(PlayerModelPart.CAPE) && abstractClientPlayer.skin.cape != null
 
-    @JvmStatic
-    fun getEquipmentCount(entity: LivingEntity): Int {
+    private fun getEquipmentCount(entity: LivingEntity): Int {
         var i = 0
         for (equipmentSlot in EquipmentSlot.entries) {
             if (equipmentSlot.isArmor && !CosmeticArmorHelper.getArmorItem(entity, equipmentSlot).isEmpty) {
@@ -162,33 +156,28 @@ object QueryBinding : ContextBinding() {
         return i
     }
 
-    @JvmStatic
-    fun getItemMaxUseDuration(entity: LivingEntity): Int {
+    private fun getItemMaxUseDuration(entity: LivingEntity): Int {
         val useItem: ItemStack = entity.useItem
         if (useItem.isEmpty) return 0
         return useItem.getUseDuration(entity)
     }
 
-    @JvmStatic
-    fun getYawSpeed(context: IContext<Entity>): Float {
+    private fun getYawSpeed(context: IContext<Entity>): Float {
         if (context.entity is LocalPlayer) return PlayerEntityFrameState.headYawDelta
         return 20.0f * (context.entity.yRot - context.entity.yRotO)
     }
 
-    @JvmStatic
-    fun getGroundSpeed(entity: Entity): Float {
+    private fun getGroundSpeed(entity: Entity): Float {
         val deltaMovement: Vec3 = entity.deltaMovement
         return 20.0f * Mth.sqrt((deltaMovement.x * deltaMovement.x + deltaMovement.z * deltaMovement.z).toFloat())
     }
 
-    @JvmStatic
-    fun getVerticalSpeed(context: IContext<Entity>): Float {
+    private fun getVerticalSpeed(context: IContext<Entity>): Float {
         val positionTracker: EntityFrameStateTracker<*> = context.geoInstance.positionTracker
-        return 20.0f * positionTracker.getPositionDelta().y.toFloat() / positionTracker.getTimeDelta()
+        return 20.0f * positionTracker.positionDelta.y.toFloat() / positionTracker.timeDelta
     }
 
-    @JvmStatic
-    fun getCapeFlapAmount(context: IContext<Player>): Float {
+    private fun getCapeFlapAmount(context: IContext<Player>): Float {
         val gameTime: Float = context.animationEvent.frameTime
         val player: Player = context.entity
         val ap: AbstractClientPlayer = player as AbstractClientPlayer

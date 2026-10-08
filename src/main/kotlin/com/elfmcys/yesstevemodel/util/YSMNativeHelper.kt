@@ -13,39 +13,29 @@ import java.util.*
 object YSMNativeHelper {
     @JvmStatic
     fun createTranslatableComponent(str: String, objArr: Array<Any>?): Any {
-        if (objArr.isNullOrEmpty()) {
-            return Component.translatable(str)
-        }
+        if (objArr.isNullOrEmpty()) return Component.translatable(str)
         return Component.translatable(str, *objArr)
     }
 
     @JvmStatic
-    fun createLiteralComponent(str: String?): Any {
-        return Component.literal(str ?: StringPool.EMPTY)
-    }
+    fun createLiteralComponent(str: String?): Any = Component.literal(str ?: StringPool.EMPTY)
 
     @JvmStatic
-    fun appendComponents(obj: Any, obj2: Any): Any {
-        return (obj as MutableComponent).append(obj2 as Component)
-    }
+    fun appendComponents(obj: Any, obj2: Any): Any = (obj as MutableComponent).append(obj2 as Component)
 
     @JvmStatic
     fun parseTextureIndices(textureNames: Array<String>): IntArray {
         val indexMap = LinkedHashMap<String, Int>()
-        for ((i, name) in textureNames.withIndex()) {
-            indexMap["$name.png"] = i
-        }
+        for ((i, name) in textureNames.withIndex()) indexMap["$name.png"] = i
         return indexMap.values.toIntArray()
     }
 
     @JvmStatic
-    @Environment(EnvType.CLIENT)
-    fun getClientPlayerUUID(): UUID {
-        return Minecraft.getInstance().user.profileId
-    }
+    @get:Environment(EnvType.CLIENT)
+    val clientPlayerUUID: UUID
+        get() = Minecraft.getInstance().user.profileId
 
     @JvmStatic
-    fun getAvailableCpuCores(): Int {
-        return Runtime.getRuntime().availableProcessors()
-    }
+    val availableCpuCores: Int
+        get() = Runtime.getRuntime().availableProcessors()
 }
