@@ -127,10 +127,10 @@ class AnimationRouletteScreen : Screen {
 
     override fun init() {
         clearWidgets()
-        centerX = (width / 2) - 70
-        centerY = (height / 2) - 8
+        centerX = width / 2 - 70
+        centerY = height / 2 - 8
 
-        if (currentProperties.size < (currentNavEntry.right * 8) + 1) {
+        if (currentProperties.size < currentNavEntry.right * 8 + 1) {
             currentNavEntry.setValue(0)
         }
         if (currentProperties.size <= hoveredIndex) {
@@ -276,7 +276,7 @@ class AnimationRouletteScreen : Screen {
         )
         val titleComponent = Component.literal(titleText)
         val tooltip = Tooltip.create(Component.literal(descText))
-        val totalHeight = ((((labels.size - 1) / cols) + 1) * 14) + 14
+        val totalHeight = ((labels.size - 1) / cols + 1) * 14 + 14
         val iconButton = FlatIconButton(centerX + 125, centerY + yOffset[0], totalHeight, titleComponent)
         iconButton.setTooltip(tooltip)
         addRenderableOnly(iconButton)
@@ -296,7 +296,7 @@ class AnimationRouletteScreen : Screen {
             val isSelected = selectedIdx == idx
             val btnWidth = (110.0f / cols).roundToInt()
             val checkbox = ConfigCheckBox(
-                centerX + 127 + (btnWidth * (idx % cols)),
+                centerX + 127 + btnWidth * (idx % cols),
                 centerY + rowY,
                 btnWidth,
                 labelComp
@@ -377,8 +377,8 @@ class AnimationRouletteScreen : Screen {
             centerX + 125,
             centerY + yOffset[0],
             titleComponent,
-            { isChecked ->
-                val expr = "${checkboxConfig.value}=${if (isChecked) "1" else "0"}"
+            {
+                val expr = "${checkboxConfig.value}=${if (it) "1" else "0"}"
                 executeExpression(expr, null)
                 val entity = animatableModel.entity
                 if (!GeckoLibCache.isRoamingVariableAssignment(expr) && NetworkHandler.isClientConnected() && !ServerConfig.LOW_BANDWIDTH_USAGE.get()) {
@@ -466,7 +466,7 @@ class AnimationRouletteScreen : Screen {
 
     private fun renderPageInfo(guiGraphics: GuiGraphics) {
         guiGraphics.fill(centerX + 157, centerY - 87, centerX + 238, centerY - 72, -822083584)
-        val pageStr = "${currentNavEntry.right + 1}/${((currentProperties.size - 1) / 8) + 1}"
+        val pageStr = "${currentNavEntry.right + 1}/${(currentProperties.size - 1) / 8 + 1}"
         val color = ChatFormatting.AQUA.color ?: 0x55FFFF
         guiGraphics.drawCenteredString(font, pageStr, centerX + 197, centerY - 83, color or 0xFF000000.toInt())
     }
@@ -633,13 +633,13 @@ class AnimationRouletteScreen : Screen {
 
     private fun renderRadialButtons(guiGraphics: GuiGraphics) {
         var angle = 0.3926991f
-        val remaining = currentProperties.size - (currentNavEntry.right * 8)
+        val remaining = currentProperties.size - currentNavEntry.right * 8
         val count = min(8, remaining)
         for (i in 0 until count) {
-            val propIndex = i + (currentNavEntry.right * 8)
-            val posX = (centerX + (65 * Mth.cos(angle.toDouble()))).toInt()
-            val posY = centerY + (65 * Mth.sin(angle.toDouble()))
-            val labelY = (posY - (9.0 / 2.0)).toInt()
+            val propIndex = i + currentNavEntry.right * 8
+            val posX = (centerX + 65 * Mth.cos(angle.toDouble())).toInt()
+            val posY = centerY + 65 * Mth.sin(angle.toDouble())
+            val labelY = (posY - 9.0 / 2.0).toInt()
             var value = currentProperties.getValueAt(propIndex)
             val isSubmenu = currentProperties.getKeyAt(propIndex).startsWith(SUBMENU_PREFIX)
             if (value.startsWith(SUBMENU_PREFIX)) {
@@ -647,13 +647,13 @@ class AnimationRouletteScreen : Screen {
                 val group = renderGroups[groupKey]
                 if (group != null) {
                     value = group.name
-                    val gearX = (centerX + (35 * Mth.cos(angle.toDouble()))).toInt()
-                    val gearY = centerY + (35 * Mth.sin(angle.toDouble()))
+                    val gearX = (centerX + 35 * Mth.cos(angle.toDouble())).toInt()
+                    val gearY = centerY + 35 * Mth.sin(angle.toDouble())
                     guiGraphics.drawCenteredString(
                         font,
                         Component.literal("⚙").withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD),
                         gearX,
-                        (gearY - (9.0 / 2.0)).toInt(),
+                        (gearY - 9.0 / 2.0).toInt(),
                         -1
                     )
                 }
@@ -704,7 +704,7 @@ class AnimationRouletteScreen : Screen {
             styledComp = styledComp.withStyle(ChatFormatting.RED)
         }
         val lines = font.split(styledComp, 50)
-        var lineY = (y - (lines.size * 9)) + 2
+        var lineY = y - lines.size * 9 + 2
         if (currentNavEntry.right != 0 || navigationStack.size > 1) {
             lineY += 9
         }
@@ -725,11 +725,11 @@ class AnimationRouletteScreen : Screen {
             Mth.sqrt(Mth.square((mouseY - centerY).toFloat()) + Mth.square((mouseX - centerX).toFloat()))
         var hoveredAny = false
         var hoveredConfig = false
-        val sliceCount = min(8, currentProperties.size - (currentNavEntry.right * 8))
+        val sliceCount = min(8, currentProperties.size - currentNavEntry.right * 8)
         for (i in 0 until sliceCount) {
-            val startAngle = ((6.2831855f / 8) * i) + 0.034906585f
-            val endAngle = ((6.2831855f / 8) * (i + 1)) - 0.034906585f
-            val propIndex = i + (currentNavEntry.right * 8)
+            val startAngle = 6.2831855f / 8 * i + 0.034906585f
+            val endAngle = 6.2831855f / 8 * (i + 1) - 0.034906585f
+            val propIndex = i + currentNavEntry.right * 8
             val isSubmenu = currentProperties.getValueAt(propIndex).startsWith(SUBMENU_PREFIX)
             hoveredAny = checkRadialHover(
                 guiGraphics,
@@ -775,7 +775,7 @@ class AnimationRouletteScreen : Screen {
         var hovered = alreadyHovered
         if (isHovered) {
             hovered = true
-            hoveredIndex = index + (currentNavEntry.right * 8)
+            hoveredIndex = index + currentNavEntry.right * 8
         }
         if (isHovered && index < currentProperties.size) {
             if (isSubmenu) {
@@ -802,14 +802,14 @@ class AnimationRouletteScreen : Screen {
         val startSin = Mth.sin(startAngle.toDouble())
         val endCos = Mth.cos(endAngle.toDouble())
         val endSin = Mth.sin(endAngle.toDouble())
-        val outerStartX = centerX + (outerRadius * startCos)
-        val outerStartY = centerY + (outerRadius * startSin)
-        val innerStartX = centerX + (innerRadius * startCos)
-        val innerStartY = centerY + (innerRadius * startSin)
-        val innerEndX = centerX + (innerRadius * endCos)
-        val innerEndY = centerY + (innerRadius * endSin)
-        val outerEndX = centerX + (outerRadius * endCos)
-        val outerEndY = centerY + (outerRadius * endSin)
+        val outerStartX = centerX + outerRadius * startCos
+        val outerStartY = centerY + outerRadius * startSin
+        val innerStartX = centerX + innerRadius * startCos
+        val innerStartY = centerY + innerRadius * startSin
+        val innerEndX = centerX + innerRadius * endCos
+        val innerEndY = centerY + innerRadius * endSin
+        val outerEndX = centerX + outerRadius * endCos
+        val outerEndY = centerY + outerRadius * endSin
         guiGraphics.guiRenderState.submitGuiElement(
             RadialSliceRenderState.of(
                 guiGraphics.pose(),
