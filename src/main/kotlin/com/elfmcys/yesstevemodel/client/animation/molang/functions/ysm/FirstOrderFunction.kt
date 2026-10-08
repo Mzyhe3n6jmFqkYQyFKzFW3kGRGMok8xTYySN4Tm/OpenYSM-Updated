@@ -23,7 +23,7 @@ class FirstOrderFunction : EntityFunction() {
             return input
         }
         physics.setArgs(input, response, 0.0f, 0.0f)
-        return physics.getValue()
+        return physics.value
     }
 
     override fun validateArgumentSize(size: Int): Boolean {

@@ -23,15 +23,15 @@ class SecondOrder(
         val coeff = Mth.clamp(coefficient, 0.0f, 1.0f)
         val resp = this.response
 
-        val k1: Float = coeff / Mth.PI / freq
-        val k2: Float = 1.0f / (2.0f * Mth.PI * freq) / (2.0f * Mth.PI * freq)
-        val k3: Float = resp * coeff / 2.0f / Mth.PI / freq
+        val k1 = coeff / Mth.PI / freq
+        val k2 = 1.0f / (2.0f * Mth.PI * freq) / (2.0f * Mth.PI * freq)
+        val k3 = resp * coeff / 2.0f / Mth.PI / freq
 
-        val inputFunctionDot: Float = (input - inputFunction) / step
+        val inputFunctionDot = (input - inputFunction) / step
         inputFunction = input
 
-        val maxTimeStep: Float = sqrt(4.0f * k2 + k1 * k1) - k1
-        var cycleTime: Int = ceil(step / maxTimeStep).toInt()
+        val maxTimeStep = sqrt(4.0f * k2 + k1 * k1) - k1
+        var cycleTime = ceil(step / maxTimeStep).toInt()
         step /= cycleTime
 
         var currentSimDot = lastSimulationDot
@@ -52,5 +52,6 @@ class SecondOrder(
         response = arg3
     }
 
-    override fun getValue(): Float = lastSimulation
+    override val value: Float
+        get() = lastSimulation
 }
