@@ -33,7 +33,8 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
 ) : IAnimationController<T> {
     private var boneTargets: MutableList<BoneTopLevelSnapshot>? = null
     private var animationEntries: AnimationController? = null
-    private var currentEntry2: AnimationState? = null
+    var currentEntry: AnimationState? = null
+        private set
     private var displayName: String? = null
     private var childController: AnimationControllerRuntime<T>? = null
     private val animationSlots: ReferenceArrayList<AnimationSlot> = ReferenceArrayList(8)
@@ -61,7 +62,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             transitioned = true
             if (activeSlotCount != 0) break
         }
-        val currEntry = currentEntry2
+        val currEntry = currentEntry
         if (currEntry?.subName != null && depth != MAX_DEPTH) {
             if (transitioned) {
                 val subControllerName =
@@ -105,7 +106,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
 
     override val currentAnimation: String
         get() {
-            val currEntry = currentEntry2
+            val currEntry = currentEntry
             if (currEntry != null) {
                 if (currEntry.subName != null && childController != null)
                     return childController?.currentAnimation ?: "(null)"
@@ -118,11 +119,8 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         displayName = if (depth > 1) "[$parentName] $stateName" else stateName
     }
 
-    val currentEntry: AnimationState?
-        get() = currentEntry2
-
     val isBuiltinAnimation: Boolean
-        get() = currentEntry2?.isBuiltinEntry == true
+        get() = currentEntry?.isBuiltinEntry == true
 
     override fun init(
         list: MutableList<BoneTopLevelSnapshot>,
@@ -156,7 +154,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
 
     private fun evaluateTransitions(evaluator: ExpressionEvaluator<AnimationContext<*>>): Boolean {
         val entries = animationEntries ?: return false
-        val currEntry = currentEntry2
+        val currEntry = currentEntry
         if (currEntry == null) {
             val nextState = entries.states.get(entries.stateId) ?: return false
             visitedEntries.add(nextState.hashId)
@@ -196,7 +194,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     }
 
     private fun transitionToEntry(nextState: AnimationState?, evaluator: ExpressionEvaluator<AnimationContext<*>>) {
-        val curr = currentEntry2
+        val curr = currentEntry
         if (nextState == null && curr == null) return
         playbackFlags.audioPlayerManager?.stopAll()
         evaluator.entity.setIsClientSide(true)
@@ -220,7 +218,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             }
         }
         evaluator.entity.setIsClientSide(false)
-        currentEntry2 = nextState
+        currentEntry = nextState
         for (activeBoneTransform in activeBoneTransforms) {
             activeBoneTransform.resetAndClear()
         }
@@ -255,7 +253,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     }
 
     override fun forEachTransform(consumer: (BoneTransformProvider) -> Unit) {
-        val curr = currentEntry2
+        val curr = currentEntry
         if (curr != null) {
             if (curr.subName != null && childController != null) {
                 childController?.forEachTransform(consumer)
@@ -275,7 +273,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     override fun reset() {
         boneTargets = ReferenceLists.emptyList()
         animationEntries = null
-        currentEntry2 = null
+        currentEntry = null
         activeSlotCount = 0
         activeBoneTransforms.clear()
         boneTransformMap.clear()
