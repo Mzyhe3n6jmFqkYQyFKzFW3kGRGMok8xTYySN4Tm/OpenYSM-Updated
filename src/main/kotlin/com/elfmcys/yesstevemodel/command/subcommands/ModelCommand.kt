@@ -84,7 +84,7 @@ object ModelCommand {
         val targets: Collection<ServerPlayer> = EntityArgument.getPlayers(context, TARGETS_NAME)
         val modelName: String = StringArgumentType.getString(context, MODEL_ID_NAME)
         var textureName: String = StringArgumentType.getString(context, TEXTURE_ID_NAME)
-        val info: ServerModelData? = ServerModelManager.getServerModelInfo()[modelName]
+        val info: ServerModelData? = ServerModelManager.serverModelInfo[modelName]
         if (info == null) {
             context.source.sendSuccess({
                 Component.translatable(
@@ -123,7 +123,7 @@ object ModelCommand {
         targets.forEach { player ->
             ModelInfoCapability[player]?.let { cap ->
                 AuthModelsCapability[player]?.let { authCap ->
-                    if (!ServerModelManager.getAuthModels().contains(modelName) || authCap.containsModel(modelName)) {
+                    if (!ServerModelManager.authModels.contains(modelName) || authCap.containsModel(modelName)) {
                         cap.setModelAndTexture(modelName, finalTextureName)
                         cap.setMandatory(true)
                         context.source.sendSuccess({

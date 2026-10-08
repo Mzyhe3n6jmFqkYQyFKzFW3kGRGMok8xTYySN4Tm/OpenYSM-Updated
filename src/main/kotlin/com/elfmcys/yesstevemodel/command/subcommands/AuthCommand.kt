@@ -51,7 +51,7 @@ object AuthCommand {
     private fun addAuthModel(context: CommandContext<CommandSourceStack>): Int {
         val targets: Collection<ServerPlayer> = EntityArgument.getPlayers(context, TARGETS_NAME)
         val string: String = StringArgumentType.getString(context, MODEL_ID_NAME)
-        if (!ServerModelManager.getServerModelInfo().containsKey(string)) {
+        if (!ServerModelManager.serverModelInfo.containsKey(string)) {
             context.source.sendSuccess(
                 { Component.translatable("commands.yes_steve_model.export.not_exist", string) },
                 true
@@ -79,7 +79,7 @@ object AuthCommand {
         val targets = EntityArgument.getPlayers(context, TARGETS_NAME)
         targets.forEach { player ->
             AuthModelsCapability[player]?.let { ownModelCap ->
-                val setKeySet = ServerModelManager.getServerModelInfo().keys
+                val setKeySet = ServerModelManager.serverModelInfo.keys
                 setKeySet.forEach(ownModelCap::addModel)
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.authModels), player)
                 context.source.sendSuccess({
@@ -101,7 +101,7 @@ object AuthCommand {
             AuthModelsCapability[player]?.let { ownModelsCap ->
                 ownModelsCap.removeModel(modelName)
                 ModelInfoCapability[player]?.let { modelIdCap ->
-                    if (ServerModelManager.getAuthModels()
+                    if (ServerModelManager.authModels
                             .contains(modelIdCap.modelId) && !ownModelsCap.containsModel(modelIdCap.modelId)
                     ) {
                         modelIdCap.resetToDefault()
@@ -126,7 +126,7 @@ object AuthCommand {
             AuthModelsCapability[player]?.let { ownModelCap ->
                 ownModelCap.clear()
                 ModelInfoCapability[player]?.let { modelIdCap ->
-                    if (ServerModelManager.getAuthModels().contains(modelIdCap.modelId)) {
+                    if (ServerModelManager.authModels.contains(modelIdCap.modelId)) {
                         modelIdCap.resetToDefault()
                     }
                 }

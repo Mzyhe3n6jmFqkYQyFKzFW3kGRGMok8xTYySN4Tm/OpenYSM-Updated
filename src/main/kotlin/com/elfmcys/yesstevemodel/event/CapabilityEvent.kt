@@ -58,7 +58,7 @@ object CapabilityEvent {
                 }
             }
             getAuthModelsCap(entity)?.let { authModelsCap ->
-                for (modelId in ServerModelManager.getAuthModels()) {
+                for (modelId in ServerModelManager.authModels) {
                     authModelsCap.addModel(modelId)
                 }
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.authModels), entity)

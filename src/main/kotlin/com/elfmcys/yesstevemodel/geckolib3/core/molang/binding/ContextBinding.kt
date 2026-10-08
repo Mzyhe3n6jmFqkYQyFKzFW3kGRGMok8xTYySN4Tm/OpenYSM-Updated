@@ -39,7 +39,8 @@ open class ContextBinding : ObjectBinding {
 
     override fun getProperty(name: String): Any? = bindings[name]
 
-    open fun getKeys(): MutableSet<String> = bindings.keys
+    open val keys: MutableSet<String>
+        get() = bindings.keys
 
     open fun function(name: String, function: Function) {
         bindings[name] = function

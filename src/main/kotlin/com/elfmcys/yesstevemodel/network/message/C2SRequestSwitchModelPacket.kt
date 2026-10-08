@@ -41,10 +41,10 @@ class C2SRequestSwitchModelPacket(
             ModelInfoCapability[sender]?.let { cap ->
                 AuthModelsCapability[sender]?.let { cap2 ->
                     val str = message.modelId
-                    val serverModelInfo = ServerModelManager.getServerModelInfo()
+                    val serverModelInfo = ServerModelManager.serverModelInfo
                     val serverModelData = serverModelInfo[str]
                     if (serverModelData == null ||
-                        (ServerModelManager.getAuthModels().contains(str) && !cap2.containsModel(message.modelId)) ||
+                        (ServerModelManager.authModels.contains(str) && !cap2.containsModel(message.modelId)) ||
                         !serverModelData.modelInfo.textures.contains(message.textureId)
                     ) {
                         cap.resetToDefault()

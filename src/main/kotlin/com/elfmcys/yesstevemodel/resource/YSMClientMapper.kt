@@ -780,7 +780,7 @@ object YSMClientMapper {
         for ((name, value) in raw.functionFiles) {
             val data = value.data ?: continue
             val molangScript = String(data, StandardCharsets.UTF_8)
-            runCatching { functions[name] = GeckoLibCache.getMolangParser().parseExpression(molangScript, true) }
+            runCatching { functions[name] = GeckoLibCache.molangParser.parseExpression(molangScript, true) }
         }
 
         val translations = LinkedHashMap<String, MutableMap<String, String>>()
@@ -990,7 +990,7 @@ object YSMClientMapper {
     @JvmStatic
     fun parse(str: String): IValue {
         return runCatching {
-            GeckoLibCache.getMolangParser().parseExpression(str, false)
+            GeckoLibCache.molangParser.parseExpression(str, false)
         }.getOrElse {
             FloatValue.ZERO
         }

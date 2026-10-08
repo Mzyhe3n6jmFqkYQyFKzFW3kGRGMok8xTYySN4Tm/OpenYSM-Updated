@@ -43,9 +43,9 @@ object RootClientCommand {
                     }
                 }
             }
-            GeckoLibCache.getGlobalBindings().forEach { (namespace, obj) ->
+            GeckoLibCache.globalBindings.forEach { (namespace, obj) ->
                 if (obj is ContextBinding) {
-                    obj.getKeys().forEach { key ->
+                    obj.keys.forEach { key ->
                         set.add("$namespace.$key")
                     }
                 }

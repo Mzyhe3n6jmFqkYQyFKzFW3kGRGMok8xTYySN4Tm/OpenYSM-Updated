@@ -932,10 +932,12 @@ object ServerModelManager {
     operator fun get(str: String): ServerModelData? = CACHE_NAME_INFO[str]
 
     @JvmStatic
-    fun getServerModelInfo(): Map<String, ServerModelData> = CACHE_NAME_INFO
+    val serverModelInfo: Map<String, ServerModelData>
+        get() = CACHE_NAME_INFO
 
     @JvmStatic
-    fun getAuthModels(): Set<String> = AUTH_MODELS
+    val authModels: Set<String>
+        get() = AUTH_MODELS
 
     @JvmStatic
     fun requestPlayerAuth(serverPlayer: ServerPlayer, consumer: ((UUIDComponentData) -> Unit)? = null) {
@@ -1088,7 +1090,7 @@ object ServerModelManager {
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.authModels), serverPlayer)
             }
             val modelId = modelInfoCap.modelId
-            if (!getServerModelInfo().containsKey(modelId) || AUTH_MODELS.contains(modelId) && !authModelsCap.authModels
+            if (!serverModelInfo.containsKey(modelId) || AUTH_MODELS.contains(modelId) && !authModelsCap.authModels
                     .contains(modelInfoCap.modelId) || !(CACHE_NAME_INFO[modelId] ?: return).modelInfo.textures
                     .contains(modelInfoCap.selectTexture)
             ) {
