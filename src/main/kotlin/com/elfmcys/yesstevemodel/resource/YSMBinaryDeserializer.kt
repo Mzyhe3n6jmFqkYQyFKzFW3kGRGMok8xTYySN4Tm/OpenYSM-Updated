@@ -36,7 +36,7 @@ class YSMBinaryDeserializer : AutoCloseable {
             it.model == null || it.textures.isEmpty()
         }
 
-        val offset = reader.getOffset()
+        val offset = reader.offset
         if (closeOnExit) reader.close()
         Constants.LOGGER.info("end offset: 0x" + Integer.toHexString(offset))
         return model

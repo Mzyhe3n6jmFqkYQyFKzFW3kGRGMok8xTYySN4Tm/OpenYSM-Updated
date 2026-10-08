@@ -1,10 +1,11 @@
+@file:Suppress("unused")
+
 package rip.ysm.security
 
 import io.netty.buffer.ByteBuf
 import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
 
-@Suppress("unused")
 class YSMByteBuf(buf: ByteBuf) : AutoCloseable {
     // TODO: 'fun order(p0: ByteOrder!): ByteBuf!' is deprecated. Deprecated in Java.
     private val buf: ByteBuf = buf.order(ByteOrder.LITTLE_ENDIAN)
@@ -24,11 +25,11 @@ class YSMByteBuf(buf: ByteBuf) : AutoCloseable {
         buf.writeBytes(garbageData)
     }
 
-    fun getOffset(): Int = buf.readerIndex()
-
-    fun setOffset(offset: Int) {
-        buf.readerIndex(offset)
-    }
+    var offset: Int
+        get() = buf.readerIndex()
+        set(value) {
+            buf.readerIndex(value)
+        }
 
     fun readByte(): Byte = buf.readByte()
 
@@ -45,22 +46,18 @@ class YSMByteBuf(buf: ByteBuf) : AutoCloseable {
         var position = 0
         while (true) {
             val currentByte = buf.readByte().toInt()
-            value = value or ((currentByte and 0x7F) shl position)
-            if ((currentByte and 0x80) == 0) {
-                break
-            }
+            value = value or (currentByte and 0x7F shl position)
+            if (currentByte and 0x80 == 0) break
             position += 7
-            if (position >= 64) {
-                throw RuntimeException("VarInt too big")
-            }
+            if (position >= 64) throw RuntimeException("VarInt too big")
         }
         return value
     }
 
     fun writeVarInt(value: Int) {
         var v = value
-        while ((v and -128) != 0) {
-            buf.writeByte((v and 127) or 128)
+        while (v and -128 != 0) {
+            buf.writeByte(v and 127 or 128)
             v = v ushr 7
         }
         buf.writeByte(v)
@@ -72,7 +69,7 @@ class YSMByteBuf(buf: ByteBuf) : AutoCloseable {
         while (true) {
             val currentByte = buf.readByte().toInt()
             value = value or ((currentByte and 0x7F).toLong() shl position)
-            if ((currentByte and 0x80) == 0) {
+            if (currentByte and 0x80 == 0) {
                 break
             }
             position += 7
@@ -85,8 +82,8 @@ class YSMByteBuf(buf: ByteBuf) : AutoCloseable {
 
     fun writeVarLong(value: Long) {
         var v = value
-        while ((v and -128L) != 0L) {
-            buf.writeByte(((v and 127L).toInt()) or 128)
+        while (v and -128L != 0L) {
+            buf.writeByte((v and 127L).toInt() or 128)
             v = v ushr 7
         }
         buf.writeByte(v.toInt())
