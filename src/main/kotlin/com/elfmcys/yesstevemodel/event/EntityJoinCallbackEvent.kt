@@ -22,7 +22,7 @@ object EntityJoinCallbackEvent {
 
     @Environment(EnvType.CLIENT)
     private fun register() {
-        if (PlatformAPI.isServer()) {
+        if (PlatformAPI.isServer) {
             return
         }
         ClientEntityEvents.ENTITY_LOAD.register { entity, _ ->

@@ -22,7 +22,7 @@ object CommandRegistry {
     val MODEL_IDS: SuggestionProvider<CommandSourceStack> =
         SuggestionProviders.register(NameSpaces.MOD.path("models")) { commandContext, suggestionsBuilder ->
             if (commandContext.source is SharedSuggestionProvider) {
-                if (PlatformAPI.isServer()) {
+                if (PlatformAPI.isServer) {
                     return@register SharedSuggestionProvider.suggest(
                         ServerModelManager.getServerModelInfo().keys.map(::escapeIfRequired),
                         suggestionsBuilder
@@ -40,7 +40,7 @@ object CommandRegistry {
     val ANIMATION_NAMES: SuggestionProvider<CommandSourceStack> =
         SuggestionProviders.register(NameSpaces.MOD.path("animations")) { commandContext, suggestionsBuilder ->
             if (commandContext.source is SharedSuggestionProvider) {
-                if (PlatformAPI.isServer()) {
+                if (PlatformAPI.isServer) {
                     return@register Suggestions.empty()
                 }
                 val map = ClientModelManager.getLocalModelContext().animationBundle.mainAnimations
@@ -56,7 +56,7 @@ object CommandRegistry {
             if (commandContext.source is SharedSuggestionProvider) {
                 val str = commandContext.getArgument("model_id", String::class.java)
                 when {
-                    PlatformAPI.isServer() -> {
+                    PlatformAPI.isServer -> {
                         ServerModelManager.getServerModelInfo()[str]?.let { serverModelInfo ->
                             val list = mutableListOf("-").apply {
                                 addAll(serverModelInfo.modelInfo.textures.map(::escapeIfRequired))
@@ -85,7 +85,7 @@ object CommandRegistry {
     }
 
     init {
-        if (!PlatformAPI.isServer()) {
+        if (!PlatformAPI.isServer) {
             ClientCommandRegistrationCallback.EVENT.register(ClientCommandRegistrationCallback { dispatcher, _ ->
                 if (!YesSteveModel.isAvailable()) {
                     return@ClientCommandRegistrationCallback
@@ -99,7 +99,7 @@ object CommandRegistry {
                 return@CommandRegistrationCallback
             }
             RootCommand.registerCommands(dispatcher)
-            if (!PlatformAPI.isServer()) {
+            if (!PlatformAPI.isServer) {
                 RootClientCommand.registerClientCommands(dispatcher)
             }
         })

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package rip.ysm.api
 
 import net.minecraft.server.MinecraftServer
@@ -6,16 +8,20 @@ import java.nio.file.Path
 
 object PlatformAPI {
     @JvmStatic
-    fun isServer(): Boolean = PlatformAPIImpl.isServer
+    val isServer: Boolean
+        get() = PlatformAPIImpl.isServer
 
     @JvmStatic
-    fun getPlatformName(): String = PlatformAPIImpl.platformName
+    val platformName: String
+        get() = PlatformAPIImpl.platformName
 
     @JvmStatic
-    fun getConfigFolder(): Path = PlatformAPIImpl.configFolder
+    val configFolder: Path
+        get() = PlatformAPIImpl.configFolder
 
     @JvmStatic
-    fun getGameFolder(): Path = PlatformAPIImpl.gameFolder
+    val gameFolder: Path
+        get() = PlatformAPIImpl.gameFolder
 
     @JvmStatic
     fun isModLoaded(modId: String): Boolean = PlatformAPIImpl.isModLoaded(modId)
@@ -24,8 +30,10 @@ object PlatformAPI {
     fun getModVersion(modId: String): String = PlatformAPIImpl.getModVersion(modId)
 
     @JvmStatic
-    fun isDevelopmentEnvironment(): Boolean = PlatformAPIImpl.isDevelopmentEnvironment
+    val isDevelopmentEnvironment: Boolean
+        get() = PlatformAPIImpl.isDevelopmentEnvironment
 
     @JvmStatic
-    fun getServer(): MinecraftServer? = PlatformAPIImpl.server
+    val server: MinecraftServer?
+        get() = PlatformAPIImpl.server
 }

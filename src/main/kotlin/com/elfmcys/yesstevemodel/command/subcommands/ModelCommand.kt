@@ -188,7 +188,7 @@ object ModelCommand {
                             true
                         )
                     }
-                    if (PlatformAPI.isServer()) {
+                    if (PlatformAPI.isServer) {
                         YSMMessageFormatter.sendServerMessage(
                             context.source,
                             Component.translatable(

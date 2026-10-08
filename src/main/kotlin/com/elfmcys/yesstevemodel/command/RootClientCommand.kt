@@ -11,10 +11,8 @@ import com.elfmcys.yesstevemodel.command.subcommands.client.MoLangCommand
 import com.elfmcys.yesstevemodel.command.subcommands.client.WatchCommand
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.binding.ContextBinding
 import com.elfmcys.yesstevemodel.geckolib3.resource.GeckoLibCache
-import com.elfmcys.yesstevemodel.molang.runtime.Struct
 import com.elfmcys.yesstevemodel.util.YSMMessageFormatter
 import com.mojang.brigadier.CommandDispatcher
-import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.suggestion.SuggestionProvider
 import com.mojang.brigadier.suggestion.Suggestions
 import net.minecraft.client.Minecraft
@@ -31,14 +29,14 @@ object RootClientCommand {
     val VARS_SUGGESTION_PROVIDER: SuggestionProvider<CommandSourceStack> = SuggestionProviders.register(
         NameSpaces.MOD.path("vars")
     ) { context, builder ->
-        if (context.source is SharedSuggestionProvider && !PlatformAPI.isServer()) {
+        if (context.source is SharedSuggestionProvider && !PlatformAPI.isServer) {
             val geo = getActiveGeoModel() ?: return@register Suggestions.empty()
             val set = HashSet<String>()
             geo.getEvaluationContext().forEachPropertyName { str ->
                 set.add("v.$str")
             }
             if (geo is RoamingPropertyHolder) {
-                val struct: Struct? = (geo as RoamingPropertyHolder).serverVarContainer
+                val struct = (geo as RoamingPropertyHolder).serverVarContainer
                 if (struct is RoamingStruct) {
                     struct.forEachVar { str2 ->
                         set.add("v.roaming.$str2")
@@ -66,7 +64,7 @@ object RootClientCommand {
     val CONTROLLERS_SUGGESTION_PROVIDER: SuggestionProvider<CommandSourceStack> = SuggestionProviders.register(
         NameSpaces.MOD.path("controllers")
     ) { commandContext, suggestionsBuilder ->
-        if (commandContext.source is SharedSuggestionProvider && !PlatformAPI.isServer()) {
+        if (commandContext.source is SharedSuggestionProvider && !PlatformAPI.isServer) {
             val geo = getActiveGeoModel() ?: return@register Suggestions.empty()
             val controllers = HashSet<String>()
             for (controller in geo.getAnimationData().getAnimationControllers()) {
@@ -79,7 +77,7 @@ object RootClientCommand {
 
     @JvmStatic
     fun registerClientCommands(commandDispatcher: CommandDispatcher<CommandSourceStack>) {
-        val root: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(ROOT_NAME)
+        val root = Commands.literal(ROOT_NAME)
             .requires { commandSourceStack -> YSMMessageFormatter.isCurrentClientPlayer(commandSourceStack.entity) }
         root.then(MoLangCommand.register())
         root.then(WatchCommand.register())
@@ -89,7 +87,7 @@ object RootClientCommand {
 
     @JvmStatic
     fun getActiveGeoModel(): GeoEntity<*>? {
-        var geoEntity: GeoEntity<*>? = AnimationDebugOverlay.getActiveModel()
+        var geoEntity = AnimationDebugOverlay.getActiveModel()
         if (geoEntity == null) {
             val localPlayer = Minecraft.getInstance().player
             if (localPlayer != null) {
