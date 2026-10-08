@@ -5,10 +5,10 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.context.AnimationContext
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import org.joml.Vector3f
 
-open class ConstantPoint(
+class ConstantPoint(
     currentTick: Float,
     totalTick: Float,
-    @JvmField val value: Vector3f,
+    val value: Vector3f,
     context: AnimationControllerContext
 ) : AnimationPoint(currentTick, totalTick, context) {
     override val percentCompleted: Float

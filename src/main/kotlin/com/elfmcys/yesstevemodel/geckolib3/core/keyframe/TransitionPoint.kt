@@ -7,12 +7,12 @@ import com.elfmcys.yesstevemodel.geckolib3.core.util.MathUtil
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import org.joml.Vector3f
 
-open class TransitionPoint(
+class TransitionPoint(
     currentTick: Float,
-    @JvmField val lerpFactor: Float,
+    val lerpFactor: Float,
     totalTick: Float,
-    @JvmField val offsetPoint: Vector3f,
-    @JvmField val dstKeyframe: TransitionKeyFrame,
+    val offsetPoint: Vector3f,
+    private val dstKeyframe: TransitionKeyFrame,
     context: AnimationControllerContext
 ) : AnimationPoint(currentTick, totalTick, context) {
     override fun getLerpPoint(evaluator: ExpressionEvaluator<AnimationContext<*>>): Vector3f {
@@ -28,11 +28,8 @@ open class TransitionPoint(
         return vector3f
     }
 
-    open fun evaluateRaw(evaluator: ExpressionEvaluator<AnimationContext<*>>): Vector3f {
+    fun evaluateRaw(evaluator: ExpressionEvaluator<AnimationContext<*>>): Vector3f {
         setupControllerContext(evaluator)
         return dstKeyframe.evaluate(evaluator)
     }
-
-    open fun getOffsetPoint(): Vector3f = offsetPoint
-    open fun getLerpFactor(): Float = lerpFactor
 }

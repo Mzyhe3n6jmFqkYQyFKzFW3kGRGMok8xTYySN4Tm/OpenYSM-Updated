@@ -196,8 +196,8 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
                 is TransitionPoint -> {
                     val vector3fMul = point.evaluateRaw(evaluator).mul(data.getBlendWeight())
                     MathUtil.nlerpEulerAngles(
-                        point.getLerpFactor(),
-                        point.getOffsetPoint(),
+                        point.lerpFactor,
+                        point.offsetPoint,
                         vector3fMul,
                         data.topLevelSnapshot.bone.initialRotation,
                         vector3fMul,
@@ -230,7 +230,7 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
 
                 else -> {
                     if (point is TransitionPoint) {
-                        blendWeight = MathUtil.lerpValues(point.getLerpFactor(), 1.0f, blendWeight)
+                        blendWeight = MathUtil.lerpValues(point.lerpFactor, 1.0f, blendWeight)
                     }
                     mutableVector.setPercentCompleted(0.0f)
                 }
@@ -249,7 +249,7 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
                 mutableVector.setPercentCompleted(point.percentCompleted)
             } else {
                 if (point is TransitionPoint) {
-                    blendWeight = MathUtil.lerpValues(point.getLerpFactor(), 1.0f, blendWeight)
+                    blendWeight = MathUtil.lerpValues(point.lerpFactor, 1.0f, blendWeight)
                 }
                 mutableVector.setPercentCompleted(0.0f)
             }

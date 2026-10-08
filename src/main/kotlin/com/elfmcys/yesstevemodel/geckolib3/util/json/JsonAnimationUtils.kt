@@ -25,47 +25,6 @@ import kotlin.math.max
 
 object JsonAnimationUtils {
     @JvmStatic
-    fun getAnimations(json: JsonObject): Set<Map.Entry<String, JsonElement>> {
-        if (json.has("animations")) return json.getAsJsonObject("animations").entrySet()
-        return ImmutableSet.of()
-    }
-
-    @JvmStatic
-    fun getBones(json: JsonObject): List<Map.Entry<String, JsonElement>> {
-        val bones = json.getAsJsonObject("bones")
-        return bones?.entrySet()?.toList() ?: emptyList()
-    }
-
-    @JvmStatic
-    fun getSoundEffects(json: JsonObject): List<Map.Entry<String, JsonElement>> {
-        val bones = json.getAsJsonObject("sound_effects")
-        return bones?.entrySet()?.toList() ?: emptyList()
-    }
-
-    @JvmStatic
-    fun getCustomInstructionKeyFrames(json: JsonObject): List<Map.Entry<String, JsonElement>> {
-        val customInstructions = json.getAsJsonObject("timeline")
-        return customInstructions?.entrySet()?.toList() ?: emptyList()
-    }
-
-    @JvmStatic
-    @Throws(ChainedJsonException::class)
-    private fun getObjectByKey(json: Set<Map.Entry<String, JsonElement>>, key: String): JsonElement {
-        for ((key1, value) in json) {
-            if (key1 == key) {
-                return value
-            }
-        }
-        throw ChainedJsonException("Could not find key: $key")
-    }
-
-    @JvmStatic
-    @Throws(ChainedJsonException::class)
-    fun getAnimation(animationFile: JsonObject, animationName: String): Map.Entry<String, JsonElement> {
-        return AbstractMap.SimpleEntry(animationName, getObjectByKey(getAnimations(animationFile), animationName))
-    }
-
-    @JvmStatic
     @Throws(ClassCastException::class, IllegalStateException::class)
     fun deserializeJsonToAnimation(
         element: Map.Entry<String, JsonElement>,
@@ -94,7 +53,7 @@ object JsonAnimationUtils {
         val customInstructionKeyframes = ReferenceArrayList<EventKeyFrame<Array<IValue>>>()
         val soundKeyFrames = ReferenceArrayList<EventKeyFrame<String>>()
 
-        for ((key, value) in getSoundEffects(animationJsonObject)) {
+        for ((key, value) in animationJsonObject.soundEffects) {
             val startTick = (key.toDoubleOrNull() ?: 0.0) * 20.0
 
             when {
@@ -111,7 +70,7 @@ object JsonAnimationUtils {
             }
         }
 
-        for ((key, value) in getCustomInstructionKeyFrames(animationJsonObject)) {
+        for ((key, value) in animationJsonObject.customInstructionKeyFrames) {
             val startTick = (key.toDoubleOrNull() ?: 0.0) * 20.0
             when {
                 value.isJsonArray -> {
@@ -129,7 +88,7 @@ object JsonAnimationUtils {
 
         customInstructionKeyframes.sortWith(Comparator.comparingDouble { it.startTick.toDouble() })
 
-        for ((key, value) in getBones(animationJsonObject)) {
+        for ((key, value) in animationJsonObject.bones) {
             val rotationKeyFrames: MutableList<RawBoneKeyFrame> = Lists.newArrayList()
             val positionKeyFrames: MutableList<RawBoneKeyFrame> = Lists.newArrayList()
             val scaleKeyFrames: MutableList<RawBoneKeyFrame> = Lists.newArrayList()
@@ -189,3 +148,41 @@ object JsonAnimationUtils {
         return max
     }
 }
+
+@Throws(ChainedJsonException::class)
+private fun getObjectByKey(json: Set<Map.Entry<String, JsonElement>>, key: String): JsonElement {
+    for ((key1, value) in json) {
+        if (key1 == key) {
+            return value
+        }
+    }
+    throw ChainedJsonException("Could not find key: $key")
+}
+
+@Throws(ChainedJsonException::class)
+fun JsonObject.getAnimation(animationName: String): Map.Entry<String, JsonElement> =
+    AbstractMap.SimpleEntry(animationName, getObjectByKey(animations, animationName))
+
+val JsonObject.customInstructionKeyFrames: List<Map.Entry<String, JsonElement>>
+    get() {
+        val customInstructions = getAsJsonObject("timeline")
+        return customInstructions?.entrySet()?.toList() ?: emptyList()
+    }
+
+val JsonObject.soundEffects: List<Map.Entry<String, JsonElement>>
+    get() {
+        val bones = getAsJsonObject("sound_effects")
+        return bones?.entrySet()?.toList() ?: emptyList()
+    }
+
+val JsonObject.bones: List<Map.Entry<String, JsonElement>>
+    get() {
+        val bones = getAsJsonObject("bones")
+        return bones?.entrySet()?.toList() ?: emptyList()
+    }
+
+val JsonObject.animations: Set<Map.Entry<String, JsonElement>>
+    get() {
+        if (has("animations")) return getAsJsonObject("animations").entrySet()
+        return ImmutableSet.of()
+    }

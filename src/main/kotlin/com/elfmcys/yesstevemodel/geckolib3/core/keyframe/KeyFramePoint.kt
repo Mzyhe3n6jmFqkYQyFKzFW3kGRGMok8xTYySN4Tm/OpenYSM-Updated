@@ -6,9 +6,9 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.context.AnimationContext
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import org.joml.Vector3f
 
-open class KeyFramePoint(
+class KeyFramePoint(
     currentTick: Float,
-    @JvmField val keyFrame: BoneKeyFrame,
+    private val keyFrame: BoneKeyFrame,
     context: AnimationControllerContext
 ) : AnimationPoint(currentTick, keyFrame.totalTick, context) {
     override fun getLerpPoint(evaluator: ExpressionEvaluator<AnimationContext<*>>): Vector3f {
