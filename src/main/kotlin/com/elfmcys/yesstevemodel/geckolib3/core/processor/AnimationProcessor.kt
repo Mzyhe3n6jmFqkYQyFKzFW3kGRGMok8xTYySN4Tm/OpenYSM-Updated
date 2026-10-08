@@ -53,7 +53,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
     ) {
         context.storage = publicVariableStorage
         context.random = random
-        context.setAudioPlayerManager(audioPlayerManager)
+        context.audioPlayerManager = audioPlayerManager
         val evaluator = ExpressionEvaluator.evaluator(context)
         val seekTime = event.currentTick
         when {

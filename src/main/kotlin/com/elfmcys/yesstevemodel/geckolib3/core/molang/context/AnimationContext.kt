@@ -33,7 +33,7 @@ class AnimationContext<TEntity>(
 ) : IContext<TEntity> {
     private var animationControllerContext2: AnimationControllerContext? = null
     override var playbackFlags: PlaybackFlags? = null
-    private var audioPlayerManager2: AudioPlayerManager? = null
+    var audioPlayerManager: AudioPlayerManager? = null
     override var random: RandomSource? = null
     private var storage2: VariableStorage? = null
     var storage: VariableStorage?
@@ -57,7 +57,7 @@ class AnimationContext<TEntity>(
         animationControllerContext2 = context.animationControllerContext2
         random = context.random
         storage2 = context.storage2
-        audioPlayerManager2 = context.audioPlayerManager2
+        audioPlayerManager = context.audioPlayerManager
         when (entity) {
             is Player -> PlayerCapability[entity]?.let { cap -> foreignStorage = cap.propertyGetter }
             is Projectile -> ProjectileCapability[entity]?.let { cap -> foreignStorage = cap.propertyGetter }
@@ -73,11 +73,8 @@ class AnimationContext<TEntity>(
 
     override val data: EntityModelData
         get() = data2
-    override var animationControllerContext: AnimationControllerContext?
+    override val animationControllerContext: AnimationControllerContext?
         get() = animationControllerContext2
-        set(value) {
-            animationControllerContext2 = value
-        }
 
     override val entity: TEntity
         get() = entity2
@@ -95,7 +92,7 @@ class AnimationContext<TEntity>(
     override val scopedStorage: IScopedVariableStorage?
         get() = storage2
     override val controllerStorage: IControllerVariableStorage?
-        get() = animationControllerContext2
+        get() = animationControllerContext
 
     override fun resolveExpression(str: String): IValue? = instance.resolveExpression(str)
 
@@ -151,16 +148,12 @@ class AnimationContext<TEntity>(
 
     override fun getAudioPlayerManager(global: Boolean): AudioPlayerManager? {
         if (!global) {
-            val audioPlayerManager2 = animationControllerContext2?.audioPlayerManager
+            val audioPlayerManager2 = animationControllerContext?.audioPlayerManager
             if (audioPlayerManager2 != null) return audioPlayerManager2
             val audioPlayerManager1 = playbackFlags?.audioPlayerManager
             if (audioPlayerManager1 != null) return audioPlayerManager1
         }
-        return audioPlayerManager2
-    }
-
-    fun setAudioPlayerManager(audioPlayerManager: AudioPlayerManager?) {
-        this.audioPlayerManager2 = audioPlayerManager
+        return audioPlayerManager
     }
 
     fun setAnimationControllerContext(context: AnimationControllerContext?) {
