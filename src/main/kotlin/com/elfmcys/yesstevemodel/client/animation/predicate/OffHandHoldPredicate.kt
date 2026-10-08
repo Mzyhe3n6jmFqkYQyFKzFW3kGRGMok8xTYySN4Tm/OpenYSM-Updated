@@ -21,7 +21,7 @@ class OffHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
         val entity: LivingEntity = animatable.entity
         if (animatable is IPreviewAnimatable) return PlayState.STOP
         if (!checkSwingAndUse(entity, InteractionHand.OFF_HAND)) return PlayState.PAUSE
-        val i: Int = animatable.getModelAssembly()?.modelData?.formatVersion ?: 0
+        val i: Int = animatable.modelAssembly?.modelData?.formatVersion ?: 0
         val itemInHand: ItemStack = entity.getItemInHand(InteractionHand.OFF_HAND)
         if (itemInHand.`is`(Items.CROSSBOW) && CrossbowItem.isCharged(itemInHand))
             return IAnimationPredicate.playAnimationWithValid(

@@ -1,13 +1,13 @@
 package com.elfmcys.yesstevemodel.util
 
-import rip.ysm.compat.oculus.OculusCompat
+import com.elfmcys.yesstevemodel.client.entity.IPreviewAnimatable
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
 import com.elfmcys.yesstevemodel.geckolib3.core.AnimatableEntity
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.context.IContext
-import com.elfmcys.yesstevemodel.client.entity.IPreviewAnimatable
 import net.minecraft.client.CameraType
 import net.minecraft.client.Minecraft
 import net.minecraft.world.entity.Entity
+import rip.ysm.compat.oculus.OculusCompat
 
 object CameraUtil {
     @JvmStatic
@@ -33,6 +33,6 @@ object CameraUtil {
 
     @JvmStatic
     fun isThirdPersonModel(model: AnimatableEntity<*>): Boolean {
-        return model is IPreviewAnimatable || ModelPreviewRenderer.isPreview()
+        return model is IPreviewAnimatable || ModelPreviewRenderer.isPreview
     }
 }

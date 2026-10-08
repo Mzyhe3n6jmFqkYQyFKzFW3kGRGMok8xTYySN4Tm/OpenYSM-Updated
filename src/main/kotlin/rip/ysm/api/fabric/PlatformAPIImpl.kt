@@ -21,16 +21,20 @@ object PlatformAPIImpl {
     }
 
     @JvmStatic
-    fun isServer(): Boolean = FabricLoader.getInstance().environmentType == EnvType.SERVER
+    val isServer: Boolean
+        get() = FabricLoader.getInstance().environmentType == EnvType.SERVER
 
     @JvmStatic
-    fun getPlatformName(): String = "Fabric"
+    val platformName: String
+        get() = "Fabric"
 
     @JvmStatic
-    fun getConfigFolder(): Path = FabricLoader.getInstance().configDir
+    val configFolder: Path
+        get() = FabricLoader.getInstance().configDir
 
     @JvmStatic
-    fun getGameFolder(): Path = FabricLoader.getInstance().gameDir
+    val gameFolder: Path
+        get() = FabricLoader.getInstance().gameDir
 
     @JvmStatic
     fun isModLoaded(modId: String): Boolean = FabricLoader.getInstance().isModLoaded(modId)
@@ -40,13 +44,15 @@ object PlatformAPIImpl {
         .orElse(null)?.metadata?.version?.friendlyString ?: "unknown"
 
     @JvmStatic
-    fun isDevelopmentEnvironment(): Boolean = FabricLoader.getInstance().isDevelopmentEnvironment
+    val isDevelopmentEnvironment: Boolean
+        get() = FabricLoader.getInstance().isDevelopmentEnvironment
 
     @JvmStatic
-    fun getServer(): MinecraftServer? {
-        if (currentServer != null) return currentServer
-        if (!isServer())
-            return runCatching { Minecraft.getInstance().singleplayerServer }.getOrNull()
-        return null
-    }
+    val server: MinecraftServer?
+        get() {
+            if (currentServer != null) return currentServer
+            if (!isServer)
+                return runCatching { Minecraft.getInstance().singleplayerServer }.getOrNull()
+            return null
+        }
 }

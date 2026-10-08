@@ -33,7 +33,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     private var needsInit: Boolean = false
     private var playerUpdateIValue: IValue? = null
     private val updateExpressionArgs: BooleanList = BooleanArrayList(1).apply { size(1) }
-    private var forceDisabled: Boolean = false
+    private var forceDisabled2: Boolean = false
     private var extraRenderFlag: Boolean = false
 
     override fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<T>>, z: Boolean) {
@@ -71,17 +71,17 @@ abstract class LivingAnimatable<T : LivingEntity>(
     open fun initModelWithTexture(str: String, str2: String?) {
         markModelInitialized()
         currentTextureName = str2
-        setModelId(str)
+        modelId = str
         updateCurrentTexture()
     }
 
     open fun setForceDisabled(forceDisabled: Boolean) {
-        this.forceDisabled = forceDisabled
+        this.forceDisabled2 = forceDisabled
     }
 
-    open fun isForceDisabled(): Boolean = forceDisabled
+    open fun isForceDisabled(): Boolean = forceDisabled2
 
-    open fun isModelActive(): Boolean = isModelInitialized && !forceDisabled
+    open fun isModelActive(): Boolean = isModelInitialized && !forceDisabled2
 
     override fun onModelLoaded(modelAssembly: ModelAssembly) {
         super.onModelLoaded(modelAssembly)
@@ -105,7 +105,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
         super.resetModel()
         currentTextureName = null
         textureIndex = 0
-        forceDisabled = false
+        forceDisabled2 = false
     }
 
     override fun reset() {
@@ -132,25 +132,25 @@ abstract class LivingAnimatable<T : LivingEntity>(
     }
 
     open fun getModelConfig(): ConditionManager? {
-        return getModelAssembly()?.animationBundle?.conditionManager
+        return modelAssembly?.animationBundle?.conditionManager
     }
 
     private fun updateCurrentTexture() {
         if (isModelReady) {
             val map =
-                getModelAssembly()?.animationBundle?.textures
+                modelAssembly?.animationBundle?.textures
             if (map != null) {
                 val abstractTexture = map[currentTextureName]
                 when {
                     abstractTexture != null -> {
-                        (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(abstractTexture)
+                        (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(abstractTexture)
                         textureIndex = map.getValuesList().indexOf(abstractTexture)
                     }
 
                     !map.isEmpty() -> {
                         currentTextureName = map.getKeyAt(0)
                         map.getValueAt(0)
-                            .let { (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(it) }
+                            .let { (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(it) }
                         textureIndex = 0
                     }
                 }
@@ -158,22 +158,22 @@ abstract class LivingAnimatable<T : LivingEntity>(
         }
     }
 
-    override fun getAnimationProcessor(): GeoModel = getModelAssembly()!!.animationBundle.mainModel
+    override fun getAnimationProcessor(): GeoModel = modelAssembly!!.animationBundle.mainModel
 
-    override fun getAnimation(str: String): Animation? = getModelAssembly()?.animationBundle?.mainAnimations?.get(str)
+    override fun getAnimation(str: String): Animation? = modelAssembly?.animationBundle?.mainAnimations?.get(str)
 
     override fun getAnimationEntries(str: String): AnimationController? =
-        getModelAssembly()?.animationBundle?.animationEntries?.get(str)
+        modelAssembly?.animationBundle?.animationEntries?.get(str)
 
     open fun getCurrentTextureName(): String? {
-        return if (isModelReady) currentTextureName else getModelAssembly()?.animationBundle?.textures
+        return if (isModelReady) currentTextureName else modelAssembly?.animationBundle?.textures
             ?.getKeyAt(0)
     }
 
     override val textureLocation: Identifier
         get() {
             return if (isModelReady) {
-                (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.currentTexture?.getResourceLocation()
+                (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.currentTexture?.getResourceLocation()
                     ?: ClientModelManager.getDefaultTexture()
             } else {
                 ClientModelManager.getDefaultTexture()
@@ -181,25 +181,17 @@ abstract class LivingAnimatable<T : LivingEntity>(
         }
 
     override fun getTextureIndex(): Int {
-        if (isModelReady) {
-            return textureIndex
-        }
+        if (isModelReady) return textureIndex
         return 0
     }
 
     override val widthScale: Float
-        get() {
-            return getModelAssembly()?.modelData?.modelProperties?.widthScale ?: 1.0f
-        }
+        get() = modelAssembly?.modelData?.modelProperties?.widthScale ?: 1.0f
 
     override val heightScale: Float
-        get() {
-            return getModelAssembly()?.modelData?.modelProperties?.heightScale ?: 1.0f
-        }
+        get() = modelAssembly?.modelData?.modelProperties?.heightScale ?: 1.0f
 
-    open fun isRenderLayersFirst(): Boolean {
-        return getModelAssembly()?.modelData?.modelProperties?.renderLayersFirst ?: false
-    }
+    open fun isRenderLayersFirst(): Boolean = modelAssembly?.modelData?.modelProperties?.renderLayersFirst ?: false
 
     open fun isExtraRenderFlag(): Boolean = extraRenderFlag
 

@@ -29,7 +29,7 @@ class MainHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
         if (!checkSwingAndUse(entity, InteractionHand.MAIN_HAND)) {
             return PlayState.PAUSE
         }
-        val i: Int = animatable.getModelAssembly()?.modelData?.formatVersion ?: 0
+        val i: Int = animatable.modelAssembly?.modelData?.formatVersion ?: 0
         val mainHandItem: ItemStack = entity.getItemInHand(InteractionHand.MAIN_HAND)
         val playState: PlayState? = TacCompat.handleGunHoldAnimState(mainHandItem, event)
         if (playState != null) {

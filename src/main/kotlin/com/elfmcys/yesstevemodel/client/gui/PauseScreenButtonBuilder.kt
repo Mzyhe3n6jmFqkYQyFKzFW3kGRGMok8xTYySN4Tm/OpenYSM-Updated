@@ -36,7 +36,7 @@ object PauseScreenButtonBuilder {
             val player = minecraft.player ?: return@builder
             val cap = PlayerCapability[player] ?: return@builder
             val modelId = cap.modelId
-            val modelAssembly = cap.getModelAssembly()
+            val modelAssembly = cap.modelAssembly
             if (modelAssembly != null && modelAssembly.modelData.modelProperties.extraAnimation.isNotEmpty()) {
                 minecraft.setScreen(AnimationRouletteScreen(modelId, modelAssembly, cap))
             }

@@ -81,7 +81,7 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
     ) {
         val maid = animatable.entity
         val vanillaState: LivingEntityRenderState = state
-        val syncRotationsForPreview = ModelPreviewRenderer.isPreview()
+        val syncRotationsForPreview = ModelPreviewRenderer.isPreview
         var savedYBodyRot = 0.0f
         var savedYBodyRotO = 0.0f
         var savedYHeadRot = 0.0f

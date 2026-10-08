@@ -55,7 +55,7 @@ object NativeModelRenderer {
                 Minecraft.getInstance().options.fov().get().toFloat()
             )
         ).mul(RenderSystem.getModelViewMatrix())
-        val isPreview = ModelPreviewRenderer.isPreview() || ModelPreviewRenderer.isExtraPlayer()
+        val isPreview = ModelPreviewRenderer.isPreview || ModelPreviewRenderer.isExtraPlayer()
 
         if (textureLocation != null && NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && GeneralConfig.USE_GPU_RENDERER.get()) {
             if (!GpuCapability.isAvailable()) {

@@ -31,7 +31,7 @@ open class MaidTextureButton(
 
     init {
         val animatable = MaidRenderStore.getOrCreate(maid)
-        val assembly: ModelAssembly? = animatable.getModelAssembly()
+        val assembly: ModelAssembly? = animatable.modelAssembly
         modelId = animatable.modelId
         displayName =
             if (assembly != null) ComponentUtil.getDisplayName(assembly, modelId) else Component.literal(modelId)

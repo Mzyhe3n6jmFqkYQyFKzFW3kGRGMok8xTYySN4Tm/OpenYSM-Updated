@@ -90,14 +90,8 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
         }
     }
 
-    fun getModelAssembly(): ModelAssembly? {
-        return modelAssembly2
-    }
-
-    fun setModelId(str: String) {
-        modelId2 = str
-        refreshModel()
-    }
+    val modelAssembly: ModelAssembly?
+        get() = modelAssembly2
 
     private fun refreshModel() {
         ClientModelManager.getModelContext(modelId2)?.let { assembly ->
@@ -129,7 +123,8 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
         }
     }
 
-    fun getRenderShape(): ModelWrapper? = renderShape2
+    val renderShape: ModelWrapper?
+        get() = renderShape2
 
     open fun onModelLoaded(modelAssembly: ModelAssembly) {
         renderShape2?.audioProvider = AudioStreamCache.getOrCreateProvider(modelAssembly)
@@ -156,8 +151,12 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
         clearModel()
     }
 
-    val modelId: String
+    var modelId: String
         get() = modelId2
+        set(value) {
+            modelId2 = value
+            refreshModel()
+        }
 
     override val isModelReady: Boolean
         get() {
@@ -168,12 +167,12 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean =
         event.isFirstPerson() || OculusCompat.isPBRActive()
 
-    override fun resolveExpression(str: String): IValue? = getModelAssembly()?.expressionCache?.functions?.get(str)
+    override fun resolveExpression(str: String): IValue? = modelAssembly?.expressionCache?.functions?.get(str)
 
     override fun getAudioStreamFactory(str: String): IAudioStreamFactory? {
         val shape = renderShape2 ?: return null
         val provider = shape.audioProvider ?: return null
-        val trackData = getModelAssembly()?.expressionCache?.soundEffects?.get(str)
+        val trackData = modelAssembly?.expressionCache?.soundEffects?.get(str)
         if (trackData?.data != null && trackData.codec != AudioCodec.UNDEFINED)
             return IAudioStreamFactory { provider.createAudioStream(trackData) }
         return null

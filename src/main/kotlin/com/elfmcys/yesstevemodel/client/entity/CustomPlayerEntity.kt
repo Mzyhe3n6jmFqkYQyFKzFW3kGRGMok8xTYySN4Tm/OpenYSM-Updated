@@ -31,7 +31,7 @@ abstract class CustomPlayerEntity(
     }
 
     override fun registerAnimationControllers() {
-        getModelAssembly()?.animationBundle?.playerControllerInstaller?.invoke(this)
+        modelAssembly?.animationBundle?.playerControllerInstaller?.invoke(this)
     }
 
     override fun resetModel() {
@@ -49,14 +49,11 @@ abstract class CustomPlayerEntity(
     override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean =
         event.isFirstPerson() || !isLocalPlayer && OculusCompat.isPBRActive()
 
-    override fun getServerVarContainer(): Struct? {
-        return null
-    }
+    override val serverVarContainer: Struct?
+        get() = null
 
     open val isLocalPlayerModel: Boolean
-        get() {
-            return isLocalPlayer
-        }
+        get() = isLocalPlayer
 
     override fun onModelLoaded(modelAssembly: ModelAssembly) {
         super.onModelLoaded(modelAssembly)
@@ -92,7 +89,7 @@ abstract class CustomPlayerEntity(
 
     override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
         super.setupAnim(seekTime, isFirstPerson)
-        getEvaluationContext().setRoamingProperties(getServerVarContainer())
+        getEvaluationContext().setRoamingProperties(serverVarContainer)
     }
 
     override fun afterSetupAnim(seekTime: Float, isFirstPerson: Boolean) {

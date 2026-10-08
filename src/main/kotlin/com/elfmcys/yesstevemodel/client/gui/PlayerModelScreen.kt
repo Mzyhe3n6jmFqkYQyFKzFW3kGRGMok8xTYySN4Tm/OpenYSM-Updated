@@ -272,7 +272,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             IconButton(guiLeft + 5, guiTop + 5, 20, 20, 80, 16) {
                 val player = minecraft.player ?: return@IconButton
                 val cap = PlayerCapability[player] ?: return@IconButton
-                val modelAssembly = cap.getModelAssembly() ?: return@IconButton
+                val modelAssembly = cap.modelAssembly ?: return@IconButton
                 if (modelAssembly.modelData.metadata != null) {
                     minecraft.setScreen(createModelInfoScreen(this, modelAssembly))
                 }
@@ -283,7 +283,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             IconButton(guiLeft + 28, guiTop + 5, 79, 20, 32, 16) {
                 val player = minecraft.player ?: return@IconButton
                 val cap = PlayerCapability[player] ?: return@IconButton
-                val modelAssembly = cap.getModelAssembly() ?: return@IconButton
+                val modelAssembly = cap.modelAssembly ?: return@IconButton
                 minecraft.setScreen(createTextureScreen(this, cap.modelId, modelAssembly))
             }.apply { setTooltipText("gui.yes_steve_model.model.texture") }
         )
