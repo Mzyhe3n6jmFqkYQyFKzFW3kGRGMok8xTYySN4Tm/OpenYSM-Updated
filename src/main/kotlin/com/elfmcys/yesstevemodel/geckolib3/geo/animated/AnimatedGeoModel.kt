@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.geo.animated
 
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool

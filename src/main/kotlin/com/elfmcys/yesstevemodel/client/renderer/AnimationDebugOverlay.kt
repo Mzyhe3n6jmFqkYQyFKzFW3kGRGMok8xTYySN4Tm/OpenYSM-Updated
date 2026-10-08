@@ -5,19 +5,15 @@ import com.elfmcys.yesstevemodel.capability.ProjectileCapability
 import com.elfmcys.yesstevemodel.capability.VehicleCapability
 import com.elfmcys.yesstevemodel.client.animation.molang.MolangWatchRegistry
 import com.elfmcys.yesstevemodel.client.entity.GeoEntity
-import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.player.LocalPlayer
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.MutableComponent
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.phys.EntityHitResult
-import net.minecraft.world.phys.HitResult
 import rip.ysm.api.client.HudOverlay
 import rip.ysm.compat.touhoulittlemaid.MaidCapabilityBridge
 import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat
@@ -52,7 +48,7 @@ object AnimationDebugOverlay {
 
     @JvmStatic
     fun tryUpdateFromHitResult(): Boolean {
-        val hitResult: HitResult? = Minecraft.getInstance().hitResult
+        val hitResult = Minecraft.getInstance().hitResult
         if (hitResult is EntityHitResult) {
             return tryUpdateFromEntity(hitResult.entity)
         }
@@ -61,7 +57,7 @@ object AnimationDebugOverlay {
 
     @JvmStatic
     fun tryUpdateFromLocalPlayer(): Boolean {
-        val localPlayer: LocalPlayer? = Minecraft.getInstance().player
+        val localPlayer = Minecraft.getInstance().player
         if (localPlayer != null) {
             val cap = PlayerCapability[localPlayer]
             if (cap != null) {
@@ -75,7 +71,7 @@ object AnimationDebugOverlay {
 
     @JvmStatic
     fun tryUpdateFromEntity(entity: Entity): Boolean {
-        val capability: Any? = when {
+        val capability = when {
             entity is Player -> PlayerCapability[entity]
             TouhouLittleMaidCompat.isMaidEntity(entity) -> MaidCapabilityBridge[entity]
             entity is Projectile -> ProjectileCapability[entity]
@@ -94,12 +90,12 @@ object AnimationDebugOverlay {
         clearActiveModel()
         activeModel = WeakReference(geoEntity)
         geoEntity.setBoneLookup(MOLANG_WATCH)
-        val entity: Entity = geoEntity.entity
-        val localPlayer: LocalPlayer? = Minecraft.getInstance().player
+        val entity = geoEntity.entity
+        val localPlayer = Minecraft.getInstance().player
         if (localPlayer != null) {
-            val mutableComponentAppend: MutableComponent =
+            val mutableComponentAppend =
                 Component.translatable("message.yes_steve_model.model.debug_animation.true").append(" -> ")
-            val customName: Component? = entity.customName
+            val customName = entity.customName
             val displayName = customName ?: entity.displayName
             localPlayer.displayClientMessage(
                 mutableComponentAppend.append(displayName),
@@ -112,18 +108,14 @@ object AnimationDebugOverlay {
     fun clearActiveModel() {
         val currentModel = activeModel
         if (currentModel != null) {
-            val geoEntity: GeoEntity<*>? = currentModel.get()
-            if (geoEntity != null) {
-                geoEntity.setBoneLookup(null)
-            }
+            val geoEntity = currentModel.get()
+            geoEntity?.setBoneLookup(null)
             activeModel = null
-            val localPlayer: LocalPlayer? = Minecraft.getInstance().player
-            if (localPlayer != null) {
-                localPlayer.displayClientMessage(
-                    Component.translatable("message.yes_steve_model.model.debug_animation.false"),
-                    false
-                )
-            }
+            val localPlayer = Minecraft.getInstance().player
+            localPlayer?.displayClientMessage(
+                Component.translatable("message.yes_steve_model.model.debug_animation.false"),
+                false
+            )
         }
     }
 
@@ -141,7 +133,7 @@ object AnimationDebugOverlay {
     fun getActiveModel(): GeoEntity<*>? {
         val currentModel = activeModel
         if (currentModel != null) {
-            val geoEntity: GeoEntity<*>? = currentModel.get()
+            val geoEntity = currentModel.get()
             if (geoEntity != null && geoEntity.isDebugMode()) {
                 return geoEntity
             }
@@ -153,19 +145,19 @@ object AnimationDebugOverlay {
 
     @JvmStatic
     fun renderOverlay(font: Font, guiGraphics: GuiGraphics, screenWidth: Int, screenHeight: Int) {
-        val geoEntity: GeoEntity<*> = getActiveModel() ?: return
+        val geoEntity = getActiveModel() ?: return
         val currentY = intArrayOf(5)
         MOLANG_WATCH.forEachEntry { molangKey, molangValue ->
             renderDebugOverlay(font, guiGraphics, currentY, molangKey, molangValue, screenWidth, screenHeight)
         }
         DEBUG_LINES.forEach { str3 ->
-            val controller: IAnimationController<*>? = geoEntity.getAnimationData().getAnimationControllerByName(str3)
+            val controller = geoEntity.getAnimationData().getAnimationControllerByName(str3)
             renderDebugOverlay(
                 font,
                 guiGraphics,
                 currentY,
                 str3,
-                controller?.getCurrentAnimation() ?: "(N/A)",
+                controller?.currentAnimation ?: "(N/A)",
                 screenWidth,
                 screenHeight
             )

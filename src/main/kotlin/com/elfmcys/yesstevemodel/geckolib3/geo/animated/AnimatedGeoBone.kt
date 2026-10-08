@@ -12,113 +12,115 @@ class AnimatedGeoBone(
     private val stateBuffer: FloatArray,
     private val stateOffset: Int
 ) : IBone {
-    private val name: String = geoBone.name
-    private val boneId: Int = geoBone.boneId
-    private val pivotX: Float = geoBone.pivotX
-    private val pivotY: Float = geoBone.pivotY
-    private val pivotZ: Float = geoBone.pivotZ
-    private val initialRotation: Vector3f = Vector3f(geoBone.rotX, geoBone.rotY, geoBone.rotZ)
+    private val geoBoneName: String = geoBone.name
+    private val geoBoneBoneId: Int = geoBone.boneId
+    private val geoBonePivotX: Float = geoBone.pivotX
+    private val geoBonePivotY: Float = geoBone.pivotY
+    private val geoBonePivotZ: Float = geoBone.pivotZ
+    private val geoBoneInitialRotation: Vector3f = Vector3f(geoBone.rotX, geoBone.rotY, geoBone.rotZ)
 
     @JvmField
     @PublishedApi
     internal var rawTouhouMaidBone: Any? = null
 
-    init {
-        setHidden(geoBone.isHidden, geoBone.childBonesAreHiddenToo())
-        setRotationX(geoBone.rotX)
-        setRotationY(geoBone.rotY)
-        setRotationZ(geoBone.rotZ)
-        setScaleX(1.0f)
-        setScaleY(1.0f)
-        setScaleZ(1.0f)
-    }
+    override val initialRotation: Vector3f
+        get() = geoBoneInitialRotation
 
-    override fun getInitialRotation(): Vector3f = initialRotation
+    override val pivotAbsX: Float
+        get() = stateBuffer[stateOffset + PIVOT_ABS_X_OFFSET]
 
-    override fun getPivotAbsX(): Float = stateBuffer[stateOffset + PIVOT_ABS_X_OFFSET]
+    override val pivotAbsY: Float
+        get() = stateBuffer[stateOffset + PIVOT_ABS_Y_OFFSET]
 
-    override fun getPivotAbsY(): Float = stateBuffer[stateOffset + PIVOT_ABS_Y_OFFSET]
+    override val pivotAbsZ: Float
+        get() = stateBuffer[stateOffset + PIVOT_ABS_Z_OFFSET]
 
-    override fun getPivotAbsZ(): Float = stateBuffer[stateOffset + PIVOT_ABS_Z_OFFSET]
+    override val name: String
+        get() = geoBoneName
 
-    override fun getName(): String = name
+    override val boneId: Int
+        get() = geoBoneBoneId
 
-    override fun getBoneId(): Int = boneId
+    override var rotationX: Float
+        get() = matrixData[matrixOffset + ROT_X_OFFSET]
+        set(value) {
+            matrixData[matrixOffset + ROT_X_OFFSET] = value
+        }
 
-    override fun getRotationX(): Float = matrixData[matrixOffset + ROT_X_OFFSET]
+    override var rotationY: Float
+        get() = matrixData[matrixOffset + ROT_Y_OFFSET]
+        set(value) {
+            matrixData[matrixOffset + ROT_Y_OFFSET] = value
+        }
 
-    override fun setRotationX(value: Float) {
-        matrixData[matrixOffset + ROT_X_OFFSET] = value
-    }
+    override var rotationZ: Float
+        get() = matrixData[matrixOffset + ROT_Z_OFFSET]
+        set(value) {
+            matrixData[matrixOffset + ROT_Z_OFFSET] = value
+        }
 
-    override fun getRotationY(): Float = matrixData[matrixOffset + ROT_Y_OFFSET]
+    override var positionX: Float
+        get() = matrixData[matrixOffset + POS_X_OFFSET]
+        set(value) {
+            matrixData[matrixOffset + POS_X_OFFSET] = value
+        }
 
-    override fun setRotationY(value: Float) {
-        matrixData[matrixOffset + ROT_Y_OFFSET] = value
-    }
+    override var positionY: Float
+        get() = matrixData[matrixOffset + POS_Y_OFFSET]
+        set(value) {
+            matrixData[matrixOffset + POS_Y_OFFSET] = value
+        }
 
-    override fun getRotationZ(): Float = matrixData[matrixOffset + ROT_Z_OFFSET]
+    override var positionZ: Float
+        get() = matrixData[matrixOffset + POS_Z_OFFSET]
+        set(value) {
+            matrixData[matrixOffset + POS_Z_OFFSET] = value
+        }
 
-    override fun setRotationZ(value: Float) {
-        matrixData[matrixOffset + ROT_Z_OFFSET] = value
-    }
+    override var scaleX: Float
+        get() = matrixData[matrixOffset + SCALE_X_OFFSET]
+        set(value) {
+            matrixData[matrixOffset + SCALE_X_OFFSET] = value
+        }
 
-    override fun getPositionX(): Float = matrixData[matrixOffset + POS_X_OFFSET]
+    override var scaleY: Float
+        get() = matrixData[matrixOffset + SCALE_Y_OFFSET]
+        set(value) {
+            matrixData[matrixOffset + SCALE_Y_OFFSET] = value
+        }
 
-    override fun setPositionX(value: Float) {
-        matrixData[matrixOffset + POS_X_OFFSET] = value
-    }
+    override var scaleZ: Float
+        get() = matrixData[matrixOffset + SCALE_Z_OFFSET]
+        set(value) {
+            matrixData[matrixOffset + SCALE_Z_OFFSET] = value
+        }
 
-    override fun getPositionY(): Float = matrixData[matrixOffset + POS_Y_OFFSET]
+    override val pivotX: Float
+        get() = geoBonePivotX
 
-    override fun setPositionY(value: Float) {
-        matrixData[matrixOffset + POS_Y_OFFSET] = value
-    }
+    override val pivotY: Float
+        get() = geoBonePivotY
 
-    override fun getPositionZ(): Float = matrixData[matrixOffset + POS_Z_OFFSET]
+    override val pivotZ: Float
+        get() = geoBonePivotZ
 
-    override fun setPositionZ(value: Float) {
-        matrixData[matrixOffset + POS_Z_OFFSET] = value
-    }
-
-    override fun getScaleX(): Float = matrixData[matrixOffset + SCALE_X_OFFSET]
-
-    override fun setScaleX(value: Float) {
-        matrixData[matrixOffset + SCALE_X_OFFSET] = value
-    }
-
-    override fun getScaleY(): Float = matrixData[matrixOffset + SCALE_Y_OFFSET]
-
-    override fun setScaleY(value: Float) {
-        matrixData[matrixOffset + SCALE_Y_OFFSET] = value
-    }
-
-    override fun getScaleZ(): Float = matrixData[matrixOffset + SCALE_Z_OFFSET]
-
-    override fun setScaleZ(value: Float) {
-        matrixData[matrixOffset + SCALE_Z_OFFSET] = value
-    }
-
-    override fun getPivotX(): Float = pivotX
-
-    override fun getPivotY(): Float = pivotY
-
-    override fun getPivotZ(): Float = pivotZ
-
-    override fun isHidden(): Boolean = matrixData[matrixOffset + HIDDEN_OFFSET] == 1.0f
+    override val isHidden: Boolean
+        get() = matrixData[matrixOffset + HIDDEN_OFFSET] == 1.0f
 
     override fun setHidden(hidden: Boolean) {
         setHidden(hidden, hidden)
     }
 
-    override fun childBonesAreHiddenToo(): Boolean = matrixData[matrixOffset + HIDE_CHILDREN_OFFSET] == 1.0f
+    override val childBonesAreHiddenToo: Boolean
+        get() = matrixData[matrixOffset + HIDE_CHILDREN_OFFSET] == 1.0f
 
     override fun setHidden(selfHidden: Boolean, skipChildRendering: Boolean) {
         matrixData[matrixOffset + HIDDEN_OFFSET] = if (selfHidden) 1.0f else 0.0f
         matrixData[matrixOffset + HIDE_CHILDREN_OFFSET] = if (skipChildRendering) 1.0f else 0.0f
     }
 
-    override fun isTrackingXform(): Boolean = matrixData[matrixOffset + TRACK_XFORM_OFFSET] == 1.0f
+    override val isTrackingXform: Boolean
+        get() = matrixData[matrixOffset + TRACK_XFORM_OFFSET] == 1.0f
 
     override fun setTrackXform(z: Boolean) {
         matrixData[matrixOffset + TRACK_XFORM_OFFSET] = if (z) 1.0f else 0.0f
@@ -129,6 +131,16 @@ class AnimatedGeoBone(
             rawTouhouMaidBone = TouhouMaidBoneProcessor.createLocationBone(this)
         }
         return rawTouhouMaidBone as? T
+    }
+
+    init {
+        setHidden(geoBone.isHidden, geoBone.childBonesAreHiddenToo())
+        rotationX = geoBone.rotX
+        rotationY = geoBone.rotY
+        rotationZ = geoBone.rotZ
+        scaleX = 1.0f
+        scaleY = 1.0f
+        scaleZ = 1.0f
     }
 
     companion object {

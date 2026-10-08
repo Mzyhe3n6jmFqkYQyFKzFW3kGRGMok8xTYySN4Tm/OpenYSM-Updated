@@ -21,13 +21,11 @@ open class VehicleRotationController(
     private var boneTarget: BoneTopLevelSnapshot? = null
     private var vehicleRotation: TransitionVector3f? = null
 
-    override fun getName(): String {
-        return modelId
-    }
+    override val name: String
+        get() = modelId
 
-    override fun getCurrentAnimation(): String {
-        return "[Coded]"
-    }
+    override val currentAnimation: String
+        get() = "[Coded]"
 
     open fun getVehicleRotation(): Vector3f? {
         return vehicleRotation

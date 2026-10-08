@@ -216,7 +216,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
             tickCount,
             partialTick,
             frameTime,
-            limbSwingAmount <= (-getScale()) || limbSwingAmount <= getScale(),
+            limbSwingAmount <= -getScale() || limbSwingAmount <= getScale(),
             z,
             modelData
         )
@@ -252,9 +252,9 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
         event.currentTick = seekTime
         if (!animationProcessor.isDisabled()) {
             isTickTriggered = isTickTriggered or rateLimiter.request(seekTime / 20.0f)
-            val z2 = (isTickTriggered && !hasUpdatedThisTick) || wasAnimationActiveLastTick || z
+            val z2 = isTickTriggered && !hasUpdatedThisTick || wasAnimationActiveLastTick || z
             val z3 =
-                (!z || (seekTime == 0.0f && !hasUpdatedThisTick)) && isTickTriggered && !hasUpdatedThisTick
+                (!z || seekTime == 0.0f && !hasUpdatedThisTick) && isTickTriggered && !hasUpdatedThisTick
             resetHeadTracking(wasEvaluatedLastFrame)
             if (z2) {
                 if (z3) {

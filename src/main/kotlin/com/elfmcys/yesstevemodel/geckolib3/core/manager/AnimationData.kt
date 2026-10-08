@@ -36,7 +36,7 @@ open class AnimationData {
     open fun getAnimationControllerByName(name: String): IAnimationController<*>? {
         if (animationControllerMap.isEmpty() && animationControllers.isNotEmpty()) {
             for (controller in animationControllers) {
-                animationControllerMap[controller.getName()] = controller
+                animationControllerMap[controller.name] = controller
             }
         }
         return animationControllerMap[name]

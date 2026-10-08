@@ -70,7 +70,7 @@ object RootClientCommand {
             val geo = getActiveGeoModel() ?: return@register Suggestions.empty()
             val controllers = HashSet<String>()
             for (controller in geo.getAnimationData().getAnimationControllers()) {
-                controllers.add(controller.getName())
+                controllers.add(controller.name)
             }
             return@register SharedSuggestionProvider.suggest(controllers, suggestionsBuilder)
         }

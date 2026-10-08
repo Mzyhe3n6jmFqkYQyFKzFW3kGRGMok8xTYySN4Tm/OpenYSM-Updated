@@ -79,7 +79,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
                 @Suppress("UNCHECKED_CAST")
                 (controller as IAnimationController<AnimatableEntity<TEntity>>).process(event, evaluator, z2)
             }
-            currentDeprecatedMode = controller.isDeprecatedMode()
+            currentDeprecatedMode = controller.isDeprecatedMode
             controller.forEachTransform(transformFunc)
         }
         currentEvaluator = null
@@ -103,7 +103,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
                         percentageReset,
                         prevRot,
                         MathUtil.ZERO,
-                        topLevelSnapshot.bone.getInitialRotation(),
+                        topLevelSnapshot.bone.initialRotation,
                         topLevelSnapshot.rotation,
                         rotScratch
                     )
@@ -176,7 +176,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
                 vector3f.add(rot)
                 snapshot.rotation.set(vector3f)
             } else {
-                rot.applyRotationBlendTo(snapshot.rotation, snapshot.bone.getInitialRotation(), rotScratch)
+                rot.applyRotationBlendTo(snapshot.rotation, snapshot.bone.initialRotation, rotScratch)
                 vector3f.set(snapshot.rotation)
             }
         }
@@ -223,7 +223,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
             val boneId = model.getGeoModel().bones[0].boneId
             Int2ReferenceMaps.fastForEach(model.bones()) { entry ->
                 val boneTopLevelSnapshot = BoneTopLevelSnapshot(entry.value)
-                boneById.put(entry.value.getBoneId(), boneTopLevelSnapshot)
+                boneById.put(entry.value.boneId, boneTopLevelSnapshot)
                 if (entry.intKey == boneId) {
                     bones[0] = boneTopLevelSnapshot
                 } else {

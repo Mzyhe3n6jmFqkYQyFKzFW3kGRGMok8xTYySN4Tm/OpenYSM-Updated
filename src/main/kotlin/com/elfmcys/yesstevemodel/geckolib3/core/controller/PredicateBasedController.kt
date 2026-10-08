@@ -25,7 +25,7 @@ import java.util.*
 @Suppress("unused")
 open class PredicateBasedController<T : AnimatableEntity<*>>(
     animatable: T,
-    private val name: String,
+    override val name: String,
     private val transitionLengthTicks: Float,
     predicate: IAnimationPredicate<*>,
     private val deprecatedMode: Boolean = false
@@ -108,14 +108,13 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
         }
     }
 
-    override fun getName(): String = name
-
-    override fun getCurrentAnimation(): String {
-        if (transitionInterpolator.animationState == AnimationState.IDLE) {
-            return "Coded"
+    override val currentAnimation: String
+        get() {
+            if (transitionInterpolator.animationState == AnimationState.IDLE) {
+                return "Coded"
+            }
+            return "Coded -> " + (transitionInterpolator.currentAnimation?.animationName ?: "")
         }
-        return "Coded -> " + (transitionInterpolator.currentAnimation?.animationName ?: "")
-    }
 
     open fun setAnimation(animationName: String?) {
         transitionInterpolator.setAnimation(animationName, null)
@@ -172,10 +171,8 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
         transitionInterpolator.stopSound()
     }
 
-    @Deprecated("")
-    override fun isDeprecatedMode(): Boolean {
-        return deprecatedMode && transitionInterpolator.animationState == AnimationState.RUNNING
-    }
+    override val isDeprecatedMode: Boolean
+        get() = deprecatedMode && transitionInterpolator.animationState == AnimationState.RUNNING
 
     class TransformProviderRecord(private val data: BoneAnimationQueue) : BoneTransformProvider {
         private val mutableVector: TransitionVector3f = TransitionVector3f(0f, 0f, 0f)
@@ -201,7 +198,7 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
                         point.getLerpFactor(),
                         point.getOffsetPoint(),
                         vector3fMul,
-                        data.topLevelSnapshot.bone.getInitialRotation(),
+                        data.topLevelSnapshot.bone.initialRotation,
                         vector3fMul,
                         rotScratch
                     )
