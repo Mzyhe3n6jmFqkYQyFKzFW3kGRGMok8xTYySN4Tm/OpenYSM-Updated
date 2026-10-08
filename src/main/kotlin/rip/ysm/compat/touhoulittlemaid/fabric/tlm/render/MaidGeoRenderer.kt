@@ -188,10 +188,10 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
             null,
             packedLight,
             overlay,
-            color.getRed() / 255.0f,
-            color.getGreen() / 255.0f,
-            color.getBlue() / 255.0f,
-            color.getAlpha() / 255.0f
+            color.red / 255.0f,
+            color.green / 255.0f,
+            color.blue / 255.0f,
+            color.alpha / 255.0f
         )
         if (layersFirst) {
             renderTlmLayers(animatable, state, poseStack, collector)
@@ -208,10 +208,10 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
                 null,
                 packedLight,
                 overlay,
-                color.getRed() / 255.0f,
-                color.getGreen() / 255.0f,
-                color.getBlue() / 255.0f,
-                color.getAlpha() / 255.0f
+                color.red / 255.0f,
+                color.green / 255.0f,
+                color.blue / 255.0f,
+                color.alpha / 255.0f
             )
         }
         if (!layersFirst) {

@@ -85,10 +85,10 @@ abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEn
                     null,
                     packedLight,
                     getPackedLight(projectile, 0.0f),
-                    color.getRed() / 255.0f,
-                    color.getGreen() / 255.0f,
-                    color.getBlue() / 255.0f,
-                    color.getAlpha() / 255.0f
+                    color.red / 255.0f,
+                    color.green / 255.0f,
+                    color.blue / 255.0f,
+                    color.alpha / 255.0f
                 )
                 poseStack.popPose()
             }
