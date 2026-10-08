@@ -40,9 +40,8 @@ open class GeckoProjectileEntity(
         projectileModelContext = null
     }
 
-    override fun getAnimationProcessor(): GeoModel {
-        return projectileModelContext!!.model
-    }
+    override val animationProcessor: GeoModel?
+        get() = projectileModelContext?.model
 
     override val textureLocation: Identifier
         get() {
@@ -59,19 +58,13 @@ open class GeckoProjectileEntity(
     }
 
     override val isModelReady: Boolean
-        get() {
-            return super.isModelReady && projectileModelContext != null && (renderShape?.isValid == true)
-        }
+        get() = super.isModelReady && projectileModelContext != null && renderShape?.isValid == true
 
     override val heightScale: Float
-        get() {
-            return 0.7f
-        }
+        get() = 0.7f
 
     override val widthScale: Float
-        get() {
-            return 0.7f
-        }
+        get() = 0.7f
 
     private class ProjectileModelWrapper(
         modelAssembly: ModelAssembly,

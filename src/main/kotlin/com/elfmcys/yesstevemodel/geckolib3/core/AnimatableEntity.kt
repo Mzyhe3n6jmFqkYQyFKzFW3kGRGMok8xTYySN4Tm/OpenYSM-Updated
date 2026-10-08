@@ -40,46 +40,46 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
     protected var currentModel2: AnimatedGeoModel? = null
 
     @JvmField
-    var animationMap: Object2ReferenceMap<String, MutableList<IValue>>? = null
+    protected var animationMap: Object2ReferenceMap<String, MutableList<IValue>>? = null
 
     @JvmField
-    var wasAnimationActiveLastTick: Boolean = false
+    protected var wasAnimationActiveLastTick: Boolean = false
 
     @JvmField
-    var hasUpdatedThisTick: Boolean = false
+    protected var hasUpdatedThisTick: Boolean = false
 
     @JvmField
-    var isTickTriggered: Boolean = false
+    protected var isTickTriggered: Boolean = false
 
     @JvmField
-    var wasEvaluatedLastFrame: Boolean = false
+    protected var wasEvaluatedLastFrame: Boolean = false
 
     @JvmField
-    var seekTime: Float = 0.0f
+    protected var seekTime2: Float = 0.0f
 
     @JvmField
-    val manager: AnimationData = AnimationData()
+    protected val manager: AnimationData = AnimationData()
 
     @JvmField
-    var lastTick: Float = -1.0f
+    protected var lastTick: Float = -1.0f
 
     @JvmField
-    var isFirstFrameAfterReset: Boolean = true
+    protected var isFirstFrameAfterReset: Boolean = true
 
     @JvmField
-    var needsReset: Boolean = false
+    protected var needsReset: Boolean = false
 
     @JvmField
     protected var modelInitialized: Boolean = false
 
     @JvmField
-    var animationStates: MutableMap<String, AnimationState> = Maps.newHashMap()
+    protected var animationStates: MutableMap<String, AnimationState> = Maps.newHashMap()
 
     @JvmField
-    val animationProcessor: AnimationProcessor<TEntity> = AnimationProcessor(this)
+    protected val animationProcessor2: AnimationProcessor<TEntity> = AnimationProcessor(this)
 
     @JvmField
-    val rateLimiter: RateLimiter = RateLimiter().apply { setRefreshRate(refreshRate) }
+    protected val rateLimiter: RateLimiter = RateLimiter().apply { setRefreshRate(refreshRate) }
 
     @JvmField
     protected val defaultPhysicsManager: PhysicsManager = PhysicsManager()
@@ -94,7 +94,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
     open fun reset() {
         currentModel2 = null
         animationMap = null
-        animationProcessor.reset()
+        animationProcessor2.reset()
         defaultPhysicsManager.clear()
         rateLimiter.reset()
         manager.clear()
@@ -106,7 +106,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
         isFirstFrameAfterReset = true
         needsReset = false
         wasEvaluatedLastFrame = false
-        seekTime = 0.0f
+        seekTime2 = 0.0f
         animationStates.clear()
     }
 
@@ -115,13 +115,15 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
     open val positionTracker: EntityFrameStateTracker<TEntity>
         get() = positionTracker2
 
-    open fun getSeekTime(): Float = seekTime
+    open val seekTime: Float
+        get() = seekTime2
 
     open fun addAnimationController(controller: IAnimationController<*>) {
         manager.addAnimationController(controller)
     }
 
-    open fun getAnimationData(): AnimationData = manager
+    open val animationData: AnimationData
+        get() = manager
 
     open fun resolveExpression(str: String): IValue? = null
 
@@ -137,14 +139,15 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
     open val textureIndex: Int
         get() = 0
 
-    open fun getScale(): Float = 0.15f
+    open val scale: Float
+        get() = 0.15f
 
     open fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {}
     open fun afterSetupAnim(seekTime: Float, isFirstPerson: Boolean) {}
 
     open fun hasCustomTexture(): Boolean = false
 
-    open fun getBone(i: Int): IBone? = animationProcessor.getBone(i)
+    open fun getBone(i: Int): IBone? = animationProcessor2.getBone(i)
 
     open fun shouldRenderOverlay(): Boolean = true
 
@@ -219,7 +222,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
             tickCount,
             partialTick,
             frameTime,
-            limbSwingAmount <= -getScale() || limbSwingAmount <= getScale(),
+            limbSwingAmount <= -scale || limbSwingAmount <= scale,
             z,
             modelData
         )
@@ -249,25 +252,25 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
             val f3 = f2 - manager.limbSwing
             if (f3 > 0.0f) {
                 manager.limbSwing = f2
-                seekTime += f3
+                seekTime2 += f3
             }
         }
-        event.currentTick = seekTime
-        if (!animationProcessor.isDisabled()) {
-            isTickTriggered = isTickTriggered or rateLimiter.request(seekTime / 20.0f)
+        event.currentTick = seekTime2
+        if (!animationProcessor2.isDisabled) {
+            isTickTriggered = isTickTriggered or rateLimiter.request(seekTime2 / 20.0f)
             val z2 = isTickTriggered && !hasUpdatedThisTick || wasAnimationActiveLastTick || z
             val z3 =
-                (!z || seekTime == 0.0f && !hasUpdatedThisTick) && isTickTriggered && !hasUpdatedThisTick
+                (!z || seekTime2 == 0.0f && !hasUpdatedThisTick) && isTickTriggered && !hasUpdatedThisTick
             resetHeadTracking(wasEvaluatedLastFrame)
             if (z2) {
                 if (z3) {
                     hasUpdatedThisTick = true
-                    positionTracker2.updateState(event.getTickCount(), seekTime, event.getFrameTime())
+                    positionTracker2.updateState(event.getTickCount(), seekTime2, event.getFrameTime())
                 }
-                physicsManager.update(seekTime)
-                setupAnim(seekTime, z3)
+                physicsManager.update(seekTime2)
+                setupAnim(seekTime2, z3)
                 getEvaluationContext().tickAnimation(event, ctx, z3, shouldRenderOverlay())
-                afterSetupAnim(seekTime, z3)
+                afterSetupAnim(seekTime2, z3)
                 wasAnimationActiveLastTick = z
             }
             applyHeadTracking(event, z2)
@@ -278,7 +281,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
     open fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<TEntity>>, z: Boolean) {}
     open fun resetHeadTracking(wasAnimEvaluated: Boolean) {}
 
-    open fun getEvaluationContext(): AnimationProcessor<TEntity> = animationProcessor
+    open fun getEvaluationContext(): AnimationProcessor<TEntity> = animationProcessor2
 
     open fun initAnimationControllers(
         model: GeoModel,
@@ -289,7 +292,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
         currentModel2 = animModel
         animationMap = object2ReferenceMap
         registerAnimationControllers()
-        animationProcessor.initBones(animModel, object2ReferenceMap)
+        animationProcessor2.initBones(animModel, object2ReferenceMap)
         currentModel = animModel
     }
 
@@ -319,14 +322,14 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
         func: ((String) -> Unit)?
     ) {
         if (func != null) {
-            animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, func)
+            animationProcessor2.execute(value, isClientPlayer, executeBeforeAnimation, func)
         } else {
-            animationProcessor.execute(value, isClientPlayer, executeBeforeAnimation, null)
+            animationProcessor2.execute(value, isClientPlayer, executeBeforeAnimation, null)
         }
     }
 
     open val propertyGetter: IForeignVariableStorage
-        get() = animationProcessor.publicVariableStorage
+        get() = animationProcessor2.publicVariableStorage
 
     open fun markModelInitialized() {
         modelInitialized = true

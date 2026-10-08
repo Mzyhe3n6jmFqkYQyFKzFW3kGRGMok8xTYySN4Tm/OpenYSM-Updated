@@ -158,7 +158,8 @@ abstract class LivingAnimatable<T : LivingEntity>(
         }
     }
 
-    override fun getAnimationProcessor(): GeoModel = modelAssembly!!.animationBundle.mainModel
+    override val animationProcessor: GeoModel
+        get() = modelAssembly!!.animationBundle.mainModel
 
     override fun getAnimation(str: String): Animation? = modelAssembly?.animationBundle?.mainAnimations?.get(str)
 
