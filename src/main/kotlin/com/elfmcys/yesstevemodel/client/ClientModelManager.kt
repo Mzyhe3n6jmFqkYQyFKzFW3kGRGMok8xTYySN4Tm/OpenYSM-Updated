@@ -35,6 +35,13 @@ import net.minecraft.resources.Identifier
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.tuple.Pair
 import org.apache.logging.log4j.message.StringFormattedMessage
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.launch
 import rip.ysm.security.YSMByteBuf
 import rip.ysm.security.YSMClientCache
 import rip.ysm.security.YsmCrypt
@@ -45,7 +52,8 @@ import java.nio.file.*
 import java.security.SecureRandom
 import java.time.Instant
 import java.util.*
-import java.util.concurrent.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
 
 @Environment(EnvType.CLIENT)
@@ -58,15 +66,10 @@ object ClientModelManager {
     private var currentCacheFolderName: String? = null
     private val pendingModelsCount: AtomicInteger = AtomicInteger(0)
 
-    // TODO: Replace to kotlin version
-    private val modelPhraseExecutor: ThreadPoolExecutor = ThreadPoolExecutor(
-        1, 1, 0L, TimeUnit.MILLISECONDS,
-        LinkedBlockingQueue()
-    ) { runnable ->
-        Thread(runnable, "YSM-Model-Parse-Thread").apply {
-            isDaemon = true
-        }
-    }
+    private val modelParseJob = SupervisorJob()
+    private val modelParseScope = CoroutineScope(
+        modelParseJob + Dispatchers.IO.limitedParallelism(1) + CoroutineName("YSM-Model-Parse")
+    )
 
     private val serverModels: MutableMap<UUID, ServerModelContext> = ConcurrentHashMap()
     private val SECURE_RANDOM: SecureRandom = SecureRandom()
@@ -75,7 +78,7 @@ object ClientModelManager {
     private var localModelContext2: ModelAssembly? = null
 
     @Volatile
-    private var pendingModelCallback: Runnable? = null
+    private var pendingModelCallback: (() -> Unit)? = null
 
     private var defaultTexture2: IResourceLocatable? = null
 
@@ -307,13 +310,14 @@ object ClientModelManager {
                     updatedModelIds.add(modelId)
                     isModelReadyList.add(isAuth)
                 } else {
-                    modelPhraseExecutor.submit {
-                        val currentKey = clientKey ?: return@submit
+                    modelParseScope.launch {
+                        val currentKey = clientKey ?: return@launch
                         runCatching {
                             val fileBytes = Files.readAllBytes(cachedFile.toPath())
                             val decompressed = YsmCrypt.read(fileBytes, currentKey)
                             parseAndLoadModel(decompressed, modelId, isAuth)
                         }.onFailure { e ->
+                            if (e is CancellationException) return@onFailure
                             Constants.LOGGER.error("Failed to parse and load cached model: $modelId", e)
                         }
                     }
@@ -431,7 +435,7 @@ object ClientModelManager {
         }
 
         if (pendingModelsCount.get() == 0) {
-            modelPhraseExecutor.submit {
+            modelParseScope.launch {
                 Constants.LOGGER.info("All models loaded from local cache. Handshake complete!")
                 onSyncComplete()
             }
@@ -470,9 +474,9 @@ object ClientModelManager {
         if (ctx.bytesReceived >= totalSize) {
             val fileBuffer = ctx.fileBuffer ?: return
 
-            modelPhraseExecutor.submit {
-                val currentClientKey = clientKey ?: return@submit
-                val currentServerKey = serverKey ?: return@submit
+            modelParseScope.launch {
+                val currentClientKey = clientKey ?: return@launch
+                val currentServerKey = serverKey ?: return@launch
                 runCatching {
                     val folder = currentCacheFolderName ?: "default_cache"
                     val cacheDir = ServerModelManager.CACHE_CLIENT.resolve(folder).toFile()
@@ -492,6 +496,7 @@ object ClientModelManager {
 
                     parseAndLoadModel(decompressed, ctx.modelId, ctx.isAuth)
                 }.onFailure {
+                    if (it is CancellationException) return@onFailure
                     Constants.LOGGER.error("Failed to save/parse downloaded model: ${ctx.modelId}", it)
                 }.also {
                     if (pendingModelsCount.decrementAndGet() <= 0) {
@@ -545,7 +550,7 @@ object ClientModelManager {
         serverKey = null
         clientKey = null
 
-        modelPhraseExecutor.queue.clear()
+        modelParseJob.cancelChildren()
 
         currentCacheFolderName = null
         pendingModelsCount.set(0)
@@ -645,10 +650,9 @@ object ClientModelManager {
     }
 
     private fun forEachGuiWidget(action: (IGuiWidget) -> Unit) {
-        val it = guiWidgets.keys.iterator()
-        while (it.hasNext()) {
+        for (widget in guiWidgets.keys) {
             runCatching {
-                action(it.next())
+                action(widget)
             }.onFailure { th ->
                 th.printStackTrace()
             }
@@ -817,7 +821,7 @@ object ClientModelManager {
         isAuth: Boolean
     ) {
         if (isPrimary) {
-            pendingModelCallback = Runnable {
+            pendingModelCallback = {
                 processModelData(parsedBundle, modelId, isPrimary = true, isAuth = false)
             }
         } else {
@@ -828,14 +832,9 @@ object ClientModelManager {
 
     @JvmStatic
     fun runPendingModelCallback() {
-        val runnable = pendingModelCallback ?: return
-        synchronized(runnable) {
-            val runnable2 = pendingModelCallback
-            if (runnable2 != null) {
-                runnable2.run()
-                pendingModelCallback = null
-            }
-        }
+        val callback = pendingModelCallback ?: return
+        pendingModelCallback = null
+        callback()
     }
 
     @JvmStatic
