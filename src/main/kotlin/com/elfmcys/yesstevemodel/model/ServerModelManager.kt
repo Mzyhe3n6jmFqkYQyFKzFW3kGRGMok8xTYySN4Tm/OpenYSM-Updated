@@ -1,4 +1,4 @@
-@file:Suppress("UnstableApiUsage", "unused")
+@file:Suppress("UnstableApiUsage", "unused", "MemberVisibilityCanBePrivate")
 
 package com.elfmcys.yesstevemodel.model
 
@@ -134,7 +134,6 @@ object ServerModelManager {
         }
     }
 
-    @JvmStatic
     @Throws(IOException::class)
     fun reloadPacks() {
         CACHE_NAME_INFO = Maps.newHashMap()
@@ -310,7 +309,6 @@ object ServerModelManager {
         }
     }
 
-    @JvmStatic
     fun nativeSendModelData(uuid: UUID, data: ByteBuffer?) {
         if (data != null && !data.hasRemaining() && data.position() > 0) {
             data.flip()
@@ -368,7 +366,6 @@ object ServerModelManager {
         }
     }
 
-    @JvmStatic
     fun nativeLoadModels(callback: ((ModelLoadResult) -> Unit)?): Boolean {
         return runCatching {
             val loadedModels = LinkedHashMap<String, ServerModelData>()
@@ -633,7 +630,6 @@ object ServerModelManager {
         return ServerModelData(modelId, animInfo, projectiles, vehicles, serverModelInfo, isCustomSkinModel, isAuth)
     }
 
-    @JvmStatic
     fun nativeSyncModels(
         uuids: Array<UUID>,
         playerNames: Array<String>,
@@ -817,7 +813,6 @@ object ServerModelManager {
         }
     }
 
-    @JvmStatic
     fun nativeExportModel(modelID: String, extra: String?, callback: ((ExportResult) -> Unit)?) {
         YSMThreadPool.launch {
             runCatching {
@@ -925,21 +920,16 @@ object ServerModelManager {
         }
     }
 
-    @JvmStatic
     fun getModelDefinition(str: String): Optional<ServerModelData> = Optional.ofNullable(CACHE_NAME_INFO[str])
 
-    @JvmStatic
     operator fun get(str: String): ServerModelData? = CACHE_NAME_INFO[str]
 
-    @JvmStatic
     val serverModelInfo: Map<String, ServerModelData>
         get() = CACHE_NAME_INFO
 
-    @JvmStatic
     val authModels: Set<String>
         get() = AUTH_MODELS
 
-    @JvmStatic
     fun requestPlayerAuth(serverPlayer: ServerPlayer, consumer: ((UUIDComponentData) -> Unit)? = null) {
         val currentServer = PlatformAPIImpl.server ?: return
         currentServer.execute {
@@ -960,7 +950,6 @@ object ServerModelManager {
         }
     }
 
-    @JvmStatic
     fun loadModels(
         consumer: ((ModelLoadResult) -> Unit)? = null,
         consumer2: ((UUIDComponentData) -> Unit)? = null
@@ -1022,7 +1011,6 @@ object ServerModelManager {
         callback?.invoke(modelLoadResult)
     }
 
-    @JvmStatic
     fun syncModelToPlayer(uuid: UUID) {
         nativeSendModelData(uuid, null)
     }
@@ -1061,7 +1049,6 @@ object ServerModelManager {
         return false
     }
 
-    @JvmStatic
     fun getDefaultModelConfig(): Pair<String, String> {
         val defaultModelId =
             (ServerConfig.DEFAULT_MODEL_ID as? ForgeConfigSpec.ConfigValue<*>)?.get() as? String ?: "default"
@@ -1081,7 +1068,6 @@ object ServerModelManager {
         return Pair.of(defaultModelId, defaultTexture)
     }
 
-    @JvmStatic
     fun validatePlayerModel(serverPlayer: ServerPlayer) {
         if (CACHE_NAME_INFO.isNotEmpty()) {
             val modelInfoCap = ModelInfoCapability[serverPlayer] ?: return
