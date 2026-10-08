@@ -13,8 +13,10 @@ import net.minecraft.client.Minecraft
 
 @Environment(EnvType.CLIENT)
 object ClientTickEvent {
-    private var tickCount2: Int = 0
-    private var refreshRate2: Int = 60
+    var tickCount: Int = 0
+        private set
+    var refreshRate: Int = 60
+        private set
 
     init {
         ClientTickEvents.START_CLIENT_TICK.register(::onClientPreTick)
@@ -23,23 +25,15 @@ object ClientTickEvent {
     @JvmStatic
     fun onClientPreTick(client: Minecraft) {
         if (!YesSteveModel.isAvailable) return
-        tickCount2++
+        tickCount++
         UploadManager.processPendingUploads()
         ModelUploadSession.tickCurrent()
         ClientModelManager.flushPendingModels()
         ObjectPool.cleanup()
-        refreshRate2 = client.window.refreshRate
+        refreshRate = client.window.refreshRate
         val localPlayer = client.player
         if (localPlayer != null) {
             PlayerCapability[localPlayer]?.tickAnimations()
         }
     }
-
-    @JvmStatic
-    val tickCount: Int
-        get() = tickCount2
-
-    @JvmStatic
-    val refreshRate: Int
-        get() = refreshRate2
 }
