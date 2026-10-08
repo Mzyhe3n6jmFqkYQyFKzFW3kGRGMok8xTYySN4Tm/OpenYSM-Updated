@@ -26,7 +26,7 @@ object EntityJoinCallbackEvent {
             return
         }
         ClientEntityEvents.ENTITY_LOAD.register { entity, _ ->
-            if (!YesSteveModel.isAvailable()) {
+            if (!YesSteveModel.isAvailable) {
                 return@register
             }
             val list = callbackCache.getIfPresent(entity.id)

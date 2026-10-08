@@ -16,15 +16,15 @@ import org.lwjgl.opengl.GL20
 object ClientSetupEvent {
     init {
         registerKeyMappings()
-        if (YesSteveModel.isAvailable()) Constants.doNothing(AnimationRegister)
+        if (YesSteveModel.isAvailable) Constants.doNothing(AnimationRegister)
         ClientLifecycleEvents.CLIENT_STARTED.register {
-            if (YesSteveModel.isAvailable()) checkNativeInitialization()
+            if (YesSteveModel.isAvailable) checkNativeInitialization()
         }
     }
 
     private fun registerKeyMappings() {
         KeyBindingHelper.registerKeyBinding(PlayerModelToggleKey.KEY_MAPPING)
-        if (!YesSteveModel.isAvailable()) return
+        if (!YesSteveModel.isAvailable) return
         KeyBindingHelper.registerKeyBinding(AnimationRouletteKey.KEY_ROULETTE)
         KeyBindingHelper.registerKeyBinding(AnimationRouletteKey.KEY_LOCK)
         KeyBindingHelper.registerKeyBinding(DebugAnimationKey.KEY_MAPPING)

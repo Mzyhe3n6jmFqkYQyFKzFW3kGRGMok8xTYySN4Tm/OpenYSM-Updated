@@ -469,7 +469,7 @@ object YSMClientMapper {
         val mesh = buildMesh(geoBones.toTypedArray(), parentMap, context, translucencyArray)
 
         mesh.bakedBones = bakedBones
-        if (NativeLibLoader.isLoaded()) mesh.buildNativeCache()
+        if (NativeLibLoader.isLoaded) mesh.buildNativeCache()
         return mesh
     }
 

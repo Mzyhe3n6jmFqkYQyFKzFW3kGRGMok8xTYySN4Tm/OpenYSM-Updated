@@ -29,7 +29,7 @@ object ReplacePlayerRenderEvent {
         collector: SubmitNodeCollector,
         cameraState: CameraRenderState
     ): Boolean {
-        if (!YesSteveModel.isAvailable()) return false
+        if (!YesSteveModel.isAvailable) return false
         val localPlayer = Minecraft.getInstance().player
         if (entity == localPlayer && GeneralConfig.DISABLE_SELF_MODEL.get()) return false
         if ((entity != localPlayer && GeneralConfig.DISABLE_OTHER_MODEL.get()) || entity.isSpectator) return false

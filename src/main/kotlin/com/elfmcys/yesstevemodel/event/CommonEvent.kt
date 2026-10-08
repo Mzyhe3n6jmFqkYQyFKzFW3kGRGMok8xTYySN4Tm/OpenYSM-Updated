@@ -12,7 +12,7 @@ object CommonEvent {
     }
 
     private fun register() {
-        if (!YesSteveModel.isAvailable()) {
+        if (!YesSteveModel.isAvailable) {
             Constants.LOGGER.error(YesSteveModel.getErrorMessage())
             return
         }

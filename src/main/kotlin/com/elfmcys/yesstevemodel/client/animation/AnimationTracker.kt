@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.client.animation
 
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
@@ -5,8 +7,10 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 class AnimationTracker {
     @JvmField
     var currentAnimation: String = StringPool.EMPTY
+
     @JvmField
     var previousAnimation: String = StringPool.EMPTY
+
     @JvmField
     var queuedAnimation: String = StringPool.EMPTY
 

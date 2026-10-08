@@ -18,7 +18,7 @@ object ClientPlayerCloneEvent {
 
     @JvmStatic
     fun onClientPlayerRespawn(oldPlayer: LocalPlayer?, newPlayer: LocalPlayer?) {
-        if (oldPlayer == null || newPlayer == null || !YesSteveModel.isAvailable()) return
+        if (oldPlayer == null || newPlayer == null || !YesSteveModel.isAvailable) return
         CapabilityLifecycle.revive(oldPlayer)
         val oldCap = PlayerCapability[oldPlayer]
         val newCap = PlayerCapability[newPlayer]

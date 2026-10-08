@@ -20,13 +20,16 @@ object NativeLibLoader {
     private var isAndroid = false
 
     @JvmStatic
-    fun isAvailable(): Boolean = available
+    val isAvailable: Boolean
+        get() = available
 
     @JvmStatic
-    fun isLoaded(): Boolean = loaded
+    val isLoaded: Boolean
+        get() = loaded
 
     @JvmStatic
-    fun isOnAndroid(): Boolean = isAndroid
+    val isOnAndroid: Boolean
+        get() = isAndroid
 
     private var lastError: ErrorState? = null
 
@@ -267,8 +270,10 @@ object NativeLibLoader {
     }
 
     @JvmStatic
-    fun getErrorComponent(): Component? = lastError?.component
+    val errorComponent: Component?
+        get() = lastError?.component
 
     @JvmStatic
-    fun getErrorMessage(): String? = lastError?.logMsg
+    val errorMessage: String?
+        get() = lastError?.logMsg
 }

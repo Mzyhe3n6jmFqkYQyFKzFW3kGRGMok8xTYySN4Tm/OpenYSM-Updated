@@ -30,7 +30,7 @@ object ExtraAnimationKey {
     fun getKeyMappings(): MutableList<KeyMapping> {
         if (!initialized) {
             initialized = true
-            if (YesSteveModel.isAvailable()) {
+            if (YesSteveModel.isAvailable) {
                 for (i in 0..7) {
                     val eventMapping = KeyMappingFactory.createInGameNone(
                         "key.yes_steve_model.extra_animation.$i.desc",
@@ -53,7 +53,7 @@ object ExtraAnimationKey {
     }
 
     private fun onKeyInput(action: Int, event: KeyEvent) {
-        if (!YesSteveModel.isAvailable() || !InputUtil.isPlayerReady()) return
+        if (!YesSteveModel.isAvailable || !InputUtil.isPlayerReady()) return
         val localPlayer = Minecraft.getInstance().player ?: return
         for (eventMapping in KEY_MAPPINGS) {
             if (action == 1 && InputUtil.isKeyPressed(event, eventMapping) && !AnimationLockEvent.isPlayerMoving(

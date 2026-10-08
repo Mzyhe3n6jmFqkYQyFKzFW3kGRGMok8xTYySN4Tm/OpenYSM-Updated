@@ -61,7 +61,7 @@ object PlayerAnimationController {
                 if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.getInstance()
             )
         }
-        ParcoolCompat.getControllerFactory()?.let { registerController("parcool", it) }
+        ParcoolCompat.controllerFactory?.let { registerController("parcool", it) }
         registerController("vehicle") { animationEntryKey, entity ->
             CompositeAnimationController(
                 entity,

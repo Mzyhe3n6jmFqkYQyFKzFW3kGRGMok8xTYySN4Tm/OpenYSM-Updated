@@ -12,16 +12,18 @@ import rip.ysm.compat.parcool.fabric.ParcoolCompatImpl
 
 object ParcoolCompat : ModCompat("parcool") {
     @JvmStatic
-    fun getInCompatibleInfo(): Pair<String, String>? {
-        if (!isModLoaded) return null
-        return ParcoolCompatImpl.getInCompatibleInfo()
-    }
+    val inCompatibleInfo: Pair<String, String>?
+        get() {
+            if (!isModLoaded) return null
+            return ParcoolCompatImpl.inCompatibleInfo
+        }
 
     @JvmStatic
-    fun getControllerFactory(): ((String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>)? {
-        if (!isModLoaded) return null
-        return ParcoolCompatImpl.getControllerFactory()
-    }
+    val controllerFactory: ((String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>)?
+        get() {
+            if (!isModLoaded) return null
+            return ParcoolCompatImpl.controllerFactory
+        }
 
     @JvmStatic
     fun isPlayerParcooling(player: Player): Boolean = isModLoaded && ParcoolCompatImpl.isPlayerParcooling(player)

@@ -779,7 +779,7 @@ object ClientModelManager {
                 Minecraft.getInstance().execute {
                     for ((animationBundle, projectileModels, vehicleModels, _, _, _, textures) in removed) {
                         for (tex in textures) UploadManager.removeTexture(tex)
-                        if (NativeLibLoader.isLoaded()) {
+                        if (NativeLibLoader.isLoaded) {
                             for ((_, value) in projectileModels) value.model.freeNativeCache()
                             for ((_, value) in vehicleModels) value.model.freeNativeCache()
                             animationBundle.mainModel.freeNativeCache()

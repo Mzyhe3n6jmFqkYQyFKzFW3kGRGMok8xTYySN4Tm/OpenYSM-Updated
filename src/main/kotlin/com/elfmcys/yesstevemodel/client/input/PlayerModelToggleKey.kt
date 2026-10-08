@@ -38,7 +38,7 @@ object PlayerModelToggleKey {
     @JvmStatic
     private fun onKeyInput(action: Int, event: KeyEvent) {
         if (InputUtil.isPlayerReady() && action == 1 && InputUtil.isKeyPressed(event, KEY_MAPPING)) {
-            if (!YesSteveModel.isAvailable()) {
+            if (!YesSteveModel.isAvailable) {
                 YesSteveModel.sendUnavailableMessage()
                 return
             }

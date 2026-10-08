@@ -12,7 +12,8 @@ object SBackpackCompatImpl : ModCompat("sophisticatedbackpacks") {
     }
 
     @JvmStatic
-    fun getInCompatibleInfo(): Pair<String, String>? = null
+    val inCompatibleInfo: Pair<String, String>?
+        get() = null
 
     @JvmStatic
     fun getBackpack(livingEntity: LivingEntity): ItemStack = ItemStack.EMPTY

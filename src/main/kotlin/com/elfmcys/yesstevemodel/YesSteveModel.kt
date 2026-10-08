@@ -4,7 +4,6 @@ import com.elfmcys.yesstevemodel.config.GeneralConfig
 import com.elfmcys.yesstevemodel.config.ModSoundEvents
 import com.elfmcys.yesstevemodel.config.ServerConfig
 import com.elfmcys.yesstevemodel.event.YsmEventBootstrap
-import com.elfmcys.yesstevemodel.util.obfuscate.Keep
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import net.fabricmc.api.EnvType
@@ -27,7 +26,7 @@ object YesSteveModel {
                 it
             )
         }
-        if (!NativeLibLoader.isAvailable()) {
+        if (!NativeLibLoader.isAvailable) {
             Constants.LOGGER.error(getErrorMessage())
         } else {
             initConfig()
@@ -50,12 +49,13 @@ object YesSteveModel {
         if (!PlatformAPI.isServer) ModSoundEvents.register()
     }
 
-    @Keep
     @JvmStatic
-    fun isAvailable(): Boolean = NativeLibLoader.isAvailable()
+    val isAvailable: Boolean
+        get() = NativeLibLoader.isAvailable
 
     @JvmStatic
-    fun isOnAndroid(): Boolean = NativeLibLoader.isOnAndroid()
+    val isOnAndroid: Boolean
+        get() = NativeLibLoader.isOnAndroid
 
     @Environment(EnvType.CLIENT)
     @JvmStatic
@@ -65,8 +65,8 @@ object YesSteveModel {
     }
 
     @JvmStatic
-    fun getUnavailableComponent(): Component? = NativeLibLoader.getErrorComponent()
+    fun getUnavailableComponent(): Component? = NativeLibLoader.errorComponent
 
     @JvmStatic
-    fun getErrorMessage(): String? = NativeLibLoader.getErrorMessage()
+    fun getErrorMessage(): String? = NativeLibLoader.errorMessage
 }

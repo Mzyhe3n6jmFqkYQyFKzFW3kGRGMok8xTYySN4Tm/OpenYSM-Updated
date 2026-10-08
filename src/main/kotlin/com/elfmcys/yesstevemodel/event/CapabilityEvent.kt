@@ -27,7 +27,7 @@ object CapabilityEvent {
     }
 
     private fun onPlayerCloned(oldPlayer: ServerPlayer, newPlayer: ServerPlayer, wasDeath: Boolean) {
-        if (!YesSteveModel.isAvailable()) return
+        if (!YesSteveModel.isAvailable) return
         CapabilityLifecycle.revive(oldPlayer)
         val oldModelInfoCap = getModelInfoCap(oldPlayer)
         val oldAuthModelsCap = getAuthModelsCap(oldPlayer)
@@ -42,7 +42,7 @@ object CapabilityEvent {
     }
 
     private fun onEntityAdd(entity: Entity, level: ServerLevel) {
-        if (!YesSteveModel.isAvailable()) return
+        if (!YesSteveModel.isAvailable) return
         if (entity is ServerPlayer) {
             getModelInfoCap(entity)?.let { modelInfoCap ->
                 if (!NetworkHandler.isPlayerConnected(entity) && !modelInfoCap.isMandatory) {
@@ -70,7 +70,7 @@ object CapabilityEvent {
     }
 
     private fun onServerTick(server: MinecraftServer) {
-        if (!YesSteveModel.isAvailable()) return
+        if (!YesSteveModel.isAvailable) return
         val players = server.playerList.players
         val lowBandwidth = ServerConfig.LOW_BANDWIDTH_USAGE.get()
         for (serverPlayer in players) {

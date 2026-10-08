@@ -17,10 +17,11 @@ object SBackpackCompat : ModCompat("sophisticatedbackpacks") {
     }
 
     @JvmStatic
-    fun getInCompatibleInfo(): Pair<String, String>? {
-        if (!isModLoaded) return null
-        return SBackpackCompatImpl.getInCompatibleInfo()
-    }
+    val inCompatibleInfo: Pair<String, String>?
+        get() {
+            if (!isModLoaded) return null
+            return SBackpackCompatImpl.inCompatibleInfo
+        }
 
     @JvmStatic
     fun getBackpack(livingEntity: LivingEntity): ItemStack {

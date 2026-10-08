@@ -29,7 +29,7 @@ object InputStateKey {
     }
 
     private fun onKeyInput(keyCode: Int, action: Int) {
-        if (YesSteveModel.isAvailable() && InputUtil.isPlayerReady() && keyCode in 32..348) {
+        if (YesSteveModel.isAvailable && InputUtil.isPlayerReady() && keyCode in 32..348) {
             when (action) {
                 1 -> {
                     keyStates[keyCode] = true
@@ -43,7 +43,7 @@ object InputStateKey {
     }
 
     private fun onMouseInput(button: Int, action: Int) {
-        if (YesSteveModel.isAvailable() && InputUtil.isPlayerReady() && button in 0..7) {
+        if (YesSteveModel.isAvailable && InputUtil.isPlayerReady() && button in 0..7) {
             when (action) {
                 1 -> {
                     mouseStates[button] = true

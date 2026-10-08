@@ -57,7 +57,7 @@ object NativeModelRenderer {
         ).mul(RenderSystem.getModelViewMatrix())
         val isPreview = ModelPreviewRenderer.isPreview || ModelPreviewRenderer.isExtraPlayer()
 
-        if (textureLocation != null && NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && GeneralConfig.USE_GPU_RENDERER.get()) {
+        if (textureLocation != null && NativeLibLoader.isLoaded && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && GeneralConfig.USE_GPU_RENDERER.get()) {
             if (!GpuCapability.isAvailable()) {
                 ChatLogger.logFormatted("Disabled GPU renderer for: " + GpuCapability.getReason())
                 GeneralConfig.USE_GPU_RENDERER.setAndSave(false)
@@ -101,7 +101,7 @@ object NativeModelRenderer {
             }
         }
 
-        if (NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && !isPreview) {
+        if (NativeLibLoader.isLoaded && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && !isPreview) {
             nativeRenderModel(
                 buffer,
                 pose,
