@@ -11,9 +11,7 @@ import net.minecraft.world.entity.Entity
 class FirstOrderFunction : EntityFunction() {
     override fun eval(context: ExecutionContext<IContext<Entity>>, arguments: ArgumentCollection): Any {
         val name = arguments.getStringId(context, 0)
-        if (name == StringPool.EMPTY_ID) {
-            return 0
-        }
+        if (name == StringPool.EMPTY_ID) return 0
         val input = arguments.getAsFloat(context, 1)
         val response = if (arguments.size() >= 3) arguments.getAsFloat(context, 2) else 1.0f
         val physicsManager = context.entity().geoInstance().getPhysicsManager()
@@ -26,7 +24,5 @@ class FirstOrderFunction : EntityFunction() {
         return physics.value
     }
 
-    override fun validateArgumentSize(size: Int): Boolean {
-        return size >= 2
-    }
+    override fun validateArgumentSize(size: Int): Boolean = size >= 2
 }
