@@ -11,11 +11,14 @@ internal class LiveOption<T>(
 ) : Option<T>("", liveGetter, setter) {
     private val descText: String = descText ?: ""
 
-    override fun get(): T = liveGetter()
+    override val get: T
+        get() = liveGetter()
 
-    override fun getLabel(): Component = Component.literal(titleText)
+    override val label: Component
+        get() = Component.literal(titleText)
 
-    override fun getDescription(): Component = Component.literal(descText)
+    override val description: Component
+        get() = Component.literal(descText)
 
     override fun setPending(value: T) {
         super.setPending(value)

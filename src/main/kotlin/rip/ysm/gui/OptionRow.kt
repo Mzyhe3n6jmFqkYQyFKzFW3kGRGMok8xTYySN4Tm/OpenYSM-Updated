@@ -14,7 +14,7 @@ abstract class OptionRow<T>(
     width: Int,
     height: Int,
     val option: Option<T>?
-) : AbstractWidget(x, y, width, height, option?.getLabel() ?: Component.empty()) {
+) : AbstractWidget(x, y, width, height, option?.label ?: Component.empty()) {
 
     open fun refresh() {
     }
