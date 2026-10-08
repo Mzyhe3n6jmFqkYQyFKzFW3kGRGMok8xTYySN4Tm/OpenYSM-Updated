@@ -89,7 +89,7 @@ abstract class CustomPlayerEntity(
 
     override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
         super.setupAnim(seekTime, isFirstPerson)
-        getEvaluationContext().setRoamingProperties(serverVarContainer)
+        evaluationContext.setRoamingProperties(serverVarContainer)
     }
 
     override fun afterSetupAnim(seekTime: Float, isFirstPerson: Boolean) {

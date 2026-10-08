@@ -235,7 +235,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
                 }
                 physicsManager.update(seekTime)
                 setupAnim(seekTime, z3)
-                getEvaluationContext().tickAnimation(event, ctx, z3, shouldRenderOverlay())
+                evaluationContext.tickAnimation(event, ctx, z3, shouldRenderOverlay())
                 afterSetupAnim(seekTime, z3)
                 wasAnimationActiveLastTick = z
             }
@@ -247,7 +247,8 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
     open fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<TEntity>>, z: Boolean) {}
     open fun resetHeadTracking(wasAnimEvaluated: Boolean) {}
 
-    open fun getEvaluationContext(): AnimationProcessor<TEntity> = animationProcessor2
+    open val evaluationContext: AnimationProcessor<TEntity>
+        get() = animationProcessor2
 
     open fun initAnimationControllers(
         model: GeoModel,

@@ -71,7 +71,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
         super.setupAnim(seekTime, isFirstPerson)
         val lookup = boneLookup
         if (lookup != null) {
-            val processor = getEvaluationContext()
+            val processor = evaluationContext
             processor.execute({ evaluator ->
                 lookup.evaluatePreAnimation(evaluator)
                 null

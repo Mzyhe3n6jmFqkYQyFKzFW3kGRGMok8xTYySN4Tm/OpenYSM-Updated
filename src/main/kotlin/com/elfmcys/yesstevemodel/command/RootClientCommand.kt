@@ -32,7 +32,7 @@ object RootClientCommand {
         if (context.source is SharedSuggestionProvider && !PlatformAPI.isServer) {
             val geo = activeGeoModel ?: return@register Suggestions.empty()
             val set = HashSet<String>()
-            geo.getEvaluationContext().forEachPropertyName { str ->
+            geo.evaluationContext.forEachPropertyName { str ->
                 set.add("v.$str")
             }
             if (geo is RoamingPropertyHolder) {
