@@ -98,7 +98,7 @@ object QueryBinding : ContextBinding() {
         val geoInstance = context.geoInstance()
         if (geoInstance is PlayerCapability) {
             if (!geoInstance.isLocalPlayerModel) {
-                return geoInstance.positionTracker.isFlying()
+                return geoInstance.positionTracker.isFlying
             }
         }
         return context.entity().abilities.flying
@@ -165,7 +165,7 @@ object QueryBinding : ContextBinding() {
     @JvmStatic
     fun getYawSpeed(context: IContext<Entity>): Float {
         if (context.entity() is LocalPlayer) {
-            return PlayerEntityFrameState.getHeadYawDelta()
+            return PlayerEntityFrameState.headYawDelta
         }
         return 20.0f * (context.entity().yRot - context.entity().yRotO)
     }

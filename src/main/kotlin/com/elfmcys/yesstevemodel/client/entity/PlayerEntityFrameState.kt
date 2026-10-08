@@ -13,13 +13,21 @@ open class PlayerEntityFrameState(player: Player, val isLocalPlayer: Boolean) : 
     val effectAmplifiers: Object2ByteOpenHashMap<Holder<MobEffect>> = Object2ByteOpenHashMap(8)
     private var flying: Boolean = false
     var experienceLevel: Int = 0
+        private set
     var health: Int = 0
+        private set
     var maxHealth: Int = 0
+        private set
     var foodLevel: Int = 0
+        private set
     var strafeInput: Float = 0.0f
+        private set
     var verticalInput: Float = 0.0f
+        private set
     var forwardInput: Float = 0.0f
+        private set
     var isShieldBlocking: Boolean = false
+        private set
 
     override fun reset() {
         super.reset()
@@ -54,12 +62,11 @@ open class PlayerEntityFrameState(player: Player, val isLocalPlayer: Boolean) : 
         if (flags and 1024 != 0) isShieldBlocking = message.shieldBlockCooldown
     }
 
-    open fun isFlying(): Boolean {
-        if (isLocalPlayer) {
-            return entity.abilities.flying
+    open val isFlying: Boolean
+        get() {
+            if (isLocalPlayer) return entity.abilities.flying
+            return flying
         }
-        return flying
-    }
 
     open fun getEffectAmplifier(mobEffect: Holder<MobEffect>): Byte {
         if (isLocalPlayer) {
@@ -78,22 +85,19 @@ open class PlayerEntityFrameState(player: Player, val isLocalPlayer: Boolean) : 
     }
 
     companion object {
-        @JvmField
+        @JvmStatic
         var headYawDelta: Float = 0.0f
+            private set
 
-        @JvmField
-        var lastYRot: Float = 0.0f
+        private var lastYRot: Float = 0.0f
 
         @JvmStatic
         fun updateHeadYaw(player: Player, currentTick: Int, previousTick: Int) {
             val yRot = player.yRot
             if (previousTick > 0) {
-                headYawDelta = ((yRot - lastYRot) * 20.0f) / (currentTick - previousTick)
+                headYawDelta = (yRot - lastYRot) * 20.0f / (currentTick - previousTick)
             }
             lastYRot = yRot
         }
-
-        @JvmStatic
-        fun getHeadYawDelta(): Float = headYawDelta
     }
 }
