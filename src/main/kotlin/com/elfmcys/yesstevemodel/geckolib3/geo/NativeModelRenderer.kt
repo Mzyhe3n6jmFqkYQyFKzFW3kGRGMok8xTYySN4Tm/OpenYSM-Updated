@@ -58,8 +58,8 @@ object NativeModelRenderer {
         val isPreview = ModelPreviewRenderer.isPreview || ModelPreviewRenderer.isExtraPlayer()
 
         if (textureLocation != null && NativeLibLoader.isLoaded && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get() && GeneralConfig.USE_GPU_RENDERER.get()) {
-            if (!GpuCapability.isAvailable()) {
-                ChatLogger.logFormatted("Disabled GPU renderer for: " + GpuCapability.getReason())
+            if (!GpuCapability.isAvailable) {
+                ChatLogger.logFormatted("Disabled GPU renderer for: " + GpuCapability.reason)
                 GeneralConfig.USE_GPU_RENDERER.setAndSave(false)
                 return
             }

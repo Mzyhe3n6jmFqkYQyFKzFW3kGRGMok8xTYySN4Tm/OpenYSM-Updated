@@ -242,8 +242,8 @@ object ClientModelManager {
 
         YSMByteBuf(Unpooled.buffer()).use { outBuf ->
             outBuf.writeGarbageHeader(garbageLen, garbage)
-            outBuf.getRawBuf().writeByte(0x02)
-            outBuf.getRawBuf().writeByte(0x00)
+            outBuf.rawBuf.writeByte(0x02)
+            outBuf.rawBuf.writeByte(0x00)
 
             val result = YsmCrypt.encrypt(outBuf.toArray(), newKey1, true)
             lastKey = result.nextKey()
@@ -259,11 +259,11 @@ object ClientModelManager {
         currentCacheFolderName = java.lang.Long.toHexString(folderHash)
 
         val newServerKey = ByteArray(56)
-        buf.getRawBuf().readBytes(newServerKey)
+        buf.rawBuf.readBytes(newServerKey)
         serverKey = newServerKey
 
         val newClientKey = ByteArray(56)
-        buf.getRawBuf().readBytes(newClientKey)
+        buf.rawBuf.readBytes(newClientKey)
         clientKey = newClientKey
 
         val cacheDir = ServerModelManager.CACHE_CLIENT.resolve(currentCacheFolderName ?: "default_cache").toFile()
@@ -417,7 +417,7 @@ object ClientModelManager {
         if (currentKey1 != null) {
             YSMByteBuf(Unpooled.buffer()).use { outBuf ->
                 outBuf.writeGarbageHeader(garbageLen, garbage)
-                outBuf.getRawBuf().writeByte(0x04)
+                outBuf.rawBuf.writeByte(0x04)
 
                 outBuf.writeVarInt(modelsToRequest.size)
                 for ((hash1, hash2) in modelsToRequest) {
@@ -464,7 +464,7 @@ object ClientModelManager {
             ctx.bytesReceived = 0
         }
 
-        buf.getRawBuf().readBytes(buffer, chunkOffset, chunkLength)
+        buf.rawBuf.readBytes(buffer, chunkOffset, chunkLength)
         ctx.bytesReceived += chunkLength
 
         if (ctx.bytesReceived >= totalSize) {
@@ -987,7 +987,7 @@ object ClientModelManager {
 
                         YSMBinaryDeserializer(clearText, 32).use { deserializer ->
                             val rawModel = deserializer.deserializeKeepOpen()
-                            coreDataLength = deserializer.reader.getRawBuf().readerIndex()
+                            coreDataLength = deserializer.reader.rawBuf.readerIndex()
 
                             val metaName = rawModel.metadata.name
                             when {
@@ -1008,7 +1008,7 @@ object ClientModelManager {
 
                         YSMByteBuf(Unpooled.buffer()).use { outBuf ->
                             outBuf.writeDword(32)
-                            outBuf.getRawBuf().writeBytes(clearText, 0, coreDataLength)
+                            outBuf.rawBuf.writeBytes(clearText, 0, coreDataLength)
 
                             outBuf.writeVarInt(32)
                             outBuf.writeVarInt(1)
@@ -1025,8 +1025,8 @@ object ClientModelManager {
                             outBuf.writeString(extra ?: "")
                             outBuf.writeVarInt(0)
 
-                            val rawBytes = ByteArray(outBuf.getRawBuf().readableBytes())
-                            outBuf.getRawBuf().readBytes(rawBytes)
+                            val rawBytes = ByteArray(outBuf.rawBuf.readableBytes())
+                            outBuf.rawBuf.readBytes(rawBytes)
 
                             val finalEncrypted = YsmCrypt.encryptYsmFile(rawBytes)
                             val exportPath = ServerModelManager.EXPORT.resolve("$exportName.ysm")

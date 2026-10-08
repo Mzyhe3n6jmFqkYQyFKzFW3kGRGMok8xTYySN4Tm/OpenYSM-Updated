@@ -16,19 +16,21 @@ object GpuCapability {
     private var available: Boolean = false
 
     @Volatile
-    private var reason: String? = null
+    private var reason2: String? = null
 
     @JvmStatic
-    fun isAvailable(): Boolean {
-        if (!checked) check()
-        return available
-    }
+    val isAvailable: Boolean
+        get() {
+            if (!checked) check()
+            return available
+        }
 
     @JvmStatic
-    fun getReason(): String? {
-        if (!checked) check()
-        return reason
-    }
+    val reason: String?
+        get() {
+            if (!checked) check()
+            return reason2
+        }
 
     @Synchronized
     @JvmStatic
@@ -37,16 +39,16 @@ object GpuCapability {
         checked = true
 
         if (System.getProperty("OYSM_DISABLE_GPU") != null) {
-            reason = "gpu renderer has been disabled"
+            reason2 = "gpu renderer has been disabled"
             return
         }
         if (!NativeLibLoader.isLoaded) {
-            reason = "native ysm-core not loaded"
+            reason2 = "native ysm-core not loaded"
             return
         }
         val osName = System.getProperty("os.name", "").lowercase(Locale.ROOT)
         if (osName.contains("mac") || osName.contains("darwin")) {
-            reason = "macOS GL is capped at 4.1 and lacks GL_ARB_shader_storage_buffer_object"
+            reason2 = "macOS GL is capped at 4.1 and lacks GL_ARB_shader_storage_buffer_object"
             return
         }
 
@@ -63,12 +65,12 @@ object GpuCapability {
             glVendor = GL11.glGetString(GL11.GL_VENDOR)
             glslVersion = GL11.glGetString(0x8B8C)
         } catch (t: Throwable) {
-            reason = "GL capabilities not available: ${t.message}"
+            reason2 = "GL capabilities not available: ${t.message}"
             return
         }
 
         if (glVersion == null) {
-            reason = "GL version not available"
+            reason2 = "GL version not available"
             return
         }
 
@@ -78,7 +80,7 @@ object GpuCapability {
         Constants.LOGGER.info("OpenGL glsl version: {}", glslVersion)
 
         if (!caps.OpenGL30) {
-            reason = "OpenGL 3.0 not supported (got $glVersion)"
+            reason2 = "OpenGL 3.0 not supported (got $glVersion)"
             return
         }
 
@@ -88,27 +90,27 @@ object GpuCapability {
         val hasExplicitAttrib = caps.OpenGL33 || caps.GL_ARB_explicit_attrib_location
         val hasPackedNormal = caps.OpenGL33 || caps.GL_ARB_vertex_type_2_10_10_10_rev
         if (!hasSsbo) {
-            reason = "SSBO not supported, GL_VERSION=$glVersion"
+            reason2 = "SSBO not supported, GL_VERSION=$glVersion"
             return
         }
         if (!hasIfaceQuery) {
-            reason = "GL_ARB_program_interface_query not supported; GL_VERSION=$glVersion"
+            reason2 = "GL_ARB_program_interface_query not supported; GL_VERSION=$glVersion"
             return
         }
         if (!hasLayoutBinding) {
-            reason = "GL_ARB_shading_language_420pack not supported; GL_VERSION=$glVersion"
+            reason2 = "GL_ARB_shading_language_420pack not supported; GL_VERSION=$glVersion"
             return
         }
         if (!hasExplicitAttrib) {
-            reason = "GL_ARB_explicit_attrib_location not supported; GL_VERSION=$glVersion"
+            reason2 = "GL_ARB_explicit_attrib_location not supported; GL_VERSION=$glVersion"
             return
         }
         if (!hasPackedNormal) {
-            reason = "GL_ARB_vertex_type_2_10_10_10_rev not supported; GL_VERSION=$glVersion"
+            reason2 = "GL_ARB_vertex_type_2_10_10_10_rev not supported; GL_VERSION=$glVersion"
             return
         }
 
         available = true
-        reason = "ok (GL $glVersion, $glRenderer)"
+        reason2 = "ok (GL $glVersion, $glRenderer)"
     }
 }
