@@ -60,9 +60,9 @@ open class HandItemRenderer {
         NativeModelRenderer.renderMesh(
             buffer,
             poseStack.last(),
-            model.getGeoModel(),
-            model.getMatrixData(),
-            model.getAbsPivotData(),
+            model.geoModel,
+            model.matrixData,
+            model.absPivotData,
             textureIndex,
             renderPartMask,
             packedLight,

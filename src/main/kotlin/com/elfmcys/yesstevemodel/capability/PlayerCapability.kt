@@ -83,18 +83,18 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         super.applyHeadTracking(event, z)
         val model2 = currentModel
         if (model2 != null && isLocalPlayerModel && !event.isFirstPerson && FirstPersonCompat.isModLoaded) {
-            if (model2.allHeadBone() != null) {
-                model2.allHeadBone()?.setHidden(FirstPersonCompat.shouldHideHead())
+            if (model2.allHeadBone != null) {
+                model2.allHeadBone.setHidden(FirstPersonCompat.shouldHideHead())
             }
             when {
-                model2.viewLocatorBone() != null -> {
+                model2.viewLocatorBone != null -> {
                     FirstPersonCompat.setCameraDistance(
-                        (model2.viewLocatorBone() ?: return).pivotY * widthScale
+                        model2.viewLocatorBone.pivotY * widthScale
                     )
                 }
 
-                z && model2.headBones().isNotEmpty() -> {
-                    val bone = model2.headBones()[model2.headBones().size - 1]
+                z && model2.headBones.isNotEmpty() -> {
+                    val bone = model2.headBones[model2.headBones.size - 1]
                     FirstPersonCompat.setCameraDistance(bone.pivotY * widthScale)
                 }
             }
@@ -105,8 +105,8 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         super.resetHeadTracking(wasAnimEvaluated)
         val model2 = currentModel
         if (model2 != null && isLocalPlayerModel) {
-            if ((FirstPersonCompat.isModLoaded || BetterCombatCompat.isModLoaded) && model2.allHeadBone() != null) {
-                model2.allHeadBone()?.setHidden(false)
+            if ((FirstPersonCompat.isModLoaded || BetterCombatCompat.isModLoaded) && model2.allHeadBone != null) {
+                model2.allHeadBone.setHidden(false)
             }
         }
     }

@@ -172,7 +172,7 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
             texture,
             bodyVisible,
             minecraft.shouldEntityAppearGlowing(maid),
-            geoModel.getGeoModel().isTranslucentTexture(textureIndex)
+            geoModel.geoModel.isTranslucentTexture(textureIndex)
         )
 
         val layersFirst = animatable.isRenderLayersFirst

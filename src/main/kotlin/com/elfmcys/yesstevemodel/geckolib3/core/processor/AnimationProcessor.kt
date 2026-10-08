@@ -216,11 +216,11 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
 
     fun initBones(model: AnimatedGeoModel, object2ReferenceMap: Object2ReferenceMap<String, out List<IValue>>) {
         reset()
-        if (model.bones().isNotEmpty()) {
-            bones.ensureCapacity(model.bones().size)
+        if (model.bones.isNotEmpty()) {
+            bones.ensureCapacity(model.bones.size)
             bones.add(null)
-            val boneId = model.getGeoModel().bones[0].boneId
-            Int2ReferenceMaps.fastForEach(model.bones()) { entry ->
+            val boneId = model.geoModel.bones[0].boneId
+            Int2ReferenceMaps.fastForEach(model.bones) { entry ->
                 val boneTopLevelSnapshot = BoneTopLevelSnapshot(entry.value)
                 boneById.put(entry.value.boneId, boneTopLevelSnapshot)
                 if (entry.intKey == boneId) {

@@ -38,7 +38,7 @@ open class CustomPlayerParrotLayer(context: EntityRendererProvider.Context) : Ge
     ) {
         val player = entityLivingBaseIn.entity
         val model = entityLivingBaseIn.currentModel ?: return
-        if (model.leftShoulderBones().isNotEmpty()) {
+        if (model.leftShoulderBones.isNotEmpty()) {
             renderParrot(
                 poseStack,
                 state,
@@ -53,7 +53,7 @@ open class CustomPlayerParrotLayer(context: EntityRendererProvider.Context) : Ge
                 true
             )
         }
-        if (model.rightShoulderBones().isNotEmpty()) {
+        if (model.rightShoulderBones.isNotEmpty()) {
             renderParrot(
                 poseStack,
                 state,
@@ -120,9 +120,9 @@ open class CustomPlayerParrotLayer(context: EntityRendererProvider.Context) : Ge
 
     open fun applyParrotTransform(poseStack: PoseStack, model: AnimatedGeoModel, isLeftShoulder: Boolean) {
         if (isLeftShoulder) {
-            RenderUtils.prepMatrixForLocator(poseStack, model.leftShoulderBones())
+            RenderUtils.prepMatrixForLocator(poseStack, model.leftShoulderBones)
         } else {
-            RenderUtils.prepMatrixForLocator(poseStack, model.rightShoulderBones())
+            RenderUtils.prepMatrixForLocator(poseStack, model.rightShoulderBones)
         }
     }
 }

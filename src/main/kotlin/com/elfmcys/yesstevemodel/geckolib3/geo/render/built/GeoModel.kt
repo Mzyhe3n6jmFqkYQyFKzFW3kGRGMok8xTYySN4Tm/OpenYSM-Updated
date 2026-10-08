@@ -119,7 +119,7 @@ open class GeoModel(
                 passengerGroups.add(resolveBoneIds(strArr4))
             }
         }
-        boneTransformData = AnimatedGeoModel(this).getMatrixData()
+        boneTransformData = AnimatedGeoModel(this).matrixData
     }
 
     open fun buildNativeCache() {

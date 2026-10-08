@@ -84,10 +84,10 @@ object ModelPreviewRenderer {
                 if (!cap.isModelInitialized || !cap.isModelReady) return
                 val index = vehicle.passengers.indexOf(entity)
                 val model = cap.currentModel
-                if (index < 0 || model == null || model.passengerGroupChains()
-                        .isEmpty() || index >= model.passengerGroupChains().size
+                if (index < 0 || model == null || model.passengerGroupChains
+                        .isEmpty() || index >= model.passengerGroupChains.size
                 ) return
-                val list = model.passengerGroupChains()[index]
+                val list = model.passengerGroupChains[index]
                 val bodyRotation = CustomVehicleRenderer.getBodyRotation(
                     vehicle,
                     Mth.lerp(partialTick, vehicle.yRotO, vehicle.yRot),

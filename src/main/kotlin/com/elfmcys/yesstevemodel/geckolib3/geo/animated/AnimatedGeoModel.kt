@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package com.elfmcys.yesstevemodel.geckolib3.geo.animated
 
@@ -13,28 +13,30 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import it.unimi.dsi.fastutil.objects.ReferenceLists
 import rip.ysm.compat.touhoulittlemaid.TouhouMaidBoneProcessor
 
-class AnimatedGeoModel(private val geoModel: GeoModel) {
+class AnimatedGeoModel(val geoModel: GeoModel) {
     private val boneIdsMap: Int2ReferenceMap<IBone>
-    private val matrixData: FloatArray
-    private val absPivotData: FloatArray
-    private val headBones: List<IBone>
-    private val leftHandBones: List<IBone>
-    private val rightHandBones: List<IBone>
-    private val elytraBones: List<IBone>
-    private val tacPistolBones: List<IBone>
-    private val tacRifleBones: List<IBone>
-    private val leftWaistBones: List<IBone>
-    private val rightWaistBones: List<IBone>
-    private val leftShoulderBones: List<IBone>
-    private val rightShoulderBones: List<IBone>
-    private val bladeBones: List<IBone>
-    private val sheathBones: List<IBone>
-    private val backpackBones: List<IBone>
-    private val allHeadBone: IBone?
-    private val viewLocatorBone: IBone?
-    private val leftHandGroupChains: MutableList<List<IBone>> = ReferenceArrayList()
-    private val rightHandGroupChains: MutableList<List<IBone>> = ReferenceArrayList()
-    private val passengerGroupChains: MutableList<List<IBone>> = ReferenceArrayList()
+    val matrixData: FloatArray
+    val absPivotData: FloatArray
+    val headBones: List<IBone>
+    val leftHandBones: List<IBone>
+    val rightHandBones: List<IBone>
+    val elytraBones: List<IBone>
+    val tacPistolBones: List<IBone>
+    val tacRifleBones: List<IBone>
+    val leftWaistBones: List<IBone>
+    val rightWaistBones: List<IBone>
+    val leftShoulderBones: List<IBone>
+    val rightShoulderBones: List<IBone>
+    val bladeBones: List<IBone>
+    val sheathBones: List<IBone>
+    val backpackBones: List<IBone>
+    val allHeadBone: IBone?
+    val viewLocatorBone: IBone?
+    val rightHandChain: List<List<IBone>>
+        field: MutableList<List<IBone>> = ReferenceArrayList()
+    val leftHandChains: List<List<IBone>>
+        field: MutableList<List<IBone>> = ReferenceArrayList()
+    val passengerGroupChains: MutableList<List<IBone>> = ReferenceArrayList()
 
     @JvmField
     @PublishedApi
@@ -68,8 +70,8 @@ class AnimatedGeoModel(private val geoModel: GeoModel) {
         backpackBones = lookupBones(geoModel.backpackIds)
         allHeadBone = map.get(ALL_HEAD_ID)
         viewLocatorBone = map.get(VIEW_LOCATOR_ID)
-        geoModel.extraLeftHandGroups.forEach { intList -> leftHandGroupChains.add(lookupBones(intList)) }
-        geoModel.extraRightHandGroups.forEach { intList2 -> rightHandGroupChains.add(lookupBones(intList2)) }
+        geoModel.extraLeftHandGroups.forEach { intList -> rightHandChain.add(lookupBones(intList)) }
+        geoModel.extraRightHandGroups.forEach { intList2 -> leftHandChains.add(lookupBones(intList2)) }
         geoModel.passengerGroups.forEach { intList3 -> passengerGroupChains.add(lookupBones(intList3)) }
     }
 
@@ -79,54 +81,11 @@ class AnimatedGeoModel(private val geoModel: GeoModel) {
         return ReferenceLists.unmodifiable(referenceArrayList)
     }
 
-    fun getMatrixData(): FloatArray = matrixData
-
-    fun getAbsPivotData(): FloatArray = absPivotData
-
-    fun bones(): Int2ReferenceMap<IBone> = boneIdsMap
-
-    fun getGeoModel(): GeoModel = geoModel
-
-    fun leftHandBones(): List<IBone> = leftHandBones
-
-    fun rightHandChain(): List<List<IBone>> = leftHandGroupChains
-
-    fun rightHandBones(): List<IBone> = rightHandBones
-
-    fun leftHandChains(): List<List<IBone>> = rightHandGroupChains
-
-    fun passengerGroupChains(): List<List<IBone>> = passengerGroupChains
-
-    fun elytraBones(): List<IBone> = elytraBones
-
-    fun backpackBones(): List<IBone> = backpackBones
-
-    fun tacPistolBones(): List<IBone> = tacPistolBones
-
-    fun tacRifleBones(): List<IBone> = tacRifleBones
-
-    fun leftWaistBones(): List<IBone> = leftWaistBones
-
-    fun rightWaistBones(): List<IBone> = rightWaistBones
-
-    fun leftShoulderBones(): List<IBone> = leftShoulderBones
-
-    fun rightShoulderBones(): List<IBone> = rightShoulderBones
-
-    fun bladeBones(): List<IBone> = bladeBones
-
-    fun sheathBones(): List<IBone> = sheathBones
-
-    fun allHeadBone(): IBone? = allHeadBone
-
-    fun viewLocatorBone(): IBone? = viewLocatorBone
-
-    fun headBones(): List<IBone> = headBones
+    val bones: Int2ReferenceMap<IBone>
+        get() = boneIdsMap
 
     inline fun <reified T> getTouhouMaidData(): T? {
-        if (rawTouhouMaidData == null) {
-            rawTouhouMaidData = TouhouMaidBoneProcessor.createLocationModel(this)
-        }
+        if (rawTouhouMaidData == null) rawTouhouMaidData = TouhouMaidBoneProcessor.createLocationModel(this)
         return rawTouhouMaidData as? T
     }
 

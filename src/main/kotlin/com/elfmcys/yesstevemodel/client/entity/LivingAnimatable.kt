@@ -37,8 +37,8 @@ abstract class LivingAnimatable<T : LivingEntity>(
 
     override fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<T>>, z: Boolean) {
         val model = currentModel2
-        if (model != null && model.headBones().isNotEmpty()) {
-            val bone = model.headBones()[model.headBones().size - 1]
+        if (model != null && model.headBones.isNotEmpty()) {
+            val bone = model.headBones[model.headBones.size - 1]
             if (z) armorBoneOffset.set(bone.rotationX, bone.rotationY)
             val data = event.modelData
             bone.rotationX = armorBoneOffset.x + Math.toRadians(data.headPitch.toDouble()).toFloat()
@@ -48,8 +48,8 @@ abstract class LivingAnimatable<T : LivingEntity>(
 
     override fun resetHeadTracking(wasAnimEvaluated: Boolean) {
         val model = currentModel2
-        if (model != null && model.headBones().isNotEmpty()) {
-            val bone = model.headBones()[model.headBones().size - 1]
+        if (model != null && model.headBones.isNotEmpty()) {
+            val bone = model.headBones[model.headBones.size - 1]
             bone.rotationX = armorBoneOffset.x
             bone.rotationY = armorBoneOffset.y
         }
@@ -96,8 +96,8 @@ abstract class LivingAnimatable<T : LivingEntity>(
         get() = super.currentModel
         set(value) {
             super.currentModel = value
-            if (value != null && value.headBones().isNotEmpty()) {
-                val bone = value.headBones()[value.headBones().size - 1]
+            if (value != null && value.headBones.isNotEmpty()) {
+                val bone = value.headBones[value.headBones.size - 1]
                 armorBoneOffset.set(bone.rotationX, bone.rotationY)
             }
         }

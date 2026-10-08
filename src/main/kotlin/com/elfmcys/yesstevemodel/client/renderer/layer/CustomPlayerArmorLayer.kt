@@ -36,7 +36,7 @@ open class CustomPlayerArmorLayer(context: EntityRendererProvider.Context) : Geo
     ) {
         val player = entityLivingBaseIn.entity
         val model = entityLivingBaseIn.currentModel
-        if (model != null && model.headBones().isNotEmpty()) {
+        if (model != null && model.headBones.isNotEmpty()) {
             val itemBySlot = player.getItemBySlot(EquipmentSlot.HEAD)
             if (!itemBySlot.isEmpty && !isArmorItem(itemBySlot))
                 renderArmorPiece(poseStack, multiBufferSource, packedLightIn, model, player, itemBySlot)
@@ -60,7 +60,7 @@ open class CustomPlayerArmorLayer(context: EntityRendererProvider.Context) : Geo
     ) {
         val collector = RenderContext.collector() ?: return
         poseStack.pushPose()
-        RenderUtils.prepMatrixForLocator(poseStack, model.headBones())
+        RenderUtils.prepMatrixForLocator(poseStack, model.headBones)
         poseStack.scale(0.625f, 0.625f, 0.625f)
         poseStack.translate(0.0f, 0.25f, 0.0f)
         itemRenderer.renderItem(player, stack, ItemDisplayContext.HEAD, poseStack, collector, i)

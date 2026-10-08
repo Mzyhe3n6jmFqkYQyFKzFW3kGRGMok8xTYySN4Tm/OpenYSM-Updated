@@ -298,7 +298,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
 
     open fun clearAnimationControllers() {
         currentModel2?.let {
-            val model = it.getGeoModel()
+            val model = it.geoModel
             val object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>? = animationMap
             reset()
             initAnimationControllers(model, object2ReferenceMap ?: return)
