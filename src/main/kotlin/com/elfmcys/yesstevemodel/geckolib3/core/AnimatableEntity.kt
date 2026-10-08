@@ -70,7 +70,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
     var needsReset: Boolean = false
 
     @JvmField
-    var modelInitialized: Boolean = false
+    protected var modelInitialized: Boolean = false
 
     @JvmField
     var animationStates: MutableMap<String, AnimationState> = Maps.newHashMap()
@@ -84,7 +84,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
     @JvmField
     protected val defaultPhysicsManager: PhysicsManager = PhysicsManager()
 
-    abstract fun getTextureLocation(): Identifier
+    abstract val textureLocation: Identifier
     abstract fun isModelReady(): Boolean
     abstract fun getHeightScale(): Float
     abstract fun getWidthScale(): Float
@@ -128,7 +128,8 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
 
     fun getAnimationExpressions(str: String): MutableList<IValue>? = animationMap?.get(str)
 
-    open fun getPhysicsManager(): PhysicsManager = defaultPhysicsManager
+    open val physicsManager: PhysicsManager
+        get() = defaultPhysicsManager
 
     open fun getAnimationEntries(str: String): AnimationController? = null
 
@@ -221,7 +222,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
             modelData
         )
         val context = AnimationContext(entity, this, event, modelData)
-        getLogger()?.let { context.setLogger(it) }
+        logger?.let { context.setLogger(it) }
         setCustomAnimations(context, event)
         return event
     }
@@ -261,7 +262,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
                     hasUpdatedThisTick = true
                     positionTracker.updateState(event.getTickCount(), seekTime, event.getFrameTime())
                 }
-                getPhysicsManager().update(seekTime)
+                physicsManager.update(seekTime)
                 setupAnim(seekTime, z3)
                 getEvaluationContext().tickAnimation(event, ctx, z3, shouldRenderOverlay())
                 afterSetupAnim(seekTime, z3)
@@ -322,19 +323,21 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
         }
     }
 
-    open fun getPropertyGetter(): IForeignVariableStorage = animationProcessor.getPublicVariableStorage()
+    open val propertyGetter: IForeignVariableStorage
+        get() = animationProcessor.publicVariableStorage
 
     open fun markModelInitialized() {
         modelInitialized = true
     }
 
-    open fun isModelInitialized(): Boolean = modelInitialized
+    open val isModelInitialized: Boolean
+        get() = modelInitialized
 
-    open fun getLogger(): ILogger? = null
+    open val logger: ILogger?
+        get() = null
 
-    open fun isDebugMode(): Boolean {
-        return Minecraft.getInstance().level == entity.level() && !entity.isRemoved
-    }
+    open val isDebugMode: Boolean
+        get() = Minecraft.getInstance().level == entity.level() && !entity.isRemoved
 
     open fun setAnimationState(name: String, state: AnimationState) {
         animationStates[name] = state

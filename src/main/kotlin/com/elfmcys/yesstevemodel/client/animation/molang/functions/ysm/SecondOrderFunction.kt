@@ -17,7 +17,7 @@ class SecondOrderFunction : EntityFunction() {
         val frequency = if (size >= 3) arguments.getAsFloat(context, 2) else 1.0f
         val coefficient = if (size >= 4) arguments.getAsFloat(context, 3) else 1.0f
         val response = if (size >= 5) arguments.getAsFloat(context, 4) else 1.0f
-        val physicsManager = context.entity().geoInstance().getPhysicsManager()
+        val physicsManager = context.entity().geoInstance().physicsManager
         val physics = physicsManager[name]
         if (physics == null) {
             physicsManager[name] = SecondOrder(input, frequency, coefficient, response)

@@ -28,7 +28,7 @@ open class MaidModelButton(
         if (isStarred) {
             return
         }
-        val modelId: String = modelIdHolder.getModelId()
+        val modelId: String = modelIdHolder.modelId
         val textureName: String = modelIdHolder.getCurrentTextureName() ?: ""
         val displayName: Component = ComponentUtil.getDisplayName(renderContext, modelId)
 

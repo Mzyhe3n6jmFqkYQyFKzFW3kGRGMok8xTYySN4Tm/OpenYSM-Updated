@@ -30,13 +30,13 @@ object EntityRenderCache {
                     it.remove()
                 }
 
-                !geoEntity.isDebugMode() -> {
+                !geoEntity.isDebugMode -> {
                     it.remove()
                 }
 
                 else -> {
                     geoEntity.tickModel()
-                    if (geoEntity.supportsAsync() && geoEntity.isModelInitialized() && geoEntity.isModelReady()) {
+                    if (geoEntity.supportsAsync() && geoEntity.isModelInitialized && geoEntity.isModelReady()) {
                         val entity = geoEntity.entity
                         when {
                             entity is AbstractClientPlayer -> {

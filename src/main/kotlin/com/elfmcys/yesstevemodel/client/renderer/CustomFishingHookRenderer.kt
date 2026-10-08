@@ -28,7 +28,7 @@ object CustomFishingHookRenderer {
         packedLight: Int
     ): Boolean {
         val cap = ProjectileCapability[fishingHook]
-        if (cap != null && cap.isModelInitialized() && cap.isModelReady()) {
+        if (cap != null && cap.isModelInitialized && cap.isModelReady()) {
             fishingHook.xRot = 0.0f
             fishingHook.xRotO = 0.0f
             RendererManager.getProjectileRenderer()

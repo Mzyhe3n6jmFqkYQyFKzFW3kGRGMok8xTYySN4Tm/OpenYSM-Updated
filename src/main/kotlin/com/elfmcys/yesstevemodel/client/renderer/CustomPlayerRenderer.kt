@@ -48,7 +48,7 @@ open class CustomPlayerRenderer(context: EntityRendererProvider.Context) :
         val capability = PlayerCapability[player] ?: return
         currentPlayer = player
         capability.tickModel()
-        val renderEvent = SpecialPlayerRenderEvent(player, capability, capability.getModelId())
+        val renderEvent = SpecialPlayerRenderEvent(player, capability, capability.modelId)
         currentTexture = renderEvent.textureLocation
         if (SpecialPlayerRenderEvent.post(renderEvent).isFalse()) {
             return
@@ -93,7 +93,7 @@ open class CustomPlayerRenderer(context: EntityRendererProvider.Context) :
     }
 
     open fun getTextureLocation(player: Player): Identifier {
-        return currentTexture ?: PlayerCapability[player]?.getTextureLocation()
+        return currentTexture ?: PlayerCapability[player]?.textureLocation
         ?: MissingTextureAtlasSprite.getLocation()
     }
 
@@ -104,7 +104,7 @@ open class CustomPlayerRenderer(context: EntityRendererProvider.Context) :
         }
         val player = currentPlayer ?: Minecraft.getInstance().player
         if (player != null) {
-            return PlayerCapability[player]?.getTextureLocation() ?: MissingTextureAtlasSprite.getLocation()
+            return PlayerCapability[player]?.textureLocation ?: MissingTextureAtlasSprite.getLocation()
         }
         return MissingTextureAtlasSprite.getLocation()
     }

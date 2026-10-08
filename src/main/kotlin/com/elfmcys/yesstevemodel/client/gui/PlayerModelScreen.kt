@@ -284,7 +284,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                 val player = minecraft.player ?: return@IconButton
                 val cap = PlayerCapability[player] ?: return@IconButton
                 val modelAssembly = cap.getModelAssembly() ?: return@IconButton
-                minecraft.setScreen(createTextureScreen(this, cap.getModelId(), modelAssembly))
+                minecraft.setScreen(createTextureScreen(this, cap.modelId, modelAssembly))
             }.apply { setTooltipText("gui.yes_steve_model.model.texture") }
         )
 
@@ -555,7 +555,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             localPlayer
         )
         val cap = PlayerCapability[localPlayer] ?: return
-        val modelAssembly = ClientModelManager.getModelContext(cap.getModelId())
+        val modelAssembly = ClientModelManager.getModelContext(cap.modelId)
         val displayName = if (modelAssembly?.modelData?.metadata != null) {
             ModelMetadataPresenter.getLocalizedModelString(
                 modelAssembly,
@@ -563,10 +563,10 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                 modelAssembly.modelData.metadata.name
             )
         } else {
-            FileTypeUtil.getNameWithoutArchiveExtension(cap.getModelId())
+            FileTypeUtil.getNameWithoutArchiveExtension(cap.modelId)
         }
         val lines = font.split(
-            FormattedText.of(displayName.ifBlank { FileTypeUtil.getNameWithoutArchiveExtension(cap.getModelId()) }),
+            FormattedText.of(displayName.ifBlank { FileTypeUtil.getNameWithoutArchiveExtension(cap.modelId) }),
             125
         )
         var lineY = guiTop + 205

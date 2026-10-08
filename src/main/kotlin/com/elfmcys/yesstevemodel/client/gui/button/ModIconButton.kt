@@ -21,7 +21,7 @@ class ModIconButton(x: Int, y: Int) : FlatColorButton(x, y, 20, 20, Component.em
         val localPlayer = Minecraft.getInstance().player ?: return
         val cap = PlayerCapability[localPlayer] ?: return
         val starCap = StarModelsCapability[localPlayer] ?: return
-        val u = if (starCap.containsModel(cap.getModelId())) 16.0f else 0.0f
+        val u = if (starCap.containsModel(cap.modelId)) 16.0f else 0.0f
         guiGraphics.blit(
             RenderPipelines.GUI_TEXTURED,
             ICON_TEXTURE,
@@ -40,7 +40,7 @@ class ModIconButton(x: Int, y: Int) : FlatColorButton(x, y, 20, 20, Component.em
         val localPlayer = Minecraft.getInstance().player ?: return
         val cap = PlayerCapability[localPlayer] ?: return
         val starCap = StarModelsCapability[localPlayer] ?: return
-        val modelId = cap.getModelId()
+        val modelId = cap.modelId
         if (starCap.containsModel(modelId)) {
             starCap.removeModel(modelId)
             NetworkHandler.sendToServer(C2SSetStarModelPacket.remove(modelId))

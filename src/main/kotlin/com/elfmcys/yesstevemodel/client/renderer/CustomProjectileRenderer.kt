@@ -17,7 +17,7 @@ object CustomProjectileRenderer {
         packedLight: Int
     ): Boolean {
         val cap = ProjectileCapability[projectile]
-        if (cap != null && cap.isModelInitialized() && cap.isModelReady()) {
+        if (cap != null && cap.isModelInitialized && cap.isModelReady()) {
             RendererManager.getProjectileRenderer()
                 .render(cap.entity, state, partialTick, poseStack, multiBufferSource, packedLight)
             return false

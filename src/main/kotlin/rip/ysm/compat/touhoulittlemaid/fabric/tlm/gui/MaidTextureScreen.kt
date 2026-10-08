@@ -32,7 +32,7 @@ open class MaidTextureScreen(
 
     override fun renderTexturePreview(guiGraphics: GuiGraphics, partialTick: Float) {
         val animatable: MaidAnimatable = MaidRenderStore.getOrCreate(maid)
-        modelHolder.initModelWithTexture(animatable.getModelId(), animatable.getModelTextureId())
+        modelHolder.initModelWithTexture(animatable.modelId, animatable.getModelTextureId())
         val x0 = guiLeft + 93
         val y0 = guiTop
         val x1 = guiLeft + 299

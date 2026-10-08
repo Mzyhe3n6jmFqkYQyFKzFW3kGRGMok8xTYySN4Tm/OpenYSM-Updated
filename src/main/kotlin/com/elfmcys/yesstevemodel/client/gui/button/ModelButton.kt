@@ -40,7 +40,7 @@ open class ModelButton(
     private val animationDuration: Double
     private val disablePreviewRotation: Boolean = renderContext.modelData.modelProperties.disablePreviewRotation
     private val displayName: Component =
-        Component.literal(FileTypeUtil.getNameWithoutArchiveExtension(modelIdHolder.getModelId()))
+        Component.literal(FileTypeUtil.getNameWithoutArchiveExtension(modelIdHolder.modelId))
     private var backgroundTexture: IResourceLocatable? = renderContext.textureRegistry.getGuiBackground()?.let {
         UploadManager.getOrCreateLocatableWithSize(it, true)
     }
@@ -80,20 +80,20 @@ open class ModelButton(
             if (NetworkHandler.isClientConnected()) {
                 val modelAssembly = modelIdHolder.getModelAssembly()
                 if (modelAssembly != null && cap.hasMolangVars(modelAssembly.modelData.hashId)) {
-                    cap.initModelWithTexture(modelIdHolder.getModelId(), currentTexture)
+                    cap.initModelWithTexture(modelIdHolder.modelId, currentTexture)
                     NetworkHandler.sendToServer(
                         C2SRequestSwitchModelPacket(
-                            cap.getModelId(),
+                            cap.modelId,
                             cap.getCurrentTextureName() ?: currentTexture
                         )
                     )
                     return
                 } else {
-                    NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(modelIdHolder.getModelId(), currentTexture))
+                    NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(modelIdHolder.modelId, currentTexture))
                     return
                 }
             }
-            cap.initModelWithTexture(modelIdHolder.getModelId(), currentTexture)
+            cap.initModelWithTexture(modelIdHolder.modelId, currentTexture)
         }
     }
 
@@ -169,7 +169,7 @@ open class ModelButton(
         val player = minecraft.player
         if (player != null) {
             val starCap = StarModelsCapability[player]
-            if (starCap != null && starCap.containsModel(modelIdHolder.getModelId())) {
+            if (starCap != null && starCap.containsModel(modelIdHolder.modelId)) {
                 guiGraphics.blit(
                     RenderPipelines.GUI_TEXTURED,
                     ICON_TEXTURE,
@@ -203,7 +203,7 @@ open class ModelButton(
                     detailedTooltipLines = ModelMetadataPresenter.buildModelTooltip(
                         renderContext,
                         selected,
-                        modelIdHolder.getModelId(),
+                        modelIdHolder.modelId,
                         true
                     )
                 }
@@ -218,7 +218,7 @@ open class ModelButton(
                     tooltipLines = ModelMetadataPresenter.buildModelTooltip(
                         renderContext,
                         selected,
-                        modelIdHolder.getModelId(),
+                        modelIdHolder.modelId,
                         false
                     )
                 }
@@ -242,7 +242,7 @@ open class ModelButton(
         fun createDisplayName(previewEntity: PlayerPreviewEntity, modelAssembly: ModelAssembly): MutableComponent {
             val metadata = modelAssembly.modelData.metadata
             if (metadata == null || metadata.name.isBlank())
-                return Component.literal(FileTypeUtil.getNameWithoutArchiveExtension(previewEntity.getModelId()))
+                return Component.literal(FileTypeUtil.getNameWithoutArchiveExtension(previewEntity.modelId))
             return Component.literal(
                 ModelMetadataPresenter.getLocalizedModelString(
                     modelAssembly,

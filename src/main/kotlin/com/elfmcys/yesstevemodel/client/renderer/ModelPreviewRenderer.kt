@@ -84,7 +84,7 @@ object ModelPreviewRenderer {
         if (vehicle != null) {
             val cap = VehicleCapability[vehicle]
             if (cap != null) {
-                if (!cap.isModelInitialized() || !cap.isModelReady()) return
+                if (!cap.isModelInitialized || !cap.isModelReady()) return
                 val index = vehicle.passengers.indexOf(entity)
                 val model = cap.getCurrentModel()
                 if (index < 0 || model == null || model.passengerGroupChains()
