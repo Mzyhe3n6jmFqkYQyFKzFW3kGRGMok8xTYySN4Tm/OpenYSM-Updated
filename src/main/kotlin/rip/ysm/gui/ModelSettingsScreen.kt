@@ -182,10 +182,10 @@ open class ModelSettingsScreen(
         if (mc.player == null) return
         val la = animatable as? CustomPlayerEntity ?: return
         val scale = mc.window.guiScale
-        val sx = (previewLeft * scale)
-        val sy = (mc.window.height - previewBottom * scale)
-        val sw = ((previewRight - previewLeft) * scale)
-        val sh = ((previewBottom - previewTop) * scale)
+        val sx = previewLeft * scale
+        val sy = mc.window.height - previewBottom * scale
+        val sw = (previewRight - previewLeft) * scale
+        val sh = (previewBottom - previewTop) * scale
         RenderSystem.enableScissorForRenderTypeDraws(sx, sy, sw, sh)
         val cx = (previewLeft + previewRight) / 2.0f + offsetX
         val cy = previewTop + (previewBottom - previewTop) * 0.65f + offsetY
