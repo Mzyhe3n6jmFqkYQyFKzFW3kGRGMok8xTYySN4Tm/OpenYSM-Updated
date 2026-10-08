@@ -21,7 +21,7 @@ class ForeignVariableBinding : ObjectBinding, ResetVariable {
 
     private class ForeignVariable(private val name: Int) : Variable {
         override fun evaluate(context: ExecutionContext<*>): Any? {
-            val storage = (context.entity as? IContext<*>)?.foreignStorage()
+            val storage = (context.entity as? IContext<*>)?.foreignStorage
             return storage?.getPublic(name)
         }
     }

@@ -21,12 +21,12 @@ class ControllerVariableBinding : ObjectBinding, ResetVariable {
 
     private class ControllerVariable(private val name: Int) : AssignableVariable {
         override fun evaluate(context: ExecutionContext<*>): Any? {
-            val storage = (context.entity as? IContext<*>)?.controllerStorage()
+            val storage = (context.entity as? IContext<*>)?.controllerStorage
             return storage?.getControllerVariable(name)
         }
 
         override fun assign(context: ExecutionContext<*>, value: Any?) {
-            val storage = (context.entity as? IContext<*>)?.controllerStorage()
+            val storage = (context.entity as? IContext<*>)?.controllerStorage
             storage?.setControllerVariable(name, value)
         }
     }

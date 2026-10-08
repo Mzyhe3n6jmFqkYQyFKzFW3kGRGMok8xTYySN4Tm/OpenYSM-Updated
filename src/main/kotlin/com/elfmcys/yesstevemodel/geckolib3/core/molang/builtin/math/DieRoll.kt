@@ -23,7 +23,7 @@ class DieRoll : ContextFunction<Any>() {
             range -= min
         }
         var total = 0.0f
-        val rnd: RandomSource = context.entity.random() ?: RandomSource.create()
+        val rnd: RandomSource = context.entity.random ?: RandomSource.create()
         while (i-- > 0) {
             total += min + rnd.nextFloat() * range
         }

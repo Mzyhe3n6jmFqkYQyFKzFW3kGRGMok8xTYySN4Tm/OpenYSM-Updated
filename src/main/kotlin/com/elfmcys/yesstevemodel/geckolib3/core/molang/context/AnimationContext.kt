@@ -27,18 +27,26 @@ import net.minecraft.world.entity.projectile.Projectile
 
 class AnimationContext<TEntity>(
     private val entity2: TEntity,
-    val instance: AnimatableEntity<*>,
+    private val instance: AnimatableEntity<*>,
     private val animationEvent2: AnimationEvent<*>,
     private val data2: EntityModelData
 ) : IContext<TEntity> {
     private var animationControllerContext2: AnimationControllerContext? = null
-    private var playbackFlags2: PlaybackFlags? = null
-    var audioPlayerManager: AudioPlayerManager? = null
-    var random: RandomSource? = null
-    var storage: VariableStorage? = null
-    var foreignStorage: IForeignVariableStorage? = null
-    var logger: ILogger? = null
-    private var isClientSide2: Boolean = false
+    override var playbackFlags: PlaybackFlags? = null
+    private var audioPlayerManager2: AudioPlayerManager? = null
+    override var random: RandomSource? = null
+    private var storage2: VariableStorage? = null
+    var storage: VariableStorage?
+        get() = storage2
+        set(value) {
+            storage2 = value
+            foreignStorage = value
+        }
+    override var foreignStorage: IForeignVariableStorage? = null
+        private set
+    private var logger: ILogger? = null
+    override var isClientSide: Boolean = false
+        private set
 
     constructor(entity: TEntity, context: AnimationContext<*>) : this(
         entity,
@@ -48,8 +56,8 @@ class AnimationContext<TEntity>(
     ) {
         animationControllerContext2 = context.animationControllerContext2
         random = context.random
-        storage = context.storage
-        audioPlayerManager = context.audioPlayerManager
+        storage2 = context.storage2
+        audioPlayerManager2 = context.audioPlayerManager2
         when (entity) {
             is Player -> PlayerCapability[entity]?.let { cap -> foreignStorage = cap.propertyGetter }
             is Projectile -> ProjectileCapability[entity]?.let { cap -> foreignStorage = cap.propertyGetter }
@@ -70,13 +78,7 @@ class AnimationContext<TEntity>(
         set(value) {
             animationControllerContext2 = value
         }
-    override var playbackFlags: PlaybackFlags?
-        get() = playbackFlags2
-        set(value) {
-            playbackFlags2 = value
-        }
 
-    override fun random(): RandomSource? = random
     override val entity: TEntity
         get() = entity2
     override val mc: Minecraft
@@ -88,15 +90,17 @@ class AnimationContext<TEntity>(
         return AnimationContext(child, this)
     }
 
-    override fun tempStorage(): ITempVariableStorage? = storage?.localVariables
-    override fun scopedStorage(): IScopedVariableStorage? = storage
-    override fun foreignStorage(): IForeignVariableStorage? = foreignStorage
-    override fun controllerStorage(): IControllerVariableStorage? = animationControllerContext2
+    override val tempStorage: ITempVariableStorage?
+        get() = storage2?.localVariables
+    override val scopedStorage: IScopedVariableStorage?
+        get() = storage2
+    override val controllerStorage: IControllerVariableStorage?
+        get() = animationControllerContext2
 
     override fun resolveExpression(str: String): IValue? = instance.resolveExpression(str)
 
     override fun callFunction(context: ExecutionContext<*>, value: IValue, list: List<*>): Any? {
-        val localStorage = storage?.localVariables ?: return null
+        val localStorage = storage2?.localVariables ?: return null
         if (localStorage.pushScope(list)) {
             try {
                 return value.evalSafe(context as ExpressionEvaluator)
@@ -112,7 +116,7 @@ class AnimationContext<TEntity>(
         value: IValue,
         arguments: Function.ArgumentCollection
     ): Any? {
-        val localStorage = storage?.localVariables ?: return null
+        val localStorage = storage2?.localVariables ?: return null
         if (localStorage.pushScopeWithArgs(context, arguments)) {
             try {
                 return value.evalSafe(context as ExpressionEvaluator)
@@ -123,15 +127,14 @@ class AnimationContext<TEntity>(
         return null
     }
 
-    override fun getAnimationLayers(): List<*>? = storage?.localVariables?.asList()
+    override val animationLayers: List<*>?
+        get() = storage2?.localVariables?.asList()
 
     override val isDebugMode: Boolean
         get() = logger != null
-    override val isClientSide: Boolean
-        get() = isClientSide2
 
     fun setIsClientSide(z: Boolean) {
-        isClientSide2 = z
+        isClientSide = z
     }
 
     override fun logWarning(str: String, vararg objArr: Any) {
@@ -149,32 +152,19 @@ class AnimationContext<TEntity>(
     override fun getAudioPlayerManager(global: Boolean): AudioPlayerManager? {
         if (!global) {
             val audioPlayerManager2 = animationControllerContext2?.audioPlayerManager
-            if (audioPlayerManager2 != null) {
-                return audioPlayerManager2
-            }
-            val audioPlayerManager1 = playbackFlags2?.audioPlayerManager
-            if (audioPlayerManager1 != null) {
-                return audioPlayerManager1
-            }
+            if (audioPlayerManager2 != null) return audioPlayerManager2
+            val audioPlayerManager1 = playbackFlags?.audioPlayerManager
+            if (audioPlayerManager1 != null) return audioPlayerManager1
         }
-        return audioPlayerManager
+        return audioPlayerManager2
     }
 
     fun setAudioPlayerManager(audioPlayerManager: AudioPlayerManager?) {
-        this.audioPlayerManager = audioPlayerManager
+        this.audioPlayerManager2 = audioPlayerManager
     }
 
     fun setAnimationControllerContext(context: AnimationControllerContext?) {
         animationControllerContext2 = context
-    }
-
-    fun setStorage(variableStorage: VariableStorage?) {
-        storage = variableStorage
-        foreignStorage = variableStorage
-    }
-
-    fun setRandom(random: RandomSource?) {
-        this.random = random
     }
 
     fun setLogger(logger: ILogger?) {

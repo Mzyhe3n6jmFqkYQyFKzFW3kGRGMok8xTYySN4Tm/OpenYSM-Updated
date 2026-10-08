@@ -41,8 +41,8 @@ object QueryBinding : ContextBinding() {
 
         `var`("actor_count") { ctx -> ctx.level?.entityCount ?: 0 }
         `var`("anim_time") { ctx -> ctx.animationControllerContext?.animTime ?: 0.0f }
-        `var`("all_animations_finished") { ctx -> ctx.playbackFlags?.isPaused() ?: false }
-        `var`("any_animation_finished") { ctx -> ctx.playbackFlags?.isStopped() ?: false }
+        `var`("all_animations_finished") { ctx -> ctx.playbackFlags?.isPaused ?: false }
+        `var`("any_animation_finished") { ctx -> ctx.playbackFlags?.isStopped ?: false }
         `var`("life_time") { ctx -> ctx.geoInstance.seekTime / 20.0 }
         `var`("head_x_rotation") { ctx -> ctx.data.netHeadYaw }
         `var`("head_y_rotation") { ctx -> ctx.data.headPitch }

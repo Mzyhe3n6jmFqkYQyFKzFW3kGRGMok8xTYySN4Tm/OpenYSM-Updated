@@ -27,16 +27,16 @@ interface IContext<TEntity> {
     val data: EntityModelData
     val animationControllerContext: AnimationControllerContext?
     val playbackFlags: PlaybackFlags?
-    fun random(): RandomSource?
+    val random: RandomSource?
     fun <TChild> createChild(child: TChild): IContext<TChild>
-    fun tempStorage(): ITempVariableStorage?
-    fun scopedStorage(): IScopedVariableStorage?
-    fun controllerStorage(): IControllerVariableStorage?
-    fun foreignStorage(): IForeignVariableStorage?
+    val tempStorage: ITempVariableStorage?
+    val scopedStorage: IScopedVariableStorage?
+    val controllerStorage: IControllerVariableStorage?
+    val foreignStorage: IForeignVariableStorage?
     fun resolveExpression(str: String): IValue?
     fun callFunction(context: ExecutionContext<*>, value: IValue, list: List<*>): Any?
     fun callFunctionWithArgs(context: ExecutionContext<*>, value: IValue, arguments: Function.ArgumentCollection): Any?
-    fun getAnimationLayers(): List<*>?
+    val animationLayers: List<*>?
     val isDebugMode: Boolean
     val isClientSide: Boolean
     fun logWarning(str: String, vararg objArr: Any)

@@ -53,7 +53,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     ) {
         if (animationEntries == null) return
         evaluator.entity.setAnimationControllerContext(null)
-        evaluator.entity.setPlaybackFlags(playbackFlags)
+        evaluator.entity.playbackFlags = playbackFlags
         val currentTick = event.currentTick
         visitedEntries.clear()
         var transitioned = false

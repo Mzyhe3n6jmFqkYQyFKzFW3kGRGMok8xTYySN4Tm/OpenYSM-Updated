@@ -8,7 +8,7 @@ object ArgsVariable : Variable {
     override fun evaluate(context: ExecutionContext<*>): Any? {
         val entity = context.entity
         if (entity is IContext<*>) {
-            return entity.getAnimationLayers()
+            return entity.animationLayers
         }
         return null
     }
