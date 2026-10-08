@@ -10,6 +10,7 @@ class C2SSyncAnimationExpressionPacket(val floatData: FloatArrayList) {
         @JvmStatic
         fun encode(message: C2SSyncAnimationExpressionPacket, buf: FriendlyByteBuf) {
             buf.writeByte(message.floatData.size)
+            // TODO: 'fun next(): Float!' is deprecated. Deprecated in Java.
             for (floatDatum in message.floatData) {
                 buf.writeFloat(floatDatum)
             }

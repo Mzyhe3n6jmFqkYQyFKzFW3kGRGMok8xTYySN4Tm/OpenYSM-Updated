@@ -51,15 +51,15 @@ fun interface Function {
             val obj: Any?
             when (obj2) {
                 is StringExpression -> {
-                    if (obj2.getResourceLocation() != null) {
-                        return obj2.getResourceLocation()
+                    if (obj2.resourceLocation != null) {
+                        return obj2.resourceLocation
                     }
-                    val resourceLocationTryParse = Identifier.tryParse(obj2.getName())
+                    val resourceLocationTryParse = Identifier.tryParse(obj2.name)
                     if (resourceLocationTryParse != null) {
-                        obj2.setResourceLocation(resourceLocationTryParse)
+                        obj2.resourceLocation = resourceLocationTryParse
                         return resourceLocationTryParse
                     }
-                    obj = obj2.getName()
+                    obj = obj2.name
                 }
 
                 is String -> {

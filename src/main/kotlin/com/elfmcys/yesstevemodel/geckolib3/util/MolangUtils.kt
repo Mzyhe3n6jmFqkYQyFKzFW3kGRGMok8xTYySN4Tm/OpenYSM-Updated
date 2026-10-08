@@ -66,7 +66,7 @@ object MolangUtils {
     fun parseSlotType(ctx: ExecutionContext<out IContext<*>>, args: Function.ArgumentCollection, index: Int): EquipmentSlot? {
         val expr: Expression = args.getExpression(index)
         if (expr is StringExpression) {
-            if (expr.isSlotResolved()) {
+            if (expr.isSlotResolved) {
                 return expr.cachedSlot
             }
             val name = expr.name
