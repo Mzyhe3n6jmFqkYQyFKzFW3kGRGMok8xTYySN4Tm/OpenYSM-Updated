@@ -58,7 +58,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.getInstance()
+                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate
             )
         }
         ParcoolCompat.controllerFactory?.let { registerController("parcool", it) }
@@ -75,7 +75,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
         registerController("main") { animationEntryKey, entity ->
@@ -91,7 +91,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
         registerSlotController("pre_hold") { animationEntryKey, entity ->
@@ -99,7 +99,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
         registerController("hold_offhand") { animationEntryKey, entity ->
@@ -123,7 +123,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
         if (ItemUseAnimationPredicate.isModLoaded) {
@@ -141,7 +141,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
         registerController("swing") { animationEntryKey, entity ->
@@ -157,7 +157,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
         registerSlotController("pre_use") { animationEntryKey, entity ->
@@ -165,7 +165,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
         registerController("use") { animationEntryKey, entity ->
@@ -181,7 +181,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                StopAnimationPredicate()
+                StopAnimationPredicate
             )
         }
         registerController("passenger") { animationEntryKey, entity ->
@@ -222,7 +222,7 @@ object PlayerAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.getInstance(),
+                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate,
                 true
             )
         }

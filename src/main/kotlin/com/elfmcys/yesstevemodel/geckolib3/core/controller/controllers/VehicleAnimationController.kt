@@ -52,11 +52,11 @@ object VehicleAnimationController {
                 entity,
                 animationEntryKey,
                 0.0f,
-                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.getInstance()
+                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate
             )
         }
         registerNamedController("pre_main", null, true) { animationEntryKey, entity ->
-            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate())
+            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate)
         }
         registerNamedController("main", EntityMovementPredicate.MOVEMENT_STATES, true) { animationEntryKey, entity ->
             CompositeAnimationController(entity, animationEntryKey, 0.1f, EntityMovementPredicate())
@@ -75,14 +75,14 @@ object VehicleAnimationController {
             CompositeAnimationController(entity, animationEntryKey, 0.1f, RideStateAnimationPredicate())
         }
         registerNamedController("post_main", null, true) { animationEntryKey, entity ->
-            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate())
+            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate)
         }
         registerParallelController("parallel") { animationEntryKey, entity, linkedAnimationName ->
             CompositeAnimationController(
                 entity,
                 animationEntryKey,
                 0.0f,
-                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.getInstance(),
+                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate,
                 true
             )
         }

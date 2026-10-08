@@ -46,7 +46,7 @@ object ProjectileAnimationController {
     @JvmStatic
     fun registerControllers() {
         registerNamedController("pre_main", null, true) { animationEntryKey, entity ->
-            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate())
+            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate)
         }
         registerNamedController(
             "main",
@@ -56,14 +56,14 @@ object ProjectileAnimationController {
             CompositeAnimationController(entity, animationEntryKey, 0.1f, ProjectileAnimationPredicate())
         }
         registerNamedController("post_main", null, true) { animationEntryKey, entity ->
-            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate())
+            CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate)
         }
         registerParallelController("parallel") { animationEntryKey, entity, linkedAnimationName ->
             CompositeAnimationController(
                 entity,
                 animationEntryKey,
                 0.0f,
-                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate.getInstance(),
+                if (linkedAnimationName != null) NamedAnimationPredicate(linkedAnimationName) else StopAnimationPredicate,
                 true
             )
         }
