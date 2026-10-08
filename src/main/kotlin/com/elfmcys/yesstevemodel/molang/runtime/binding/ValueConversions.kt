@@ -56,7 +56,7 @@ object ValueConversions {
     @JvmStatic
     fun asString(obj: Any?): String? {
         if (obj is StringExpression) {
-            return obj.getName()
+            return obj.name
         }
         if (obj is String) {
             return obj
@@ -67,7 +67,7 @@ object ValueConversions {
     @JvmStatic
     fun asStringId(obj: Any?): Int {
         if (obj is StringExpression) {
-            return obj.getPath()
+            return obj.path
         }
         if (obj is String) {
             return StringPool.computeIfAbsent(obj)
