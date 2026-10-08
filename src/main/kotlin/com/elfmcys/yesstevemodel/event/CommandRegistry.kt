@@ -24,7 +24,7 @@ object CommandRegistry {
             if (commandContext.source is SharedSuggestionProvider) {
                 if (PlatformAPI.isServer) {
                     return@register SharedSuggestionProvider.suggest(
-                        ServerModelManager.getServerModelInfo().keys.map(::escapeIfRequired),
+                        ServerModelManager.serverModelInfo.keys.map(::escapeIfRequired),
                         suggestionsBuilder
                     )
                 }
@@ -57,7 +57,7 @@ object CommandRegistry {
                 val str = commandContext.getArgument("model_id", String::class.java)
                 when {
                     PlatformAPI.isServer -> {
-                        ServerModelManager.getServerModelInfo()[str]?.let { serverModelInfo ->
+                        ServerModelManager.serverModelInfo[str]?.let { serverModelInfo ->
                             val list = mutableListOf("-").apply {
                                 addAll(serverModelInfo.modelInfo.textures.map(::escapeIfRequired))
                             }

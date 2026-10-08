@@ -17,7 +17,8 @@ object GeckoLibCache {
         Pattern.compile("^([;\\s]*(v|variable)\\.roaming\\.[A-Za-z0-9_]+\\s*=[^;]+[;\\s]*)+$", Pattern.CASE_INSENSITIVE)
 
     @JvmStatic
-    fun getMolangParser(): MolangParser = PARSER_POOL.poll() ?: createMolangParser()
+    val molangParser: MolangParser
+        get() = PARSER_POOL.poll() ?: createMolangParser()
 
     @JvmStatic
     fun releaseParser(parser: MolangParser) {
@@ -28,7 +29,7 @@ object GeckoLibCache {
     @JvmStatic
     @Throws(ParseException::class)
     fun parseSimpleExpression(molangExpression: String): IValue {
-        val parser = getMolangParser()
+        val parser = molangParser
         return try {
             parser.parseExpressionUnsafe(molangExpression, false)
         } finally {
@@ -54,14 +55,15 @@ object GeckoLibCache {
     }
 
     @JvmStatic
-    fun getGlobalBindings(): MutableMap<String, Any> {
-        if (bindings.isEmpty()) {
-            bindings.putAll(EXTRA_BINDING)
-            bindings["math"] = MathBinding
-            bindings["q"] = QueryBinding
+    val globalBindings: MutableMap<String, Any>
+        get() {
+            if (bindings.isEmpty()) {
+                bindings.putAll(EXTRA_BINDING)
+                bindings["math"] = MathBinding
+                bindings["q"] = QueryBinding
+            }
+            return bindings
         }
-        return bindings
-    }
 
     @JvmStatic
     fun isRoamingVariableAssignment(str: String): Boolean {
