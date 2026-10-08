@@ -29,7 +29,7 @@ open class MaidModelButton(
             return
         }
         val modelId: String = modelIdHolder.modelId
-        val textureName: String = modelIdHolder.getCurrentTextureName() ?: ""
+        val textureName: String = modelIdHolder.currentTextureName ?: ""
         val displayName: Component = ComponentUtil.getDisplayName(renderContext, modelId)
 
         MaidRenderStore.getOrCreate(maid).setYsmModel(modelId, textureName)

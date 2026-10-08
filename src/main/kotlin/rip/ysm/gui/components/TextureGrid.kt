@@ -106,7 +106,7 @@ class TextureGrid(private val owner: ModernPlayerTextureScreen) : OptionRow<Any?
     private fun currentTextureName(): String {
         val mc = Minecraft.getInstance()
         val player = mc.player ?: return StringPool.EMPTY
-        return PlayerCapability[player]?.getCurrentTextureName() ?: StringPool.EMPTY
+        return PlayerCapability[player]?.currentTextureName ?: StringPool.EMPTY
     }
 
     private fun renderHolderPreview(g: GuiGraphics, x: Int, y: Int, holder: PlayerPreviewEntity, pt: Float) {

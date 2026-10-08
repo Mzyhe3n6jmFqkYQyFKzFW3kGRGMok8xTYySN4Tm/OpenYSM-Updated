@@ -27,7 +27,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     isActive: Boolean
 ) : GeoEntity<T>(t, isActive) {
     private var currentTextureName2: String? = null
-    private var textureIndex: Int = 0
+    private var textureIndex2: Int = 0
     private val armorBoneOffset: Vector2f = Vector2f()
     private var needsInit: Boolean = false
     private var playerUpdateIValue: IValue? = null
@@ -78,9 +78,11 @@ abstract class LivingAnimatable<T : LivingEntity>(
         forceDisabled2 = forceDisabled
     }
 
-    open fun isForceDisabled(): Boolean = forceDisabled2
+    open val isForceDisabled: Boolean
+        get() = forceDisabled2
 
-    open fun isModelActive(): Boolean = isModelInitialized && !forceDisabled2
+    open val isModelActive: Boolean
+        get() = isModelInitialized && !forceDisabled2
 
     override fun onModelLoaded(modelAssembly: ModelAssembly) {
         super.onModelLoaded(modelAssembly)
@@ -103,7 +105,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     override fun resetModel() {
         super.resetModel()
         currentTextureName2 = null
-        textureIndex = 0
+        textureIndex2 = 0
         forceDisabled2 = false
     }
 
@@ -142,14 +144,14 @@ abstract class LivingAnimatable<T : LivingEntity>(
                 when {
                     abstractTexture != null -> {
                         (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(abstractTexture)
-                        textureIndex = map.getValuesList().indexOf(abstractTexture)
+                        textureIndex2 = map.getValuesList().indexOf(abstractTexture)
                     }
 
                     !map.isEmpty() -> {
                         currentTextureName2 = map.getKeyAt(0)
                         map.getValueAt(0)
                             .let { (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.setTexture(it) }
-                        textureIndex = 0
+                        textureIndex2 = 0
                     }
                 }
             }
@@ -163,25 +165,22 @@ abstract class LivingAnimatable<T : LivingEntity>(
     override fun getAnimationEntries(str: String): AnimationController? =
         modelAssembly?.animationBundle?.animationEntries?.get(str)
 
-    open fun getCurrentTextureName(): String? {
-        return if (isModelReady) currentTextureName2 else modelAssembly?.animationBundle?.textures
-            ?.getKeyAt(0)
-    }
+    open val currentTextureName: String?
+        get() = if (isModelReady) currentTextureName2 else modelAssembly?.animationBundle?.textures?.getKeyAt(0)
 
     override val textureLocation: Identifier
-        get() {
-            return if (isModelReady) {
-                (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.texture?.getResourceLocation()
-                    ?: ClientModelManager.defaultTexture
-            } else {
-                ClientModelManager.defaultTexture
-            }
+        get() = if (isModelReady) {
+            (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.texture?.getResourceLocation()
+                ?: ClientModelManager.defaultTexture
+        } else {
+            ClientModelManager.defaultTexture
         }
 
-    override fun getTextureIndex(): Int {
-        if (isModelReady) return textureIndex
-        return 0
-    }
+    override val textureIndex: Int
+        get() {
+            if (isModelReady) return textureIndex2
+            return 0
+        }
 
     override val widthScale: Float
         get() = modelAssembly?.modelData?.modelProperties?.widthScale ?: 1.0f

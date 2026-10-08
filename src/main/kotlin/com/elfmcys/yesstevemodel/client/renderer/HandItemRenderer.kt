@@ -46,7 +46,7 @@ open class HandItemRenderer {
             return
         }
         val textureLocation: Identifier = event.textureLocation ?: capability.textureLocation
-        val textureIndex: Int = if (event.textureLocation == null) capability.getTextureIndex() else 0
+        val textureIndex: Int = if (event.textureLocation == null) capability.textureIndex else 0
         val buffer: VertexConsumer = bufferSource.getBuffer(CustomEntityTranslucentRenderType.get(textureLocation))
         val renderPartMask: Int =
             if (arm == HumanoidArm.LEFT) LayerTypeConstants.TYPE_LEFT else LayerTypeConstants.TYPE_RIGHT

@@ -134,7 +134,8 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
 
     open fun getAnimationEntries(str: String): AnimationController? = null
 
-    open fun getTextureIndex(): Int = 0
+    open val textureIndex: Int
+        get() = 0
 
     open fun getScale(): Float = 0.15f
 

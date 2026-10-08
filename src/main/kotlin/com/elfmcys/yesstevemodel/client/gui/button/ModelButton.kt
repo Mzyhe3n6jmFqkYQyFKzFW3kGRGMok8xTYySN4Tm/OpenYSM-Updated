@@ -76,7 +76,7 @@ open class ModelButton(
         val localPlayer = Minecraft.getInstance().player
         if (!isStarred && localPlayer != null) {
             val cap = PlayerCapability[localPlayer] ?: return
-            val currentTexture = modelIdHolder.getCurrentTextureName() ?: ""
+            val currentTexture = modelIdHolder.currentTextureName ?: ""
             if (NetworkHandler.isClientConnected()) {
                 val modelAssembly = modelIdHolder.modelAssembly
                 if (modelAssembly != null && cap.hasMolangVars(modelAssembly.modelData.hashId)) {
@@ -84,7 +84,7 @@ open class ModelButton(
                     NetworkHandler.sendToServer(
                         C2SRequestSwitchModelPacket(
                             cap.modelId,
-                            cap.getCurrentTextureName() ?: currentTexture
+                            cap.currentTextureName ?: currentTexture
                         )
                     )
                     return

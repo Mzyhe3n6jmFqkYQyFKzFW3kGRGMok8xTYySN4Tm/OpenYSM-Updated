@@ -49,7 +49,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
 
     override fun onModelLoaded(modelAssembly: ModelAssembly) {
         super.onModelLoaded(modelAssembly)
-        currentModelHashId = modelAssembly.modelData?.hashId ?: 0
+        currentModelHashId = modelAssembly.modelData.hashId ?: 0
     }
 
     override fun clearModel() {
@@ -200,7 +200,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
             molangVarsMap.put(entry.intKey, holder)
         }
         initModelWithTexture(playerCapability.modelId, playerCapability.currentTextureName)
-        setForceDisabled(playerCapability.isForceDisabled())
+        setForceDisabled(playerCapability.isForceDisabled)
         val holder = molangVarsMap[currentModelHashId]
         val vars = holder?.currentVars
         if (vars != null) {
