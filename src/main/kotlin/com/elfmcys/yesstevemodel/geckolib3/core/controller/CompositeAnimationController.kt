@@ -9,7 +9,7 @@ import com.elfmcys.yesstevemodel.geckolib3.core.snapshot.BoneTopLevelSnapshot
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
 
-open class CompositeAnimationController<T : AnimatableEntity<*>>(
+class CompositeAnimationController<T : AnimatableEntity<*>>(
     private val animatable: T,
     override val name: String,
     transitionLengthTicks: Float,
