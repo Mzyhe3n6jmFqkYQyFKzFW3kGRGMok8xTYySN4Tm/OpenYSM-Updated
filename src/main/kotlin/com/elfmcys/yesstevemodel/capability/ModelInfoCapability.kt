@@ -21,15 +21,21 @@ import java.util.*
 class ModelInfoCapability {
     private var modelId2: String? = null
     private var selectTexture2: String? = null
-    private var mandatory2: Boolean = false
+    private var mandatory: Boolean = false
     private var molangStorage: Int2ReferenceOpenHashMap<Object2FloatOpenHashMap<String>> = Int2ReferenceOpenHashMap()
-    private var animSync2: PlayerStateSynchronizer = PlayerStateSynchronizer()
-    private var disabled2: Boolean = false
+    var animSync: PlayerStateSynchronizer = PlayerStateSynchronizer()
+        private set
+    private var disabled: Boolean = false
     private var dirty: Boolean = false
     private val pendingCallbacks: ArrayDeque<(Object2FloatOpenHashMap<String>) -> Unit> = ArrayDeque()
 
     var modelId: String
-        get() = modelId2 ?: ServerModelManager.getDefaultModelConfig().getLeft()
+        get() {
+            val ret = ServerModelManager.getDefaultModelConfig().getLeft()
+            if (modelId2 == null)
+                modelId2 = ret
+            return modelId2!!
+        }
         set(value) {
             if (modelId2 == value) return
             modelId2 = value
@@ -37,7 +43,12 @@ class ModelInfoCapability {
         }
 
     val selectTexture: String
-        get() = selectTexture2 ?: ServerModelManager.getDefaultModelConfig().getRight()
+        get() {
+            val ret = ServerModelManager.getDefaultModelConfig().getRight()
+            if (selectTexture2 == null)
+                selectTexture2 = ret
+            return selectTexture2!!
+        }
 
     fun setSelectTexture(str: String) {
         if (selectTexture2 == str) return
@@ -61,26 +72,26 @@ class ModelInfoCapability {
         molangStorage = source.molangStorage
         modelId2 = source.modelId2
         selectTexture2 = source.selectTexture2
-        mandatory2 = source.mandatory2
-        animSync2 = source.animSync2
+        mandatory = source.mandatory
+        animSync = source.animSync
         pendingCallbacks.addAll(source.pendingCallbacks)
-        disabled2 = source.disabled2
+        disabled = source.disabled
         source.pendingCallbacks.clear()
         markDirty()
     }
 
     fun setDisabled(disabled: Boolean) {
-        if (this.disabled2 == disabled) return
-        this.disabled2 = disabled
+        if (this.disabled == disabled) return
+        this.disabled = disabled
         markDirty()
     }
 
     fun playAnimation(serverPlayer: ServerPlayer, str: String) {
-        animSync2.syncModelSwitch(serverPlayer, !dirty, str)
+        animSync.syncModelSwitch(serverPlayer, !dirty, str)
     }
 
     fun stopAnimation(serverPlayer: ServerPlayer) {
-        animSync2.syncModelSwitch(serverPlayer, !dirty, StringPool.EMPTY)
+        animSync.syncModelSwitch(serverPlayer, !dirty, StringPool.EMPTY)
     }
 
     fun createSyncMessage(serverPlayer: ServerPlayer, fullSync: Boolean): S2CSetModelAndTexturePacket? =
@@ -97,8 +108,8 @@ class ModelInfoCapability {
                 serverPlayer.id,
                 modelId,
                 selectTexture,
-                disabled2,
-                animSync2.buildFullSyncMessage(serverPlayer, fullSync)
+                disabled,
+                animSync.buildFullSyncMessage(serverPlayer, fullSync)
                     .setMolangVars(it.loadedModelData.hashId, molangVars)
             )
         }
@@ -128,7 +139,7 @@ class ModelInfoCapability {
                 Object2FloatOpenHashMap(stringValues)
             }
         }
-        animSync2.syncMolangVars(serverPlayer, !dirty, feedbackData.entityId, stringValues)
+        animSync.syncMolangVars(serverPlayer, !dirty, feedbackData.entityId, stringValues)
     }
 
     fun retainAnimationKeys(intSet: IntSet) {
@@ -141,10 +152,8 @@ class ModelInfoCapability {
         }
     }
 
-    val animSync: PlayerStateSynchronizer
-        get() = animSync2
-
-    fun isDisabled(): Boolean = disabled2
+    val isDisabled: Boolean
+        get() = disabled
 
     fun markDirty() {
         dirty = true
@@ -158,21 +167,21 @@ class ModelInfoCapability {
     }
 
     fun setMandatory(mandatory: Boolean) {
-        if (this.mandatory2 != mandatory) {
-            this.mandatory2 = mandatory
+        if (this.mandatory != mandatory) {
+            this.mandatory = mandatory
             markDirty()
         }
     }
 
     val isMandatory: Boolean
-        get() = mandatory2
+        get() = mandatory
 
     fun serializeNBT(): CompoundTag {
         val compoundTag = CompoundTag()
         compoundTag.putString("model_id", modelId)
         compoundTag.putString("select_texture", selectTexture)
-        compoundTag.putBoolean("mandatory", mandatory2)
-        compoundTag.putBoolean("disabled", disabled2)
+        compoundTag.putBoolean("mandatory", mandatory)
+        compoundTag.putBoolean("disabled", disabled)
         val compoundTag2 = CompoundTag()
         molangStorage.int2ReferenceEntrySet().fastForEach { entry ->
             val compoundTag3 = CompoundTag()
@@ -192,8 +201,8 @@ class ModelInfoCapability {
         if (selectTextureStr.length > 4 && selectTextureStr.lowercase().endsWith(".png"))
             selectTextureStr = selectTextureStr.substring(0, selectTextureStr.length - 4)
         setSelectTexture(selectTextureStr)
-        mandatory2 = compoundTag.getBooleanOr("mandatory", false)
-        disabled2 = compoundTag.getBooleanOr("disabled", false)
+        mandatory = compoundTag.getBooleanOr("mandatory", false)
+        disabled = compoundTag.getBooleanOr("disabled", false)
         molangStorage.clear()
         val compound = compoundTag.getCompoundOrEmpty("molang_storage")
         for (str in compound.keySet()) {
