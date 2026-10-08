@@ -9,10 +9,12 @@ import rip.ysm.compat.ModCompat
 
 object ParcoolCompatImpl : ModCompat("parcool") {
     @JvmStatic
-    fun getInCompatibleInfo(): Pair<String, String>? = null
+    val inCompatibleInfo: Pair<String, String>?
+        get() = null
 
     @JvmStatic
-    fun getControllerFactory(): ((String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>)? = null
+    val controllerFactory: ((String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>)?
+        get() = null
 
     @JvmStatic
     fun isPlayerParcooling(player: Player): Boolean = false

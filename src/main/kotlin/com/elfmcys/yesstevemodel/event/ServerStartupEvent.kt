@@ -7,7 +7,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 object ServerStartupEvent {
     init {
         ServerLifecycleEvents.SERVER_STARTING.register { server ->
-            if (!YesSteveModel.isAvailable()) return@register
+            if (!YesSteveModel.isAvailable) return@register
             ServerModelManager.loadModels({ result ->
                 if (!result.isSuccess) {
                     server.execute {

@@ -12,8 +12,11 @@ class BonePivotAbs : BoneParamFunction() {
     }
 
     class BonePivotAbsStruct(private val bone: IBone) : Vec3fStruct() {
-        override fun getX(): Float = bone.pivotAbsX
-        override fun getY(): Float = bone.pivotAbsY
-        override fun getZ(): Float = bone.pivotAbsZ
+        override val x: Float
+            get() = bone.pivotAbsX
+        override val y: Float
+            get() = bone.pivotAbsY
+        override val z: Float
+            get() = bone.pivotAbsZ
     }
 }

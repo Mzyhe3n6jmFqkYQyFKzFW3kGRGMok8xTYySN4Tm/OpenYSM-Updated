@@ -27,7 +27,7 @@ object PlayerSkinTextureManager {
     }
 
     private fun onRenderTexture(event: SpecialPlayerRenderEvent): EventResult {
-        if (!YesSteveModel.isAvailable()) {
+        if (!YesSteveModel.isAvailable) {
             return EventResult.pass()
         }
         val player = event.player

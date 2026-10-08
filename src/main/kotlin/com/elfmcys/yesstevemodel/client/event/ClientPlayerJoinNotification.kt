@@ -33,7 +33,7 @@ object ClientPlayerJoinNotification {
         if (notified) return
         ClientModelManager.runPendingModelCallback()
         notified = true
-        if (!YesSteveModel.isAvailable()) {
+        if (!YesSteveModel.isAvailable) {
             YesSteveModel.sendUnavailableMessage()
             return
         }
@@ -61,7 +61,7 @@ object ClientPlayerJoinNotification {
     private fun onPlayerQuit(player: LocalPlayer) {
         if (notified) {
             notified = false
-            if (!YesSteveModel.isAvailable()) {
+            if (!YesSteveModel.isAvailable) {
                 return
             }
             ClientModelManager.resetSync()

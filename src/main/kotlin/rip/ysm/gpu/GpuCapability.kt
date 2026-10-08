@@ -40,7 +40,7 @@ object GpuCapability {
             reason = "gpu renderer has been disabled"
             return
         }
-        if (!NativeLibLoader.isLoaded()) {
+        if (!NativeLibLoader.isLoaded) {
             reason = "native ysm-core not loaded"
             return
         }

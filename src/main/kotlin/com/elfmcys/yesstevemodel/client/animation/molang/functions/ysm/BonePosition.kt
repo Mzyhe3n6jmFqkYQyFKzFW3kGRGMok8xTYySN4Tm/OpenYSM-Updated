@@ -9,8 +9,11 @@ class BonePosition : BoneParamFunction() {
     }
 
     class BonePositionStruct(private val boneTransform: IBone) : Vec3fStruct() {
-        override fun getX(): Float = boneTransform.positionX
-        override fun getY(): Float = boneTransform.positionY
-        override fun getZ(): Float = boneTransform.positionZ
+        override val x: Float
+            get() = boneTransform.positionX
+        override val y: Float
+            get() = boneTransform.positionY
+        override val z: Float
+            get() = boneTransform.positionZ
     }
 }

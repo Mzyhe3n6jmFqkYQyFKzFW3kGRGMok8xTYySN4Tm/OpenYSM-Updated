@@ -48,7 +48,7 @@ object RendererManager {
     }
 
     private fun initRenderers(resourceManager: ResourceManager) {
-        if (!YesSteveModel.isAvailable()) return
+        if (!YesSteveModel.isAvailable) return
         val minecraft = Minecraft.getInstance()
         val entityRenderDispatcher = minecraft.entityRenderDispatcher
         val context = EntityRendererProvider.Context(

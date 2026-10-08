@@ -462,7 +462,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         guiGraphics.drawString(font, pageStr, pageX, pageY - 9 / 2, 0xFFF3F0E0.toInt())
 
         var renderer =
-            if (NativeLibLoader.isLoaded() && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get()) "SIMD" else "Fallback"
+            if (NativeLibLoader.isLoaded && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get()) "SIMD" else "Fallback"
         if (renderer == "SIMD" && GpuCapability.isAvailable() && GeneralConfig.USE_GPU_RENDERER.get()) {
             renderer = "GPU"
         }

@@ -11,7 +11,7 @@ import net.minecraft.network.chat.Component
 
 object PauseScreenButtonBuilder {
     @JvmStatic
-    fun isServerConnected(): Boolean = YesSteveModel.isOnAndroid()
+    fun isServerConnected(): Boolean = YesSteveModel.isOnAndroid
 
     @JvmStatic
     fun createButtons(pauseScreen: PauseScreen): List<Button>? {

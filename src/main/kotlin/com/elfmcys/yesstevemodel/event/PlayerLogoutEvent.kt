@@ -8,7 +8,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 object PlayerLogoutEvent {
     init {
         ServerPlayConnectionEvents.DISCONNECT.register { handler, _ ->
-            if (!YesSteveModel.isAvailable()) {
+            if (!YesSteveModel.isAvailable) {
                 return@register
             }
             val player = handler.player

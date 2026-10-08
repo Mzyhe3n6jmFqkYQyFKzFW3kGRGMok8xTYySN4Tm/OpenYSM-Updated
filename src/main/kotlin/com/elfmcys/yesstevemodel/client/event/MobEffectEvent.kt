@@ -10,7 +10,7 @@ import net.minecraft.world.entity.LivingEntity
 object MobEffectEvent {
     @JvmStatic
     fun onEffectAdded(entity: LivingEntity, effect: Holder<MobEffect>?, amplifier: Int) {
-        if (!YesSteveModel.isAvailable() || entity.level().isClientSide) return
+        if (!YesSteveModel.isAvailable || entity.level().isClientSide) return
         if (entity is ServerPlayer && effect != null) {
             ModelInfoCapability[entity]?.animSync?.syncEffectAdded(entity, effect, amplifier + 1)
         }
@@ -18,7 +18,7 @@ object MobEffectEvent {
 
     @JvmStatic
     fun onEffectRemoved(entity: LivingEntity, effect: Holder<MobEffect>?) {
-        if (!YesSteveModel.isAvailable() || entity.level().isClientSide) return
+        if (!YesSteveModel.isAvailable || entity.level().isClientSide) return
         if (entity is ServerPlayer && effect != null) {
             ModelInfoCapability[entity]?.animSync?.syncEffectRemoved(entity, effect)
         }

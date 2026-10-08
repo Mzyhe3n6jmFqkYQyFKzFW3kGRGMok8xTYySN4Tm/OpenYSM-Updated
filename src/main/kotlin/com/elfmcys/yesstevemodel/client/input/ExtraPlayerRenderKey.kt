@@ -24,7 +24,7 @@ object ExtraPlayerRenderKey {
 
     init {
         ClientRawInputEvent.KEY_PRESSED.register { _, action, event ->
-            if (YesSteveModel.isAvailable() && InputUtil.isPlayerReady() && action == 1 && InputUtil.isKeyPressed(
+            if (YesSteveModel.isAvailable && InputUtil.isPlayerReady() && action == 1 && InputUtil.isKeyPressed(
                     event,
                     KEY_MAPPING
                 )

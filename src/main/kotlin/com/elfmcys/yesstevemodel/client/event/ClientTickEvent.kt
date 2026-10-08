@@ -22,7 +22,7 @@ object ClientTickEvent {
 
     @JvmStatic
     fun onClientPreTick(client: Minecraft) {
-        if (!YesSteveModel.isAvailable()) return
+        if (!YesSteveModel.isAvailable) return
         tickCount2++
         UploadManager.processPendingUploads()
         ModelUploadSession.tickCurrent()

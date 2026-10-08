@@ -21,7 +21,7 @@ object AnimationLockEvent {
 
     init {
         ClientRawInputEvent.KEY_PRESSED.register { _, action, event ->
-            if (YesSteveModel.isAvailable() && action == 1 && AnimationRouletteKey.KEY_LOCK.matches(event))
+            if (YesSteveModel.isAvailable && action == 1 && AnimationRouletteKey.KEY_LOCK.matches(event))
                 animationLocked = !animationLocked
             EventResult.pass()
         }
@@ -30,7 +30,7 @@ object AnimationLockEvent {
 
     private fun onClientTick(client: Minecraft) {
         val localPlayer = client.player
-        if (YesSteveModel.isAvailable() && !animationLocked && localPlayer != null && isPlayerMoving(localPlayer)) {
+        if (YesSteveModel.isAvailable && !animationLocked && localPlayer != null && isPlayerMoving(localPlayer)) {
             PlayerCapability[localPlayer]?.let { cap ->
                 if (cap.isModelSwitching) {
                     cap.clearModelSwitch()

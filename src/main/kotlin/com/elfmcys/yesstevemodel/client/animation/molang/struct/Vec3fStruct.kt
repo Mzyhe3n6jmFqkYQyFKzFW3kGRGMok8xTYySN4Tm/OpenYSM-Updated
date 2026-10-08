@@ -6,21 +6,21 @@ import com.elfmcys.yesstevemodel.molang.runtime.Struct
 abstract class Vec3fStruct : Struct {
     override fun get(name: Int): Any? {
         return when (name) {
-            NAME_X -> getX()
-            NAME_Y -> getY()
-            NAME_Z -> getZ()
+            NAME_X -> x
+            NAME_Y -> y
+            NAME_Z -> z
             else -> null
         }
     }
 
-    abstract fun getX(): Float
-    abstract fun getY(): Float
-    abstract fun getZ(): Float
+    abstract val x: Float
+    abstract val y: Float
+    abstract val z: Float
 
     override fun set(name: Int, value: Any?) {}
 
     override fun toString(): String {
-        return String.format("vec3{x=%.2f, y=%.2f, z=%.2f}", getX(), getY(), getZ())
+        return String.format("vec3{x=%.2f, y=%.2f, z=%.2f}", x, y, z)
     }
 
     override fun copy(): Struct {

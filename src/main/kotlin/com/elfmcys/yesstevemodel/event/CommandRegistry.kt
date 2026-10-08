@@ -87,14 +87,14 @@ object CommandRegistry {
     init {
         if (!PlatformAPI.isServer) {
             ClientCommandRegistrationCallback.EVENT.register(ClientCommandRegistrationCallback { dispatcher, _ ->
-                if (!YesSteveModel.isAvailable()) {
+                if (!YesSteveModel.isAvailable) {
                     return@ClientCommandRegistrationCallback
                 }
                 OpenYSMClientCommand.registerClientCommands(dispatcher)
             })
         }
         CommandRegistrationCallback.EVENT.register(CommandRegistrationCallback { dispatcher, _, _ ->
-            if (!YesSteveModel.isAvailable()) {
+            if (!YesSteveModel.isAvailable) {
                 RootCommand.registerFallbackCommands(dispatcher)
                 return@CommandRegistrationCallback
             }

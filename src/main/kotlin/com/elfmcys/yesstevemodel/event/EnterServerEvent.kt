@@ -14,7 +14,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 object EnterServerEvent {
     init {
         ServerPlayConnectionEvents.JOIN.register { handler, _, _ ->
-            if (!YesSteveModel.isAvailable()) {
+            if (!YesSteveModel.isAvailable) {
                 return@register
             }
             val player = handler.player
