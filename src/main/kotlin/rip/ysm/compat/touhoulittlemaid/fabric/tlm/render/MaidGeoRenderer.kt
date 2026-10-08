@@ -36,7 +36,7 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
     private val dispatchedMat: Matrix4f = Matrix4f()
     private val renderEarlyMat: Matrix4f = Matrix4f()
     private var rtb: MultiBufferSource? = null
-    private var currentModelRenderCycle2: IRenderCycle = EModelRenderCycle.INITIAL
+    override var currentModelRenderCycle: IRenderCycle = EModelRenderCycle.INITIAL
 
     override fun getGeoEntity(state: EntityMaidRenderState): IGeoEntity? {
         val maid = state.maid ?: return null
@@ -307,12 +307,6 @@ open class MaidGeoRenderer : IGeoRenderer<MaidAnimatable>, IGeoEntityRenderer<En
         get() = rtb
         set(value) {
             rtb = value
-        }
-
-    override var currentModelRenderCycle: IRenderCycle
-        get() = currentModelRenderCycle2
-        set(value) {
-            currentModelRenderCycle2 = value
         }
 
     companion object {
