@@ -13,21 +13,16 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 
 class AnimationControllerContext : IControllerVariableStorage {
-    private var audioPlayerManager2: AudioPlayerManager? = null
-    private var animTime2: Float = 0.0f
+    private var _audioPlayerManager: AudioPlayerManager? = null
+    var animTime: Float = 0.0f
+        private set
     private var propertyMap: Int2ObjectOpenHashMap<Any>? = null
     private var captureCount: Int = 0
     private var capturedArgs: ReferenceArrayList<ReferenceArrayList<Any>>? = null
 
-    var animTime: Float
-        get() = animTime2
-        set(value) {
-            animTime2 = value
-        }
-
     val audioPlayerManager: AudioPlayerManager
         get() {
-            val manager = audioPlayerManager2 ?: AudioPlayerManager().also { audioPlayerManager2 = it }
+            val manager = _audioPlayerManager ?: AudioPlayerManager().also { _audioPlayerManager = it }
             return manager
         }
 
