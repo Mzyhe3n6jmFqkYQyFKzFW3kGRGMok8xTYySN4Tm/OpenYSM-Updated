@@ -42,7 +42,7 @@ open class CustomPlayerItemInHandLayer(
         val mainHandItem: ItemStack = entity.mainHandItem
         if (!offhandItem.isEmpty || !mainHandItem.isEmpty) {
             poseStack.pushPose()
-            val useExtraPlayer: Boolean = entityLivingBaseIn.isRenderLayersFirst()
+            val useExtraPlayer: Boolean = entityLivingBaseIn.isRenderLayersFirst
             if (animatedGeoModel.rightHandBones().isNotEmpty()) {
                 if (SlashBladeCompat.isSlashBladeItem(mainHandItem)) {
                     SlashBladeRenderer.renderOnEntity(

@@ -26,8 +26,8 @@ class TextureGrid(private val owner: ModernPlayerTextureScreen) : OptionRow<Any?
         for (i in 0 until owner.textureMap.size) {
             names.add(owner.textureMap.getKeyAt(i))
         }
-        this.textureNames = names
-        this.holders = Array(names.size) { i ->
+        textureNames = names
+        holders = Array(names.size) { i ->
             PlayerPreviewEntity().apply {
                 resetModel()
                 animationStateMachine.setCurrentAnimation("idle")
@@ -36,17 +36,13 @@ class TextureGrid(private val owner: ModernPlayerTextureScreen) : OptionRow<Any?
         }
     }
 
-    private fun cols(): Int {
-        return max(1, (width + TEX_GAP) / (TEX_BTN_W + TEX_GAP))
-    }
+    private fun cols(): Int = max(1, (width + TEX_GAP) / (TEX_BTN_W + TEX_GAP))
 
-    private fun rows(): Int {
-        return (textureNames.size + cols() - 1) / cols()
-    }
+    private fun rows(): Int = (textureNames.size + cols() - 1) / cols()
 
     override fun setWidth(w: Int) {
         super.setWidth(w)
-        this.height = rows() * (TEX_BTN_H + TEX_GAP) - TEX_GAP
+        height = rows() * (TEX_BTN_H + TEX_GAP) - TEX_GAP
     }
 
     fun collectBlurRegions(out: MutableList<IntArray>, rowScroll: Int, areaTop: Int, areaBottom: Int) {
@@ -59,9 +55,7 @@ class TextureGrid(private val owner: ModernPlayerTextureScreen) : OptionRow<Any?
             val x = x + col * slotW
             val y = y + row * slotH - rowScroll
             val yBot = y + TEX_BTN_H
-            if (yBot <= areaTop || y >= areaBottom) {
-                continue
-            }
+            if (yBot <= areaTop || y >= areaBottom) continue
             val top = max(y, areaTop)
             val bot = min(yBot, areaBottom)
             out.add(intArrayOf(x, top, TEX_BTN_W, bot - top))
@@ -117,7 +111,18 @@ class TextureGrid(private val owner: ModernPlayerTextureScreen) : OptionRow<Any?
 
     private fun renderHolderPreview(g: GuiGraphics, x: Int, y: Int, holder: PlayerPreviewEntity, pt: Float) {
         val previewH = TEX_BTN_H - 20
-        ModelPreviewRenderer.submitLivingEntityPreview(g, x, y, x + TEX_BTN_W, y + previewH, 35, pt, holder, false, true)
+        ModelPreviewRenderer.submitLivingEntityPreview(
+            g,
+            x,
+            y,
+            x + TEX_BTN_W,
+            y + previewH,
+            35,
+            pt,
+            holder,
+            false,
+            true
+        )
     }
 
     override fun renderControl(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
@@ -131,23 +136,17 @@ class TextureGrid(private val owner: ModernPlayerTextureScreen) : OptionRow<Any?
         val slotH = TEX_BTN_H + TEX_GAP
         val col = ((mouseX - x) / slotW).toInt()
         val row = ((mouseY - y) / slotH).toInt()
-        if (col < 0 || col >= c) {
-            return
-        }
+        if (col !in 0..<c) return
         val idx = row * c + col
-        if (idx !in textureNames.indices) {
-            return
-        }
+        if (idx !in textureNames.indices) return
         val localX = mouseX - x - col * slotW
         val localY = mouseY - y - row * slotH
-        if (localX >= TEX_BTN_W || localY >= TEX_BTN_H) {
-            return
-        }
+        if (localX >= TEX_BTN_W || localY >= TEX_BTN_H) return
         val name = textureNames[idx]
         val mc = Minecraft.getInstance()
         val player = mc.player ?: return
         PlayerCapability[player]?.let { cap ->
-            cap.setCurrentTexture(name)
+            cap.currentTexture = name
             NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(owner.modelId, name))
         }
     }
