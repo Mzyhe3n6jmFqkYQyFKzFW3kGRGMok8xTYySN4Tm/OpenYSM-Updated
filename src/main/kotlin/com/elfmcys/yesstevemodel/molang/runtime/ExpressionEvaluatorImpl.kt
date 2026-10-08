@@ -94,8 +94,8 @@ class ExpressionEvaluatorImpl<TEntity>(
                 BinaryExpression.Op.LTE -> return evalFloat(expr.left()) <= evalFloat(expr.right())
                 BinaryExpression.Op.GT -> return evalFloat(expr.left()) > evalFloat(expr.right())
                 BinaryExpression.Op.GTE -> return evalFloat(expr.left()) >= evalFloat(expr.right())
-                BinaryExpression.Op.ADD -> return (evalFloat(expr.left()) + evalFloat(expr.right())) != 0.0f
-                BinaryExpression.Op.SUB -> return (evalFloat(expr.left()) - evalFloat(expr.right())) != 0.0f
+                BinaryExpression.Op.ADD -> return evalFloat(expr.left()) + evalFloat(expr.right()) != 0.0f
+                BinaryExpression.Op.SUB -> return evalFloat(expr.left()) - evalFloat(expr.right()) != 0.0f
                 BinaryExpression.Op.MUL -> {
                     val l = evalFloat(expr.left())
                     return l != 0.0f && evalFloat(expr.right()) != 0.0f
@@ -103,7 +103,7 @@ class ExpressionEvaluatorImpl<TEntity>(
 
                 BinaryExpression.Op.DIV -> {
                     val r = evalFloat(expr.right())
-                    return r != 0.0f && (evalFloat(expr.left()) / r) != 0.0f
+                    return r != 0.0f && evalFloat(expr.left()) / r != 0.0f
                 }
 
                 else -> {}
@@ -263,7 +263,7 @@ class ExpressionEvaluatorImpl<TEntity>(
     override fun visitStruct(expression: StructAccessExpression): Any? {
         val value = expression.left().visit(this)
         return if (value is Struct) {
-            value.getProperty(expression.path())
+            value[expression.path()]
         } else {
             null
         }
@@ -433,13 +433,13 @@ class ExpressionEvaluatorImpl<TEntity>(
                         val value = a.left().visit(evaluator)
                         when {
                             value is Struct -> {
-                                value.putProperty(a.path(), `val`)
+                                value[a.path()] = `val`
                             }
 
                             a.left() is AssignableVariableExpression -> {
                                 val variable = (a.left() as AssignableVariableExpression).target()
                                 val struct: Struct = HashMapStruct()
-                                struct.putProperty(a.path(), `val`)
+                                struct[a.path()] = `val`
                                 variable.assign(evaluator, struct)
                             }
                         }

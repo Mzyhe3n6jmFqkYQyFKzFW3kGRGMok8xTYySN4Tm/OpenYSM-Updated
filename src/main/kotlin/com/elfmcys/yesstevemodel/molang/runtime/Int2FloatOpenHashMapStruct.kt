@@ -9,11 +9,11 @@ open class Int2FloatOpenHashMapStruct(
     val properties: Int2FloatOpenHashMap
 ) : Struct {
 
-    override fun getProperty(name: Int): Any {
+    override fun get(name: Int): Any {
         return properties.get(name)
     }
 
-    override fun putProperty(name: Int, value: Any?) {
+    override fun set(name: Int, value: Any?) {
         properties.put(name, ValueConversions.asFloat(value))
     }
 
@@ -24,7 +24,7 @@ open class Int2FloatOpenHashMapStruct(
     override fun copy(): Struct {
         val hashMapStruct = HashMapStruct(true)
         for (entry in properties.int2FloatEntrySet()) {
-            hashMapStruct.putProperty(entry.intKey, entry.floatValue)
+            hashMapStruct[entry.intKey] = entry.floatValue
         }
         return hashMapStruct
     }

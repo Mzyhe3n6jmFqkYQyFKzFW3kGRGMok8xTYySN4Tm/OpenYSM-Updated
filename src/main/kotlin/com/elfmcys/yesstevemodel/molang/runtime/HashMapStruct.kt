@@ -10,7 +10,7 @@ open class HashMapStruct : Struct {
     constructor() : this(false)
 
     constructor(isRightValue: Boolean) {
-        this.properties = PooledStringHashMap<Any?>()
+        this.properties = PooledStringHashMap()
         this.isRightValue = isRightValue
     }
 
@@ -19,12 +19,10 @@ open class HashMapStruct : Struct {
         this.isRightValue = false
     }
 
-    override fun getProperty(name: Int): Any? {
-        return properties.get(name)
-    }
+    override fun get(name: Int): Any? = properties.get(name)
 
-    override fun putProperty(name: Int, value: Any?) {
-        properties.put(name, value)
+    override fun set(name: Int, value: Any?) {
+        properties[name] = value
     }
 
     override fun copy(): Struct {
@@ -44,7 +42,13 @@ open class HashMapStruct : Struct {
                 builder.append(", ")
             }
             first = false
-            builder.append(String.format("%s=%s", StringPool.getString(entry.intKey), entry.value?.toString() ?: "null"))
+            builder.append(
+                String.format(
+                    "%s=%s",
+                    StringPool.getString(entry.intKey),
+                    entry.value?.toString() ?: "null"
+                )
+            )
         }
         builder.append("}")
         return builder.toString()

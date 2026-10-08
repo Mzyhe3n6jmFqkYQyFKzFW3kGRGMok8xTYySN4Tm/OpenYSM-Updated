@@ -15,9 +15,9 @@ class RoamingStruct(
     private var pendingBoneData = RoamingSyncBatch(modelHashId, 4)
     private var dirty = false
 
-    override fun getProperty(name: Int): Any = floatVars.get(name)
+    override fun get(name: Int): Any = floatVars.get(name)
 
-    override fun putProperty(name: Int, value: Any?) {
+    override fun set(name: Int, value: Any?) {
         val f = ValueConversions.asFloat(value)
         if (f == floatVars.put(name, f)) return
         varNames.add(name)
@@ -31,7 +31,7 @@ class RoamingStruct(
         val it = floatVars.int2FloatEntrySet().iterator()
         while (it.hasNext()) {
             val entry = it.next()
-            mapStruct.putProperty(entry.intKey, entry.floatValue)
+            mapStruct[entry.intKey] = entry.floatValue
         }
         return mapStruct
     }
