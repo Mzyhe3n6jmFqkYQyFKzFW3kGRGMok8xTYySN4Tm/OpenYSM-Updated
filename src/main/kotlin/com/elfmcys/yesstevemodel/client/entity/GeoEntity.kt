@@ -20,22 +20,25 @@ import com.elfmcys.yesstevemodel.util.YSMThreadPool
 import com.elfmcys.yesstevemodel.util.log.ChatLogger
 import com.elfmcys.yesstevemodel.util.log.ILogger
 import com.mojang.blaze3d.systems.RenderSystem
-import java.lang.invoke.VarHandle
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
 import net.minecraft.world.entity.Entity
 import rip.ysm.compat.oculus.OculusCompat
+import java.lang.invoke.VarHandle
 
 abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : AnimatableEntity<T>(t) {
     private var modelId2: String = "default"
-    private var modelAssembly2: ModelAssembly? = null
-    private var renderShape2: ModelWrapper? = null
+    var modelAssembly: ModelAssembly? = null
+        private set
+    var renderShape: ModelWrapper? = null
+        private set
     private var loaded: Boolean = false
     private var updateTicks: Int = 0
     private var bones: PhysicsManager? = null
     private var boneLookup: MolangWatchRegistry? = null
-    private var renderLayers2: List<IValue>? = null
+    var renderLayers: List<IValue>? = null
+        private set
     private var modelDeferred: Deferred<AnimationEvent<*>?>? = null
 
     init {
@@ -59,9 +62,6 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
             }
             return currentBones
         }
-
-    open val renderLayers: List<IValue>?
-        get() = renderLayers2
 
     open fun setBoneLookup(watchRegistry: MolangWatchRegistry?) {
         boneLookup = watchRegistry
@@ -90,51 +90,45 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
         }
     }
 
-    val modelAssembly: ModelAssembly?
-        get() = modelAssembly2
-
     private fun refreshModel() {
         ClientModelManager.getModelContext(modelId2)?.let { assembly ->
-            val shape = renderShape2
+            val shape = renderShape
             if (shape == null || shape.isDefault || assembly != shape.context) {
-                renderShape2 = buildRenderShape(assembly, false)
+                renderShape = buildRenderShape(assembly, false)
             }
         } ?: run {
             val localAssembly = ClientModelManager.localModelContext
-            val shape = renderShape2
+            val shape = renderShape
             if (shape == null || !shape.isDefault || localAssembly != shape.context) {
-                renderShape2 = buildRenderShape(localAssembly, true)
+                renderShape = buildRenderShape(localAssembly, true)
             }
         }
 
-        val shape = renderShape2
+        val shape = renderShape
         if (shape != null) {
-            if ((shape.context != modelAssembly2 || shape.isDefault != loaded) && shape.isValid) {
-                modelAssembly2 = shape.context
+            if ((shape.context != modelAssembly || shape.isDefault != loaded) && shape.isValid) {
+                modelAssembly = shape.context
                 loaded = shape.isDefault
-                modelAssembly2?.let { onModelLoaded(it) }
+                modelAssembly?.let { onModelLoaded(it) }
                 model?.let { initAnimationControllers(it, shape.context.expressionCache.events) }
                 return
             }
             return
         }
-        if (modelAssembly2 != null) {
+        if (modelAssembly != null) {
             clearModel()
         }
     }
 
-    val renderShape: ModelWrapper?
-        get() = renderShape2
-
     open fun onModelLoaded(modelAssembly: ModelAssembly) {
-        renderShape2?.audioProvider = AudioStreamCache.getOrCreateProvider(modelAssembly)
-        renderLayers2 = modelAssembly.expressionCache.events[MolangEventDispatcher.DEFER]
+        renderShape?.audioProvider = AudioStreamCache.getOrCreateProvider(modelAssembly)
+        renderLayers = modelAssembly.expressionCache.events[MolangEventDispatcher.DEFER]
     }
 
     open fun clearModel() {
-        modelAssembly2 = null
-        renderLayers2 = null
-        renderShape2 = null
+        modelAssembly = null
+        renderLayers = null
+        renderShape = null
         loaded = false
         reset()
     }
@@ -160,7 +154,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
 
     override val isModelReady: Boolean
         get() {
-            val shape = renderShape2
+            val shape = renderShape
             return shape != null && !shape.isDefault && shape.isValid
         }
 
@@ -170,7 +164,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     override fun resolveExpression(str: String): IValue? = modelAssembly?.expressionCache?.functions?.get(str)
 
     override fun getAudioStreamFactory(str: String): IAudioStreamFactory? {
-        val shape = renderShape2 ?: return null
+        val shape = renderShape ?: return null
         val provider = shape.audioProvider ?: return null
         val trackData = modelAssembly?.expressionCache?.soundEffects?.get(str)
         if (trackData?.data != null && trackData.codec != AudioCodec.UNDEFINED)
