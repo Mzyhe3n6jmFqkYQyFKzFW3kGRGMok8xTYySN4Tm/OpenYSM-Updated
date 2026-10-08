@@ -35,15 +35,9 @@ object CapabilityEvent {
         val modelInfoCap = getModelInfoCap(newPlayer)
         val authModelsCap = getAuthModelsCap(newPlayer)
         val starModelsCap = getStarModelsCap(newPlayer)
-        if (modelInfoCap != null && oldModelInfoCap != null) {
-            modelInfoCap.copyFrom(oldModelInfoCap)
-        }
-        if (authModelsCap != null && oldAuthModelsCap != null) {
-            authModelsCap.setAuthModels(oldAuthModelsCap.getAuthModels())
-        }
-        if (starModelsCap != null && oldStarModelsCap != null) {
-            starModelsCap.setStarModels(oldStarModelsCap.getStarModels())
-        }
+        if (modelInfoCap != null && oldModelInfoCap != null) modelInfoCap.copyFrom(oldModelInfoCap)
+        if (authModelsCap != null && oldAuthModelsCap != null) authModelsCap.authModels = oldAuthModelsCap.authModels
+        if (starModelsCap != null && oldStarModelsCap != null) starModelsCap.starModels = oldStarModelsCap.starModels
         CapabilityLifecycle.invalidate(oldPlayer)
     }
 
@@ -67,10 +61,10 @@ object CapabilityEvent {
                 for (modelId in ServerModelManager.getAuthModels()) {
                     authModelsCap.addModel(modelId)
                 }
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.getAuthModels()), entity)
+                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.authModels), entity)
             }
             getStarModelsCap(entity)?.let { starModelsCap ->
-                NetworkHandler.sendToClientPlayer(S2CSyncStarModelsPacket(starModelsCap.getStarModels()), entity)
+                NetworkHandler.sendToClientPlayer(S2CSyncStarModelsPacket(starModelsCap.starModels), entity)
             }
         }
     }
@@ -112,7 +106,7 @@ object CapabilityEvent {
             }
             ProjectileModelCapability[projectile]?.let { projectileModelCap ->
                 modelInfoCap.withMolangVars { vars ->
-                    projectileModelCap.setModel(modelInfoCap.getModelId(), vars)
+                    projectileModelCap.setModel(modelInfoCap.modelId, vars)
                     NetworkHandler.sendToTrackingEntity(
                         S2CSyncProjectileModelPacket(projectile.id, projectileModelCap),
                         projectile
@@ -129,8 +123,8 @@ object CapabilityEvent {
                 return
             }
             VehicleModelCapability[entity]?.let { vehicleModelCap ->
-                modelInfoCap.getMolangVars()?.let { vars ->
-                    vehicleModelCap.setModel(modelInfoCap.getModelId(), vars)
+                modelInfoCap.molangVars?.let { vars ->
+                    vehicleModelCap.setModel(modelInfoCap.modelId, vars)
                     NetworkHandler.sendToTrackingEntity(S2CSyncVehicleModelPacket(entity.id, vehicleModelCap), entity)
                 }
             }

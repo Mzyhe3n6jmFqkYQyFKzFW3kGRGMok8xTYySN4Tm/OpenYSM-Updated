@@ -40,7 +40,7 @@ class S2CSyncStarModelsPacket(val starModels: MutableSet<String>) {
         @Environment(EnvType.CLIENT)
         fun handleCapability(message: S2CSyncStarModelsPacket) {
             val player = Minecraft.getInstance().player ?: return
-            StarModelsCapability[player]?.setStarModels(message.starModels)
+            StarModelsCapability[player]?.starModels = message.starModels
         }
     }
 }

@@ -60,7 +60,7 @@ object AuthCommand {
         targets.forEach { player ->
             AuthModelsCapability[player]?.let { ownModelCap ->
                 ownModelCap.addModel(string)
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.getAuthModels()), player)
+                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.authModels), player)
                 context.source.sendSuccess({
                     Component.translatable(
                         "commands.yes_steve_model.auth_model.add.info",
@@ -80,7 +80,7 @@ object AuthCommand {
             AuthModelsCapability[player]?.let { ownModelCap ->
                 val setKeySet = ServerModelManager.getServerModelInfo().keys
                 setKeySet.forEach(ownModelCap::addModel)
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.getAuthModels()), player)
+                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.authModels), player)
                 context.source.sendSuccess({
                     Component.translatable(
                         "commands.yes_steve_model.auth_model.all.info",
@@ -101,12 +101,12 @@ object AuthCommand {
                 ownModelsCap.removeModel(modelName)
                 ModelInfoCapability[player]?.let { modelIdCap ->
                     if (ServerModelManager.getAuthModels()
-                            .contains(modelIdCap.getModelId()) && !ownModelsCap.containsModel(modelIdCap.getModelId())
+                            .contains(modelIdCap.modelId) && !ownModelsCap.containsModel(modelIdCap.modelId)
                     ) {
                         modelIdCap.resetToDefault()
                     }
                 }
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelsCap.getAuthModels()), player)
+                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelsCap.authModels), player)
                 context.source.sendSuccess({
                     Component.translatable(
                         "commands.yes_steve_model.auth_model.remove.info",
@@ -125,11 +125,11 @@ object AuthCommand {
             AuthModelsCapability[player]?.let { ownModelCap ->
                 ownModelCap.clear()
                 ModelInfoCapability[player]?.let { modelIdCap ->
-                    if (ServerModelManager.getAuthModels().contains(modelIdCap.getModelId())) {
+                    if (ServerModelManager.getAuthModels().contains(modelIdCap.modelId)) {
                         modelIdCap.resetToDefault()
                     }
                 }
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.getAuthModels()), player)
+                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.authModels), player)
                 context.source.sendSuccess({
                     Component.translatable(
                         "commands.yes_steve_model.auth_model.clear.info",

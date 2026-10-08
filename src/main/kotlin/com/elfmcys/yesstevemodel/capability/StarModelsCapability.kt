@@ -8,13 +8,7 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.entity.player.Player
 
 class StarModelsCapability {
-    private var starModels: MutableSet<String> = Sets.newHashSet()
-
-    fun getStarModels(): MutableSet<String> = starModels
-
-    fun setStarModels(set: MutableSet<String>) {
-        starModels = set
-    }
+    var starModels: MutableSet<String> = Sets.newHashSet()
 
     fun containsModel(str: String): Boolean = starModels.contains(str)
 

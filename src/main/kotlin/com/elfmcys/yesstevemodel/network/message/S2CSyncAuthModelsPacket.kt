@@ -12,27 +12,22 @@ class S2CSyncAuthModelsPacket(val authModels: MutableSet<String>) {
         @JvmStatic
         fun encode(message: S2CSyncAuthModelsPacket, buf: FriendlyByteBuf) {
             buf.writeVarInt(message.authModels.size)
-            for (modelId in message.authModels) {
-                buf.writeUtf(modelId)
-            }
+            for (modelId in message.authModels) buf.writeUtf(modelId)
         }
 
         @JvmStatic
         fun decode(buf: FriendlyByteBuf): S2CSyncAuthModelsPacket {
             val size = buf.readVarInt()
             val tmp = HashSet<String>(size)
-            for (i in 0 until size) {
-                tmp.add(buf.readUtf())
-            }
+            for (i in 0 until size) tmp.add(buf.readUtf())
             return S2CSyncAuthModelsPacket(tmp)
         }
 
         @JvmStatic
         fun handle(message: S2CSyncAuthModelsPacket, ctx: PacketContext) {
-            if (ctx.isClientSide()) {
-                ctx.enqueueWork {
-                    handleCapability(message)
-                }
+            if (!ctx.isClientSide()) return
+            ctx.enqueueWork {
+                handleCapability(message)
             }
         }
 
@@ -40,7 +35,7 @@ class S2CSyncAuthModelsPacket(val authModels: MutableSet<String>) {
         @Environment(EnvType.CLIENT)
         fun handleCapability(message: S2CSyncAuthModelsPacket) {
             val player = Minecraft.getInstance().player ?: return
-            AuthModelsCapability[player]?.setAuthModels(message.authModels)
+            AuthModelsCapability[player]?.authModels = message.authModels
         }
     }
 }

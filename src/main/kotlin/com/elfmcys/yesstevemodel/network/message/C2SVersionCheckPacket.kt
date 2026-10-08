@@ -30,10 +30,10 @@ class C2SVersionCheckPacket(val version: String = NetworkHandler.VERSION) {
                     cap.stopAnimation(sender)
                 }
                 AuthModelsCapability[sender]?.let { cap ->
-                    NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(cap.getAuthModels()), sender)
+                    NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(cap.authModels), sender)
                 }
                 StarModelsCapability[sender]?.let { cap ->
-                    NetworkHandler.sendToClientPlayer(S2CSyncStarModelsPacket(cap.getStarModels()), sender)
+                    NetworkHandler.sendToClientPlayer(S2CSyncStarModelsPacket(cap.starModels), sender)
                 }
                 ServerModelManager.requestPlayerAuth(sender)
             }
