@@ -61,9 +61,8 @@ open class VehicleRotationController(
     }
 
     private inner class ExpressionTransformProvider : BoneTransformProvider {
-        override fun getBoneTarget(): BoneTopLevelSnapshot {
-            return this@VehicleRotationController.boneTarget!!
-        }
+        override val boneTarget: BoneTopLevelSnapshot
+            get() = this@VehicleRotationController.boneTarget!!
 
         override fun getRotation(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
             return this@VehicleRotationController.vehicleRotation2

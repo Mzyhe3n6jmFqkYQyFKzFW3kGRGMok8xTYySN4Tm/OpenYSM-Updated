@@ -327,7 +327,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         fun isActive(): Boolean = active
     }
 
-    private class BoneBlendState(private val boneTarget: BoneTopLevelSnapshot) : BoneTransformProvider {
+    private class BoneBlendState(override val boneTarget: BoneTopLevelSnapshot) : BoneTransformProvider {
         private val blendSources: ReferenceArrayList<Pair<ConditionalEvaluator, BoneAnimationQueue>> =
             ReferenceArrayList(4)
         private var isMarked: Boolean = false
@@ -360,8 +360,6 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             isMarked = false
             blendSources.clear()
         }
-
-        override fun getBoneTarget(): BoneTopLevelSnapshot = boneTarget
 
         override fun getRotation(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
             val sources = blendSources

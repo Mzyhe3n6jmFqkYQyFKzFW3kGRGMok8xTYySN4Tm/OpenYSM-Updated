@@ -178,7 +178,8 @@ open class PredicateBasedController<T : AnimatableEntity<*>>(
         private val mutableVector: TransitionVector3f = TransitionVector3f(0f, 0f, 0f)
         private val rotScratch = EulerNlerpScratch()
 
-        override fun getBoneTarget(): BoneTopLevelSnapshot = data.topLevelSnapshot
+        override val boneTarget: BoneTopLevelSnapshot
+            get() = data.topLevelSnapshot
 
         override fun getRotation(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
             val point = data.rotationQueue ?: return null
