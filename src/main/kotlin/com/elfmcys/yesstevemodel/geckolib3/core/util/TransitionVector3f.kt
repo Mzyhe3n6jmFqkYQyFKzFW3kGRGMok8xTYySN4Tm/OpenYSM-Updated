@@ -1,9 +1,11 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.core.util
 
 import org.joml.Vector3f
 
-open class TransitionVector3f : Vector3f {
-    @JvmField var percentCompleted: Float = 1.0f
+class TransitionVector3f : Vector3f {
+    var percentCompleted: Float = 1.0f
 
     constructor() : super() {
         percentCompleted = 1.0f
@@ -17,13 +19,13 @@ open class TransitionVector3f : Vector3f {
         percentCompleted = 1.0f
     }
 
-    open fun setPercentCompleted(newPercent: Float) {
+    fun setPercentCompleted(newPercent: Float) {
         if (newPercent < percentCompleted) {
             percentCompleted = newPercent
         }
     }
 
-    open fun applyLinearBlendTo(targetVec: Vector3f) {
+    fun applyLinearBlendTo(targetVec: Vector3f) {
         val progress: Float = percentCompleted
         if (progress == 0.0f) {
             targetVec.set(this)
@@ -32,7 +34,7 @@ open class TransitionVector3f : Vector3f {
         }
     }
 
-    open fun applyRotationBlendTo(targetEuler: Vector3f, offsetEuler: Vector3f) {
+    fun applyRotationBlendTo(targetEuler: Vector3f, offsetEuler: Vector3f) {
         val progress: Float = percentCompleted
         if (progress == 0.0f) {
             targetEuler.set(this)
@@ -41,7 +43,7 @@ open class TransitionVector3f : Vector3f {
         }
     }
 
-    open fun applyRotationBlendTo(targetEuler: Vector3f, offsetEuler: Vector3f, scratch: EulerNlerpScratch) {
+    fun applyRotationBlendTo(targetEuler: Vector3f, offsetEuler: Vector3f, scratch: EulerNlerpScratch) {
         val progress: Float = percentCompleted
         if (progress == 0.0f) {
             targetEuler.set(this)

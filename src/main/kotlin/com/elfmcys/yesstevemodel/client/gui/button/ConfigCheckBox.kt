@@ -18,14 +18,14 @@ open class ConfigCheckBox(
     x: Int,
     y: Int,
     width: Int = 115,
-    private val component2: Component,
-    private val consumer2: (Boolean) -> Unit
-) : AbstractButton(x, y, width, 12, component2), ISpecialWidget {
-    constructor(x: Int, y: Int, component: Component, consumer: (Boolean) -> Unit) : this(
+    private val component: Component,
+    private val consumer: (Boolean) -> Unit
+) : AbstractButton(x, y, width, 12, component), ISpecialWidget {
+    constructor(x: Int, y: Int, component2: Component, consumer2: (Boolean) -> Unit) : this(
         x,
         y,
-        component2 = component,
-        consumer2 = consumer
+        component = component2,
+        consumer = consumer2
     )
 
     var isStateTriggered: Boolean = false
@@ -34,12 +34,12 @@ open class ConfigCheckBox(
         val u = if (isStateTriggered) 128.0f else 0.0f
         val v = if (isHovered) 12.0f else 0.0f
         guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, u, v, width, height, 256, 256)
-        guiGraphics.drawString(Minecraft.getInstance().font, component2, x + 14, y + 2, -1, false)
+        guiGraphics.drawString(Minecraft.getInstance().font, component, x + 14, y + 2, -1, false)
     }
 
     override fun onPress(input: InputWithModifiers) {
         isStateTriggered = !isStateTriggered
-        consumer2(isStateTriggered)
+        consumer(isStateTriggered)
     }
 
     override fun updateWidgetNarration(output: NarrationElementOutput) {

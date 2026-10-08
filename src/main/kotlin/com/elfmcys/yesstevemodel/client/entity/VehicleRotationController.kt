@@ -9,7 +9,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.snapshot.BoneTopLevelSnapshot
 import com.elfmcys.yesstevemodel.geckolib3.core.util.TransitionVector3f
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap
-import org.joml.Vector3f
 import rip.ysm.compat.immersiveaircraft.ImmersiveAirCraftCompat
 import rip.ysm.compat.simpleplanes.SimplePlanesCompat
 
@@ -19,16 +18,14 @@ class VehicleRotationController(
 ) : IAnimationController<GeckoVehicleEntity> {
     private val transformProvider: ExpressionTransformProvider = ExpressionTransformProvider()
     private var boneTarget: BoneTopLevelSnapshot? = null
-    private var vehicleRotation2: TransitionVector3f? = null
+    var vehicleRotation: TransitionVector3f? = null
+        private set
 
     override val name: String
         get() = modelId
 
     override val currentAnimation: String
         get() = "[Coded]"
-
-    val vehicleRotation: Vector3f?
-        get() = vehicleRotation2
 
     override fun init(
         list: MutableList<BoneTopLevelSnapshot>,
@@ -45,35 +42,30 @@ class VehicleRotationController(
         val rot = ImmersiveAirCraftCompat.getAircraftRotation(event)
             ?: SimplePlanesCompat.getSimplePlanesRotation(event)
         if (rot != null) {
-            vehicleRotation2 = TransitionVector3f(rot).apply {
+            vehicleRotation = TransitionVector3f(rot).apply {
                 setPercentCompleted(0.0f)
             }
         }
     }
 
     override fun forEachTransform(consumer: (BoneTransformProvider) -> Unit) {
-        if (boneTarget != null && vehicleRotation2 != null) consumer(transformProvider)
+        if (boneTarget != null && vehicleRotation != null) consumer(transformProvider)
     }
 
     override fun reset() {
         boneTarget = null
-        vehicleRotation2 = null
+        vehicleRotation = null
     }
 
     private inner class ExpressionTransformProvider : BoneTransformProvider {
         override val boneTarget: BoneTopLevelSnapshot
             get() = this@VehicleRotationController.boneTarget!!
 
-        override fun getRotation(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
-            return this@VehicleRotationController.vehicleRotation2
-        }
+        override fun getRotation(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? =
+            this@VehicleRotationController.vehicleRotation
 
-        override fun getPosition(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
-            return null
-        }
+        override fun getPosition(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? = null
 
-        override fun getScale(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? {
-            return null
-        }
+        override fun getScale(evaluator: ExpressionEvaluator<AnimationContext<*>>): TransitionVector3f? = null
     }
 }

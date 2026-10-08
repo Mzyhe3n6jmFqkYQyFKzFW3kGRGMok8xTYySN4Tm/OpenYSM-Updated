@@ -4,15 +4,12 @@ import com.elfmcys.yesstevemodel.molang.parser.ast.*
 import com.elfmcys.yesstevemodel.molang.runtime.binding.ValueConversions
 
 class ExpressionEvaluatorImpl<TEntity>(
-    private val entity2: TEntity
+    override val entity: TEntity
 ) : ExpressionEvaluator<TEntity>, ExpressionVisitor<Any?> {
     private var returnValue: Any? = null
     private var op: StatementExpression.Op? = null
     private var cnt: Int = 0
     private var working: Int = 0
-
-    override val entity: TEntity
-        get() = entity2
 
     override fun eval(expression: Expression): Any? {
         return try {
