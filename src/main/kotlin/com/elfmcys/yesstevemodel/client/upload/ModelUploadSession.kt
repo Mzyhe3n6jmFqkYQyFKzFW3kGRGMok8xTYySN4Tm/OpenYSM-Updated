@@ -63,16 +63,20 @@ class ModelUploadSession(
         message = reason
     }
 
-    fun isTerminal(): Boolean = state == State.COMPLETED || state == State.FAILED
+    val isTerminal: Boolean
+        get() = state == State.COMPLETED || state == State.FAILED
 
-    fun getTotalBytes(): Int = data.size
+    val totalBytes: Int
+        get() = data.size
 
-    fun getSentBytes(): Int = min(nextOffset, data.size)
+    val sentBytes: Int
+        get() = min(nextOffset, data.size)
 
-    fun getProgress(): Float {
-        if (data.isEmpty() || state == State.COMPLETED) return 1f
-        return getSentBytes().toFloat() / data.size
-    }
+    val progress: Float
+        get() {
+            if (data.isEmpty() || state == State.COMPLETED) return 1f
+            return sentBytes.toFloat() / data.size
+        }
 
     enum class State {
         STARTING,
@@ -104,13 +108,14 @@ class ModelUploadSession(
         var lastChunksPerTick: Int = 4
 
         @JvmStatic
-        fun getInstance(): ModelUploadSession? = instance
+        val INSTANCE: ModelUploadSession?
+            get() = instance
 
         @Synchronized
         @JvmStatic
         fun start(modelId: String, data: ByteArray): String? {
-            val currentInstance = instance
-            if (currentInstance != null && !currentInstance.isTerminal()) return "Upload already in progress"
+            val currentInstance = INSTANCE
+            if (currentInstance != null && !currentInstance.isTerminal) return "Upload already in progress"
             if (data.isEmpty()) return "Empty file"
             if (serverLimitsKnown && data.size > lastMaxTotalBytes)
                 return "File exceeds server limit (${formatBytes(lastMaxTotalBytes)})"
@@ -135,8 +140,8 @@ class ModelUploadSession(
         @Synchronized
         @JvmStatic
         fun clearIfTerminal() {
-            val currentInstance = instance
-            if (currentInstance != null && currentInstance.isTerminal()) {
+            val currentInstance = INSTANCE
+            if (currentInstance != null && currentInstance.isTerminal) {
                 instance = null
                 notifyListeners()
             }
@@ -169,7 +174,7 @@ class ModelUploadSession(
                 lastChunksPerTick = chunksPerTick
             }
             serverLimitsKnown = true
-            val s = instance
+            val s = INSTANCE
             if (s == null || s.state != State.STARTING) return
             if (status != 0.toByte()) {
                 s.fail(getRequestErrorText(status) + if (message.isEmpty()) "" else ": $message")
@@ -193,7 +198,7 @@ class ModelUploadSession(
             h2: Long,
             message: String
         ) {
-            val s = instance
+            val s = INSTANCE
             if (s == null || s.uploadId != uploadId) return
             if (status == 0.toByte()) {
                 s.state = State.COMPLETED
@@ -206,13 +211,13 @@ class ModelUploadSession(
 
         @JvmStatic
         fun tickCurrent() {
-            val s = instance ?: return
+            val s = INSTANCE ?: return
             s.tick()
         }
 
         @JvmStatic
         private fun notifyListeners() {
-            val s = instance
+            val s = INSTANCE
             for (l in listeners) {
                 l.onSessionUpdate(s)
             }
