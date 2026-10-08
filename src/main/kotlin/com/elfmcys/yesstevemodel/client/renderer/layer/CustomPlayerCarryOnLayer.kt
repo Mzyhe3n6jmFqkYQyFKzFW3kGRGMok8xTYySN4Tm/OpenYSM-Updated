@@ -32,7 +32,7 @@ open class CustomPlayerCarryOnLayer : GeoLayerRenderer<CustomPlayerEntity>() {
         if (entity !is Player) return
         if (!CarryOnDataHelper.isPlayerCarrying(entity)) return
         val collector = RenderContext.collector() ?: return
-        val model = entityLivingBaseIn.getCurrentModel()
+        val model = entityLivingBaseIn.currentModel
 
         poseStack.pushPose()
 

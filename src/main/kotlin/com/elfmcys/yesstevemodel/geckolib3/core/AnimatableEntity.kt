@@ -34,10 +34,10 @@ import rip.ysm.api.entity.EntityDataBridge
 
 abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity) {
     @JvmField
-    var positionTracker: EntityFrameStateTracker<TEntity> = createPositionTracker(entity)
+    protected var positionTracker2: EntityFrameStateTracker<TEntity> = createPositionTracker(entity)
 
     @JvmField
-    var currentModel: AnimatedGeoModel? = null
+    protected var currentModel2: AnimatedGeoModel? = null
 
     @JvmField
     var animationMap: Object2ReferenceMap<String, MutableList<IValue>>? = null
@@ -85,20 +85,20 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
     protected val defaultPhysicsManager: PhysicsManager = PhysicsManager()
 
     abstract val textureLocation: Identifier
-    abstract fun isModelReady(): Boolean
-    abstract fun getHeightScale(): Float
-    abstract fun getWidthScale(): Float
+    abstract val isModelReady: Boolean
+    abstract val heightScale: Float
+    abstract val widthScale: Float
     abstract fun getAnimation(str: String): Animation?
     abstract fun registerAnimationControllers()
 
     open fun reset() {
-        currentModel = null
+        currentModel2 = null
         animationMap = null
         animationProcessor.reset()
         defaultPhysicsManager.clear()
         rateLimiter.reset()
         manager.clear()
-        positionTracker.reset()
+        positionTracker2.reset()
         lastTick = -1.0f
         wasAnimationActiveLastTick = false
         hasUpdatedThisTick = false
@@ -112,7 +112,8 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
 
     open fun createPositionTracker(entity: TEntity): EntityFrameStateTracker<TEntity> = EntityFrameStateTracker(entity)
 
-    open fun getPositionTracker(): EntityFrameStateTracker<TEntity> = positionTracker
+    open val positionTracker: EntityFrameStateTracker<TEntity>
+        get() = positionTracker2
 
     open fun getSeekTime(): Float = seekTime
 
@@ -167,7 +168,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
     }
 
     open fun processAnimationImpl(partialTick: Float, z: Boolean): AnimationEvent<*>? {
-        if (currentModel == null) return null
+        if (currentModel2 == null) return null
         val livingEntity = entity as? LivingEntity
         val tickCount = if (this is IPreviewAnimatable) ClientTickEvent.getTickCount() else entity.tickCount
         val frameTime =
@@ -260,7 +261,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
             if (z2) {
                 if (z3) {
                     hasUpdatedThisTick = true
-                    positionTracker.updateState(event.getTickCount(), seekTime, event.getFrameTime())
+                    positionTracker2.updateState(event.getTickCount(), seekTime, event.getFrameTime())
                 }
                 physicsManager.update(seekTime)
                 setupAnim(seekTime, z3)
@@ -284,15 +285,15 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
     ) {
         reset()
         val animModel = AnimatedGeoModel(model)
-        currentModel = animModel
+        currentModel2 = animModel
         animationMap = object2ReferenceMap
         registerAnimationControllers()
         animationProcessor.initBones(animModel, object2ReferenceMap)
-        setCurrentModel(animModel)
+        currentModel = animModel
     }
 
     open fun clearAnimationControllers() {
-        currentModel?.let {
+        currentModel2?.let {
             val model = it.getGeoModel()
             val object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>? = animationMap
             reset()
@@ -300,9 +301,9 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
         }
     }
 
-    fun getCurrentModel(): AnimatedGeoModel? = currentModel
-
-    open fun setCurrentModel(model: AnimatedGeoModel?) {}
+    open var currentModel: AnimatedGeoModel?
+        get() = currentModel2
+        set(value) {}
 
     open fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean = true
 
@@ -343,9 +344,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
         animationStates[name] = state
     }
 
-    open fun getAnimationState(name: String): AnimationState {
-        return animationStates.getOrDefault(name, AnimationState.IDLE)
-    }
+    open fun getAnimationState(name: String): AnimationState = animationStates.getOrDefault(name, AnimationState.IDLE)
 
     fun interface AnimationControllerVisitor : ((IAnimationController<*>) -> Unit) -> Unit
 }

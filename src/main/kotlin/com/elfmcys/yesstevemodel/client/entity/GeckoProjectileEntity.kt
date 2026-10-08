@@ -44,10 +44,11 @@ open class GeckoProjectileEntity(
         return projectileModelContext!!.model
     }
 
-    override fun getTextureLocation(): Identifier {
-        return (getRenderShape() as ProjectileModelWrapper).textureLocatable.getResourceLocation()
-            ?: MissingTextureAtlasSprite.getLocation()
-    }
+    override val textureLocation: Identifier
+        get() {
+            return (getRenderShape() as ProjectileModelWrapper).textureLocatable.getResourceLocation()
+                ?: MissingTextureAtlasSprite.getLocation()
+        }
 
     override fun getAnimation(str: String): Animation? {
         return projectileModelContext?.animations?.get(str)
@@ -57,17 +58,20 @@ open class GeckoProjectileEntity(
         return projectileModelContext?.animationControllers?.get(str)
     }
 
-    override fun isModelReady(): Boolean {
-        return super.isModelReady() && projectileModelContext != null && (getRenderShape()?.isValid == true)
-    }
+    override val isModelReady: Boolean
+        get() {
+            return super.isModelReady && projectileModelContext != null && (getRenderShape()?.isValid == true)
+        }
 
-    override fun getHeightScale(): Float {
-        return 0.7f
-    }
+    override val heightScale: Float
+        get() {
+            return 0.7f
+        }
 
-    override fun getWidthScale(): Float {
-        return 0.7f
-    }
+    override val widthScale: Float
+        get() {
+            return 0.7f
+        }
 
     private class ProjectileModelWrapper(
         modelAssembly: ModelAssembly,

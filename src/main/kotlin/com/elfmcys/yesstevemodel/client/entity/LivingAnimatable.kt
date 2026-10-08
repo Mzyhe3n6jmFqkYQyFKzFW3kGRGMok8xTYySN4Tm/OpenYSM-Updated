@@ -37,7 +37,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     private var extraRenderFlag: Boolean = false
 
     override fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<T>>, z: Boolean) {
-        val model = currentModel
+        val model = currentModel2
         if (model != null && model.headBones().isNotEmpty()) {
             val bone = model.headBones()[model.headBones().size - 1]
             if (z) {
@@ -50,7 +50,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     }
 
     override fun resetHeadTracking(wasAnimEvaluated: Boolean) {
-        val model = currentModel
+        val model = currentModel2
         if (model != null && model.headBones().isNotEmpty()) {
             val bone = model.headBones()[model.headBones().size - 1]
             bone.rotationX = armorBoneOffset.x
@@ -60,8 +60,8 @@ abstract class LivingAnimatable<T : LivingEntity>(
 
     override fun createPositionTracker(entity: T): LivingEntityFrameState<T> = LivingEntityFrameState(entity)
 
-    override fun getPositionTracker(): LivingEntityFrameState<T> =
-        super.getPositionTracker() as LivingEntityFrameState<T>
+    override val positionTracker: LivingEntityFrameState<T>
+        get() = super.positionTracker as LivingEntityFrameState<T>
 
     open fun setCurrentTexture(str: String?) {
         currentTextureName = str
@@ -91,13 +91,15 @@ abstract class LivingAnimatable<T : LivingEntity>(
             if (values != null) MolangEventDispatcher.createUpdateExpression(values, updateExpressionArgs) else null
     }
 
-    override fun setCurrentModel(model: AnimatedGeoModel?) {
-        super.setCurrentModel(model)
-        if (model != null && model.headBones().isNotEmpty()) {
-            val bone = model.headBones()[model.headBones().size - 1]
-            armorBoneOffset.set(bone.rotationX, bone.rotationY)
+    override var currentModel: AnimatedGeoModel?
+        get() = super.currentModel
+        set(value) {
+            super.currentModel = value
+            if (value != null && value.headBones().isNotEmpty()) {
+                val bone = value.headBones()[value.headBones().size - 1]
+                armorBoneOffset.set(bone.rotationX, bone.rotationY)
+            }
         }
-    }
 
     override fun resetModel() {
         super.resetModel()
@@ -134,7 +136,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     }
 
     private fun updateCurrentTexture() {
-        if (isModelReady()) {
+        if (isModelReady) {
             val map =
                 getModelAssembly()?.animationBundle?.textures
             if (map != null) {
@@ -164,13 +166,13 @@ abstract class LivingAnimatable<T : LivingEntity>(
         getModelAssembly()?.animationBundle?.animationEntries?.get(str)
 
     open fun getCurrentTextureName(): String? {
-        return if (isModelReady()) currentTextureName else getModelAssembly()?.animationBundle?.textures
+        return if (isModelReady) currentTextureName else getModelAssembly()?.animationBundle?.textures
             ?.getKeyAt(0)
     }
 
     override val textureLocation: Identifier
         get() {
-            return if (isModelReady()) {
+            return if (isModelReady) {
                 (getRenderShape() as? LivingAnimatable<*>.TexturedModelWrapper)?.currentTexture?.getResourceLocation()
                     ?: ClientModelManager.getDefaultTexture()
             } else {
@@ -179,19 +181,21 @@ abstract class LivingAnimatable<T : LivingEntity>(
         }
 
     override fun getTextureIndex(): Int {
-        if (isModelReady()) {
+        if (isModelReady) {
             return textureIndex
         }
         return 0
     }
 
-    override fun getWidthScale(): Float {
-        return getModelAssembly()?.modelData?.modelProperties?.widthScale ?: 1.0f
-    }
+    override val widthScale: Float
+        get() {
+            return getModelAssembly()?.modelData?.modelProperties?.widthScale ?: 1.0f
+        }
 
-    override fun getHeightScale(): Float {
-        return getModelAssembly()?.modelData?.modelProperties?.heightScale ?: 1.0f
-    }
+    override val heightScale: Float
+        get() {
+            return getModelAssembly()?.modelData?.modelProperties?.heightScale ?: 1.0f
+        }
 
     open fun isRenderLayersFirst(): Boolean {
         return getModelAssembly()?.modelData?.modelProperties?.renderLayersFirst ?: false

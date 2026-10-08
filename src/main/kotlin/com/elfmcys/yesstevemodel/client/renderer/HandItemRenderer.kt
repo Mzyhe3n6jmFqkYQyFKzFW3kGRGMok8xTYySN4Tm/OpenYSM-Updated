@@ -40,7 +40,7 @@ open class HandItemRenderer {
         if (currentOrNewGeoModel.processAnimation(partialTick) == null) {
             return
         }
-        val model: AnimatedGeoModel = currentOrNewGeoModel.getCurrentModel() ?: return
+        val model: AnimatedGeoModel = currentOrNewGeoModel.currentModel ?: return
         val event = SpecialPlayerRenderEvent(localPlayer, capability, capability.modelId)
         if (SpecialPlayerRenderEvent.post(event).isFalse()) {
             return

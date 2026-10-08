@@ -21,7 +21,7 @@ object CustomVehicleRenderer {
     @JvmStatic
     fun hasReadyVehicleModel(entity: Entity): Boolean {
         val cap = VehicleCapability[entity]
-        return cap != null && cap.isModelInitialized && cap.isModelReady()
+        return cap != null && cap.isModelInitialized && cap.isModelReady
     }
 
     @JvmStatic
@@ -35,7 +35,7 @@ object CustomVehicleRenderer {
         packedLight: Int
     ): Boolean {
         val cap = VehicleCapability[entity]
-        if (cap != null && cap.isModelInitialized && cap.isModelReady()) {
+        if (cap != null && cap.isModelInitialized && cap.isModelReady) {
             RendererManager.getVehicleRenderer().renderEntity(
                 cap,
                 state,

@@ -159,10 +159,11 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
     val modelId: String
         get() = modelId2
 
-    override fun isModelReady(): Boolean {
-        val shape = renderShape2
-        return shape != null && !shape.isDefault && shape.isValid
-    }
+    override val isModelReady: Boolean
+        get() {
+            val shape = renderShape2
+            return shape != null && !shape.isDefault && shape.isValid
+        }
 
     override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean =
         event.isFirstPerson() || OculusCompat.isPBRActive()
@@ -205,6 +206,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
         return super.processAnimationImpl(partialTick, z)
     }
 
+    // TODO: 'fun loadFence(): Unit' is deprecated. Deprecated in Java.
     open fun awaitAsyncResult(): AnimationEvent<*>? {
         val future = modelDeferred ?: return null
         modelDeferred = null

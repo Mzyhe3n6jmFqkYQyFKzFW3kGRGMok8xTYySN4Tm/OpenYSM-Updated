@@ -37,7 +37,7 @@ open class CustomPlayerElytraLayer(context: EntityRendererProvider.Context) : Ge
     ) {
         val entity = entityLivingBaseIn.entity
         val stack = CosmeticArmorHelper.getElytraItem(entity)
-        val animatedGeoModel = entityLivingBaseIn.getCurrentModel()
+        val animatedGeoModel = entityLivingBaseIn.currentModel
         if (!stack.isEmpty && animatedGeoModel != null && animatedGeoModel.elytraBones()
                 .isNotEmpty() && entity is AbstractClientPlayer
         ) {

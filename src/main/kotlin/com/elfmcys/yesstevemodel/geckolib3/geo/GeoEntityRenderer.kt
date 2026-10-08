@@ -48,9 +48,9 @@ abstract class GeoEntityRenderer<TEntity : Entity, T : AnimatableEntity<TEntity>
             val entity = t.entity
             val z = !entity.isInvisibleTo(player)
             val zShouldEntityAppearGlowing = minecraft.shouldEntityAppearGlowing(entity)
-            val currentModel = t.getCurrentModel() ?: return
+            val currentModel = t.currentModel ?: return
             val renderType = getRenderType(
-                t.getTextureLocation(),
+                t.textureLocation,
                 z,
                 zShouldEntityAppearGlowing,
                 currentModel.getGeoModel().isTranslucentTexture(0)

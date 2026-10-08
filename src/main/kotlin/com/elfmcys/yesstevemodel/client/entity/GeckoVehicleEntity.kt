@@ -51,20 +51,22 @@ open class GeckoVehicleEntity(
 
     override fun getAnimationProcessor(): GeoModel = vehicleModel!!.model
 
-    override fun getTextureLocation(): Identifier =
-        (getRenderShape() as EntityModelWrapper).textureLocatable.getResourceLocation()
+    override val textureLocation: Identifier
+        get() = (getRenderShape() as EntityModelWrapper).textureLocatable.getResourceLocation()
             ?: MissingTextureAtlasSprite.getLocation()
 
     override fun getAnimation(str: String): Animation? = vehicleModel?.animations?.get(str)
 
     override fun getAnimationEntries(str: String): AnimationController? = vehicleModel?.animationControllers?.get(str)
 
-    override fun isModelReady(): Boolean =
-        super.isModelReady() && vehicleModel != null && (getRenderShape()?.isValid == true)
+    override val isModelReady: Boolean
+        get() = super.isModelReady && vehicleModel != null && (getRenderShape()?.isValid == true)
 
-    override fun getHeightScale(): Float = 0.7f
+    override val heightScale: Float
+        get() = 0.7f
 
-    override fun getWidthScale(): Float = 0.7f
+    override val widthScale: Float
+        get() = 0.7f
 
     private class EntityModelWrapper(
         modelAssembly: ModelAssembly,

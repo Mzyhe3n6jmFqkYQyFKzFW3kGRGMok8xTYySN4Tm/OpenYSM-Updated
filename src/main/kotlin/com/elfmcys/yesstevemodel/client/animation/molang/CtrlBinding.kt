@@ -141,7 +141,7 @@ object CtrlBinding : ContextBinding() {
     @JvmStatic
     fun evaluateState(name: String, context: IContext<LivingEntity>): Boolean {
         val livingEntity: LivingEntity = context.entity()
-        val positionTracker: EntityFrameStateTracker<*> = context.geoInstance().getPositionTracker()
+        val positionTracker: EntityFrameStateTracker<*> = context.geoInstance().positionTracker
         if (positionTracker.getCachedModelId() != null) {
             return name == positionTracker.getCachedModelId()
         }
@@ -189,7 +189,7 @@ object CtrlBinding : ContextBinding() {
         val animatableEntity: AnimatableEntity<*> = context.geoInstance()
         if (animatableEntity is PlayerCapability) {
             if (!animatableEntity.isLocalPlayerModel) {
-                return animatableEntity.getPositionTracker().isFlying()
+                return animatableEntity.positionTracker.isFlying()
             }
         }
         val entity: Entity = context.entity()

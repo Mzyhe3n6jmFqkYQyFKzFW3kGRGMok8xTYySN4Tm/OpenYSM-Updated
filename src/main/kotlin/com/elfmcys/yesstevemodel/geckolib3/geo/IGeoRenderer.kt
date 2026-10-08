@@ -80,7 +80,7 @@ interface IGeoRenderer<T : AnimatableEntity<*>> {
     ) {
         val consumer = vertexConsumer ?: bufferSource?.getBuffer(renderType)
         animatable.resetAnimationState()
-        val tex = animatable.getTextureLocation()
+        val tex = animatable.textureLocation
         if (consumer != null) {
             NativeModelRenderer.renderMesh(
                 consumer,
@@ -116,8 +116,8 @@ interface IGeoRenderer<T : AnimatableEntity<*>> {
         alpha: Float
     ) {
         if (getCurrentModelRenderCycle() == EModelRenderCycle.INITIAL) {
-            val width = animatable.getHeightScale()
-            val height = animatable.getWidthScale()
+            val width = animatable.heightScale
+            val height = animatable.widthScale
             poseStack.scale(width, height, width)
         }
     }
