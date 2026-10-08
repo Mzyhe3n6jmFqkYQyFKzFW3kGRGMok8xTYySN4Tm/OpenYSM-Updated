@@ -155,7 +155,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
     }
 
     private fun applyTransform(provider: BoneTransformProvider) {
-        val snapshot = provider.getBoneTarget()
+        val snapshot = provider.boneTarget
         if (!snapshot.isCurrentlyRunningAnimation) {
             snapshot.isCurrentlyRunningAnimation = true
             modelRendererList.add(snapshot)
