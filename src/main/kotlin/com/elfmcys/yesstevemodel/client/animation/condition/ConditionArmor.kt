@@ -71,9 +71,8 @@ class ConditionArmor {
         return list.firstOrNull { stack.`is`(it) }?.let { "${equipmentSlot.getName()}#${it.location()}" } ?: EMPTY
     }
 
-    fun hasFilter(equipmentSlot: EquipmentSlot): Boolean {
-        return tagTest.containsKey(equipmentSlot) || idTest.containsKey(equipmentSlot)
-    }
+    fun hasFilter(equipmentSlot: EquipmentSlot): Boolean =
+        tagTest.containsKey(equipmentSlot) || idTest.containsKey(equipmentSlot)
 
     companion object {
         private val ID_PRE_REG: Pattern = Pattern.compile("^(.+?)\\$(.*?)$")
