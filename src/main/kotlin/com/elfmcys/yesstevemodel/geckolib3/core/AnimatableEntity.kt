@@ -32,56 +32,23 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import rip.ysm.api.entity.EntityDataBridge
 
-abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity) {
-    @JvmField
+abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
     protected var positionTracker2: EntityFrameStateTracker<TEntity> = createPositionTracker(entity)
-
-    @JvmField
     protected var currentModel2: AnimatedGeoModel? = null
-
-    @JvmField
     protected var animationMap: Object2ReferenceMap<String, MutableList<IValue>>? = null
-
-    @JvmField
     protected var wasAnimationActiveLastTick: Boolean = false
-
-    @JvmField
     protected var hasUpdatedThisTick: Boolean = false
-
-    @JvmField
     protected var isTickTriggered: Boolean = false
-
-    @JvmField
     protected var wasEvaluatedLastFrame: Boolean = false
-
-    @JvmField
     protected var seekTime2: Float = 0.0f
-
-    @JvmField
     protected val manager: AnimationData = AnimationData()
-
-    @JvmField
     protected var lastTick: Float = -1.0f
-
-    @JvmField
     protected var isFirstFrameAfterReset: Boolean = true
-
-    @JvmField
     protected var needsReset: Boolean = false
-
-    @JvmField
     protected var modelInitialized: Boolean = false
-
-    @JvmField
     protected var animationStates: MutableMap<String, AnimationState> = Maps.newHashMap()
-
-    @JvmField
     protected val animationProcessor2: AnimationProcessor<TEntity> = AnimationProcessor(this)
-
-    @JvmField
     protected val rateLimiter: RateLimiter = RateLimiter().apply { setRefreshRate(refreshRate) }
-
-    @JvmField
     protected val defaultPhysicsManager: PhysicsManager = PhysicsManager()
 
     abstract val textureLocation: Identifier

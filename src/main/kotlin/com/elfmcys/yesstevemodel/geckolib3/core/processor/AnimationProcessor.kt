@@ -70,7 +70,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
         val manager = animatable.animationData
         currentEvaluator = evaluator
         currentSeekTime = seekTime
-        for (controller in manager.getAnimationControllers()) {
+        for (controller in manager.animationControllers) {
             if (needsInit) {
                 controller.init(bones, initExpressions)
             }
@@ -95,7 +95,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
                 val prevRot = topLevelSnapshot.prevRotation
                     ?: Vector3f(topLevelSnapshot.rotation).also { topLevelSnapshot.prevRotation = it }
                 val percentageReset =
-                    (seekTime - topLevelSnapshot.mostRecentResetRotationTick) / manager.getResetSpeed()
+                    (seekTime - topLevelSnapshot.mostRecentResetRotationTick) / manager.resetSpeed
                 if (percentageReset < 1.0f) {
                     runningAnimation = true
                     MathUtil.nlerpEulerAngles(
@@ -118,7 +118,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
                 val prevPos = topLevelSnapshot.prevPosition
                     ?: Vector3f(topLevelSnapshot.position).also { topLevelSnapshot.prevPosition = it }
                 val percentageReset =
-                    (seekTime - topLevelSnapshot.mostRecentResetPositionTick) / manager.getResetSpeed()
+                    (seekTime - topLevelSnapshot.mostRecentResetPositionTick) / manager.resetSpeed
                 if (percentageReset < 1.0f) {
                     runningAnimation = true
                     MathUtil.lerpValues(percentageReset, prevPos, MathUtil.ZERO, topLevelSnapshot.position)
@@ -135,7 +135,7 @@ class AnimationProcessor<TEntity : Entity>(private val animatable: AnimatableEnt
                     topLevelSnapshot.prevScale = it
                 }
                 val percentageReset =
-                    (seekTime - topLevelSnapshot.mostRecentResetScaleTick) / manager.getResetSpeed()
+                    (seekTime - topLevelSnapshot.mostRecentResetScaleTick) / manager.resetSpeed
                 if (percentageReset < 1.0f) {
                     runningAnimation = true
                     MathUtil.lerpValues(percentageReset, prevScl, MathUtil.ONE, topLevelSnapshot.scale)

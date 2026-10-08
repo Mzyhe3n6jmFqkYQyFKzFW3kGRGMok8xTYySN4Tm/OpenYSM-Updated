@@ -4,36 +4,26 @@ import com.elfmcys.yesstevemodel.geckolib3.core.controller.IAnimationController
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 
-open class AnimationData {
-    @JvmField
+class AnimationData {
     var limbSwing: Float = 0.0f
-
-    @JvmField
-    val animationControllers: MutableList<IAnimationController<*>> = ReferenceArrayList(0)
-
-    @JvmField
-    val animationControllerMap: Object2ReferenceOpenHashMap<String, IAnimationController<*>> =
+    val animationControllers: List<IAnimationController<*>>
+        field: MutableList<IAnimationController<*>> = ReferenceArrayList(0)
+    private val animationControllerMap: Object2ReferenceOpenHashMap<String, IAnimationController<*>> =
         Object2ReferenceOpenHashMap(0)
-
-    @JvmField
     var startTick: Float = -1.0f
+    private var resetTickLength: Float = 3.0f
 
-    @JvmField
-    var resetTickLength: Float = 3.0f
-
-    open fun addAnimationController(value: IAnimationController<*>) {
+    fun addAnimationController(value: IAnimationController<*>) {
         animationControllers.add(value)
     }
 
-    open fun getResetSpeed(): Float = resetTickLength
+    var resetSpeed: Float
+        get() = resetTickLength
+        set(value) {
+            resetTickLength = value.coerceAtLeast(0.0f)
+        }
 
-    open fun setResetSpeedInTicks(resetTickLength: Float) {
-        this.resetTickLength = if (resetTickLength < 0) 0.0f else resetTickLength
-    }
-
-    open fun getAnimationControllers(): MutableList<IAnimationController<*>> = animationControllers
-
-    open fun getAnimationControllerByName(name: String): IAnimationController<*>? {
+    fun getAnimationControllerByName(name: String): IAnimationController<*>? {
         if (animationControllerMap.isEmpty() && animationControllers.isNotEmpty()) {
             for (controller in animationControllers) {
                 animationControllerMap[controller.name] = controller
@@ -42,7 +32,7 @@ open class AnimationData {
         return animationControllerMap[name]
     }
 
-    open fun clear() {
+    fun clear() {
         limbSwing = 0.0f
         startTick = -1.0f
         resetTickLength = 3.0f
