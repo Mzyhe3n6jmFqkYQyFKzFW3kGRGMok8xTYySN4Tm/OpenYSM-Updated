@@ -36,7 +36,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     private var extraRenderFlag: Boolean = false
 
     override fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<T>>, z: Boolean) {
-        val model = currentModel2
+        val model = currentModel
         if (model != null && model.headBones.isNotEmpty()) {
             val bone = model.headBones[model.headBones.size - 1]
             if (z) armorBoneOffset.set(bone.rotationX, bone.rotationY)
@@ -47,7 +47,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
     }
 
     override fun resetHeadTracking(wasAnimEvaluated: Boolean) {
-        val model = currentModel2
+        val model = currentModel
         if (model != null && model.headBones.isNotEmpty()) {
             val bone = model.headBones[model.headBones.size - 1]
             bone.rotationX = armorBoneOffset.x

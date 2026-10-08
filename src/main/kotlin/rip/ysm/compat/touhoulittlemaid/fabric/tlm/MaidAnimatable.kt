@@ -72,7 +72,7 @@ open class MaidAnimatable(entityMaid: EntityMaid, isActive: Boolean) :
         }
     }
 
-    override fun getGeoModel(): ILocationModel? = currentModel2?.getTouhouMaidData<ILocationModel>()
+    override fun getGeoModel(): ILocationModel? = currentModel?.getTouhouMaidData<ILocationModel>()
 
     override fun setYsmModel(modelId: String, texture: String) {
         initModelWithTexture(modelId, texture)

@@ -34,13 +34,15 @@ import rip.ysm.api.entity.EntityDataBridge
 
 abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
     protected var positionTracker2: EntityFrameStateTracker<TEntity> = createPositionTracker(entity)
-    protected var currentModel2: AnimatedGeoModel? = null
+    open var currentModel: AnimatedGeoModel? = null
+        protected set
     protected var animationMap: Object2ReferenceMap<String, MutableList<IValue>>? = null
     protected var wasAnimationActiveLastTick: Boolean = false
     protected var hasUpdatedThisTick: Boolean = false
     protected var isTickTriggered: Boolean = false
     protected var wasEvaluatedLastFrame: Boolean = false
-    protected var seekTime2: Float = 0.0f
+    open var seekTime: Float = 0.0f
+        protected set
     protected val manager: AnimationData = AnimationData()
     protected var lastTick: Float = -1.0f
     protected var isFirstFrameAfterReset: Boolean = true
@@ -59,7 +61,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
     abstract fun registerAnimationControllers()
 
     open fun reset() {
-        currentModel2 = null
+        currentModel = null
         animationMap = null
         animationProcessor2.reset()
         defaultPhysicsManager.clear()
@@ -73,7 +75,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
         isFirstFrameAfterReset = true
         needsReset = false
         wasEvaluatedLastFrame = false
-        seekTime2 = 0.0f
+        seekTime = 0.0f
         animationStates.clear()
     }
 
@@ -81,9 +83,6 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
 
     open val positionTracker: EntityFrameStateTracker<TEntity>
         get() = positionTracker2
-
-    open val seekTime: Float
-        get() = seekTime2
 
     open fun addAnimationController(controller: IAnimationController<*>) {
         manager.addAnimationController(controller)
@@ -139,7 +138,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
         processAnimationImpl(partialTick, ModelPreviewRenderer.isFirstPersonOnRenderThread())
 
     open fun processAnimationImpl(partialTick: Float, z: Boolean): AnimationEvent<*>? {
-        if (currentModel2 == null) return null
+        if (currentModel == null) return null
         val livingEntity = entity as? LivingEntity
         val tickCount = if (this is IPreviewAnimatable) ClientTickEvent.tickCount else entity.tickCount
         val frameTime =
@@ -219,25 +218,25 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
             val f3 = f2 - manager.limbSwing
             if (f3 > 0.0f) {
                 manager.limbSwing = f2
-                seekTime2 += f3
+                seekTime += f3
             }
         }
-        event.currentTick = seekTime2
+        event.currentTick = seekTime
         if (!animationProcessor2.isDisabled) {
-            isTickTriggered = isTickTriggered or rateLimiter.request(seekTime2 / 20.0f)
+            isTickTriggered = isTickTriggered or rateLimiter.request(seekTime / 20.0f)
             val z2 = isTickTriggered && !hasUpdatedThisTick || wasAnimationActiveLastTick || z
             val z3 =
-                (!z || seekTime2 == 0.0f && !hasUpdatedThisTick) && isTickTriggered && !hasUpdatedThisTick
+                (!z || seekTime == 0.0f && !hasUpdatedThisTick) && isTickTriggered && !hasUpdatedThisTick
             resetHeadTracking(wasEvaluatedLastFrame)
             if (z2) {
                 if (z3) {
                     hasUpdatedThisTick = true
-                    positionTracker2.updateState(event.tickCount, seekTime2, event.frameTime)
+                    positionTracker2.updateState(event.tickCount, seekTime, event.frameTime)
                 }
-                physicsManager.update(seekTime2)
-                setupAnim(seekTime2, z3)
+                physicsManager.update(seekTime)
+                setupAnim(seekTime, z3)
                 getEvaluationContext().tickAnimation(event, ctx, z3, shouldRenderOverlay())
-                afterSetupAnim(seekTime2, z3)
+                afterSetupAnim(seekTime, z3)
                 wasAnimationActiveLastTick = z
             }
             applyHeadTracking(event, z2)
@@ -256,7 +255,7 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
     ) {
         reset()
         val animModel = AnimatedGeoModel(model)
-        currentModel2 = animModel
+        currentModel = animModel
         animationMap = object2ReferenceMap
         registerAnimationControllers()
         animationProcessor2.initBones(animModel, object2ReferenceMap)
@@ -264,17 +263,13 @@ abstract class AnimatableEntity<TEntity : Entity>(val entity: TEntity) {
     }
 
     open fun clearAnimationControllers() {
-        currentModel2?.let {
+        currentModel?.let {
             val model = it.geoModel
             val object2ReferenceMap: Object2ReferenceMap<String, MutableList<IValue>>? = animationMap
             reset()
             initAnimationControllers(model, object2ReferenceMap ?: return)
         }
     }
-
-    open var currentModel: AnimatedGeoModel?
-        get() = currentModel2
-        set(value) {}
 
     open fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean = true
 
