@@ -189,7 +189,7 @@ open class ModelSettingsScreen(
         RenderSystem.enableScissorForRenderTypeDraws(sx, sy, sw, sh)
         val cx = (previewLeft + previewRight) / 2.0f + offsetX
         val cy = previewTop + (previewBottom - previewTop) * 0.65f + offsetY
-        renderPlayerForSettings(cx, cy, zoom, pitch, yaw, partialTick, la, RendererManager.getPlayerRenderer())
+        renderPlayerForSettings(cx, cy, zoom, pitch, yaw, partialTick, la, RendererManager.playerRenderer)
         RenderSystem.disableScissorForRenderTypeDraws()
     }
 

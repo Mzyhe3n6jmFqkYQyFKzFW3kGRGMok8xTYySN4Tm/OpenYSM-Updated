@@ -252,7 +252,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
     override fun init() {
         clearWidgets()
         refreshModelList()
-        if (getCurrentPage() > maxPage) {
+        if (currentPage > maxPage) {
             resetCurrentPage()
         }
         guiLeft = (width - 420) / 2
@@ -367,9 +367,9 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                 14,
                 Component.translatable("gui.yes_steve_model.pre_page")
             ) {
-                val currentPage = getCurrentPage()
-                if (currentPage > 0) {
-                    setCurrentPage(currentPage - 1)
+                val oldCurrentPage = currentPage
+                if (oldCurrentPage > 0) {
+                    currentPage = oldCurrentPage - 1
                     init()
                 }
             }
@@ -383,9 +383,9 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                 14,
                 Component.translatable("gui.yes_steve_model.next_page")
             ) {
-                val currentPage = getCurrentPage()
-                if (currentPage < maxPage) {
-                    setCurrentPage(currentPage + 1)
+                val oldCurrentPage = currentPage
+                if (oldCurrentPage < maxPage) {
+                    currentPage = oldCurrentPage + 1
                     init()
                 }
             }
@@ -394,7 +394,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         val player = minecraft.player ?: return
         val capability = AuthModelsCapability[player]
         for (i in 0 until 10) {
-            val slotIndex = i + getCurrentPage() * 10
+            val slotIndex = i + currentPage * 10
             val slotX = guiLeft + 143 + 55 * (i % 5)
             val slotY = guiTop + 28 + 93 * (i / 5)
 
@@ -456,7 +456,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             )
         }
 
-        val pageStr = "${getCurrentPage() + 1}/${maxPage + 1}"
+        val pageStr = "${currentPage + 1}/${maxPage + 1}"
         val pageX = guiLeft + 138 + (282 - font.width(pageStr)) / 2
         val pageY = guiTop + 223
         guiGraphics.drawString(font, pageStr, pageX, pageY - 9 / 2, 0xFFF3F0E0.toInt())
@@ -669,29 +669,29 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
     }
 
     private fun handleScrollPage(delta: Double) {
-        val currentPage = getCurrentPage()
-        if (delta > 0.0 && currentPage > 0) {
-            setCurrentPage(currentPage - 1)
+        val oldCurrentPage = currentPage
+        if (delta > 0.0 && oldCurrentPage > 0) {
+            currentPage = oldCurrentPage - 1
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
             init()
             return
         }
-        if (delta < 0.0 && currentPage < maxPage) {
-            setCurrentPage(currentPage + 1)
+        if (delta < 0.0 && oldCurrentPage < maxPage) {
+            currentPage = oldCurrentPage + 1
             Minecraft.getInstance().soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0f))
             init()
             return
         }
     }
 
-    private fun getCurrentPage(): Int = pageIndexMap.getOrDefault(currentPath, 0)
-
-    private fun setCurrentPage(page: Int) {
-        pageIndexMap.put(currentPath, page)
-    }
+    private var currentPage: Int
+        get() = pageIndexMap.getOrDefault(currentPath, 0)
+        set(value) {
+            pageIndexMap[currentPath] = value
+        }
 
     private fun resetCurrentPage() {
-        pageIndexMap.put(currentPath, 0)
+        pageIndexMap[currentPath] = 0
     }
 
     override fun isPauseScreen(): Boolean = false

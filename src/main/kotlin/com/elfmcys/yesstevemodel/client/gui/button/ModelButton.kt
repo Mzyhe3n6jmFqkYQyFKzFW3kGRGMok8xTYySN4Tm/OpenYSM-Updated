@@ -41,10 +41,10 @@ open class ModelButton(
     private val disablePreviewRotation: Boolean = renderContext.modelData.modelProperties.disablePreviewRotation
     private val displayName: Component =
         Component.literal(FileTypeUtil.getNameWithoutArchiveExtension(modelIdHolder.modelId))
-    private var backgroundTexture: IResourceLocatable? = renderContext.textureRegistry.getGuiBackground()?.let {
+    private var backgroundTexture: IResourceLocatable? = renderContext.textureRegistry.guiBackground?.let {
         UploadManager.getOrCreateLocatableWithSize(it, true)
     }
-    private var foregroundTexture: IResourceLocatable? = renderContext.textureRegistry.getGuiForeground()?.let {
+    private var foregroundTexture: IResourceLocatable? = renderContext.textureRegistry.guiForeground?.let {
         UploadManager.getOrCreateLocatableWithSize(it, true)
     }
     private var cachedLanguage: String? = null

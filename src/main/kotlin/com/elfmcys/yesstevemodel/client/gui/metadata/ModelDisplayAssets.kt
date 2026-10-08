@@ -9,6 +9,8 @@ data class ModelDisplayAssets(
     val authorAvatars: Map<String, OuterFileTexture>,
     private val guiTextures: Map<String, AbstractTexture>
 ) {
-    fun getGuiForeground(): AbstractTexture? = guiTextures["gui_foreground"]
-    fun getGuiBackground(): AbstractTexture? = guiTextures["gui_background"]
+    val guiForeground: AbstractTexture?
+        get() = guiTextures["gui_foreground"]
+    val guiBackground: AbstractTexture?
+        get() = guiTextures["gui_background"]
 }

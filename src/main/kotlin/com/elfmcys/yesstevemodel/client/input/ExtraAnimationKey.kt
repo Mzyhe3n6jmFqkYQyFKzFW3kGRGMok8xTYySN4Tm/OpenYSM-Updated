@@ -27,23 +27,24 @@ object ExtraAnimationKey {
     @Volatile
     private var initialized: Boolean = false
 
-    fun getKeyMappings(): MutableList<KeyMapping> {
-        if (!initialized) {
-            initialized = true
-            if (YesSteveModel.isAvailable) {
-                for (i in 0..7) {
-                    val eventMapping = KeyMappingFactory.createInGameNone(
-                        "key.yes_steve_model.extra_animation.$i.desc",
-                        InputConstants.Type.KEYSYM,
-                        -1,
-                        KeyMappingFactory.YSM_CATEGORY
-                    )
-                    KEY_MAPPINGS.add(eventMapping)
+    val keyMappings: MutableList<KeyMapping>
+        get() {
+            if (!initialized) {
+                initialized = true
+                if (YesSteveModel.isAvailable) {
+                    for (i in 0..7) {
+                        val eventMapping = KeyMappingFactory.createInGameNone(
+                            "key.yes_steve_model.extra_animation.$i.desc",
+                            InputConstants.Type.KEYSYM,
+                            -1,
+                            KeyMappingFactory.YSM_CATEGORY
+                        )
+                        KEY_MAPPINGS.add(eventMapping)
+                    }
                 }
             }
+            return KEY_MAPPINGS
         }
-        return KEY_MAPPINGS
-    }
 
     init {
         ClientRawInputEvent.KEY_PRESSED.register { _, action, event ->

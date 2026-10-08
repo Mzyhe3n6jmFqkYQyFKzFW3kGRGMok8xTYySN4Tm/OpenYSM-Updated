@@ -29,7 +29,7 @@ object ClientSetupEvent {
         KeyBindingHelper.registerKeyBinding(AnimationRouletteKey.KEY_LOCK)
         KeyBindingHelper.registerKeyBinding(DebugAnimationKey.KEY_MAPPING)
         KeyBindingHelper.registerKeyBinding(ExtraPlayerRenderKey.KEY_MAPPING)
-        for (mapping in ExtraAnimationKey.getKeyMappings()) KeyBindingHelper.registerKeyBinding(mapping)
+        for (mapping in ExtraAnimationKey.keyMappings) KeyBindingHelper.registerKeyBinding(mapping)
     }
 
     private fun nativeClientInit(): Component? {

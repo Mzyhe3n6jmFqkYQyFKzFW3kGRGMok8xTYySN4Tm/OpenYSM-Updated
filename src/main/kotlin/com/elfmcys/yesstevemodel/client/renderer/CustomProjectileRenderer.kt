@@ -18,7 +18,7 @@ object CustomProjectileRenderer {
     ): Boolean {
         val cap = ProjectileCapability[projectile]
         if (cap != null && cap.isModelInitialized && cap.isModelReady) {
-            RendererManager.getProjectileRenderer()
+            RendererManager.projectileRenderer
                 .render(cap.entity, state, partialTick, poseStack, multiBufferSource, packedLight)
             return false
         }

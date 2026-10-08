@@ -53,9 +53,10 @@ class AnimationSlider(
         }
     }
 
-    override fun getValueString(): String {
-        return DECIMAL_FORMAT.format(getValue())
-    }
+    override val valueString: String
+        get() {
+            return DECIMAL_FORMAT.format(getValue())
+        }
 
     override fun renderWidget(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         val minecraft = Minecraft.getInstance()

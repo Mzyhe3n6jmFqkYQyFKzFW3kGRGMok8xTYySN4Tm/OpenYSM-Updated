@@ -37,7 +37,14 @@ abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEn
     @JvmField
     var bufferSource: MultiBufferSource? = null
 
-    open fun render(animatable: T, state: S, partialTick: Float, poseStack: PoseStack, bufferSource: MultiBufferSource, packedLight: Int) {
+    open fun render(
+        animatable: T,
+        state: S,
+        partialTick: Float,
+        poseStack: PoseStack,
+        bufferSource: MultiBufferSource,
+        packedLight: Int
+    ) {
         val event: AnimationEvent<*>? = animatable.processAnimation(partialTick)
         val minecraft = Minecraft.getInstance()
         val player = minecraft.player
@@ -55,9 +62,17 @@ abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEn
             if (renderType != null && (isVisible || zShouldEntityAppearGlowing)) {
                 val color: Color = getRenderColor(animatable, partialTick, poseStack, bufferSource, null, packedLight)
                 modelViewMatrix = Matrix4f(poseStack.last().pose())
-                setCurrentModelRenderCycle(EModelRenderCycle.INITIAL)
+                currentModelRenderCycle = EModelRenderCycle.INITIAL
                 poseStack.pushPose()
-                poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, projectile.yRotO, projectile.yRot) - 90.0f))
+                poseStack.mulPose(
+                    Axis.YP.rotationDegrees(
+                        Mth.lerp(
+                            partialTick,
+                            projectile.yRotO,
+                            projectile.yRot
+                        ) - 90.0f
+                    )
+                )
                 poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, projectile.xRotO, projectile.xRot)))
                 renderWithBoneAndRenderType(
                     model,
@@ -96,24 +111,32 @@ abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEn
         alpha: Float
     ) {
         projectionMatrix = Matrix4f(poseStack.last().pose())
-        super.renderEarly(animatable, poseStack, partialTick, bufferSource, buffer, packedLight, packedOverlayIn, red, green, blue, alpha)
+        super.renderEarly(
+            animatable,
+            poseStack,
+            partialTick,
+            bufferSource,
+            buffer,
+            packedLight,
+            packedOverlayIn,
+            red,
+            green,
+            blue,
+            alpha
+        )
     }
 
-    override fun getCurrentModelRenderCycle(): IRenderCycle {
-        return renderState
-    }
+    override var currentModelRenderCycle: IRenderCycle
+        get() = renderState
+        set(value) {
+            renderState = value
+        }
 
-    override fun setCurrentModelRenderCycle(cycle: IRenderCycle) {
-        renderState = cycle
-    }
-
-    override fun setCurrentRTB(bufferSource: MultiBufferSource?) {
-        this.bufferSource = bufferSource
-    }
-
-    override fun getCurrentRTB(): MultiBufferSource? {
-        return bufferSource
-    }
+    override var currentRTB: MultiBufferSource?
+        get() = bufferSource
+        set(value) {
+            bufferSource = value
+        }
 
     companion object {
         @JvmStatic

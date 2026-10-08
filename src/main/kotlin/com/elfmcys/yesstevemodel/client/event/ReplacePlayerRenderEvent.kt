@@ -51,7 +51,7 @@ object ReplacePlayerRenderEvent {
                         } else {
                             renderState.lightCoords
                         }
-                        RendererManager.getPlayerRenderer().render(
+                        RendererManager.playerRenderer.render(
                             entity,
                             renderState,
                             entity.yRot,

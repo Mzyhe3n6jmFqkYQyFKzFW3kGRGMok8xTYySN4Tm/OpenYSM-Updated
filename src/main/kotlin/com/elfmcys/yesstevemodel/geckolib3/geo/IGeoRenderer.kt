@@ -14,10 +14,7 @@ import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.resources.Identifier
 
 interface IGeoRenderer<T : AnimatableEntity<*>> {
-    fun getCurrentRTB(): MultiBufferSource?
-
-    fun setCurrentRTB(bufferSource: MultiBufferSource?) {
-    }
+    var currentRTB: MultiBufferSource?
 
     fun renderWithBone(
         model: AnimatedGeoModel,
@@ -33,7 +30,7 @@ interface IGeoRenderer<T : AnimatableEntity<*>> {
         blue: Float,
         alpha: Float
     ) {
-        setCurrentRTB(bufferSource)
+        currentRTB = bufferSource
         renderEarly(
             animatable,
             poseStack,
@@ -99,7 +96,7 @@ interface IGeoRenderer<T : AnimatableEntity<*>> {
                 tex
             )
         }
-        setCurrentModelRenderCycle(EModelRenderCycle.REPEATED)
+        currentModelRenderCycle = EModelRenderCycle.REPEATED
     }
 
     fun renderEarly(
@@ -115,7 +112,7 @@ interface IGeoRenderer<T : AnimatableEntity<*>> {
         blue: Float,
         alpha: Float
     ) {
-        if (getCurrentModelRenderCycle() == EModelRenderCycle.INITIAL) {
+        if (currentModelRenderCycle == EModelRenderCycle.INITIAL) {
             val width = animatable.heightScale
             val height = animatable.widthScale
             poseStack.scale(width, height, width)
@@ -157,14 +154,9 @@ interface IGeoRenderer<T : AnimatableEntity<*>> {
         bufferSource: MultiBufferSource?,
         buffer: VertexConsumer?,
         packedLight: Int
-    ): Color {
-        return Color.WHITE
-    }
+    ): Color = Color.WHITE
 
-    fun getCurrentModelRenderCycle(): IRenderCycle {
-        return EModelRenderCycle.INITIAL
-    }
-
-    fun setCurrentModelRenderCycle(cycle: IRenderCycle) {
-    }
+    var currentModelRenderCycle: IRenderCycle
+        get() = EModelRenderCycle.INITIAL
+        set(value) {}
 }

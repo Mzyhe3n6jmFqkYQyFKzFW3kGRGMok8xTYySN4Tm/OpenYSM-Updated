@@ -36,7 +36,7 @@ object CustomVehicleRenderer {
     ): Boolean {
         val cap = VehicleCapability[entity]
         if (cap != null && cap.isModelInitialized && cap.isModelReady) {
-            RendererManager.getVehicleRenderer().renderEntity(
+            RendererManager.vehicleRenderer.renderEntity(
                 cap,
                 state,
                 getBodyRotation(entity, yaw, partialTick),
