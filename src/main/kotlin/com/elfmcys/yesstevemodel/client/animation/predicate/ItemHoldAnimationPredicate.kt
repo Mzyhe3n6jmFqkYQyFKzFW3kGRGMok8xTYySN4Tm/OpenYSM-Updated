@@ -13,14 +13,14 @@ import rip.ysm.compat.slashblade.SlashBladeCompat
 
 class ItemHoldAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>> {
     override fun predicate(event: AnimationEvent<LivingAnimatable<*>>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val animatable = event.getAnimatable()
+        val animatable = event.animatable
         val livingEntity = animatable.entity
         if (animatable is IPreviewAnimatable) return PlayState.STOP
         val playState = SpellbooksCompat.resolvePlayState(event, livingEntity)
         if (playState != null) return playState
         val i = animatable.modelAssembly?.modelData?.formatVersion ?: 0
         if (!livingEntity.isSleeping && SlashBladeCompat.isSlashBladeItem(livingEntity.getItemInHand(InteractionHand.MAIN_HAND))) {
-            if (event.getController()?.isPlaying() == true) event.getController()?.stopTransition()
+            if (event.controller?.isPlaying() == true) event.controller?.stopTransition()
             val str = SlashBladeCompat.getComboAnimName(event)
             if (str.isNotBlank()) {
                 if (animatable.getAnimation(str) != null) {
@@ -36,7 +36,7 @@ class ItemHoldAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>> {
         }
         if (livingEntity.swinging && !livingEntity.isSleeping) {
             if (livingEntity.swingTime == 0 && animatable.positionTracker.markProcessed(1))
-                event.getController()?.stopTransition()
+                event.controller?.stopTransition()
             val conditionManager = animatable.modelConfig ?: return PlayState.CONTINUE
             val conditionSwing =
                 if (livingEntity.swingingArm == InteractionHand.MAIN_HAND) conditionManager.swingMainhand else conditionManager.swingOffhand

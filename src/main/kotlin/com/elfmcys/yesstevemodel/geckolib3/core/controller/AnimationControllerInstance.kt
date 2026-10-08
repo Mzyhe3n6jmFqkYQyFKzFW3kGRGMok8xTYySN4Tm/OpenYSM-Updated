@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package com.elfmcys.yesstevemodel.geckolib3.core.controller
 
@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 import org.joml.Vector3f
 import kotlin.math.max
 
-open class AnimationControllerInstance(
+class AnimationControllerInstance(
     var animatable: AnimatableEntity<*>,
     transitionLengthTicks: Float,
     private var isScaleTransitionSpecial: Boolean = false
@@ -51,18 +51,18 @@ open class AnimationControllerInstance(
     var isAnimationFinished: Boolean = true
         private set
 
-    open fun initBoneQueues(list: MutableList<BoneTopLevelSnapshot>) {
+    fun initBoneQueues(list: MutableList<BoneTopLevelSnapshot>) {
         fullReset()
         for (boneTopLevelSnapshot in list) {
             boneAnimationQueues.put(boneTopLevelSnapshot.boneId, BoneAnimationQueue(boneTopLevelSnapshot))
         }
     }
 
-    open fun setAnimation(animationName: String?) {
+    fun setAnimation(animationName: String?) {
         setAnimation(animationName, null)
     }
 
-    open fun setAnimation(animationName: String?, loopType: ILoopType?) {
+    fun setAnimation(animationName: String?, loopType: ILoopType?) {
         if (animationName == null) {
             cancelAnimation()
             return
@@ -77,7 +77,7 @@ open class AnimationControllerInstance(
         pendingAnimation = Pair(loopType ?: animation.loop, animation)
     }
 
-    open fun process(tick: Float, evaluator: ExpressionEvaluator<AnimationContext<*>>, z: Boolean) {
+    fun process(tick: Float, evaluator: ExpressionEvaluator<AnimationContext<*>>, z: Boolean) {
         evaluator.entity().setAnimationControllerContext(context)
         var adjustedTick: Float = adjustTick(tick)
         if (animationState == AnimationState.ENDING_TRANSITION && adjustedTick >= defaultTransitionTick) {
@@ -148,9 +148,7 @@ open class AnimationControllerInstance(
         }
     }
 
-    open fun getContext(): AnimationControllerContext = context
-
-    open fun executeRemainingEvents(animationTick: ExpressionEvaluator<AnimationContext<*>>, z: Boolean) {
+    fun executeRemainingEvents(animationTick: ExpressionEvaluator<AnimationContext<*>>, z: Boolean) {
         val anim = currentAnimation ?: return
         context.animTime = anim.animationLength / 20.0f
         instructionExecutor?.let {
@@ -160,13 +158,13 @@ open class AnimationControllerInstance(
         soundExecutor?.reset()
     }
 
-    open fun executeRenderLayers(evaluator: ExpressionEvaluator<AnimationContext<*>>) {
+    fun executeRenderLayers(evaluator: ExpressionEvaluator<AnimationContext<*>>) {
         evaluator.entity().setAnimationControllerContext(context)
         context.executeRenderLayers(evaluator)
         evaluator.entity().setAnimationControllerContext(null)
     }
 
-    open fun executeTimelineEvents(
+    fun executeTimelineEvents(
         evaluator: ExpressionEvaluator<AnimationContext<*>>,
         currentTick: Float,
         isActive: Boolean
@@ -175,7 +173,7 @@ open class AnimationControllerInstance(
         instructionExecutor?.executeTo(evaluator, currentTick, isActive)
     }
 
-    open fun startEndingTransition(tick: Float) {
+    fun startEndingTransition(tick: Float) {
         if (animationState == AnimationState.RUNNING || animationState == AnimationState.BEGINNING_TRANSITION) {
             var adjustedTick: Float = adjustTick(tick)
             for (animationQueue in activeBoneAnimationQueues) {
@@ -207,7 +205,7 @@ open class AnimationControllerInstance(
         }
     }
 
-    open fun processBeginningTransition(evaluator: ExpressionEvaluator<AnimationContext<*>>, tick: Float) {
+    fun processBeginningTransition(evaluator: ExpressionEvaluator<AnimationContext<*>>, tick: Float) {
         val anim = currentAnimation ?: return
         val blendWeight: Float = anim.blendWeight?.evalAsFloat(evaluator) ?: 1.0f
         val lerpFactor: Float = transitionInterpolator.interpolate(tick)
@@ -241,7 +239,7 @@ open class AnimationControllerInstance(
         }
     }
 
-    open fun processRunningAnimation(evaluator: ExpressionEvaluator<AnimationContext<*>>, tick: Float) {
+    fun processRunningAnimation(evaluator: ExpressionEvaluator<AnimationContext<*>>, tick: Float) {
         val anim = currentAnimation ?: return
         val blendWeight: Float = anim.blendWeight?.evalAsFloat(evaluator) ?: 1.0f
         for (boneAnimationQueue in activeBoneAnimationQueues) {
@@ -261,7 +259,7 @@ open class AnimationControllerInstance(
         }
     }
 
-    open fun processEndingTransition(evaluator: ExpressionEvaluator<AnimationContext<*>>, f: Float) {
+    fun processEndingTransition(evaluator: ExpressionEvaluator<AnimationContext<*>>, f: Float) {
         val anim = currentAnimation ?: return
         val blendWeight: Float = anim.blendWeight?.evalAsFloat(evaluator) ?: 1.0f
         for (boneAnimationQueue in activeBoneAnimationQueues) {
@@ -281,7 +279,7 @@ open class AnimationControllerInstance(
         }
     }
 
-    open fun resetAllQueues() {
+    fun resetAllQueues() {
         if (animationState != AnimationState.IDLE) {
             for (activeBoneAnimationQueue in activeBoneAnimationQueues) {
                 activeBoneAnimationQueue.resetQueues()
@@ -289,12 +287,12 @@ open class AnimationControllerInstance(
         }
     }
 
-    open fun getKeyFramePointAtTick(frames: InterpolationLookup<BoneKeyFrame>, tick: Float): KeyFramePoint {
+    fun getKeyFramePointAtTick(frames: InterpolationLookup<BoneKeyFrame>, tick: Float): KeyFramePoint {
         val frame: BoneKeyFrame = frames.getAtTime(tick)
         return KeyFramePoint(tick - frame.getStartTick(), frame, context)
     }
 
-    open fun getTransitionPointAtTick(
+    fun getTransitionPointAtTick(
         frames: InterpolationLookup<BoneKeyFrame>,
         tick: Float,
         lerpFactor: Float,
@@ -310,11 +308,11 @@ open class AnimationControllerInstance(
         )
     }
 
-    open fun getConstantPointAtTick(tick: Float, offsetPoint: Vector3f, isInstant: Boolean): ConstantPoint {
+    fun getConstantPointAtTick(tick: Float, offsetPoint: Vector3f, isInstant: Boolean): ConstantPoint {
         return ConstantPoint(tick, if (isInstant) 0.0f else defaultTransitionTick, offsetPoint, context)
     }
 
-    open fun applyPendingAnimation(): Boolean {
+    fun applyPendingAnimation(): Boolean {
         val pair: Pair<ILoopType, Animation> = pendingAnimation ?: return false
         pendingAnimation = null
         val anim = pair.second
@@ -333,7 +331,7 @@ open class AnimationControllerInstance(
         return true
     }
 
-    open fun clearAnimation() {
+    fun clearAnimation() {
         if (animationState != AnimationState.IDLE) {
             animationState = AnimationState.IDLE
             soundExecutor?.reset()
@@ -348,36 +346,34 @@ open class AnimationControllerInstance(
         }
     }
 
-    open fun getCurrentAnimation(): Animation? = currentAnimation
-    open fun getAnimationState(): AnimationState = animationState
-    open fun getActiveBoneAnimationQueues(): ReferenceArrayList<BoneAnimationQueue> = activeBoneAnimationQueues
-    open fun isAnimationFinished(): Boolean = isAnimationFinished
-    open fun setTransitionInterpolator(interpolable: IInterpolable) {
+    fun setTransitionInterpolator(interpolable: IInterpolable) {
         transitionInterpolator = interpolable
     }
 
-    open fun getInterpolated(): Float = transitionInterpolator.progress * 20.0f
-    open fun adjustTick(tick: Float): Float = max(tick - tickOffset, 0.0f)
-    open fun stopSound() {
+    val interpolated: Float
+        get() = transitionInterpolator.progress * 20.0f
+
+    fun adjustTick(tick: Float): Float = max(tick - tickOffset, 0.0f)
+    fun stopSound() {
         soundExecutor?.stop()
     }
 
-    open fun cancelAnimation() {
+    fun cancelAnimation() {
         lastRequestedAnimation = null
         pendingAnimation = null
         clearAnimation()
     }
 
-    open fun fullReset() {
+    fun fullReset() {
         cancelAnimation()
         boneAnimationQueues.clear()
     }
 
-    open fun resetRequestedAnimation() {
+    fun resetRequestedAnimation() {
         lastRequestedAnimation = null
     }
 
-    open fun beginEndingTransition(tick: Float) {
+    fun beginEndingTransition(tick: Float) {
         startEndingTransition(tick)
     }
 }

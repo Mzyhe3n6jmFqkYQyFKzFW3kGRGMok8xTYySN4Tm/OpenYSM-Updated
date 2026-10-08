@@ -12,7 +12,7 @@ class ProjectileAnimationPredicate : IAnimationPredicate<GeckoProjectileEntity> 
         event: AnimationEvent<GeckoProjectileEntity>,
         evaluator: ExpressionEvaluator<*>?
     ): PlayState {
-        val projectile = event.getAnimatable().entity
+        val projectile = event.animatable.entity
         return when {
             projectile.isInWater -> IAnimationPredicate.predicate(event, "water")
             projectile.isOnFire -> IAnimationPredicate.predicate(event, "fire")

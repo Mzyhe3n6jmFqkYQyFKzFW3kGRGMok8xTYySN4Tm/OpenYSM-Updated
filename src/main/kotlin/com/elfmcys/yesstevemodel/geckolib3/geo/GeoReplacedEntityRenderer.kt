@@ -162,7 +162,7 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
         val minecraft = Minecraft.getInstance()
         val player = minecraft.player
         if (event != null && player != null) {
-            val modelData = event.getModelData()
+            val modelData = event.modelData
             dispatchedMat.set(poseStack.last().pose())
             currentModelRenderCycle = EModelRenderCycle.INITIAL
             poseStack.pushPose()
@@ -266,8 +266,8 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
                 bufferSource,
                 packedLightIn,
                 entity,
-                event.getLimbSwing(),
-                event.getLimbSwingAmount(),
+                event.limbSwing,
+                event.limbSwingAmount,
                 partialTick,
                 data.lerpedAge,
                 data.rawNetHeadYaw,

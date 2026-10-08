@@ -9,14 +9,14 @@ import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 
 class PlayerCustomAnimationPredicate : IAnimationPredicate<CustomPlayerEntity> {
     override fun predicate(event: AnimationEvent<CustomPlayerEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val previewAnimatable: IPreviewAnimatable = event.getAnimatable() as? IPreviewAnimatable ?: return PlayState.STOP
+        val previewAnimatable: IPreviewAnimatable = event.animatable as? IPreviewAnimatable ?: return PlayState.STOP
         val str: String = previewAnimatable.animationStateMachine.previousAnimation
         if (str.isNotBlank()) {
             previewAnimatable.setCustomAnimationActive(true)
             return IAnimationPredicate.playLoopAnimation(event, str)
         }
         previewAnimatable.setCustomAnimationActive(false)
-        event.getController()?.markDirty()
+        event.controller?.markDirty()
         return PlayState.STOP
     }
 }

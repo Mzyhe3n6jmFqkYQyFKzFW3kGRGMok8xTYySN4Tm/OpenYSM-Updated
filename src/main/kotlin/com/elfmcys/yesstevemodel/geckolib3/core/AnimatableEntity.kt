@@ -265,7 +265,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
             if (z2) {
                 if (z3) {
                     hasUpdatedThisTick = true
-                    positionTracker2.updateState(event.getTickCount(), seekTime2, event.getFrameTime())
+                    positionTracker2.updateState(event.tickCount, seekTime2, event.frameTime)
                 }
                 physicsManager.update(seekTime2)
                 setupAnim(seekTime2, z3)

@@ -21,7 +21,7 @@ class LivingMovementAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>
     }
 
     private fun renderRidingAnimation(event: AnimationEvent<LivingAnimatable<*>>): PlayState? {
-        val animatable = event.getAnimatable()
+        val animatable = event.animatable
         val livingEntity = animatable.entity
         if (animatable is IPreviewAnimatable) return null
         val vehicle = livingEntity.vehicle ?: return null

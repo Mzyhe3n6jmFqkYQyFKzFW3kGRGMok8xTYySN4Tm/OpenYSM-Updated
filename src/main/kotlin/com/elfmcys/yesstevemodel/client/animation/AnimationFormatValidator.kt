@@ -10,7 +10,7 @@ object AnimationFormatValidator {
         if (version >= 19) {
             return true
         }
-        val animation: Animation = event.getAnimatable().getAnimation(animationName) ?: return false
+        val animation: Animation = event.animatable.getAnimation(animationName) ?: return false
         return animation.isFromPrimaryAssembly
     }
 }

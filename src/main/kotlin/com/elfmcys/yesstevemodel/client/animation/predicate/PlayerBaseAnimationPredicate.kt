@@ -9,7 +9,7 @@ import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 
 class PlayerBaseAnimationPredicate : IAnimationPredicate<CustomPlayerEntity> {
     override fun predicate(event: AnimationEvent<CustomPlayerEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val playerEntity: CustomPlayerEntity = event.getAnimatable()
+        val playerEntity: CustomPlayerEntity = event.animatable
         if (playerEntity is IPreviewAnimatable) {
             val tracker = playerEntity.animationStateMachine
             if (tracker.hasAnimation()) {
@@ -20,7 +20,7 @@ class PlayerBaseAnimationPredicate : IAnimationPredicate<CustomPlayerEntity> {
         if (playerEntity.isModelSwitching) {
             if (playerEntity.isDisabledState) {
                 playerEntity.enableModel()
-                event.getController()?.stopTransition()
+                event.controller?.stopTransition()
             }
             return IAnimationPredicate.predicate(event, playerEntity.selectedModelId)
         }

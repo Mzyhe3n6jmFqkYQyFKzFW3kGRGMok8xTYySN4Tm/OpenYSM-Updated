@@ -13,7 +13,7 @@ import rip.ysm.compat.cosmeticarmorreworked.CosmeticArmorHelper
 
 class EquipmentSlotAnimationPredicate(private val slot: EquipmentSlot) : IAnimationPredicate<PlayerGeoEntity> {
     override fun predicate(event: AnimationEvent<PlayerGeoEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
-        val animatable = event.getAnimatable()
+        val animatable = event.animatable
         val entity = animatable.entity
         if (animatable is IPreviewAnimatable) return PlayState.STOP
         if (CosmeticArmorHelper.getArmorItem(entity, slot).isEmpty) return PlayState.STOP

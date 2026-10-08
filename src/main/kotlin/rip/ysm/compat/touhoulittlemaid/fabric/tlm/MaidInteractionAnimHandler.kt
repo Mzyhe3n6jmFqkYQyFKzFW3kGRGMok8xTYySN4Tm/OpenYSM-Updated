@@ -20,7 +20,7 @@ object MaidInteractionAnimHandler {
         livingEntity: LivingEntity,
         entity: Entity
     ): PlayState? {
-        if (event.getAnimatable() is IPreviewAnimatable) {
+        if (event.animatable is IPreviewAnimatable) {
             return null
         }
         if (entity is EntitySit) {
