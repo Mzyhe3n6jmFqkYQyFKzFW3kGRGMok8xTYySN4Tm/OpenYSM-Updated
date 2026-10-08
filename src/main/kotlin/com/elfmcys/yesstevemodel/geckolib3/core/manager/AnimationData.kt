@@ -7,14 +7,17 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 open class AnimationData {
     @JvmField
     var limbSwing: Float = 0.0f
+
     @JvmField
     val animationControllers: MutableList<IAnimationController<*>> = ReferenceArrayList(0)
+
     @JvmField
     val animationControllerMap: Object2ReferenceOpenHashMap<String, IAnimationController<*>> =
         Object2ReferenceOpenHashMap(0)
 
     @JvmField
     var startTick: Float = -1.0f
+
     @JvmField
     var resetTickLength: Float = 3.0f
 
@@ -33,10 +36,10 @@ open class AnimationData {
     open fun getAnimationControllerByName(name: String): IAnimationController<*>? {
         if (animationControllerMap.isEmpty() && animationControllers.isNotEmpty()) {
             for (controller in animationControllers) {
-                animationControllerMap.put(controller.getName(), controller)
+                animationControllerMap[controller.getName()] = controller
             }
         }
-        return animationControllerMap.get(name)
+        return animationControllerMap[name]
     }
 
     open fun clear() {
