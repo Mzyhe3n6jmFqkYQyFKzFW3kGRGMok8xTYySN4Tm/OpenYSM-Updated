@@ -57,7 +57,7 @@ abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEn
                 animatable.textureLocation,
                 isVisible,
                 zShouldEntityAppearGlowing,
-                model.getGeoModel().isTranslucentTexture(0)
+                model.geoModel.isTranslucentTexture(0)
             )
             if (renderType != null && (isVisible || zShouldEntityAppearGlowing)) {
                 val color: Color = getRenderColor(animatable, partialTick, poseStack, bufferSource, null, packedLight)

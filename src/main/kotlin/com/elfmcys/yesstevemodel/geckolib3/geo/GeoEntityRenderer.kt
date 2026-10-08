@@ -53,7 +53,7 @@ abstract class GeoEntityRenderer<TEntity : Entity, T : AnimatableEntity<TEntity>
                 t.textureLocation,
                 z,
                 zShouldEntityAppearGlowing,
-                currentModel.getGeoModel().isTranslucentTexture(0)
+                currentModel.geoModel.isTranslucentTexture(0)
             )
             if (renderType != null && (z || zShouldEntityAppearGlowing)) {
                 val color: Color = getRenderColor(t, f2, poseStack, multiBufferSource, null, i)

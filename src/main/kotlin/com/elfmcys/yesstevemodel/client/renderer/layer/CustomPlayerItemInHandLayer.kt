@@ -43,7 +43,7 @@ open class CustomPlayerItemInHandLayer(
         if (!offhandItem.isEmpty || !mainHandItem.isEmpty) {
             poseStack.pushPose()
             val useExtraPlayer: Boolean = entityLivingBaseIn.isRenderLayersFirst
-            if (animatedGeoModel.rightHandBones().isNotEmpty()) {
+            if (animatedGeoModel.rightHandBones.isNotEmpty()) {
                 if (SlashBladeCompat.isSlashBladeItem(mainHandItem)) {
                     SlashBladeRenderer.renderOnEntity(
                         entity,
@@ -72,7 +72,7 @@ open class CustomPlayerItemInHandLayer(
                     TacCompat.handleItemSound(mainHandItem)
                 }
             }
-            if (animatedGeoModel.leftHandBones().isNotEmpty()) {
+            if (animatedGeoModel.leftHandBones.isNotEmpty()) {
                 if (SlashBladeCompat.isSlashBladeItem(offhandItem)) {
                     SlashBladeRenderer.renderRightWaist(
                         animatedGeoModel,
@@ -136,7 +136,7 @@ open class CustomPlayerItemInHandLayer(
                 itemRenderer.renderItem(livingEntity, itemStack, itemDisplayContext, poseStack, collector, i)
             }
             poseStack.popPose()
-            val chains = if (isLeftHand) model.rightHandChain() else model.leftHandChains()
+            val chains = if (isLeftHand) model.rightHandChain else model.leftHandChains
             chains.forEach { list ->
                 poseStack.pushPose()
                 if (!RenderUtils.prepMatrixForLocator(poseStack, list)) {
@@ -154,8 +154,8 @@ open class CustomPlayerItemInHandLayer(
 
     open fun applyItemBoneTransform(humanoidArm: HumanoidArm, poseStack: PoseStack, model: AnimatedGeoModel): Boolean {
         if (humanoidArm == HumanoidArm.LEFT) {
-            return RenderUtils.prepMatrixForLocator(poseStack, model.leftHandBones())
+            return RenderUtils.prepMatrixForLocator(poseStack, model.leftHandBones)
         }
-        return RenderUtils.prepMatrixForLocator(poseStack, model.rightHandBones())
+        return RenderUtils.prepMatrixForLocator(poseStack, model.rightHandBones)
     }
 }

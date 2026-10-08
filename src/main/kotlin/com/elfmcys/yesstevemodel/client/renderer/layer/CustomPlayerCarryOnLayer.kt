@@ -38,7 +38,7 @@ open class CustomPlayerCarryOnLayer : GeoLayerRenderer<CustomPlayerEntity>() {
 
         // ??????????????????????????
         val locatorBones = when {
-            model != null && model.backpackBones().isNotEmpty() -> model.backpackBones()
+            model != null && model.backpackBones.isNotEmpty() -> model.backpackBones
 
             else -> null
         }

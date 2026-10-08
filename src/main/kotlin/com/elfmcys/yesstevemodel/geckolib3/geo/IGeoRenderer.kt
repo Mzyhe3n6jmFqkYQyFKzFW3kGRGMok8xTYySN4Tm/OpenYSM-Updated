@@ -82,9 +82,9 @@ interface IGeoRenderer<T : AnimatableEntity<*>> {
             NativeModelRenderer.renderMesh(
                 consumer,
                 poseStack.last(),
-                model.getGeoModel(),
-                model.getMatrixData(),
-                model.getAbsPivotData(),
+                model.geoModel,
+                model.matrixData,
+                model.absPivotData,
                 i,
                 0,
                 i2,
