@@ -19,8 +19,10 @@ abstract class CustomPlayerEntity(
     private val isLocalPlayer: Boolean,
     isActive: Boolean
 ) : LivingAnimatable<Player>(player, isActive), RoamingPropertyHolder {
-    private var isModelSwitching2: Boolean = false
-    private var selectedModelId2: String = "idle"
+    var isModelSwitching: Boolean = false
+        private set
+    var selectedModelId: String = "idle"
+        private set
     private var isDisabled: Boolean = false
     private var syncIValues: List<IValue>? = null
 
@@ -41,8 +43,8 @@ abstract class CustomPlayerEntity(
 
     override fun reset() {
         super.reset()
-        isModelSwitching2 = false
-        selectedModelId2 = "idle"
+        isModelSwitching = false
+        selectedModelId = "idle"
         isDisabled = false
     }
 
@@ -62,29 +64,23 @@ abstract class CustomPlayerEntity(
 
     open fun requestModelSwitch(str: String) {
         if (getAnimation(str) != null) {
-            selectedModelId2 = str
-            isModelSwitching2 = true
+            selectedModelId = str
+            isModelSwitching = true
             isDisabled = true
             return
         }
-        isModelSwitching2 = false
+        isModelSwitching = false
     }
 
     open fun enableModel() {
         isDisabled = false
     }
 
-    open val isModelSwitching: Boolean
-        get() = isModelSwitching2
-
     open val isDisabledState: Boolean
         get() = isDisabled
 
-    open val selectedModelId: String
-        get() = selectedModelId2
-
     open fun clearModelSwitch() {
-        isModelSwitching2 = false
+        isModelSwitching = false
     }
 
     override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
