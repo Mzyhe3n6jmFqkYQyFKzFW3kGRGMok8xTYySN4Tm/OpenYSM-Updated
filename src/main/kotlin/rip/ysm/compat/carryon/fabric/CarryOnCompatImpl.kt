@@ -12,8 +12,8 @@ import rip.ysm.compat.carryon.CarryOnDataHelper
 
 object CarryOnCompatImpl : ModCompat("carryon") {
     @JvmStatic
-    fun getControllerFactory(): (String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity> =
-        { animationEntryKey, entity ->
+    val controllerFactory: (String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>
+        get() = { animationEntryKey, entity ->
             CompositeAnimationController(entity, animationEntryKey, 0.1f, PlayerAnimationPredicate())
         }
 
