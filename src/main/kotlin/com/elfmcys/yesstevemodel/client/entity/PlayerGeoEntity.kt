@@ -51,7 +51,7 @@ open class PlayerGeoEntity(
     open val armModelProcessor: ArmorConditions?
         get() = modelAssembly?.animationBundle?.modelProcessor
 
-    override val animationProcessor: GeoModel
+    override val model: GeoModel
         get() {
             return modelAssembly!!.animationBundle.armModel
         }
