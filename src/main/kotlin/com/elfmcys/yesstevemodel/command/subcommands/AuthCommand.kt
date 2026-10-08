@@ -20,6 +20,7 @@ import net.minecraft.commands.arguments.selector.EntitySelector
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerPlayer
 
+// TODO: Register command in kotlin way
 object AuthCommand {
     private const val AUTH_NAME: String = "auth"
     private const val ADD_NAME: String = "add"
