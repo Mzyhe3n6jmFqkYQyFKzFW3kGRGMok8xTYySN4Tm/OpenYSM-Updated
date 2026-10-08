@@ -11,7 +11,7 @@ import com.elfmcys.yesstevemodel.molang.runtime.Function.ArgumentCollection
 import net.minecraft.world.entity.Entity
 
 class SecondOrderFunction : EntityFunction() {
-    override fun eval(context: ExecutionContext<IContext<Entity>>, arguments: ArgumentCollection): Any? {
+    override fun eval(context: ExecutionContext<IContext<Entity>>, arguments: ArgumentCollection): Any {
         val name: Int = arguments.getStringId(context, 0)
         if (name == StringPool.EMPTY_ID) {
             return 0
@@ -28,7 +28,7 @@ class SecondOrderFunction : EntityFunction() {
             return input
         }
         physics.setArgs(input, frequency, coefficient, response)
-        return physics.getValue()
+        return physics.value
     }
 
     override fun validateArgumentSize(size: Int): Boolean {

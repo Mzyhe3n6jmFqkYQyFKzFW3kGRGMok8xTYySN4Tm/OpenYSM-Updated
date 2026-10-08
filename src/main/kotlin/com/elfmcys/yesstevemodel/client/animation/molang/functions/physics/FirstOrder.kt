@@ -15,5 +15,6 @@ class FirstOrder(
         response = arg1
     }
 
-    override fun getValue(): Float = lastSimulation
+    override val value: Float
+        get() = lastSimulation
 }
