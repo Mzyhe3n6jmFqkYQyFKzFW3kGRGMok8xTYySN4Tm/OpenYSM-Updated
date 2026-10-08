@@ -36,19 +36,14 @@ class LinearKeyframeInterpolator : IInterpolable {
 
     override fun interpolate(f: Float): Float {
         val segment = lookup.getAtTime(f)
-        if (f <= segment.startTime) {
-            return segment.startValue
-        }
-        if (f >= segment.endTime) {
-            return segment.startValue + segment.valueDelta
-        }
+        if (f <= segment.startTime) return segment.startValue
+        if (f >= segment.endTime) return segment.startValue + segment.valueDelta
         // 分段线性插值计算
-        return segment.startValue + (segment.valueDelta * ((f - segment.startTime) / segment.duration))
+        return segment.startValue + segment.valueDelta * ((f - segment.startTime) / segment.duration)
     }
 
-    override fun getProgress(): Float {
-        return lookup.endTime
-    }
+    override val progress: Float
+        get() = lookup.endTime
 
     override fun asInterpolator(): LinearKeyframeInterpolator {
         return LinearKeyframeInterpolator(segments)
