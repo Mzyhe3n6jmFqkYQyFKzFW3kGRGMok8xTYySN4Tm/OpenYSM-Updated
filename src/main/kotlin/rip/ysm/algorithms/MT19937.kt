@@ -1,4 +1,4 @@
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate", "SpellCheckingInspection")
 
 package rip.ysm.algorithms
 
@@ -17,15 +17,15 @@ class MT19937(seed: Long = System.currentTimeMillis()) {
         mt[0] = seed
         index = N
         for (i in 1 until N) {
-            mt[i] = F * (mt[i - 1] xor (mt[i - 1] ushr (W - 2))) + i
+            mt[i] = F * (mt[i - 1] xor (mt[i - 1] ushr W - 2)) + i
         }
     }
 
     private fun twist() {
         for (i in 0 until N) {
-            val x = (mt[i] and UPPER_MASK) or (mt[(i + 1) % N] and LOWER_MASK)
+            val x = mt[i] and UPPER_MASK or (mt[(i + 1) % N] and LOWER_MASK)
             var xA = x ushr 1
-            if ((x and 1L) != 0L) {
+            if (x and 1L != 0L) {
                 xA = xA xor A
             }
             mt[i] = mt[(i + M) % N] xor xA
@@ -38,9 +38,9 @@ class MT19937(seed: Long = System.currentTimeMillis()) {
             twist()
         }
         var y = mt[index++]
-        y = y xor ((y ushr U) and D)
-        y = y xor ((y shl S) and B)
-        y = y xor ((y shl T) and C)
+        y = y xor (y ushr U and D)
+        y = y xor (y shl S and B)
+        y = y xor (y shl T and C)
         y = y xor (y ushr L)
         return y
     }
@@ -54,7 +54,7 @@ class MT19937(seed: Long = System.currentTimeMillis()) {
         var bits: Int
         var resultVal: Int
         do {
-            bits = (extract_number() ushr (W - R)).toInt()
+            bits = (extract_number() ushr W - R).toInt()
             resultVal = bits % x
         } while (bits - resultVal + (x - 1) < 0)
         return resultVal
