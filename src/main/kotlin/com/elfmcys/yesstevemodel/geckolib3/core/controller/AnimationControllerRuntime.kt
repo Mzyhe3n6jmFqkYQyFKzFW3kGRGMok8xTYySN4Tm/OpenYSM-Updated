@@ -26,14 +26,14 @@ import org.apache.commons.lang3.StringUtils
 import org.joml.Vector3f
 
 @Suppress("unused")
-open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
+class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     private val animatable: T,
     override val name: String,
     private val transitionLengthTicks: Float
 ) : IAnimationController<T> {
     private var boneTargets: MutableList<BoneTopLevelSnapshot>? = null
     private var animationEntries: AnimationController? = null
-    private var currentEntry: AnimationState? = null
+    private var currentEntry2: AnimationState? = null
     private var displayName: String? = null
     private var childController: AnimationControllerRuntime<T>? = null
     private val animationSlots: ReferenceArrayList<AnimationSlot> = ReferenceArrayList(8)
@@ -61,7 +61,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             transitioned = true
             if (activeSlotCount != 0) break
         }
-        val currEntry = currentEntry
+        val currEntry = currentEntry2
         if (currEntry?.subName != null && depth != MAX_DEPTH) {
             if (transitioned) {
                 val subControllerName =
@@ -105,7 +105,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
 
     override val currentAnimation: String
         get() {
-            val currEntry = currentEntry
+            val currEntry = currentEntry2
             if (currEntry != null) {
                 if (currEntry.subName != null && childController != null)
                     return childController?.currentAnimation ?: "(null)"
@@ -118,9 +118,11 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         displayName = if (depth > 1) "[$parentName] $stateName" else stateName
     }
 
-    open fun getCurrentEntry(): AnimationState? = currentEntry
+    val currentEntry: AnimationState?
+        get() = currentEntry2
 
-    open fun isBuiltinAnimation(): Boolean = currentEntry?.isBuiltinEntry == true
+    val isBuiltinAnimation: Boolean
+        get() = currentEntry2?.isBuiltinEntry == true
 
     override fun init(
         list: MutableList<BoneTopLevelSnapshot>,
@@ -134,7 +136,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
         }
     }
 
-    open fun initWithBones(list: MutableList<BoneTopLevelSnapshot>, controller: AnimationController) {
+    fun initWithBones(list: MutableList<BoneTopLevelSnapshot>, controller: AnimationController) {
         reset()
         animationEntries = controller
         for (snapshot in list) {
@@ -154,7 +156,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
 
     private fun evaluateTransitions(evaluator: ExpressionEvaluator<AnimationContext<*>>): Boolean {
         val entries = animationEntries ?: return false
-        val currEntry = currentEntry
+        val currEntry = currentEntry2
         if (currEntry == null) {
             val nextState = entries.states.get(entries.stateId) ?: return false
             visitedEntries.add(nextState.hashId)
@@ -194,10 +196,8 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     }
 
     private fun transitionToEntry(nextState: AnimationState?, evaluator: ExpressionEvaluator<AnimationContext<*>>) {
-        val curr = currentEntry
-        if (nextState == null && curr == null) {
-            return
-        }
+        val curr = currentEntry2
+        if (nextState == null && curr == null) return
         playbackFlags.audioPlayerManager?.stopAll()
         evaluator.entity().setIsClientSide(true)
         if (curr != null) {
@@ -220,7 +220,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
             }
         }
         evaluator.entity().setIsClientSide(false)
-        currentEntry = nextState
+        currentEntry2 = nextState
         for (activeBoneTransform in activeBoneTransforms) {
             activeBoneTransform.resetAndClear()
         }
@@ -255,7 +255,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     }
 
     override fun forEachTransform(consumer: (BoneTransformProvider) -> Unit) {
-        val curr = currentEntry
+        val curr = currentEntry2
         if (curr != null) {
             if (curr.subName != null && childController != null) {
                 childController?.forEachTransform(consumer)
@@ -275,7 +275,7 @@ open class AnimationControllerRuntime<T : AnimatableEntity<*>>(
     override fun reset() {
         boneTargets = ReferenceLists.emptyList()
         animationEntries = null
-        currentEntry = null
+        currentEntry2 = null
         activeSlotCount = 0
         activeBoneTransforms.clear()
         boneTransformMap.clear()

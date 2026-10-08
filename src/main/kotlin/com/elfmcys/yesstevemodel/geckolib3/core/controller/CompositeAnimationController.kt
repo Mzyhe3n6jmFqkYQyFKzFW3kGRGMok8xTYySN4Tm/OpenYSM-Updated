@@ -26,7 +26,7 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
     override val currentAnimation: String
         get() {
             if (initialized)
-                return if (animationRuntime.isBuiltinAnimation()) "[builtin] " + controller.currentAnimation else animationRuntime.currentAnimation
+                return if (animationRuntime.isBuiltinAnimation) "[builtin] " + controller.currentAnimation else animationRuntime.currentAnimation
             return controller.currentAnimation
         }
 
@@ -55,9 +55,9 @@ open class CompositeAnimationController<T : AnimatableEntity<*>>(
     ) {
         if (initialized) {
             animationRuntime.process(event, evaluator, isSomething)
-            if (animationRuntime.isBuiltinAnimation()) {
+            if (animationRuntime.isBuiltinAnimation) {
                 if (activeController != controller) {
-                    animationRuntime.getCurrentEntry()?.blendTransition?.asInterpolator()?.let {
+                    animationRuntime.currentEntry?.blendTransition?.asInterpolator()?.let {
                         controller.setInterpolator(it)
                     }
                     activeController = controller
