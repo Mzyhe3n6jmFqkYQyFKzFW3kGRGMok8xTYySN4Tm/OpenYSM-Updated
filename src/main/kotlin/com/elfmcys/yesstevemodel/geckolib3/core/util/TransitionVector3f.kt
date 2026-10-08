@@ -5,24 +5,19 @@ package com.elfmcys.yesstevemodel.geckolib3.core.util
 import org.joml.Vector3f
 
 class TransitionVector3f : Vector3f {
-    var percentCompleted: Float = 1.0f
-        set(value) {
-            if (value >= field) return
-            field = value
-        }
+    var rawPercentCompleted: Float = 1.0f
 
     constructor() : super()
     constructor(x: Float, y: Float, z: Float) : super(x, y, z)
     constructor(v: Vector3f) : super(v)
 
     fun setPercentCompleted(newPercent: Float) {
-        if (newPercent < percentCompleted) {
-            percentCompleted = newPercent
-        }
+        if (newPercent >= rawPercentCompleted) return
+        rawPercentCompleted = newPercent
     }
 
     fun applyLinearBlendTo(targetVec: Vector3f) {
-        val progress = percentCompleted
+        val progress = rawPercentCompleted
         if (progress == 0.0f) {
             targetVec.set(this)
         } else {
@@ -31,7 +26,7 @@ class TransitionVector3f : Vector3f {
     }
 
     fun applyRotationBlendTo(targetEuler: Vector3f, offsetEuler: Vector3f) {
-        val progress = percentCompleted
+        val progress = rawPercentCompleted
         if (progress == 0.0f) {
             targetEuler.set(this)
         } else {
@@ -40,7 +35,7 @@ class TransitionVector3f : Vector3f {
     }
 
     fun applyRotationBlendTo(targetEuler: Vector3f, offsetEuler: Vector3f, scratch: EulerNlerpScratch) {
-        val progress = percentCompleted
+        val progress = rawPercentCompleted
         if (progress == 0.0f) {
             targetEuler.set(this)
         } else {

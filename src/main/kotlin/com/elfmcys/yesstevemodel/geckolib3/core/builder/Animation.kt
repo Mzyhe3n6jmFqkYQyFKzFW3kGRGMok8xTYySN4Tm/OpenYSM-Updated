@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.elfmcys.yesstevemodel.geckolib3.core.builder
 
 import com.elfmcys.yesstevemodel.geckolib3.core.event.ParticleEventKeyFrame
