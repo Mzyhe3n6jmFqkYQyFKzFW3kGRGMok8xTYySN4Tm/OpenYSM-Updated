@@ -424,7 +424,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                             modelId
                         ))
                     previewEntity.initModelWithTexture(modelId, modelAssembly.animationBundle.defaultTextureName)
-                    previewEntity.getAnimationStateMachine()
+                    previewEntity.animationStateMachine
                         .setCurrentAnimation(modelAssembly.modelData.modelProperties.previewAnimation)
                     addRenderableWidget(createModelButton(slotX, slotY, isAuthLocked, previewEntity, modelAssembly))
                 }

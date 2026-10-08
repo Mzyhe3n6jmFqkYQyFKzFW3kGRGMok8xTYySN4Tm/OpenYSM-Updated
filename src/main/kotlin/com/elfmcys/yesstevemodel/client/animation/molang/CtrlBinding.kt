@@ -133,7 +133,7 @@ object CtrlBinding : ContextBinding() {
     @JvmStatic
     fun isPlayingExtraAnimation(context: IContext<Any>): Boolean {
         val animatableEntity = context.geoInstance()
-        return animatableEntity is CustomPlayerEntity && animatableEntity.isModelSwitching() && animatableEntity.getAnimationState(
+        return animatableEntity is CustomPlayerEntity && animatableEntity.isModelSwitching && animatableEntity.getAnimationState(
             PlayerAnimationController.CAP_CONTROLLER_KEY
         ) != AnimationState.IDLE
     }
@@ -188,7 +188,7 @@ object CtrlBinding : ContextBinding() {
     fun isFlying(context: IContext<LivingEntity>): Boolean {
         val animatableEntity: AnimatableEntity<*> = context.geoInstance()
         if (animatableEntity is PlayerCapability) {
-            if (!animatableEntity.isLocalPlayerModel()) {
+            if (!animatableEntity.isLocalPlayerModel) {
                 return animatableEntity.getPositionTracker().isFlying()
             }
         }

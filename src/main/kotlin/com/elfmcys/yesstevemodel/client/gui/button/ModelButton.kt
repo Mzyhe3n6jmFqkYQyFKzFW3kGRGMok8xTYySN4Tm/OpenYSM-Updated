@@ -98,7 +98,7 @@ open class ModelButton(
     }
 
     override fun renderContents(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
-        val tracker = modelIdHolder.getAnimationStateMachine()
+        val tracker = modelIdHolder.animationStateMachine
         if (isHovered) {
             lastHoverTime = Util.getMillis()
             tracker.setPreviousAnimation(modelId)

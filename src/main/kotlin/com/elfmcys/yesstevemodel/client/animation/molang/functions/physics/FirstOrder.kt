@@ -7,7 +7,7 @@ class FirstOrder(
     private var lastSimulation: Float = 0.0f
 
     override fun update(timeStep: Float) {
-        lastSimulation = ((1.0f - (timeStep / response)) * lastSimulation) + ((timeStep / response) * input)
+        lastSimulation = (1.0f - timeStep / response) * lastSimulation + timeStep / response * input
     }
 
     override fun setArgs(arg0: Float, arg1: Float, arg2: Float, arg3: Float) {

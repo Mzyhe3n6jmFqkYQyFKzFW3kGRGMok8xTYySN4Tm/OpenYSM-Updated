@@ -16,17 +16,12 @@ import rip.ysm.compat.oculus.OculusCompat
 
 abstract class CustomPlayerEntity(
     player: Player,
-    @JvmField val isLocalPlayer: Boolean,
+    private val isLocalPlayer: Boolean,
     isActive: Boolean
 ) : LivingAnimatable<Player>(player, isActive), RoamingPropertyHolder {
-    @JvmField
-    var isModelSwitching: Boolean = false
-
-    @JvmField
-    var selectedModelId: String = "idle"
-
-    @JvmField
-    var isDisabled: Boolean = false
+    private var isModelSwitching2: Boolean = false
+    private var selectedModelId2: String = "idle"
+    private var isDisabled: Boolean = false
     private var syncIValues: List<IValue>? = null
 
     init {
@@ -46,22 +41,22 @@ abstract class CustomPlayerEntity(
 
     override fun reset() {
         super.reset()
-        isModelSwitching = false
-        selectedModelId = "idle"
+        isModelSwitching2 = false
+        selectedModelId2 = "idle"
         isDisabled = false
     }
 
-    override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean {
-        return event.isFirstPerson() || (!isLocalPlayer && OculusCompat.isPBRActive())
-    }
+    override fun shouldSkipAnimation(event: AnimationEvent<*>): Boolean =
+        event.isFirstPerson() || !isLocalPlayer && OculusCompat.isPBRActive()
 
     override fun getServerVarContainer(): Struct? {
         return null
     }
 
-    open fun isLocalPlayerModel(): Boolean {
-        return isLocalPlayer
-    }
+    open val isLocalPlayerModel: Boolean
+        get() {
+            return isLocalPlayer
+        }
 
     override fun onModelLoaded(modelAssembly: ModelAssembly) {
         super.onModelLoaded(modelAssembly)
@@ -70,32 +65,29 @@ abstract class CustomPlayerEntity(
 
     open fun requestModelSwitch(str: String) {
         if (getAnimation(str) != null) {
-            selectedModelId = str
-            isModelSwitching = true
+            selectedModelId2 = str
+            isModelSwitching2 = true
             isDisabled = true
             return
         }
-        isModelSwitching = false
+        isModelSwitching2 = false
     }
 
     open fun enableModel() {
         isDisabled = false
     }
 
-    open fun isModelSwitching(): Boolean {
-        return isModelSwitching
-    }
+    open val isModelSwitching: Boolean
+        get() = isModelSwitching2
 
-    open fun isDisabledState(): Boolean {
-        return isDisabled
-    }
+    open val isDisabledState: Boolean
+        get() = isDisabled
 
-    open fun getSelectedModelId(): String {
-        return selectedModelId
-    }
+    open val selectedModelId: String
+        get() = selectedModelId2
 
     open fun clearModelSwitch() {
-        isModelSwitching = false
+        isModelSwitching2 = false
     }
 
     override fun setupAnim(seekTime: Float, isFirstPerson: Boolean) {
@@ -105,7 +97,7 @@ abstract class CustomPlayerEntity(
 
     override fun afterSetupAnim(seekTime: Float, isFirstPerson: Boolean) {
         super.afterSetupAnim(seekTime, isFirstPerson)
-        if (isLocalPlayer && isFirstPerson && isModelSwitching() && getAnimationState(PlayerAnimationController.CAP_CONTROLLER_KEY) == AnimationState.IDLE) {
+        if (isLocalPlayer && isFirstPerson && isModelSwitching && getAnimationState(PlayerAnimationController.CAP_CONTROLLER_KEY) == AnimationState.IDLE) {
             clearModelSwitch()
             if (NetworkHandler.isClientConnected()) {
                 NetworkHandler.sendToServer(C2SPlayAnimationPacket.createDefault())

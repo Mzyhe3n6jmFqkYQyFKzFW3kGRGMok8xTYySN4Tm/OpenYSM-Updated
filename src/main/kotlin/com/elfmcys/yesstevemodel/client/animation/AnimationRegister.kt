@@ -35,7 +35,7 @@ object AnimationRegister {
         register("fly", Priority.HIGH) { player, event ->
             val animatable = event.getAnimatable()
             if (animatable is PlayerCapability) {
-                if (!animatable.isLocalPlayerModel()) {
+                if (!animatable.isLocalPlayerModel) {
                     return@register animatable.getPositionTracker().isFlying()
                 }
             }

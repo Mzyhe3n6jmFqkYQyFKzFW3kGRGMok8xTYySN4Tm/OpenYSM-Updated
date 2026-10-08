@@ -242,6 +242,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
             currentTexture = UploadManager.getOrCreateLocatableWithSize(abstractTexture, true, textureResolution)
         }
 
-        override fun isValid(): Boolean = currentTexture?.getResourceLocation() != null
+        override val isValid: Boolean
+            get() = currentTexture?.getResourceLocation() != null
     }
 }

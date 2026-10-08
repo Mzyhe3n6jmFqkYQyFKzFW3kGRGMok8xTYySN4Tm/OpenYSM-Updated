@@ -11,14 +11,14 @@ class PlayerBaseAnimationPredicate : IAnimationPredicate<CustomPlayerEntity> {
     override fun predicate(event: AnimationEvent<CustomPlayerEntity>, evaluator: ExpressionEvaluator<*>?): PlayState {
         val playerEntity: CustomPlayerEntity = event.getAnimatable()
         if (playerEntity is IPreviewAnimatable) {
-            val tracker = playerEntity.getAnimationStateMachine()
+            val tracker = playerEntity.animationStateMachine
             if (tracker.hasAnimation()) {
                 return IAnimationPredicate.playLoopAnimation(event, tracker.currentAnimation)
             }
             return PlayState.STOP
         }
-        if (playerEntity.isModelSwitching()) {
-            if (playerEntity.isDisabledState()) {
+        if (playerEntity.isModelSwitching) {
+            if (playerEntity.isDisabledState) {
                 playerEntity.enableModel()
                 event.getController()?.stopTransition()
             }

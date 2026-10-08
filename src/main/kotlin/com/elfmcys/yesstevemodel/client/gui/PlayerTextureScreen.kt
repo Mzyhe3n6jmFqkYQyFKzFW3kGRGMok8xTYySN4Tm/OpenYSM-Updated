@@ -48,7 +48,7 @@ open class PlayerTextureScreen(
     init {
         for (holder in texturePreviewHolders) {
             holder.resetModel()
-            holder.getAnimationStateMachine().setCurrentAnimation("idle")
+            holder.animationStateMachine.setCurrentAnimation("idle")
         }
         animationKeys = ArrayList(renderContext.animationBundle.mainAnimations.keys).apply {
             removeIf { it.startsWith(HIDDEN_PREFIX) }
@@ -182,8 +182,8 @@ open class PlayerTextureScreen(
         guiGraphics.fillGradient(guiLeft + 93, guiTop, guiLeft + 299, guiTop + 235, -14540254, -14540254)
         guiGraphics.fillGradient(guiLeft + 302, guiTop, guiLeft + 420, guiTop + 235, -14540254, -14540254)
 
-        if (!modelHolder.getAnimationStateMachine().isCurrentAnimation(currentAnimation)) {
-            modelHolder.getAnimationStateMachine().setCurrentAnimation(currentAnimation)
+        if (!modelHolder.animationStateMachine.isCurrentAnimation(currentAnimation)) {
+            modelHolder.animationStateMachine.setCurrentAnimation(currentAnimation)
         }
         renderTexturePreview(guiGraphics, minecraft.deltaTracker.getGameTimeDeltaPartialTick(false))
 

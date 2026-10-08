@@ -45,8 +45,8 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
 
     override fun getServerVarContainer(): Struct? = serverVarContainer
 
-    override fun onModelLoaded(context: ModelAssembly) {
-        super.onModelLoaded(context)
+    override fun onModelLoaded(modelAssembly: ModelAssembly) {
+        super.onModelLoaded(modelAssembly)
         currentModelHashId = getModelAssembly()?.modelData?.hashId ?: 0
     }
 
@@ -59,7 +59,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         super.setCurrentModel(model)
         val varHolder = molangVarsMap.get(currentModelHashId)
         varHolder?.currentVars?.let {
-            if (isLocalPlayerModel()) {
+            if (isLocalPlayerModel) {
                 serverVarContainer = RoamingStruct(currentModelHashId, it)
                 return
             } else {
@@ -78,7 +78,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     override fun applyHeadTracking(event: AnimationEvent<AnimatableEntity<Player>>, wasAnimEvaluated: Boolean) {
         super.applyHeadTracking(event, wasAnimEvaluated)
         val model2 = getCurrentModel()
-        if (model2 != null && isLocalPlayerModel() && !event.isFirstPerson() && FirstPersonCompat.isModLoaded) {
+        if (model2 != null && isLocalPlayerModel && !event.isFirstPerson() && FirstPersonCompat.isModLoaded) {
             if (model2.allHeadBone() != null) {
                 model2.allHeadBone()?.setHidden(FirstPersonCompat.shouldHideHead())
             }
@@ -100,7 +100,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     override fun resetHeadTracking(wasAnimEvaluated: Boolean) {
         super.resetHeadTracking(wasAnimEvaluated)
         val model2 = getCurrentModel()
-        if (model2 != null && isLocalPlayerModel()) {
+        if (model2 != null && isLocalPlayerModel) {
             if ((FirstPersonCompat.isModLoaded || BetterCombatCompat.isModLoaded) && model2.allHeadBone() != null) {
                 model2.allHeadBone()?.setHidden(false)
             }
@@ -109,7 +109,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
 
     fun updateMolangVars(i: Int, int2FloatOpenHashMap: Int2FloatOpenHashMap) {
         val varHolder = molangVarsMap.computeIfAbsent(i) { MolangVarHolder() }
-        if (isLocalPlayerModel()) {
+        if (isLocalPlayerModel) {
             if (varHolder.currentVars == null || serverVarContainer == null) {
                 varHolder.currentVars = int2FloatOpenHashMap
                 varHolder.applyPendingDeltas()
@@ -139,7 +139,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     }
 
     fun enqueueMolangDelta(i: Int, int2FloatMap: Int2FloatMap) {
-        if (!isLocalPlayerModel() && int2FloatMap.isNotEmpty()) {
+        if (!isLocalPlayerModel && int2FloatMap.isNotEmpty()) {
             val varHolder = molangVarsMap.computeIfAbsent(i) { MolangVarHolder() }
             if (varHolder.currentVars != null) {
                 varHolder.currentVars!!.putAll(int2FloatMap)
@@ -151,7 +151,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     }
 
     fun tickAnimations() {
-        if (isLocalPlayerModel() && currentModelHashId != 0) {
+        if (isLocalPlayerModel && currentModelHashId != 0) {
             val struct = serverVarContainer
             if (struct is RoamingStruct && struct.hasPendingChanges()) {
                 val syncBatch: RoamingSyncBatch = struct.consumePendingBoneData()
@@ -201,7 +201,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         val vars = holder?.currentVars
         if (vars != null) {
             serverVarContainer =
-                if (isLocalPlayerModel()) RoamingStruct(currentModelHashId, vars) else Int2FloatOpenHashMapStruct(vars)
+                if (isLocalPlayerModel) RoamingStruct(currentModelHashId, vars) else Int2FloatOpenHashMapStruct(vars)
         }
     }
 

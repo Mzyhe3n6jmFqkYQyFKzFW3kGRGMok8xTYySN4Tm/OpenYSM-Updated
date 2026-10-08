@@ -160,7 +160,7 @@ object ModelPreviewRenderer {
         rotationX.conjugate()
         poseStack.mulPose(rotationX)
         val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
-        val animationTracker = (animatableEntity as IPreviewAnimatable).getAnimationStateMachine()
+        val animationTracker = (animatableEntity as IPreviewAnimatable).animationStateMachine
         if (animationTracker.isCurrentAnimation("sleep")) {
             poseStack.mulPose(Axis.YP.rotationDegrees(yaw - 90.0f))
             poseStack.translate(0.5, 0.5625, 0.0)
@@ -285,7 +285,7 @@ object ModelPreviewRenderer {
         bufferSource: MultiBufferSource
     ) {
         val entity = animatableEntity.entity
-        val animationTracker = (animatableEntity as IPreviewAnimatable).getAnimationStateMachine()
+        val animationTracker = (animatableEntity as IPreviewAnimatable).animationStateMachine
         when {
             animationTracker.isCurrentAnimation("ride") -> {
                 AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(EntityType.HORSE)) {
@@ -579,7 +579,7 @@ object ModelPreviewRenderer {
         partialTick: Float
     ) {
         val entity = animatable.entity as LivingEntity
-        val tracker = animatable.getAnimationStateMachine()
+        val tracker = animatable.animationStateMachine
         val oldPose = entity.pose
         var newPose = oldPose
         var poseYOffset = 0.0f

@@ -21,10 +21,10 @@ import java.util.*
 class ModelInfoCapability {
     private var modelId2: String? = null
     private var selectTexture2: String? = null
-    private var mandatory: Boolean = false
+    private var mandatory2: Boolean = false
     private var molangStorage: Int2ReferenceOpenHashMap<Object2FloatOpenHashMap<String>> = Int2ReferenceOpenHashMap()
-    private var animSync: PlayerStateSynchronizer = PlayerStateSynchronizer()
-    private var disabled: Boolean = false
+    private var animSync2: PlayerStateSynchronizer = PlayerStateSynchronizer()
+    private var disabled2: Boolean = false
     private var dirty: Boolean = false
     private val pendingCallbacks: ArrayDeque<(Object2FloatOpenHashMap<String>) -> Unit> = ArrayDeque()
 
@@ -61,26 +61,26 @@ class ModelInfoCapability {
         molangStorage = source.molangStorage
         modelId2 = source.modelId2
         selectTexture2 = source.selectTexture2
-        mandatory = source.mandatory
-        animSync = source.animSync
+        mandatory2 = source.mandatory2
+        animSync2 = source.animSync2
         pendingCallbacks.addAll(source.pendingCallbacks)
-        disabled = source.disabled
+        disabled2 = source.disabled2
         source.pendingCallbacks.clear()
         markDirty()
     }
 
     fun setDisabled(disabled: Boolean) {
-        if (this.disabled == disabled) return
-        this.disabled = disabled
+        if (this.disabled2 == disabled) return
+        this.disabled2 = disabled
         markDirty()
     }
 
     fun playAnimation(serverPlayer: ServerPlayer, str: String) {
-        animSync.syncModelSwitch(serverPlayer, !dirty, str)
+        animSync2.syncModelSwitch(serverPlayer, !dirty, str)
     }
 
     fun stopAnimation(serverPlayer: ServerPlayer) {
-        animSync.syncModelSwitch(serverPlayer, !dirty, StringPool.EMPTY)
+        animSync2.syncModelSwitch(serverPlayer, !dirty, StringPool.EMPTY)
     }
 
     fun createSyncMessage(serverPlayer: ServerPlayer, fullSync: Boolean): S2CSetModelAndTexturePacket? =
@@ -97,8 +97,8 @@ class ModelInfoCapability {
                 serverPlayer.id,
                 modelId,
                 selectTexture,
-                disabled,
-                animSync.buildFullSyncMessage(serverPlayer, fullSync)
+                disabled2,
+                animSync2.buildFullSyncMessage(serverPlayer, fullSync)
                     .setMolangVars(it.getLoadedModelData().hashId, molangVars)
             )
         }
@@ -128,7 +128,7 @@ class ModelInfoCapability {
                 Object2FloatOpenHashMap(stringValues)
             }
         }
-        animSync.syncMolangVars(serverPlayer, !dirty, feedbackData.entityId, stringValues)
+        animSync2.syncMolangVars(serverPlayer, !dirty, feedbackData.entityId, stringValues)
     }
 
     fun retainAnimationKeys(intSet: IntSet) {
@@ -141,35 +141,38 @@ class ModelInfoCapability {
         }
     }
 
-    fun getAnimSync(): PlayerStateSynchronizer = animSync
+    val animSync: PlayerStateSynchronizer
+        get() = animSync2
 
-    fun isDisabled(): Boolean = disabled
+    fun isDisabled(): Boolean = disabled2
 
     fun markDirty() {
         dirty = true
     }
 
-    fun isDirty(): Boolean = dirty
+    val isDirty: Boolean
+        get() = dirty
 
     fun clearDirty() {
         dirty = false
     }
 
     fun setMandatory(mandatory: Boolean) {
-        if (this.mandatory != mandatory) {
-            this.mandatory = mandatory
+        if (this.mandatory2 != mandatory) {
+            this.mandatory2 = mandatory
             markDirty()
         }
     }
 
-    fun isMandatory(): Boolean = mandatory
+    val isMandatory: Boolean
+        get() = mandatory2
 
     fun serializeNBT(): CompoundTag {
         val compoundTag = CompoundTag()
         compoundTag.putString("model_id", modelId)
         compoundTag.putString("select_texture", selectTexture)
-        compoundTag.putBoolean("mandatory", mandatory)
-        compoundTag.putBoolean("disabled", disabled)
+        compoundTag.putBoolean("mandatory", mandatory2)
+        compoundTag.putBoolean("disabled", disabled2)
         val compoundTag2 = CompoundTag()
         molangStorage.int2ReferenceEntrySet().fastForEach { entry ->
             val compoundTag3 = CompoundTag()
@@ -189,8 +192,8 @@ class ModelInfoCapability {
         if (selectTextureStr.length > 4 && selectTextureStr.lowercase().endsWith(".png"))
             selectTextureStr = selectTextureStr.substring(0, selectTextureStr.length - 4)
         setSelectTexture(selectTextureStr)
-        mandatory = compoundTag.getBooleanOr("mandatory", false)
-        disabled = compoundTag.getBooleanOr("disabled", false)
+        mandatory2 = compoundTag.getBooleanOr("mandatory", false)
+        disabled2 = compoundTag.getBooleanOr("disabled", false)
         molangStorage.clear()
         val compound = compoundTag.getCompoundOrEmpty("molang_storage")
         for (str in compound.keySet()) {
