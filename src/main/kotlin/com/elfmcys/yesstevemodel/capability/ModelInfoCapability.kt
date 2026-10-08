@@ -28,26 +28,25 @@ class ModelInfoCapability {
     private var dirty: Boolean = false
     private val pendingCallbacks: ArrayDeque<(Object2FloatOpenHashMap<String>) -> Unit> = ArrayDeque()
 
-    fun getModelId(): String = modelId2 ?: ServerModelManager.getDefaultModelConfig().getLeft()
-
-    fun setModelId(str: String) {
-        if (modelId2 != str) {
-            modelId2 = str
+    var modelId: String
+        get() = modelId2 ?: ServerModelManager.getDefaultModelConfig().getLeft()
+        set(value) {
+            if (modelId2 == value) return
+            modelId2 = value
             markDirty()
         }
-    }
 
-    fun getSelectTexture(): String = selectTexture2 ?: ServerModelManager.getDefaultModelConfig().getRight()
+    val selectTexture: String
+        get() = selectTexture2 ?: ServerModelManager.getDefaultModelConfig().getRight()
 
     fun setSelectTexture(str: String) {
-        if (selectTexture2 != str) {
-            selectTexture2 = str
-            markDirty()
-        }
+        if (selectTexture2 == str) return
+        selectTexture2 = str
+        markDirty()
     }
 
     fun setModelAndTexture(str: String, str2: String) {
-        if (getModelId() == str && getSelectTexture() == str2) return
+        if (modelId == str && selectTexture == str2) return
         modelId2 = str
         selectTexture2 = str2
         markDirty()
@@ -85,7 +84,7 @@ class ModelInfoCapability {
     }
 
     fun createSyncMessage(serverPlayer: ServerPlayer, fullSync: Boolean): S2CSetModelAndTexturePacket? =
-        ServerModelManager[getModelId()]?.let {
+        ServerModelManager[modelId]?.let {
             val molangVars =
                 molangStorage.computeIfAbsent(it.getLoadedModelData().hashId) { Object2FloatOpenHashMap(0) }
 
@@ -96,8 +95,8 @@ class ModelInfoCapability {
 
             S2CSetModelAndTexturePacket(
                 serverPlayer.id,
-                getModelId(),
-                getSelectTexture(),
+                modelId,
+                selectTexture,
                 disabled,
                 animSync.buildFullSyncMessage(serverPlayer, fullSync)
                     .setMolangVars(it.getLoadedModelData().hashId, molangVars)
@@ -105,18 +104,19 @@ class ModelInfoCapability {
         }
 
     fun withMolangVars(consumer: (Object2FloatOpenHashMap<String>) -> Unit) {
-        ServerModelManager[getModelId()]?.let {
+        ServerModelManager[modelId]?.let {
             consumer(molangStorage.computeIfAbsent(it.getLoadedModelData().hashId) {
                 Object2FloatOpenHashMap(0)
             })
         } ?: pendingCallbacks.add(consumer)
     }
 
-    fun getMolangVars(): Object2FloatOpenHashMap<String>? = ServerModelManager[getModelId()]?.let { serverModelData ->
-        molangStorage.computeIfAbsent(serverModelData.getLoadedModelData().hashId) {
-            Object2FloatOpenHashMap(0)
+    val molangVars: Object2FloatOpenHashMap<String>?
+        get() = ServerModelManager[modelId]?.let { serverModelData ->
+            molangStorage.computeIfAbsent(serverModelData.getLoadedModelData().hashId) {
+                Object2FloatOpenHashMap(0)
+            }
         }
-    }
 
     fun applyFeedback(serverPlayer: ServerPlayer, feedbackData: FeedbackData) {
         val stringValues = feedbackData.stringValues ?: return
@@ -166,8 +166,8 @@ class ModelInfoCapability {
 
     fun serializeNBT(): CompoundTag {
         val compoundTag = CompoundTag()
-        compoundTag.putString("model_id", getModelId())
-        compoundTag.putString("select_texture", getSelectTexture())
+        compoundTag.putString("model_id", modelId)
+        compoundTag.putString("select_texture", selectTexture)
         compoundTag.putBoolean("mandatory", mandatory)
         compoundTag.putBoolean("disabled", disabled)
         val compoundTag2 = CompoundTag()
@@ -184,7 +184,7 @@ class ModelInfoCapability {
 
     fun deserializeNBT(compoundTag: CompoundTag) {
         val modelIdStr = compoundTag.getStringOr("model_id", "")
-        setModelId(modelIdStr)
+        modelId = modelIdStr
         var selectTextureStr = compoundTag.getStringOr("select_texture", "")
         if (selectTextureStr.length > 4 && selectTextureStr.lowercase().endsWith(".png"))
             selectTextureStr = selectTextureStr.substring(0, selectTextureStr.length - 4)

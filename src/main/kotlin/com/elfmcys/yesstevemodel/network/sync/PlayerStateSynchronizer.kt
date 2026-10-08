@@ -32,21 +32,14 @@ class PlayerStateSynchronizer {
         setDirty(false)
     }
 
-    fun setDirty(isDirty: Boolean) {
-        if (isDirty != dirty || tickCounter == null) {
-            dirty = isDirty
-            tickCounter = if (dirty) {
-                TickCounter(3, 3.0f)
-            } else {
-                TickCounter(4, 7.0f)
-            }
-        }
+    private fun setDirty(isDirty: Boolean) {
+        if (isDirty == dirty && tickCounter != null) return
+        dirty = isDirty
+        tickCounter = if (dirty) TickCounter(3, 3.0f) else TickCounter(4, 7.0f)
     }
 
     private fun getOrCreateSyncMessage(serverPlayer: ServerPlayer, sendNow: Boolean): S2CSyncPlayerStatePacket {
-        if (!sendNow || syncMessage.entityId != serverPlayer.id) {
-            syncMessage.reset(serverPlayer.id)
-        }
+        if (!sendNow || syncMessage.entityId != serverPlayer.id) syncMessage.reset(serverPlayer.id)
         return syncMessage
     }
 

@@ -36,10 +36,10 @@ object EnterServerEvent {
                 for (modelId in ServerModelManager.getAuthModels()) {
                     authModelsCap.addModel(modelId)
                 }
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.getAuthModels()), player)
+                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.authModels), player)
             }
             StarModelsCapability[player]?.let { starModelsCap ->
-                NetworkHandler.sendToClientPlayer(S2CSyncStarModelsPacket(starModelsCap.getStarModels()), player)
+                NetworkHandler.sendToClientPlayer(S2CSyncStarModelsPacket(starModelsCap.starModels), player)
             }
         }
     }

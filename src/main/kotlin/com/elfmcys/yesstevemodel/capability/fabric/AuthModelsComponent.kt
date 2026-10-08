@@ -16,6 +16,6 @@ class AuthModelsComponent : Component {
 
     override fun writeData(output: ValueOutput) {
         val list = output.list("AuthModels", Codec.STRING)
-        for (s in capability.getAuthModels()) list.add(s)
+        for (s in capability.authModels) list.add(s)
     }
 }

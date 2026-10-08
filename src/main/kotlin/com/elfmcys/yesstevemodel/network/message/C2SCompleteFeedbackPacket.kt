@@ -44,8 +44,8 @@ data class C2SCompleteFeedbackPacket(val feedbackData: FeedbackData) {
                         val vehicle = entity.vehicle
                         if (vehicle != null && vehicle.firstPassenger == entity) {
                             VehicleModelCapability[vehicle]?.let { vehicleCap ->
-                                cap.getMolangVars()?.let { map ->
-                                    vehicleCap.setModel(cap.getModelId(), map)
+                                cap.molangVars?.let { map ->
+                                    vehicleCap.setModel(cap.modelId, map)
                                 }
                             }
                         }

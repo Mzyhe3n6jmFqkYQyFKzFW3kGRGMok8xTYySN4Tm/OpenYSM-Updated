@@ -986,7 +986,7 @@ object ServerModelManager {
         return collection.asSequence()
             .filter { NetworkHandler.isPlayerConnected(it) }
             .mapNotNull { serverPlayer ->
-                ModelInfoCapability[serverPlayer]?.getModelId()
+                ModelInfoCapability[serverPlayer]?.modelId
             }
             .distinct()
             .toList()
@@ -1084,13 +1084,13 @@ object ServerModelManager {
         if (CACHE_NAME_INFO.isNotEmpty()) {
             val modelInfoCap = ModelInfoCapability[serverPlayer] ?: return
             val authModelsCap = AuthModelsCapability[serverPlayer] ?: return
-            if (authModelsCap.getAuthModels().removeIf { str -> !CACHE_NAME_INFO.containsKey(str) }) {
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.getAuthModels()), serverPlayer)
+            if (authModelsCap.authModels.removeIf { str -> !CACHE_NAME_INFO.containsKey(str) }) {
+                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.authModels), serverPlayer)
             }
-            val modelId = modelInfoCap.getModelId()
-            if (!getServerModelInfo().containsKey(modelId) || ((AUTH_MODELS.contains(modelId) && !authModelsCap.getAuthModels()
-                    .contains(modelInfoCap.getModelId())) || !(CACHE_NAME_INFO[modelId] ?: return).modelInfo.textures
-                    .contains(modelInfoCap.getSelectTexture()))
+            val modelId = modelInfoCap.modelId
+            if (!getServerModelInfo().containsKey(modelId) || ((AUTH_MODELS.contains(modelId) && !authModelsCap.authModels
+                    .contains(modelInfoCap.modelId)) || !(CACHE_NAME_INFO[modelId] ?: return).modelInfo.textures
+                    .contains(modelInfoCap.selectTexture))
             ) {
                 modelInfoCap.resetToDefault()
             }

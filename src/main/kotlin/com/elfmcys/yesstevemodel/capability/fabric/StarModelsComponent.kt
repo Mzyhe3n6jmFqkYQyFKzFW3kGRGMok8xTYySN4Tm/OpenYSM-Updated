@@ -16,6 +16,6 @@ class StarModelsComponent : Component {
 
     override fun writeData(output: ValueOutput) {
         val list = output.list("StarModels", Codec.STRING)
-        for (s in capability.getStarModels()) list.add(s)
+        for (s in capability.starModels) list.add(s)
     }
 }

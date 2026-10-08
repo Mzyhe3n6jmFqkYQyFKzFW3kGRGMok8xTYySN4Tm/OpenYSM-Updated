@@ -9,13 +9,7 @@ import net.minecraft.nbt.StringTag
 import net.minecraft.world.entity.player.Player
 
 class AuthModelsCapability {
-    private var authModels: MutableSet<String> = Sets.newHashSet()
-
-    fun getAuthModels(): MutableSet<String> = authModels
-
-    fun setAuthModels(set: MutableSet<String>) {
-        authModels = set
-    }
+    var authModels: MutableSet<String> = Sets.newHashSet()
 
     fun addModel(str: String) = authModels.add(str)
 
