@@ -178,9 +178,7 @@ object JsonAnimationUtils {
     }
 
     private fun calculateKeyFrameListLength(boneKeyFrames: List<BoneKeyFrame>): Float {
-        if (boneKeyFrames.isEmpty()) {
-            return 0.0f
-        }
+        if (boneKeyFrames.isEmpty()) return 0.0f
         return boneKeyFrames[boneKeyFrames.size - 1].startTick
     }
 

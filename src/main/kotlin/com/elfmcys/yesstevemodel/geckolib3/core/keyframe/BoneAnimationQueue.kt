@@ -10,37 +10,52 @@ import org.joml.Vector3f
 open class BoneAnimationQueue(
     @JvmField val topLevelSnapshot: BoneTopLevelSnapshot
 ) {
-    @JvmField val controllerSnapshot: BoneSnapshot = BoneSnapshot(topLevelSnapshot.bone)
-    @JvmField var rotationTimeline: InterpolationLookup<BoneKeyFrame>? = null
-    @JvmField var positionTimeline: InterpolationLookup<BoneKeyFrame>? = null
-    @JvmField var scaleTimeline: InterpolationLookup<BoneKeyFrame>? = null
+    @JvmField
+    val controllerSnapshot: BoneSnapshot = BoneSnapshot(topLevelSnapshot.bone)
+
+    @JvmField
+    var rotationTimeline: InterpolationLookup<BoneKeyFrame>? = null
+
+    @JvmField
+    var positionTimeline: InterpolationLookup<BoneKeyFrame>? = null
+
+    @JvmField
+    var scaleTimeline: InterpolationLookup<BoneKeyFrame>? = null
     private var animationActive: Boolean = false
     private var blendWeight: Float = 1.0f
-    @JvmField var positionOutput: Vector3f? = null
-    @JvmField var rotationOutput: Vector3f? = null
-    @JvmField var scaleOutput: Vector3f? = null
-    @JvmField var overrideMode: Boolean = false
-    @JvmField var rotationQueue: AnimationPoint? = null
-    @JvmField var positionQueue: AnimationPoint? = null
-    @JvmField var scaleQueue: AnimationPoint? = null
-    @JvmField val transformProviderRecord: PredicateBasedController.TransformProviderRecord = PredicateBasedController.TransformProviderRecord(this)
+
+    @JvmField
+    var positionOutput: Vector3f? = null
+
+    @JvmField
+    var rotationOutput: Vector3f? = null
+
+    @JvmField
+    var scaleOutput: Vector3f? = null
+
+    @JvmField
+    var overrideMode: Boolean = false
+
+    @JvmField
+    var rotationQueue: AnimationPoint? = null
+
+    @JvmField
+    var positionQueue: AnimationPoint? = null
+
+    @JvmField
+    var scaleQueue: AnimationPoint? = null
+
+    @JvmField
+    val transformProviderRecord: PredicateBasedController.TransformProviderRecord =
+        PredicateBasedController.TransformProviderRecord(this)
 
     open fun applyAnimation(animation: BoneAnimation, z: Boolean) {
-        if (animation.rotationKeyFrames.isNotEmpty()) {
-            rotationTimeline = InterpolationLookup(animation.rotationKeyFrames, 0.0f, BoneKeyFrame::getEndTick)
-        } else {
-            rotationTimeline = null
-        }
-        if (animation.positionKeyFrames.isNotEmpty()) {
-            positionTimeline = InterpolationLookup(animation.positionKeyFrames, 0.0f, BoneKeyFrame::getEndTick)
-        } else {
-            positionTimeline = null
-        }
-        if (animation.scaleKeyFrames.isNotEmpty()) {
-            scaleTimeline = InterpolationLookup(animation.scaleKeyFrames, 0.0f, BoneKeyFrame::getEndTick)
-        } else {
-            scaleTimeline = null
-        }
+        rotationTimeline = if (animation.rotationKeyFrames.isNotEmpty())
+            InterpolationLookup(animation.rotationKeyFrames, 0.0f, BoneKeyFrame::endTick) else null
+        positionTimeline = if (animation.positionKeyFrames.isNotEmpty())
+            InterpolationLookup(animation.positionKeyFrames, 0.0f, BoneKeyFrame::endTick) else null
+        scaleTimeline = if (animation.scaleKeyFrames.isNotEmpty())
+            InterpolationLookup(animation.scaleKeyFrames, 0.0f, BoneKeyFrame::endTick) else null
         controllerSnapshot.applyTransform(topLevelSnapshot.bone)
         animationActive = true
         overrideMode = z

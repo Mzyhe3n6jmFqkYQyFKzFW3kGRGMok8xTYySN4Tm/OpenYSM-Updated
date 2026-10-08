@@ -397,7 +397,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                             val lerpPoint = animationPoint.getLerpPoint(evaluator)
                             var blendWeight = boneQueue.getBlendWeight()
                             if (animationPoint is ConstantPoint) {
-                                val percentCompleted = animationPoint.getPercentCompleted()
+                                val percentCompleted = animationPoint.percentCompleted
                                 blendWeight *= 1.0f - percentCompleted
                                 transitionVector3f.setPercentCompleted(percentCompleted)
                             } else {
@@ -468,7 +468,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                             val lerpPoint = point.getLerpPoint(evaluator)
                             var blendWeight = boneQueue.getBlendWeight()
                             if (point is ConstantPoint) {
-                                val percentCompleted = point.getPercentCompleted()
+                                val percentCompleted = point.percentCompleted
                                 blendWeight *= 1.0f - percentCompleted
                                 result.setPercentCompleted(percentCompleted)
                             } else {
@@ -533,7 +533,7 @@ class AnimationControllerRuntime<T : AnimatableEntity<*>>(
                             val lerpPoint = point.getLerpPoint(evaluator)
                             var blendWeight = boneQueue.getBlendWeight()
                             if (point is ConstantPoint) {
-                                val percentCompleted = point.getPercentCompleted()
+                                val percentCompleted = point.percentCompleted
                                 blendWeight *= 1.0f - percentCompleted
                                 result.setPercentCompleted(percentCompleted)
                             } else {

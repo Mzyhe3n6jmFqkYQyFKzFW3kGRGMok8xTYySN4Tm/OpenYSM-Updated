@@ -289,7 +289,7 @@ class AnimationControllerInstance(
 
     fun getKeyFramePointAtTick(frames: InterpolationLookup<BoneKeyFrame>, tick: Float): KeyFramePoint {
         val frame: BoneKeyFrame = frames.getAtTime(tick)
-        return KeyFramePoint(tick - frame.getStartTick(), frame, context)
+        return KeyFramePoint(tick - frame.startTick, frame, context)
     }
 
     fun getTransitionPointAtTick(

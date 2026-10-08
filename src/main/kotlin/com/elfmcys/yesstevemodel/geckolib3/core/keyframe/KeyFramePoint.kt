@@ -10,10 +10,10 @@ open class KeyFramePoint(
     currentTick: Float,
     @JvmField val keyFrame: BoneKeyFrame,
     context: AnimationControllerContext
-) : AnimationPoint(currentTick, keyFrame.getTotalTick(), context) {
+) : AnimationPoint(currentTick, keyFrame.totalTick, context) {
     override fun getLerpPoint(evaluator: ExpressionEvaluator<AnimationContext<*>>): Vector3f {
         setupControllerContext(evaluator)
-        val vector3f: Vector3f = keyFrame.evaluate(evaluator, getPercentCompleted())
+        val vector3f: Vector3f = keyFrame.evaluate(evaluator, percentCompleted)
         val cached = cachedValue
         if (cached == null) {
             cachedValue = Vector3f(vector3f)

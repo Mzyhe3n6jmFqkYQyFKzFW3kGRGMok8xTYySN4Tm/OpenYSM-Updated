@@ -186,7 +186,7 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
             when (point) {
                 is ConstantPoint -> {
                     mutableVector.set(point.getLerpPoint(evaluator))
-                    mutableVector.setPercentCompleted(point.getPercentCompleted())
+                    mutableVector.setPercentCompleted(point.percentCompleted)
                     val blendWeight = data.getBlendWeight()
                     if (blendWeight != 1.0f) {
                         mutableVector.mul(blendWeight)
@@ -225,7 +225,7 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
             var blendWeight = data.getBlendWeight()
             when (point) {
                 is ConstantPoint -> {
-                    mutableVector.setPercentCompleted(point.getPercentCompleted())
+                    mutableVector.setPercentCompleted(point.percentCompleted)
                 }
 
                 else -> {
@@ -246,7 +246,7 @@ class PredicateBasedController<T : AnimatableEntity<*>>(
             mutableVector.set(point.getLerpPoint(evaluator))
             var blendWeight = data.getBlendWeight()
             if (point is ConstantPoint) {
-                mutableVector.setPercentCompleted(point.getPercentCompleted())
+                mutableVector.setPercentCompleted(point.percentCompleted)
             } else {
                 if (point is TransitionPoint) {
                     blendWeight = MathUtil.lerpValues(point.getLerpFactor(), 1.0f, blendWeight)

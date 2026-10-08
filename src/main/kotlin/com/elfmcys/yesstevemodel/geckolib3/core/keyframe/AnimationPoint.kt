@@ -6,19 +6,18 @@ import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import org.joml.Vector3f
 
 abstract class AnimationPoint(
-    @JvmField var currentTick: Float,
-    @JvmField var totalTick: Float,
-    var context: AnimationControllerContext
+    val currentTick: Float,
+    val totalTick: Float,
+    val context: AnimationControllerContext
 ) {
-    @JvmField var cachedValue: Vector3f? = null
+    var cachedValue: Vector3f? = null
+        protected set
 
-    open fun getPercentCompleted(): Float {
-        return if (totalTick == 0.0f) 1.0f else currentTick / totalTick
-    }
+    open val percentCompleted: Float
+        get() = if (totalTick == 0.0f) 1.0f else currentTick / totalTick
 
-    open fun setupControllerContext(evaluator: ExpressionEvaluator<AnimationContext<*>>) {
+    open fun setupControllerContext(evaluator: ExpressionEvaluator<AnimationContext<*>>) =
         evaluator.entity().setAnimationControllerContext(context)
-    }
 
     abstract fun getLerpPoint(evaluator: ExpressionEvaluator<AnimationContext<*>>): Vector3f
 }
