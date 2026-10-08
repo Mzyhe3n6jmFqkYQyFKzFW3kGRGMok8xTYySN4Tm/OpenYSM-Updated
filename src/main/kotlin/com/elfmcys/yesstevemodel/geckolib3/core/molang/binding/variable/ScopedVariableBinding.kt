@@ -21,11 +21,11 @@ class ScopedVariableBinding : ObjectBinding, ResetVariable {
 
     private class ScopedVariable(private val name: Int) : AssignableVariable {
         override fun evaluate(context: ExecutionContext<*>): Any? {
-            return (context.entity as? IContext<*>)?.scopedStorage()?.getScoped(name)
+            return (context.entity as? IContext<*>)?.scopedStorage?.getScoped(name)
         }
 
         override fun assign(context: ExecutionContext<*>, value: Any?) {
-            (context.entity as? IContext<*>)?.scopedStorage()?.setScoped(name, value)
+            (context.entity as? IContext<*>)?.scopedStorage?.setScoped(name, value)
         }
     }
 }

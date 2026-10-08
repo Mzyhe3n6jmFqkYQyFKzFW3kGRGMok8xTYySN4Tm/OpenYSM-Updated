@@ -21,7 +21,7 @@ class Random : ContextFunction<Any>() {
         } else {
             range -= min
         }
-        val rnd: RandomSource = context.entity.random() ?: RandomSource.create()
+        val rnd: RandomSource = context.entity.random ?: RandomSource.create()
         return min + rnd.nextFloat() * range
     }
 }

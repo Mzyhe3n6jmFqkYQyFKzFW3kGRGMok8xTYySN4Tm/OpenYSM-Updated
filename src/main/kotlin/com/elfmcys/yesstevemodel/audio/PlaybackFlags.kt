@@ -3,19 +3,23 @@
 package com.elfmcys.yesstevemodel.audio
 
 class PlaybackFlags(private val isAudioEnabled: Boolean) {
-    private var isPaused: Boolean = false
-    private var isStopped: Boolean = false
-    private var audioPlayerManager2: AudioPlayerManager? = null
+    var isPaused: Boolean = false
+        private set
+    var isStopped: Boolean = false
+        private set
 
-    val audioPlayerManager: AudioPlayerManager?
+    var audioPlayerManager: AudioPlayerManager? = null
         get() {
             if (!isAudioEnabled) return null
-            if (audioPlayerManager2 == null) audioPlayerManager2 = AudioPlayerManager()
-            return audioPlayerManager2
+            if (field == null) field = AudioPlayerManager()
+            return field
         }
 
-    fun isPaused(): Boolean = isPaused
-    fun setPaused(paused: Boolean) { this.isPaused = paused }
-    fun isStopped(): Boolean = isStopped
-    fun setStopped(stopped: Boolean) { this.isStopped = stopped }
+    fun setPaused(paused: Boolean) {
+        this.isPaused = paused
+    }
+
+    fun setStopped(stopped: Boolean) {
+        this.isStopped = stopped
+    }
 }
