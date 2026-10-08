@@ -36,17 +36,12 @@ class PlayerPreviewEntity : CustomPlayerEntity(DummyPlayer(), false, false), IPr
     }
 
     override val isDebugMode: Boolean
-        get() {
-            return true
-        }
+        get() = true
 
-    override fun shouldRenderOverlay(): Boolean {
-        return customAnimationActive
-    }
+    override fun shouldRenderOverlay(): Boolean = customAnimationActive
 
-    override fun getRefreshRate(): Int {
-        return ClientTickEvent.getRefreshRate()
-    }
+    override val refreshRate: Int
+        get() = ClientTickEvent.refreshRate
 
     override fun hasCustomTexture(): Boolean = true
 

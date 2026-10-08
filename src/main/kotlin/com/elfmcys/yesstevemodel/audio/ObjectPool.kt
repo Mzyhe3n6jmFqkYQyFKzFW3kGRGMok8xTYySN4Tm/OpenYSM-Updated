@@ -27,7 +27,7 @@ object ObjectPool {
     fun release(decoder: NativeAudioDecoder) {
         decoder.reset()
         synchronized(pool) {
-            val poolEntry = PoolEntry(decoder, ClientTickEvent.getTickCount() + 200)
+            val poolEntry = PoolEntry(decoder, ClientTickEvent.tickCount + 200)
             if (pool.isEmpty()) {
                 activeCount = poolEntry.expirationTick
             }
@@ -38,7 +38,7 @@ object ObjectPool {
     @JvmStatic
     fun cleanup() {
         if (activeCount != 0) {
-            val currentTick = ClientTickEvent.getTickCount()
+            val currentTick = ClientTickEvent.tickCount
             if (currentTick > activeCount) {
                 synchronized(pool) {
                     while (pool.isNotEmpty()) {

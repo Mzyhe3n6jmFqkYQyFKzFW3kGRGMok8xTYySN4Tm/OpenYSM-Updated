@@ -37,7 +37,7 @@ class ItemHoldAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>> {
         if (livingEntity.swinging && !livingEntity.isSleeping) {
             if (livingEntity.swingTime == 0 && animatable.positionTracker.markProcessed(1))
                 event.getController()?.stopTransition()
-            val conditionManager = animatable.getModelConfig() ?: return PlayState.CONTINUE
+            val conditionManager = animatable.modelConfig ?: return PlayState.CONTINUE
             val conditionSwing =
                 if (livingEntity.swingingArm == InteractionHand.MAIN_HAND) conditionManager.swingMainhand else conditionManager.swingOffhand
             val str2 = conditionSwing.doTest(livingEntity, livingEntity.swingingArm)

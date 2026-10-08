@@ -36,7 +36,7 @@ object MaidPoseOffset {
     private fun resolveSeated(maid: EntityMaid, animatable: MaidAnimatable, vehicle: Entity): Float {
         val living: LivingEntity = vanilla(maid)
         if (StringUtils.isNoneBlank(SWEMCompat.getHorseGaitName(living))) return SEAT_UNMEASURED
-        val conditionManager: ConditionManager? = animatable.getModelConfig()
+        val conditionManager: ConditionManager? = animatable.modelConfig
         val conditionChair: ConditionChair? = conditionManager?.chair
         if (conditionChair != null && StringUtils.isNoneBlank(conditionChair.doTest(living))) return SEAT_UNMEASURED
         val conditionVehicle: ConditionVehicle? = conditionManager?.vehicle

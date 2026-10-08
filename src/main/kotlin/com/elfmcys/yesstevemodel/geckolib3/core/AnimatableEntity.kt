@@ -79,7 +79,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
     val animationProcessor: AnimationProcessor<TEntity> = AnimationProcessor(this)
 
     @JvmField
-    val rateLimiter: RateLimiter = RateLimiter().apply { setRefreshRate(getRefreshRate()) }
+    val rateLimiter: RateLimiter = RateLimiter().apply { setRefreshRate(refreshRate) }
 
     @JvmField
     protected val defaultPhysicsManager: PhysicsManager = PhysicsManager()
@@ -147,21 +147,22 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
 
     open fun shouldRenderOverlay(): Boolean = true
 
-    open fun getRefreshRate(): Int {
-        val player = Minecraft.getInstance().player
-        if (player != null && player != entity) {
-            val vec3Position = player.position()
-            if (vec3Position.x != 0.0 || vec3Position.y != 0.0 || vec3Position.z != 0.0) {
-                if (!isFirstFrameAfterReset) return 10
-                val fDistanceTo = player.distanceTo(entity)
-                when {
-                    fDistanceTo > 64.0f -> return 30
-                    fDistanceTo > 40.0f -> return 60
+    open val refreshRate: Int
+        get() {
+            val player = Minecraft.getInstance().player
+            if (player != null && player != entity) {
+                val vec3Position = player.position()
+                if (vec3Position.x != 0.0 || vec3Position.y != 0.0 || vec3Position.z != 0.0) {
+                    if (!isFirstFrameAfterReset) return 10
+                    val fDistanceTo = player.distanceTo(entity)
+                    when {
+                        fDistanceTo > 64.0f -> return 30
+                        fDistanceTo > 40.0f -> return 60
+                    }
                 }
             }
+            return ClientTickEvent.refreshRate
         }
-        return ClientTickEvent.getRefreshRate()
-    }
 
     fun processAnimation(partialTick: Float): AnimationEvent<*>? =
         processAnimationImpl(partialTick, ModelPreviewRenderer.isFirstPersonOnRenderThread())
@@ -169,7 +170,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
     open fun processAnimationImpl(partialTick: Float, z: Boolean): AnimationEvent<*>? {
         if (currentModel2 == null) return null
         val livingEntity = entity as? LivingEntity
-        val tickCount = if (this is IPreviewAnimatable) ClientTickEvent.getTickCount() else entity.tickCount
+        val tickCount = if (this is IPreviewAnimatable) ClientTickEvent.tickCount else entity.tickCount
         val frameTime =
             if (partialTick != 1.0f) partialTick else Minecraft.getInstance().deltaTracker.getGameTimeDeltaPartialTick(
                 false
@@ -234,7 +235,7 @@ abstract class AnimatableEntity<TEntity : Entity>(@JvmField val entity: TEntity)
             hasUpdatedThisTick = false
             isTickTriggered = false
             lastTick = currentTick
-            rateLimiter.setRefreshRate(getRefreshRate())
+            rateLimiter.setRefreshRate(refreshRate)
             isFirstFrameAfterReset = needsReset
             needsReset = false
         } else {

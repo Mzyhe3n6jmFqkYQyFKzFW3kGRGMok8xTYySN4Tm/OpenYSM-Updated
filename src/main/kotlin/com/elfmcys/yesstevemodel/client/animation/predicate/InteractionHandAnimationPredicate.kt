@@ -18,7 +18,7 @@ class InteractionHandAnimationPredicate : IAnimationPredicate<LivingAnimatable<*
         if (livingEntity.isUsingItem && !livingEntity.isSleeping) {
             if (livingEntity.ticksUsingItem == 1 && animatable.positionTracker.markProcessed(2))
                 event.getController()?.stopTransition()
-            val conditionManager = animatable.getModelConfig() ?: return PlayState.STOP
+            val conditionManager = animatable.modelConfig ?: return PlayState.STOP
             if (livingEntity.usedItemHand == InteractionHand.MAIN_HAND) {
                 val conditionUse = conditionManager.useMainhand
                 val str = conditionUse.doTest(livingEntity, InteractionHand.MAIN_HAND)

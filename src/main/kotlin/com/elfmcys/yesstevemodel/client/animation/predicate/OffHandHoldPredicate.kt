@@ -35,7 +35,7 @@ class OffHandHoldPredicate : IAnimationPredicate<LivingAnimatable<*>> {
             frameState.setHandItemsForAnimation(itemInHand, InteractionHand.OFF_HAND)
             event.getController()?.stopTransition()
         }
-        val conditionHold: ConditionHold? = animatable.getModelConfig()?.holdOffhand
+        val conditionHold: ConditionHold? = animatable.modelConfig?.holdOffhand
         val str: String? = conditionHold?.doTest(entity, InteractionHand.OFF_HAND)
         if (!str.isNullOrBlank()) {
             return IAnimationPredicate.playAnimationWithValid(event, str, ILoopType.EDefaultLoopTypes.LOOP, i)
