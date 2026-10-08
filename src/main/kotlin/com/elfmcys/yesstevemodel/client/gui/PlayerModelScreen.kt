@@ -463,7 +463,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
 
         var renderer =
             if (NativeLibLoader.isLoaded && !GeneralConfig.USE_COMPATIBILITY_RENDERER.get()) "SIMD" else "Fallback"
-        if (renderer == "SIMD" && GpuCapability.isAvailable() && GeneralConfig.USE_GPU_RENDERER.get()) {
+        if (renderer == "SIMD" && GpuCapability.isAvailable && GeneralConfig.USE_GPU_RENDERER.get()) {
             renderer = "GPU"
         }
         val versionStr = PlatformAPI.getModVersion(NameSpaces.MOD.invoke())

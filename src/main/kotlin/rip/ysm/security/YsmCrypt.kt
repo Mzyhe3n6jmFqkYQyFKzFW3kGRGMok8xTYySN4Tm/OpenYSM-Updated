@@ -167,11 +167,11 @@ object YsmCrypt {
             headerBuf.writeVarInt(0)
             headerBuf.writeVarInt(0)
 
-            val headerLen = headerBuf.getRawBuf().readableBytes()
+            val headerLen = headerBuf.rawBuf.readableBytes()
             val finalPayloadLen = headerLen + encryptedPayload.size
             val finalBuf = ByteBuffer.allocate(finalPayloadLen + 8).order(ByteOrder.LITTLE_ENDIAN)
 
-            headerBuf.getRawBuf().readBytes(finalBuf.array(), 0, headerLen)
+            headerBuf.rawBuf.readBytes(finalBuf.array(), 0, headerLen)
             finalBuf.position(headerLen)
             finalBuf.put(encryptedPayload)
 
@@ -256,7 +256,7 @@ object YsmCrypt {
         hash2: Long
     ): ByteArray {
         YSMByteBuf(Unpooled.wrappedBuffer(serverData)).use { buf ->
-            val headerStart = buf.getRawBuf().readerIndex()
+            val headerStart = buf.rawBuf.readerIndex()
             if (buf.readVarInt() != 1) throw RuntimeException("Invalid YSM cache format")
             buf.readVarInt()
             buf.readVarInt()
@@ -267,7 +267,7 @@ object YsmCrypt {
             buf.readVarInt()
             buf.readVarInt()
 
-            val headerEnd = buf.getRawBuf().readerIndex()
+            val headerEnd = buf.rawBuf.readerIndex()
             val payloadEnd = serverData.size - 8
             if (payloadEnd <= headerEnd) {
                 throw RuntimeException("Invalid server payload size!")
@@ -543,7 +543,7 @@ object YsmCrypt {
             buf.readVarInt()
             buf.readVarInt()
             buf.readVarInt()
-            val headerEnd = buf.getRawBuf().readerIndex()
+            val headerEnd = buf.rawBuf.readerIndex()
 
             val payloadEnd = cacheFileData.size - 8
             if (payloadEnd <= headerEnd) {

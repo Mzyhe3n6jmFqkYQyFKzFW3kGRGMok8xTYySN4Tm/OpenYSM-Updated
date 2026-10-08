@@ -338,7 +338,7 @@ object ServerModelManager {
 
                     YSMByteBuf(Unpooled.wrappedBuffer(payload)).use { buf ->
                         buf.skipGarbageHeader()
-                        if (buf.getRawBuf().readByte().toInt() != 0x02) return
+                        if (buf.rawBuf.readByte().toInt() != 0x02) return
                     }
 
                     state.step = 2
@@ -351,7 +351,7 @@ object ServerModelManager {
 
                     YSMByteBuf(Unpooled.wrappedBuffer(decrypted)).use { buf ->
                         buf.skipGarbageHeader()
-                        if (buf.getRawBuf().readByte().toInt() != 0x04) return
+                        if (buf.rawBuf.readByte().toInt() != 0x04) return
 
                         val numRequests = buf.readVarInt()
                         val requestedHashes = ArrayList<LongArray>(numRequests)
@@ -588,7 +588,7 @@ object ServerModelManager {
             }
             if (needsUpdate) {
                 val encryptedCache = YSMBinarySerializer.serialize(model, 32, true).use { serialized ->
-                    val raw = serialized.getRawBuf()
+                    val raw = serialized.rawBuf
                     if (raw.hasArray()) {
                         val off = raw.arrayOffset() + raw.readerIndex()
                         val len = raw.readableBytes()
@@ -684,8 +684,8 @@ object ServerModelManager {
                 outBuf.writeVarInt(3) // Type
                 outBuf.writeVarLong(0L) // Cache folder hash
 
-                outBuf.getRawBuf().writeBytes(currentServerKey)
-                outBuf.getRawBuf().writeBytes(state.clientKey)
+                outBuf.rawBuf.writeBytes(currentServerKey)
+                outBuf.rawBuf.writeBytes(state.clientKey)
 
                 outBuf.writeVarInt(state.allowedModels.size)
                 for (model in state.allowedModels) {
@@ -798,7 +798,7 @@ object ServerModelManager {
                             outBuf.writeVarInt(totalSize)
                             outBuf.writeVarInt(offset)
                             outBuf.writeVarInt(length)
-                            outBuf.getRawBuf().writeBytes(fileData, offset, length)
+                            outBuf.rawBuf.writeBytes(fileData, offset, length)
                             val key1 = state.key1
                             val result = if (key1 != null) YsmCrypt.encrypt(outBuf.toArray(), key1, false) else null
 
@@ -882,7 +882,7 @@ object ServerModelManager {
 
                 YSMByteBuf(Unpooled.buffer()).use { outBuf ->
                     outBuf.writeDword(32)
-                    outBuf.getRawBuf().writeBytes(clearText, 0, coreDataLength)
+                    outBuf.rawBuf.writeBytes(clearText, 0, coreDataLength)
                     outBuf.writeVarInt(32) // version
                     outBuf.writeVarInt(1)
                     val randBytes = ByteArray(8)
@@ -895,8 +895,8 @@ object ServerModelManager {
                     outBuf.writeVarLong(java.time.Instant.now().epochSecond)
                     outBuf.writeString(extra ?: "")
                     outBuf.writeVarInt(0)
-                    val rawBytes = ByteArray(outBuf.getRawBuf().readableBytes())
-                    outBuf.getRawBuf().readBytes(rawBytes)
+                    val rawBytes = ByteArray(outBuf.rawBuf.readableBytes())
+                    outBuf.rawBuf.readBytes(rawBytes)
                     val finalEncrypted = YsmCrypt.encryptYsmFile(rawBytes)
                     val exportPath = EXPORT.resolve("$modelID.ysm")
                     exportPath.parent?.let { Files.createDirectories(it) }

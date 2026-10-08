@@ -43,7 +43,7 @@ object GpuRenderPath {
         a: Float,
         textureLocation: Identifier
     ): Boolean {
-        if (!GpuCapability.isAvailable()) return false
+        if (!GpuCapability.isAvailable) return false
         if (!BoneSkinShader.ensureCompiled()) return false
         val bakedBones = model.bakedBones ?: return false
         if (bakedBones.isEmpty()) return false
