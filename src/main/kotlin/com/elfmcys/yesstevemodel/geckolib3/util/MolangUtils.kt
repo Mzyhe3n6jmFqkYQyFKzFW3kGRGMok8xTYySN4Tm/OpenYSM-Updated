@@ -26,17 +26,20 @@ object MolangUtils {
     }
 
     @JvmStatic
-    fun normalizeTime(timestamp: Long): Float {
-        return ((timestamp + 6000L).toFloat() / 24000f) % 1f
-    }
+    fun normalizeTime(timestamp: Long): Float = (timestamp + 6000L).toFloat() / 24000f % 1f
 
     @JvmStatic
-    fun getRelativeBlockState(context: ExecutionContext<IContext<Entity>>, args: Function.ArgumentCollection): BlockState? {
-        return getRelativeBlockStateAt(context, args, 0)
-    }
+    fun getRelativeBlockState(
+        context: ExecutionContext<IContext<Entity>>,
+        args: Function.ArgumentCollection
+    ): BlockState? = getRelativeBlockStateAt(context, args, 0)
 
     @JvmStatic
-    fun getRelativeBlockStateAt(context: ExecutionContext<IContext<Entity>>, args: Function.ArgumentCollection, i: Int): BlockState? {
+    fun getRelativeBlockStateAt(
+        context: ExecutionContext<IContext<Entity>>,
+        args: Function.ArgumentCollection,
+        i: Int
+    ): BlockState? {
         val deltaX = args.getAsDouble(context, i)
         val deltaY = args.getAsDouble(context, i + 1)
         val deltaZ = args.getAsDouble(context, i + 2)
@@ -44,9 +47,9 @@ object MolangUtils {
             return null
         }
         val entity = context.entity.entity
-        val x = ((entity.x + deltaX) - 0.5).roundToLong().toInt()
-        val y = ((entity.y + deltaY) - 0.5).roundToLong().toInt()
-        val z = ((entity.z + deltaZ) - 0.5).roundToLong().toInt()
+        val x = (entity.x + deltaX - 0.5).roundToLong().toInt()
+        val y = (entity.y + deltaY - 0.5).roundToLong().toInt()
+        val z = (entity.z + deltaZ - 0.5).roundToLong().toInt()
         return entity.level().getBlockState(BlockPos(x, y, z))
     }
 
@@ -63,12 +66,14 @@ object MolangUtils {
     }
 
     @JvmStatic
-    fun parseSlotType(ctx: ExecutionContext<out IContext<*>>, args: Function.ArgumentCollection, index: Int): EquipmentSlot? {
+    fun parseSlotType(
+        ctx: ExecutionContext<out IContext<*>>,
+        args: Function.ArgumentCollection,
+        index: Int
+    ): EquipmentSlot? {
         val expr: Expression = args.getExpression(index)
         if (expr is StringExpression) {
-            if (expr.isSlotResolved) {
-                return expr.cachedSlot
-            }
+            if (expr.isSlotResolved) return expr.cachedSlot
             val name = expr.name
             val slot = SLOT_MAP[name.lowercase(Locale.ENGLISH)]
             if (slot == null) {
