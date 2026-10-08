@@ -15,13 +15,11 @@ object DebugCommand {
     private const val ARG_NAME: String = "target"
 
     @JvmStatic
-    fun register(): LiteralArgumentBuilder<CommandSourceStack> {
-        return Commands.literal(DEBUG_NAME)
-            .then(
-                Commands.argument(ARG_NAME, EntityArgument.entity())
-                    .executes(::debugEntity)
-            )
-    }
+    fun register(): LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(DEBUG_NAME)
+        .then(
+            Commands.argument(ARG_NAME, EntityArgument.entity())
+                .executes(::debugEntity)
+        )
 
     @Throws(CommandSyntaxException::class)
     private fun debugEntity(context: CommandContext<CommandSourceStack>): Int {
