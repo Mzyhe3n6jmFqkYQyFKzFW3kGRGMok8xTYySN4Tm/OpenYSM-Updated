@@ -10,10 +10,11 @@ import rip.ysm.compat.carryon.fabric.CarryOnCompatImpl
 // TODO: Funny anim when player is carrying and crawl at the same time
 object CarryOnCompat : ModCompat("carryon") {
     @JvmStatic
-    fun getControllerFactory(): ((String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>)? {
-        if (!isModLoaded) return null
-        return CarryOnCompatImpl.getControllerFactory()
-    }
+    val controllerFactory: ((String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>)?
+        get() {
+            if (!isModLoaded) return null
+            return CarryOnCompatImpl.controllerFactory
+        }
 
     @JvmStatic
     fun isPlayerCarrying(player: Player): Boolean = isModLoaded && CarryOnCompatImpl.isPlayerCarrying(player)

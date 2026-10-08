@@ -192,7 +192,7 @@ object PlayerAnimationController {
                 OffhandAttackAnimationPredicate()
             )
         }
-        CarryOnCompat.getControllerFactory()?.let { registerController("carry_on", it) }
+        CarryOnCompat.controllerFactory?.let { registerController("carry_on", it) }
         registerController("cap") { animationEntryKey, entity ->
             PredicateBasedController(
                 entity,
