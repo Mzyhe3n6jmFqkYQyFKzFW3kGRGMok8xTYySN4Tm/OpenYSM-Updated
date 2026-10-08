@@ -53,7 +53,7 @@ class S2CSyncProjectileModelPacket(
         @Environment(EnvType.CLIENT)
         fun handleCapability(entity: Entity, capability: ProjectileModelCapability, floatMap: Int2FloatOpenHashMap) {
             ProjectileCapability[entity]?.let { projectileCapability ->
-                projectileCapability.updateModelId(capability.getOwnerModelId())
+                projectileCapability.updateModelId(capability.ownerModelId)
                 projectileCapability.setFloatProperties(floatMap)
             }
         }
