@@ -45,13 +45,15 @@ open class PlayerGeoEntity(
             return playerCapability.textureLocation
         }
 
-    override fun getHeightScale(): Float {
-        return getModelAssembly()?.modelData?.modelProperties?.heightScale ?: 1.0f
-    }
+    override val heightScale: Float
+        get() {
+            return getModelAssembly()?.modelData?.modelProperties?.heightScale ?: 1.0f
+        }
 
-    override fun getWidthScale(): Float {
-        return getModelAssembly()?.modelData?.modelProperties?.widthScale ?: 1.0f
-    }
+    override val widthScale: Float
+        get() {
+            return getModelAssembly()?.modelData?.modelProperties?.widthScale ?: 1.0f
+        }
 
     override fun getAnimation(str: String): Animation? {
         return getModelAssembly()?.animationBundle?.armAnimations?.get(str)

@@ -16,10 +16,10 @@ object MathInterpolation {
         val positionDelta = context.geoInstance().positionTracker.positionDelta
         val d = positionDelta.x
         val d2 = positionDelta.z
-        if (sqrt(d * d + d2 * d2) < 1.0E-4) {
-            return 0.0
-        }
-        val angleDeg = MathUtil.radiansToDegrees(Mth.atan2(d2, d).toFloat()) - (90.0f - Mth.wrapDegrees(-entity.getViewYRot(frameTime)))
+        if (sqrt(d * d + d2 * d2) < 1.0E-4) return 0.0
+        val angleDeg = MathUtil.radiansToDegrees(Mth.atan2(d2, d).toFloat()) - (90.0f - Mth.wrapDegrees(
+            -entity.getViewYRot(frameTime)
+        ))
         val rad = MathUtil.degreesToRadians(Mth.wrapDegrees(angleDeg))
         return cos(rad.toDouble())
     }
@@ -31,10 +31,10 @@ object MathInterpolation {
         val positionDelta = context.geoInstance().positionTracker.positionDelta
         val d = positionDelta.x
         val d2 = positionDelta.z
-        if (sqrt(d * d + d2 * d2) < 1.0E-4) {
-            return 0.0
-        }
-        val angleDeg = MathUtil.radiansToDegrees(Mth.atan2(d2, d).toFloat()) - (90.0f - Mth.wrapDegrees(-entity.getViewYRot(frameTime)))
+        if (sqrt(d * d + d2 * d2) < 1.0E-4) return 0.0
+        val angleDeg = MathUtil.radiansToDegrees(Mth.atan2(d2, d).toFloat()) - (90.0f - Mth.wrapDegrees(
+            -entity.getViewYRot(frameTime)
+        ))
         val rad = MathUtil.degreesToRadians(Mth.wrapDegrees(angleDeg))
         return sin(rad.toDouble())
     }

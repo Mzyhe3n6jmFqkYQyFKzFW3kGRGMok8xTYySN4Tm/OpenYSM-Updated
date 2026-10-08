@@ -36,7 +36,8 @@ open class MaidAnimatable(entityMaid: EntityMaid, isActive: Boolean) :
         return MaidFrameState(entity)
     }
 
-    override fun getPositionTracker(): MaidFrameState = super.getPositionTracker() as MaidFrameState
+    override val positionTracker: MaidFrameState
+        get() = super.positionTracker as MaidFrameState
 
     fun hasModel(): Boolean = entity.rouletteAnimDirty
 
@@ -71,7 +72,7 @@ open class MaidAnimatable(entityMaid: EntityMaid, isActive: Boolean) :
         }
     }
 
-    override fun getGeoModel(): ILocationModel? = currentModel?.getTouhouMaidData<ILocationModel>()
+    override fun getGeoModel(): ILocationModel? = currentModel2?.getTouhouMaidData<ILocationModel>()
 
     override fun setYsmModel(modelId: String, texture: String) {
         initModelWithTexture(modelId, texture)

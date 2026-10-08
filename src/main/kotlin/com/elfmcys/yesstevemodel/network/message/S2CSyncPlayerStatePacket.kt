@@ -333,7 +333,7 @@ class S2CSyncPlayerStatePacket(
                             }
                         }
                     }
-                    cap.getPositionTracker().applySyncMessage(message)
+                    cap.positionTracker.applySyncMessage(message)
                 }
             }
         }
