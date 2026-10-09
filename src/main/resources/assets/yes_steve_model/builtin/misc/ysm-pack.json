@@ -5,6 +5,10 @@
     "zh_cn": {
       "name": "杂项模型",
       "description": "一些杂项模型"
+    },
+    "zh_tw": {
+      "name": "雜項模型",
+      "description": "一些雜項模型"
     }
   }
 }

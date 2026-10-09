@@ -19,43 +19,20 @@ object ModelMetadataPresenter {
     const val DEFAULT_LOCALE = "en_us"
 
     @JvmStatic
-    fun normalizeLocale(locale: String): String {
-        return locale.lowercase(Locale.ROOT).replace('-', '_')
-    }
+    fun normalizeLocale(locale: String): String =
+        locale.lowercase(Locale.ROOT).replace('-', '_')
 
     @JvmStatic
     fun findLocaleMap(translations: Map<String, Map<String, String>>?, targetLocale: String): Map<String, String>? {
         if (translations.isNullOrEmpty()) return null
         val normalized = normalizeLocale(targetLocale)
 
-        // 1. Direct or normalized match
+        // Direct or normalized exact match
         translations[normalized]?.let { return it }
         for ((key, value) in translations) {
-            if (normalizeLocale(key) == normalized) {
-                return value
-            }
+            if (normalizeLocale(key) == normalized) return value
         }
-
-        // 2. Language family / prefix match (e.g. "zh" for "zh_tw", "zh_cn", "zh_hk")
-        val langPrefix = normalized.substringBefore('_')
-        for ((key, value) in translations) {
-            val k = normalizeLocale(key)
-            if (k.substringBefore('_') == langPrefix) {
-                return value
-            }
-        }
-
-        // 3. Fallback to English ("en_us", "en")
-        translations[DEFAULT_LOCALE]?.let { return it }
-        for ((key, value) in translations) {
-            val k = normalizeLocale(key)
-            if (k == "en_us" || k == "en_gb" || k.substringBefore('_') == "en") {
-                return value
-            }
-        }
-
-        // 4. Any available language
-        return translations.values.firstOrNull()
+        return null
     }
 
     @JvmStatic
@@ -69,14 +46,13 @@ object ModelMetadataPresenter {
     }
 
     @JvmStatic
-    fun getLocalizedModelString(modelAssembly: ModelAssembly, key: String, defaultValue: String): String {
-        return getLocalizedModelStringForLocale(
+    fun getLocalizedModelString(modelAssembly: ModelAssembly, key: String, defaultValue: String): String =
+        getLocalizedModelStringForLocale(
             modelAssembly,
             Minecraft.getInstance().languageManager.selected,
             key,
             defaultValue
         )
-    }
 
     @JvmStatic
     fun getLocalizedModelStringForLocale(
@@ -90,7 +66,8 @@ object ModelMetadataPresenter {
         return lookupTranslation(metadataMap, locale, key, defaultValue)
     }
 
-    private fun lookupTranslation(
+    @JvmStatic
+    fun lookupTranslation(
         translations: Map<String, Map<String, String>>,
         locale: String,
         key: String,
@@ -100,17 +77,10 @@ object ModelMetadataPresenter {
         val primaryVal = primary?.get(key)
         if (!primaryVal.isNullOrBlank()) return primaryVal
 
-        val fallback = findLocaleMap(translations, DEFAULT_LOCALE)
-        if (fallback != null && fallback !== primary) {
-            val fbVal = fallback[key]
+        if (normalizeLocale(locale) != DEFAULT_LOCALE) {
+            val fallback = findLocaleMap(translations, DEFAULT_LOCALE)
+            val fbVal = fallback?.get(key)
             if (!fbVal.isNullOrBlank()) return fbVal
-        }
-
-        for (other in translations.values) {
-            if (other !== primary && other !== fallback) {
-                val otherVal = other[key]
-                if (!otherVal.isNullOrBlank()) return otherVal
-            }
         }
 
         return defaultValue
