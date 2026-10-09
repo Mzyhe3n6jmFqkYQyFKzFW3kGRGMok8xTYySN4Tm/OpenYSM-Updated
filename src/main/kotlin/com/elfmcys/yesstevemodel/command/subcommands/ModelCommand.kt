@@ -4,6 +4,7 @@ import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
 import com.elfmcys.yesstevemodel.event.CommandRegistry
 import com.elfmcys.yesstevemodel.model.ServerModelManager
+import com.elfmcys.yesstevemodel.model.ServerModelSelection
 import com.elfmcys.yesstevemodel.model.format.ServerModelData
 import com.elfmcys.yesstevemodel.util.YSMMessageFormatter
 import com.google.gson.Gson
@@ -109,6 +110,7 @@ object ModelCommand {
                 ModelInfoCapability[player]?.let { cap ->
                     cap.setModelAndTexture(modelName, finalTextureName)
                     cap.setMandatory(true)
+                    ServerModelSelection.savePlayerSelection(player.uuid, modelName, finalTextureName)
                     context.source.sendSuccess({
                         Component.translatable(
                             "message.yes_steve_model.model.set.success",
@@ -126,6 +128,7 @@ object ModelCommand {
                     if (!ServerModelManager.authModels.contains(modelName) || authCap.containsModel(modelName)) {
                         cap.setModelAndTexture(modelName, finalTextureName)
                         cap.setMandatory(true)
+                        ServerModelSelection.savePlayerSelection(player.uuid, modelName, finalTextureName)
                         context.source.sendSuccess({
                             Component.translatable(
                                 "message.yes_steve_model.model.set.success",

@@ -1,6 +1,7 @@
 package com.elfmcys.yesstevemodel.client.renderer
 
 import com.elfmcys.yesstevemodel.client.ClientModelManager
+import com.elfmcys.yesstevemodel.client.ClientOnlyMode
 import com.elfmcys.yesstevemodel.config.LoadingStateConfig
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.Font
@@ -71,16 +72,19 @@ class ModelSyncStateOverlay : HudOverlay {
         }
 
         val syncStatus = ClientModelManager.syncStatus
+        val isClientOnly = ClientOnlyMode.isActive
+        val titleKey = if (isClientOnly) "gui.yes_steve_model.client_hint.title" else "gui.yes_steve_model.sync_hint.title"
 
         if (syncStatus.currentState == ClientModelManager.SyncState.IDLE) {
             val pendingModelCount = ClientModelManager.pendingModelCount
             if (pendingModelCount > 0) {
                 val loadedModelCount = ClientModelManager.modelAssemblyMap.size
                 val totalModelCount = loadedModelCount + pendingModelCount
-                val loadingText: MutableComponent = Component.translatable("gui.yes_steve_model.sync_hint.title")
+                val loadingTextKey = if (isClientOnly) "gui.yes_steve_model.client_hint.loading_models" else "gui.yes_steve_model.sync_hint.loading_models"
+                val loadingText: MutableComponent = Component.translatable(titleKey)
                     .append(
                         Component.translatable(
-                            "gui.yes_steve_model.sync_hint.loading_models",
+                            loadingTextKey,
                             pendingModelCount,
                             totalModelCount
                         ).withStyle(ChatFormatting.YELLOW)
@@ -93,24 +97,28 @@ class ModelSyncStateOverlay : HudOverlay {
             return
         }
 
-        val prefixText: MutableComponent = Component.translatable("gui.yes_steve_model.sync_hint.title")
+        val prefixText: MutableComponent = Component.translatable(titleKey)
 
         when (syncStatus.currentState) {
             ClientModelManager.SyncState.WAITING -> {
-                prefixText.append(Component.translatable("gui.yes_steve_model.sync_hint.waiting").withStyle(ChatFormatting.AQUA))
+                val waitKey = if (isClientOnly) "gui.yes_steve_model.client_hint.waiting" else "gui.yes_steve_model.sync_hint.waiting"
+                prefixText.append(Component.translatable(waitKey).withStyle(ChatFormatting.AQUA))
                 resetAnimation()
             }
             ClientModelManager.SyncState.LOADING -> {
-                prefixText.append(Component.translatable("gui.yes_steve_model.sync_hint.loading").withStyle(ChatFormatting.GOLD))
+                val loadKey = if (isClientOnly) "gui.yes_steve_model.client_hint.loading" else "gui.yes_steve_model.sync_hint.loading"
+                prefixText.append(Component.translatable(loadKey).withStyle(ChatFormatting.GOLD))
                 resetAnimation()
             }
             ClientModelManager.SyncState.PREPARING -> {
-                prefixText.append(Component.translatable("gui.yes_steve_model.sync_hint.preparing").withStyle(ChatFormatting.LIGHT_PURPLE))
+                val prepKey = if (isClientOnly) "gui.yes_steve_model.client_hint.preparing" else "gui.yes_steve_model.sync_hint.preparing"
+                prefixText.append(Component.translatable(prepKey).withStyle(ChatFormatting.LIGHT_PURPLE))
                 resetAnimation()
             }
             ClientModelManager.SyncState.SYNCING -> {
                 if (syncStatus.syncedModels == 0) {
-                    prefixText.append(Component.translatable("gui.yes_steve_model.sync_hint.syncing").withStyle(ChatFormatting.RED))
+                    val syncKey = if (isClientOnly) "gui.yes_steve_model.client_hint.loading" else "gui.yes_steve_model.sync_hint.syncing"
+                    prefixText.append(Component.translatable(syncKey).withStyle(ChatFormatting.RED))
                     resetAnimation()
                 } else {
                     prefixText.append(
