@@ -2,6 +2,7 @@
 
 ## Credits
 
+* [YesSteveModel/LgeacyYSM](https://github.com/YesSteveModel/LgeacyYSM)
 * [OpenYSM/OpenYSM](https://github.com/OpenYSM/OpenYSM)
 * [IzumiiKonata/OpenYSM-Updated](https://github.com/IzumiiKonata/OpenYSM-Updated)
 * [gege-tlph/OpenYSM-Updated](https://github.com/gege-tlph/OpenYSM-Updated)
