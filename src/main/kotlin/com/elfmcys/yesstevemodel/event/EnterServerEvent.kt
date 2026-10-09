@@ -47,13 +47,11 @@ object EnterServerEvent {
                 }
             }
             AuthModelsCapability[player]?.let { authModelsCap ->
-                for (modelId in ServerModelManager.authModels) {
+                val savedAuth = ServerModelSelection.getAuthModels(player.uuid)
+                for (modelId in savedAuth) {
                     authModelsCap.addModel(modelId)
                 }
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.authModels), player)
-            }
-            StarModelsCapability[player]?.let { starModelsCap ->
-                NetworkHandler.sendToClientPlayer(S2CSyncStarModelsPacket(starModelsCap.starModels), player)
             }
         }
     }

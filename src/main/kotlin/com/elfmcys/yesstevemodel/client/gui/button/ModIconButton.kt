@@ -3,8 +3,6 @@ package com.elfmcys.yesstevemodel.client.gui.button
 import com.elfmcys.yesstevemodel.NameSpaces
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
 import com.elfmcys.yesstevemodel.capability.StarModelsCapability
-import com.elfmcys.yesstevemodel.network.NetworkHandler
-import com.elfmcys.yesstevemodel.network.message.C2SSetStarModelPacket
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.input.InputWithModifiers
@@ -43,10 +41,8 @@ class ModIconButton(x: Int, y: Int) : FlatColorButton(x, y, 20, 20, Component.em
         val modelId = cap.modelId
         if (starCap.containsModel(modelId)) {
             starCap.removeModel(modelId)
-            NetworkHandler.sendToServer(C2SSetStarModelPacket.remove(modelId))
         } else {
             starCap.addModel(modelId)
-            NetworkHandler.sendToServer(C2SSetStarModelPacket.add(modelId))
         }
     }
 

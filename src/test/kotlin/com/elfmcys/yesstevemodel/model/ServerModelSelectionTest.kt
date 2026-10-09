@@ -64,4 +64,47 @@ class ServerModelSelectionTest {
         assertEquals(20.0f, ServerModelSelection.getRoamingVars(player2, "model_b")["val"])
         assertTrue(ServerModelSelection.getRoamingVars(player1, "model_b").isEmpty())
     }
+
+    @Test
+    fun testAuthModelsManagement() {
+        assertTrue(ServerModelSelection.getAuthModels(player1).isEmpty())
+
+        ServerModelSelection.addAuthModel(player1, "vip/exclusive_01")
+        ServerModelSelection.addAllAuthModels(player1, listOf("vip/exclusive_02", "vip/exclusive_03"))
+
+        val auths = ServerModelSelection.getAuthModels(player1)
+        assertEquals(3, auths.size)
+        assertTrue(auths.contains("vip/exclusive_01"))
+        assertTrue(auths.contains("vip/exclusive_02"))
+        assertTrue(auths.contains("vip/exclusive_03"))
+
+        ServerModelSelection.removeAuthModel(player1, "vip/exclusive_02")
+        val authsAfterRemove = ServerModelSelection.getAuthModels(player1)
+        assertEquals(2, authsAfterRemove.size)
+        assertFalse(authsAfterRemove.contains("vip/exclusive_02"))
+
+        // Player 2 is isolated
+        assertTrue(ServerModelSelection.getAuthModels(player2).isEmpty())
+
+        ServerModelSelection.clearAuthModels(player1)
+        assertTrue(ServerModelSelection.getAuthModels(player1).isEmpty())
+    }
+
+    @Test
+    fun testNbtSerializationRoundTrip() {
+        val player = PlayerServerData(
+            modelId = "test_model",
+            textureId = "test_tex"
+        )
+        player.roamingStorage["test_model"] = java.util.concurrent.ConcurrentHashMap(mapOf("slider1" to 5.5f))
+        player.authModels.addAll(listOf("auth_1", "auth_2"))
+
+        val tag = player.save()
+        val loaded = PlayerServerData.load(tag)
+
+        assertEquals("test_model", loaded.modelId)
+        assertEquals("test_tex", loaded.textureId)
+        assertEquals(5.5f, loaded.roamingStorage["test_model"]?.get("slider1"))
+        assertEquals(setOf("auth_1", "auth_2"), loaded.authModels)
+    }
 }
