@@ -9,10 +9,7 @@ import com.elfmcys.yesstevemodel.util.AbstractManager
 import com.elfmcys.yesstevemodel.util.getCompoundOrNull
 import com.elfmcys.yesstevemodel.util.getListOrNull
 import com.elfmcys.yesstevemodel.util.getStringOrNull
-import com.google.gson.Gson
-import com.google.gson.JsonObject
 import net.minecraft.nbt.*
-import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -74,7 +71,7 @@ data class PlayerServerData(
             }
             tag.getListOrNull("auth_models")?.let { authList ->
                 for (i in authList.indices) {
-                    val authStr = authList.getString(i).orElse("")
+                    val authStr = authList.getString(i).orElse("")!!
                     if (authStr.isNotEmpty()) record.authModels.add(authStr)
                 }
             }
@@ -124,15 +121,12 @@ data class ServerSelectionData(
 }
 
 object ServerModelSelection : AbstractManager<ServerSelectionData>("server_selection.nbt", ServerSelectionData()) {
-    private val LEGACY_JSON = Constants.ConfigDir.resolve("server_selection.json")
 
     override fun loadData(): ServerSelectionData =
         runCatching {
             if (Files.exists(dataPath)) {
                 val tag = NbtIo.readCompressed(dataPath, NbtAccounter.unlimitedHeap())
                 ServerSelectionData.load(tag)
-            } else if (Files.exists(LEGACY_JSON)) {
-                loadFromLegacyJson()
             } else {
                 ServerSelectionData()
             }
@@ -140,40 +134,6 @@ object ServerModelSelection : AbstractManager<ServerSelectionData>("server_selec
             Constants.LOGGER.error("Failed to load server model selection from NBT", it)
             ServerSelectionData()
         }
-
-    private fun loadFromLegacyJson(): ServerSelectionData {
-        val selection = ServerSelectionData()
-        runCatching {
-            val json = Gson().fromJson(
-                String(Files.readAllBytes(LEGACY_JSON), StandardCharsets.UTF_8),
-                JsonObject::class.java
-            ) ?: return selection
-            val playersObj = if (json.has("players")) json.getAsJsonObject("players") else json
-            for (uuidStr in playersObj.keySet()) {
-                val playerElem = playersObj.get(uuidStr)
-                if (!playerElem.isJsonObject) continue
-                val playerObj = playerElem.asJsonObject
-                val record = PlayerServerData()
-                if (playerObj.has("model_id")) record.modelId = playerObj.get("model_id").asString
-                if (playerObj.has("texture_id")) record.textureId = playerObj.get("texture_id").asString
-                if (playerObj.has("roaming_storage")) {
-                    val roamingObj = playerObj.getAsJsonObject("roaming_storage")
-                    for (mId in roamingObj.keySet()) {
-                        val varsObj = roamingObj.getAsJsonObject(mId)
-                        val varsMap = ConcurrentHashMap<String, Float>()
-                        for (varName in varsObj.keySet()) {
-                            varsMap[varName] = varsObj.get(varName).asFloat
-                        }
-                        record.roamingStorage[mId] = varsMap
-                    }
-                }
-                selection.players[uuidStr] = record
-            }
-        }.onFailure {
-            Constants.LOGGER.error("Failed to load server model selection from legacy JSON", it)
-        }
-        return selection
-    }
 
     override fun saveNow(saveData: ServerSelectionData) {
         runCatching {
