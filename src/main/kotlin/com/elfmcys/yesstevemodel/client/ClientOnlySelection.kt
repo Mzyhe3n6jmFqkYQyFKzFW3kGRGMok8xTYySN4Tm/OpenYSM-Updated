@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.concurrent.ConcurrentHashMap
 
 @Environment(EnvType.CLIENT)
 object ClientOnlySelection {
@@ -20,24 +21,33 @@ object ClientOnlySelection {
     @Volatile
     private var _textureId: String? = null
 
+    private val _roamingStorage: MutableMap<String, MutableMap<String, Float>> = ConcurrentHashMap()
+
     @Volatile
     private var loaded: Boolean = false
 
     @Synchronized
     fun save(model: String?, texture: String?) {
+        load()
         _modelId = model
         _textureId = texture
-        loaded = true
-        runCatching {
-            Files.createDirectories(FILE.parent)
-            val json = JsonObject().apply {
-                addProperty("model_id", model)
-                addProperty("texture_id", texture)
-            }
-            Files.write(FILE, GSON.toJson(json).toByteArray(StandardCharsets.UTF_8))
-        }.onFailure {
-            Constants.LOGGER.error("Failed to save client-only model selection", it)
-        }
+        persistToDisk()
+    }
+
+    @Synchronized
+    fun updateRoamingVars(model: String?, vars: Map<String, Float>) {
+        if (model.isNullOrEmpty() || vars.isEmpty()) return
+        load()
+        val map = _roamingStorage.computeIfAbsent(model) { ConcurrentHashMap() }
+        map.putAll(vars)
+        persistToDisk()
+    }
+
+    @Synchronized
+    fun getRoamingVars(model: String?): Map<String, Float> {
+        if (model.isNullOrEmpty()) return emptyMap()
+        load()
+        return _roamingStorage[model]?.toMap() ?: emptyMap()
     }
 
     private fun load() {
@@ -55,8 +65,43 @@ object ClientOnlySelection {
                 ?: return
             if (json.has("model_id")) _modelId = json.get("model_id").asString
             if (json.has("texture_id")) _textureId = json.get("texture_id").asString
+            _roamingStorage.clear()
+            if (json.has("roaming_storage")) {
+                val roamingObj = json.getAsJsonObject("roaming_storage")
+                for (mId in roamingObj.keySet()) {
+                    val varsObj = roamingObj.getAsJsonObject(mId)
+                    val varsMap = ConcurrentHashMap<String, Float>()
+                    for (varName in varsObj.keySet()) {
+                        varsMap[varName] = varsObj.get(varName).asFloat
+                    }
+                    _roamingStorage[mId] = varsMap
+                }
+            }
         }.onFailure { e ->
             Constants.LOGGER.error("Failed to read client-only model selection", e)
+        }
+    }
+
+    @Synchronized
+    private fun persistToDisk() {
+        runCatching {
+            Files.createDirectories(FILE.parent)
+            val json = JsonObject().apply {
+                addProperty("model_id", _modelId)
+                addProperty("texture_id", _textureId)
+                if (_roamingStorage.isNotEmpty()) {
+                    val roamingJson = JsonObject()
+                    _roamingStorage.forEach { (mId, vars) ->
+                        val varsJson = JsonObject()
+                        vars.forEach { (k, v) -> varsJson.addProperty(k, v) }
+                        roamingJson.add(mId, varsJson)
+                    }
+                    add("roaming_storage", roamingJson)
+                }
+            }
+            Files.write(FILE, GSON.toJson(json).toByteArray(StandardCharsets.UTF_8))
+        }.onFailure {
+            Constants.LOGGER.error("Failed to save client-only model selection", it)
         }
     }
 

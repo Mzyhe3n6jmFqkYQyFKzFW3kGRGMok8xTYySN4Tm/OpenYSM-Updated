@@ -3,6 +3,8 @@
 package com.elfmcys.yesstevemodel.capability
 
 import com.elfmcys.yesstevemodel.capability.fabric.PlayerCapabilityImpl
+import com.elfmcys.yesstevemodel.client.ClientOnlyMode
+import com.elfmcys.yesstevemodel.client.ClientOnlySelection
 import com.elfmcys.yesstevemodel.client.animation.molang.struct.RoamingStruct
 import com.elfmcys.yesstevemodel.client.animation.molang.struct.RoamingSyncBatch
 import com.elfmcys.yesstevemodel.client.entity.CustomPlayerEntity
@@ -66,6 +68,12 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
             }
             if (isLocalPlayerModel && currentModelHashId != 0) {
                 val newVars = Int2FloatOpenHashMap()
+                if (ClientOnlyMode.isActive) {
+                    val savedVars = ClientOnlySelection.getRoamingVars(modelId)
+                    for ((k, v) in savedVars) {
+                        newVars.put(StringPool.computeIfAbsent(k), v)
+                    }
+                }
                 molangVarsMap.computeIfAbsent(currentModelHashId) { MolangVarHolder() }.currentVars = newVars
                 serverVarContainer = RoamingStruct(currentModelHashId, newVars)
                 return
@@ -160,6 +168,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
                 val size = syncBatch.changedVariables().size
                 val strArr = arrayOfNulls<String>(size)
                 val fArr = FloatArray(size)
+                val changedMap = HashMap<String, Float>(size)
                 var i = 0
                 val it = Int2FloatMaps.fastIterable(syncBatch.changedVariables()).iterator()
                 while (it.hasNext()) {
@@ -168,6 +177,7 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
                     if (str.length <= RoamingStruct.MAX_VAR_NAME_LENGTH) {
                         strArr[i] = str
                         fArr[i] = entry.floatValue
+                        changedMap[str] = entry.floatValue
                     } else {
                         strArr[i] = StringPool.EMPTY
                         fArr[i] = 0.0f
@@ -175,16 +185,20 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
                     i++
                 }
 
-                NetworkHandler.sendToServer(
-                    C2SCompleteFeedbackPacket(
-                        FeedbackData(
-                            currentModelHashId,
-                            Object2FloatArrayMap(strArr, fArr),
-                            null,
-                            entity.id
+                if (ClientOnlyMode.isActive) {
+                    ClientOnlySelection.updateRoamingVars(modelId, changedMap)
+                } else {
+                    NetworkHandler.sendToServer(
+                        C2SCompleteFeedbackPacket(
+                            FeedbackData(
+                                currentModelHashId,
+                                Object2FloatArrayMap(strArr, fArr),
+                                null,
+                                entity.id
+                            )
                         )
                     )
-                )
+                }
             }
         }
     }
