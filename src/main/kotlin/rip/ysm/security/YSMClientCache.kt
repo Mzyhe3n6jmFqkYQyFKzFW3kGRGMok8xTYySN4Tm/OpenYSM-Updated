@@ -65,7 +65,7 @@ object YSMClientCache {
                 val high = Character.digit(fileName[i * 2], 16)
                 val low = Character.digit(fileName[i * 2 + 1], 16)
                 if (high == -1 || low == -1) return null
-                buf[i] = ((high shl 4) or low).toByte()
+                buf[i] = (high shl 4 or low).toByte()
             }
 
             for (i in buf.indices) {
