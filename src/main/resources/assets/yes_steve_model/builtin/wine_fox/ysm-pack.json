@@ -2,6 +2,50 @@
   "name": "Wine Fox & Friends",
   "description": "Cute Wine Fox and her friends",
   "lang": {
+    "en_us": {
+      "name": "Wine Fox & Friends",
+      "description": "Cute Wine Fox and her friends"
+    },
+    "es_es": {
+      "name": "Wine Fox y sus amigos",
+      "description": "La linda Wine Fox y sus amigos"
+    },
+    "fr_fr": {
+      "name": "Wine Fox et ses amis",
+      "description": "L'adorable Wine Fox et ses amis"
+    },
+    "id_id": {
+      "name": "Wine Fox & Teman-teman",
+      "description": "Wine Fox yang lucu dan teman-temannya"
+    },
+    "ja_jp": {
+      "name": "酒狐とお友達",
+      "description": "かわいい酒狐とお友達"
+    },
+    "ko_kr": {
+      "name": "술 여우와 친구들",
+      "description": "귀여운 술 여우와 친구들"
+    },
+    "pt_br": {
+      "name": "Wine Fox e Amigos",
+      "description": "A fofa Wine Fox e seus amigos"
+    },
+    "ru_ru": {
+      "name": "Винная Лиса и друзья",
+      "description": "Милая Винная Лиса и её друзья"
+    },
+    "tr_tr": {
+      "name": "Şarap Tilkisi ve Arkadaşları",
+      "description": "Sevimli Şarap Tilkisi ve arkadaşları"
+    },
+    "uk_ua": {
+      "name": "Винна Лисиця та друзі",
+      "description": "Мила Винна Лисиця та її друзі"
+    },
+    "vi_vn": {
+      "name": "Cáo Rượu và Những người bạn",
+      "description": "Cáo Rượu dễ thương và những người bạn"
+    },
     "zh_cn": {
       "name": "酒狐与小伙伴",
       "description": "可爱酒狐和她的小伙伴们"
