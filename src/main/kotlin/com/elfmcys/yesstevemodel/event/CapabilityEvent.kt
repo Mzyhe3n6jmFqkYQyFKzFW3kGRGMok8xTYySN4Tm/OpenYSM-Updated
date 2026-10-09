@@ -72,13 +72,11 @@ object CapabilityEvent {
                 }
             }
             getAuthModelsCap(entity)?.let { authModelsCap ->
-                for (modelId in ServerModelManager.authModels) {
+                val savedAuth = ServerModelSelection.getAuthModels(entity.uuid)
+                for (modelId in savedAuth) {
                     authModelsCap.addModel(modelId)
                 }
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.authModels), entity)
-            }
-            getStarModelsCap(entity)?.let { starModelsCap ->
-                NetworkHandler.sendToClientPlayer(S2CSyncStarModelsPacket(starModelsCap.starModels), entity)
             }
         }
     }

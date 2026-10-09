@@ -4,6 +4,7 @@ import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
 import com.elfmcys.yesstevemodel.event.CommandRegistry
 import com.elfmcys.yesstevemodel.model.ServerModelManager
+import com.elfmcys.yesstevemodel.model.ServerModelSelection
 import com.elfmcys.yesstevemodel.network.NetworkHandler
 import com.elfmcys.yesstevemodel.network.message.S2CSyncAuthModelsPacket
 import com.elfmcys.yesstevemodel.util.YSMMessageFormatter
@@ -61,6 +62,7 @@ object AuthCommand {
         targets.forEach { player ->
             AuthModelsCapability[player]?.let { ownModelCap ->
                 ownModelCap.addModel(string)
+                ServerModelSelection.addAuthModel(player.uuid, string)
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.authModels), player)
                 context.source.sendSuccess({
                     Component.translatable(
@@ -81,6 +83,7 @@ object AuthCommand {
             AuthModelsCapability[player]?.let { ownModelCap ->
                 val setKeySet = ServerModelManager.serverModelInfo.keys
                 setKeySet.forEach(ownModelCap::addModel)
+                ServerModelSelection.addAllAuthModels(player.uuid, setKeySet)
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.authModels), player)
                 context.source.sendSuccess({
                     Component.translatable(
@@ -100,11 +103,13 @@ object AuthCommand {
         targets.forEach { player ->
             AuthModelsCapability[player]?.let { ownModelsCap ->
                 ownModelsCap.removeModel(modelName)
+                ServerModelSelection.removeAuthModel(player.uuid, modelName)
                 ModelInfoCapability[player]?.let { modelIdCap ->
                     if (ServerModelManager.authModels
                             .contains(modelIdCap.modelId) && !ownModelsCap.containsModel(modelIdCap.modelId)
                     ) {
                         modelIdCap.resetToDefault()
+                        ServerModelSelection.savePlayerSelection(player.uuid, modelIdCap.modelId, modelIdCap.selectTexture)
                     }
                 }
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelsCap.authModels), player)
@@ -125,9 +130,11 @@ object AuthCommand {
         EntityArgument.getPlayers(context, TARGETS_NAME).forEach { player ->
             AuthModelsCapability[player]?.let { ownModelCap ->
                 ownModelCap.clear()
+                ServerModelSelection.clearAuthModels(player.uuid)
                 ModelInfoCapability[player]?.let { modelIdCap ->
                     if (ServerModelManager.authModels.contains(modelIdCap.modelId)) {
                         modelIdCap.resetToDefault()
+                        ServerModelSelection.savePlayerSelection(player.uuid, modelIdCap.modelId, modelIdCap.selectTexture)
                     }
                 }
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.authModels), player)

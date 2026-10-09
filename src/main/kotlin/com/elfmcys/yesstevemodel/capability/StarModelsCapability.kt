@@ -3,36 +3,54 @@
 package com.elfmcys.yesstevemodel.capability
 
 import com.elfmcys.yesstevemodel.capability.fabric.StarModelsCapabilityImpl
+import com.elfmcys.yesstevemodel.client.ClientOnlySelection
 import com.google.common.collect.Sets
-import net.minecraft.nbt.CompoundTag
+import net.fabricmc.api.EnvType
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.world.entity.player.Player
 
 class StarModelsCapability {
-    var starModels: MutableSet<String> = Sets.newHashSet()
+    var starModels: MutableSet<String> = Sets.newConcurrentHashSet()
 
-    fun containsModel(str: String): Boolean = starModels.contains(str)
-
-    fun addModel(str: String) = starModels.add(str)
-
-    fun removeModel(str: String) = starModels.remove(str)
-
-    fun clear() = starModels.clear()
-
-    fun serializeNBT(): CompoundTag {
-        val compoundTag = CompoundTag()
-        val compoundTag2 = CompoundTag()
-        for (str in starModels) {
-            compoundTag2.putBoolean(str, true)
+    init {
+        runCatching {
+            if (FabricLoader.getInstance().environmentType == EnvType.CLIENT) {
+                starModels.addAll(ClientOnlySelection.getStarModels())
+            }
         }
-        compoundTag.put("star_models", compoundTag2)
-        return compoundTag
     }
 
-    fun deserializeNBT(compoundTag: CompoundTag) {
+    fun containsModel(str: String): Boolean =
+        starModels.contains(str) || (FabricLoader.getInstance().environmentType == EnvType.CLIENT && ClientOnlySelection.isModelStarred(str))
+
+    fun addModel(str: String): Boolean {
+        val added = starModels.add(str)
+        runCatching {
+            if (FabricLoader.getInstance().environmentType == EnvType.CLIENT) {
+                ClientOnlySelection.addStarModel(str)
+            }
+        }
+        return added
+    }
+
+    fun removeModel(str: String): Boolean {
+        val removed = starModels.remove(str)
+        runCatching {
+            if (FabricLoader.getInstance().environmentType == EnvType.CLIENT) {
+                ClientOnlySelection.removeStarModel(str)
+            }
+        }
+        return removed
+    }
+
+    fun clear() {
         starModels.clear()
-        val compound = compoundTag.getCompoundOrEmpty("star_models")
-        for (str in compound.keySet()) {
-            starModels.add(str)
+        runCatching {
+            if (FabricLoader.getInstance().environmentType == EnvType.CLIENT) {
+                for (model in ClientOnlySelection.getStarModels()) {
+                    ClientOnlySelection.removeStarModel(model)
+                }
+            }
         }
     }
 

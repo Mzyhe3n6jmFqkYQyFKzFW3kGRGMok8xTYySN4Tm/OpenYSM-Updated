@@ -2,12 +2,18 @@ package com.elfmcys.yesstevemodel.client
 
 import com.elfmcys.yesstevemodel.client.animation.molang.struct.RoamingStruct
 import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ClientOnlyModeTest {
+
+    @BeforeTest
+    fun setUp() {
+        ClientOnlySelection.clear()
+    }
 
     @Test
     fun testClientOnlySelection() {
@@ -40,6 +46,41 @@ class ClientOnlyModeTest {
         assertEquals("default", ClientOnlySelection.textureId)
         assertEquals(1.0f, ClientOnlySelection.getRoamingVars("custom/steve_special")["tail"])
         assertEquals(0.0f, ClientOnlySelection.getRoamingVars("wine_fox/01_taisho_maid")["hat"])
+    }
+
+    @Test
+    fun testStarModelsManagement() {
+        assertFalse(ClientOnlySelection.isModelStarred("star_model_1"))
+
+        ClientOnlySelection.addStarModel("star_model_1")
+        ClientOnlySelection.addStarModel("star_model_2")
+
+        assertTrue(ClientOnlySelection.isModelStarred("star_model_1"))
+        assertTrue(ClientOnlySelection.isModelStarred("star_model_2"))
+        assertEquals(2, ClientOnlySelection.getStarModels().size)
+
+        ClientOnlySelection.removeStarModel("star_model_1")
+        assertFalse(ClientOnlySelection.isModelStarred("star_model_1"))
+        assertTrue(ClientOnlySelection.isModelStarred("star_model_2"))
+        assertEquals(1, ClientOnlySelection.getStarModels().size)
+    }
+
+    @Test
+    fun testClientSelectionNbtRoundTrip() {
+        val clientData = ClientSelectionData(
+            modelId = "model_abc",
+            textureId = "tex_def"
+        )
+        clientData.roamingStorage["model_abc"] = java.util.concurrent.ConcurrentHashMap(mapOf("test_v" to 7.8f))
+        clientData.starModels.addAll(listOf("star_a", "star_b"))
+
+        val tag = clientData.save()
+        val loaded = ClientSelectionData.load(tag)
+
+        assertEquals("model_abc", loaded.modelId)
+        assertEquals("tex_def", loaded.textureId)
+        assertEquals(7.8f, loaded.roamingStorage["model_abc"]?.get("test_v"))
+        assertEquals(setOf("star_a", "star_b"), loaded.starModels)
     }
 
     @Test
