@@ -5,7 +5,6 @@ package com.elfmcys.yesstevemodel.model
 import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.NameSpaces
 import com.elfmcys.yesstevemodel.access.ServerCommonPacketListenerImplAccessor
-import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
 import com.elfmcys.yesstevemodel.client.ExportResult
 import com.elfmcys.yesstevemodel.config.ServerConfig
@@ -1079,16 +1078,19 @@ object ServerModelManager {
     fun validatePlayerModel(serverPlayer: ServerPlayer) {
         if (CACHE_NAME_INFO.isNotEmpty()) {
             val modelInfoCap = ModelInfoCapability[serverPlayer] ?: return
-            val authModelsCap = AuthModelsCapability[serverPlayer] ?: return
-            if (authModelsCap.authModels.removeIf { str -> !CACHE_NAME_INFO.containsKey(str) }) {
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.authModels), serverPlayer)
+            val userAuthModels = ServerModelSelection.getAuthModels(serverPlayer.uuid).toMutableSet()
+            if (userAuthModels.removeIf { str -> !CACHE_NAME_INFO.containsKey(str) }) {
+                ServerModelSelection.clearAuthModels(serverPlayer.uuid)
+                ServerModelSelection.addAllAuthModels(serverPlayer.uuid, userAuthModels)
+                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(userAuthModels), serverPlayer)
             }
             val modelId = modelInfoCap.modelId
-            if (!serverModelInfo.containsKey(modelId) || AUTH_MODELS.contains(modelId) && !authModelsCap.authModels
-                    .contains(modelInfoCap.modelId) || !(CACHE_NAME_INFO[modelId] ?: return).modelInfo.textures
+            if (!serverModelInfo.containsKey(modelId) || (AUTH_MODELS.contains(modelId) && !userAuthModels
+                    .contains(modelInfoCap.modelId)) || !(CACHE_NAME_INFO[modelId] ?: return).modelInfo.textures
                     .contains(modelInfoCap.selectTexture)
             ) {
                 modelInfoCap.resetToDefault()
+                ServerModelSelection.savePlayerSelection(serverPlayer.uuid, modelInfoCap.modelId, modelInfoCap.selectTexture)
             }
             modelInfoCap.retainAnimationKeys(modelHashSet)
         }

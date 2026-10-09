@@ -3,12 +3,14 @@
 package com.elfmcys.yesstevemodel.capability
 
 import com.elfmcys.yesstevemodel.capability.fabric.ProjectileModelCapabilityImpl
+import com.elfmcys.yesstevemodel.data.NbtLoad
+import com.elfmcys.yesstevemodel.data.NbtSave
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.projectile.Projectile
 
-class ProjectileModelCapability {
+class ProjectileModelCapability : NbtSave {
     var ownerModelId: String = "default"
         private set
     private var initialized: Boolean = false
@@ -30,7 +32,7 @@ class ProjectileModelCapability {
     val isInitialized: Boolean
         get() = initialized
 
-    fun serializeNBT(): CompoundTag {
+    override fun save(): CompoundTag {
         val compoundTag = CompoundTag()
         compoundTag.putString("owner_model_id", ownerModelId)
         compoundTag.putBoolean("initialized", initialized)
@@ -42,7 +44,7 @@ class ProjectileModelCapability {
         return compoundTag
     }
 
-    fun deserializeNBT(compoundTag: CompoundTag) {
+    fun loadFrom(compoundTag: CompoundTag) {
         ownerModelId = compoundTag.getStringOr("owner_model_id", "default")
         initialized = compoundTag.getBooleanOr("initialized", false)
         molangVars.clear()
@@ -52,7 +54,13 @@ class ProjectileModelCapability {
         }
     }
 
-    companion object {
+    companion object : NbtLoad<ProjectileModelCapability> {
+        override fun load(tag: CompoundTag): ProjectileModelCapability {
+            val capability = ProjectileModelCapability()
+            capability.loadFrom(tag)
+            return capability
+        }
+
         @JvmStatic
         operator fun get(entity: Entity): ProjectileModelCapability? = ProjectileModelCapabilityImpl[entity]
 

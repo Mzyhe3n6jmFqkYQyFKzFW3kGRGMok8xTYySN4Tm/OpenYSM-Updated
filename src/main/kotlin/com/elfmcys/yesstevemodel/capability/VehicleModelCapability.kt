@@ -3,11 +3,13 @@
 package com.elfmcys.yesstevemodel.capability
 
 import com.elfmcys.yesstevemodel.capability.fabric.VehicleModelCapabilityImpl
+import com.elfmcys.yesstevemodel.data.NbtLoad
+import com.elfmcys.yesstevemodel.data.NbtSave
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.entity.Entity
 
-class VehicleModelCapability {
+class VehicleModelCapability : NbtSave {
     var ownerModelId: String = "default"
         private set
     private var initialized: Boolean = false
@@ -29,7 +31,7 @@ class VehicleModelCapability {
     val isInitialized: Boolean
         get() = initialized
 
-    fun serializeNBT(): CompoundTag {
+    override fun save(): CompoundTag {
         val compoundTag = CompoundTag()
         compoundTag.putString("owner_model_id", ownerModelId)
         compoundTag.putBoolean("initialized", initialized)
@@ -41,7 +43,7 @@ class VehicleModelCapability {
         return compoundTag
     }
 
-    fun deserializeNBT(compoundTag: CompoundTag) {
+    fun loadFrom(compoundTag: CompoundTag) {
         ownerModelId = compoundTag.getStringOr("owner_model_id", "default")
         initialized = compoundTag.getBooleanOr("initialized", false)
         molangVars.clear()
@@ -51,7 +53,13 @@ class VehicleModelCapability {
         }
     }
 
-    companion object {
+    companion object : NbtLoad<VehicleModelCapability> {
+        override fun load(tag: CompoundTag): VehicleModelCapability {
+            val capability = VehicleModelCapability()
+            capability.loadFrom(tag)
+            return capability
+        }
+
         @JvmStatic
         operator fun get(entity: Entity): VehicleModelCapability? = VehicleModelCapabilityImpl[entity]
     }

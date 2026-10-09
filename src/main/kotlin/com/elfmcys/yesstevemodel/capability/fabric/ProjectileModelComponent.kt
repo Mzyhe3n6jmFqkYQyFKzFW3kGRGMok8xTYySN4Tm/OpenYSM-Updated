@@ -10,8 +10,8 @@ class ProjectileModelComponent : Component {
     val capability: ProjectileModelCapability = ProjectileModelCapability()
 
     override fun readData(input: ValueInput) =
-        input.read("ProjectileModel", CompoundTag.CODEC).ifPresent(capability::deserializeNBT)
+        input.read("ProjectileModel", CompoundTag.CODEC).ifPresent(capability::loadFrom)
 
     override fun writeData(output: ValueOutput) =
-        output.store("ProjectileModel", CompoundTag.CODEC, capability.serializeNBT())
+        output.store("ProjectileModel", CompoundTag.CODEC, capability.save())
 }

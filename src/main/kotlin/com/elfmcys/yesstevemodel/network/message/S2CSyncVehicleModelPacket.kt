@@ -21,17 +21,14 @@ class S2CSyncVehicleModelPacket(
         @JvmStatic
         fun encode(message: S2CSyncVehicleModelPacket, friendlyByteBuf: FriendlyByteBuf) {
             friendlyByteBuf.writeVarInt(message.entityId)
-            friendlyByteBuf.writeNbt(message.capability.serializeNBT())
+            friendlyByteBuf.writeNbt(message.capability.save())
         }
 
         @JvmStatic
         fun decode(buf: FriendlyByteBuf): S2CSyncVehicleModelPacket {
             val varInt = buf.readVarInt()
             val nbt = buf.readNbt()
-            val cap = VehicleModelCapability()
-            if (nbt != null) {
-                cap.deserializeNBT(nbt)
-            }
+            val cap = if (nbt != null) VehicleModelCapability.load(nbt) else VehicleModelCapability()
             val objectMap: Object2FloatOpenHashMap<String> = cap.molangVars
             val floatMap = Int2FloatOpenHashMap()
             objectMap.object2FloatEntrySet().fastForEach { entry ->

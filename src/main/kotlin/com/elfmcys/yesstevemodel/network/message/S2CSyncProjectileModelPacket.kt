@@ -21,17 +21,14 @@ class S2CSyncProjectileModelPacket(
         @JvmStatic
         fun encode(message: S2CSyncProjectileModelPacket, buf: FriendlyByteBuf) {
             buf.writeVarInt(message.entityId)
-            buf.writeNbt(message.capability.serializeNBT())
+            buf.writeNbt(message.capability.save())
         }
 
         @JvmStatic
         fun decode(buf: FriendlyByteBuf): S2CSyncProjectileModelPacket {
             val entityId = buf.readVarInt()
             val nbt = buf.readNbt()
-            val cap = ProjectileModelCapability()
-            if (nbt != null) {
-                cap.deserializeNBT(nbt)
-            }
+            val cap = if (nbt != null) ProjectileModelCapability.load(nbt) else ProjectileModelCapability()
             val objectMap: Object2FloatOpenHashMap<String> = cap.molangVars
             val floatMap = Int2FloatOpenHashMap()
             objectMap.object2FloatEntrySet().fastForEach { entry ->

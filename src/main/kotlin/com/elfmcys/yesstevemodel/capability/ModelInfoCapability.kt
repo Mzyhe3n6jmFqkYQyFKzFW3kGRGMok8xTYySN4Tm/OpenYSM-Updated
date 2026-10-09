@@ -4,6 +4,8 @@ package com.elfmcys.yesstevemodel.capability
 
 import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.capability.fabric.ModelInfoCapabilityImpl
+import com.elfmcys.yesstevemodel.data.NbtLoad
+import com.elfmcys.yesstevemodel.data.NbtSave
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import com.elfmcys.yesstevemodel.model.ServerModelManager
 import com.elfmcys.yesstevemodel.model.ServerModelSelection
@@ -19,7 +21,7 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.player.Player
 import java.util.*
 
-class ModelInfoCapability {
+class ModelInfoCapability : NbtSave {
     private var _modelId: String? = null
     private var _selectTexture: String? = null
     private var mandatory: Boolean = false
@@ -192,7 +194,7 @@ class ModelInfoCapability {
     val isMandatory: Boolean
         get() = mandatory
 
-    fun serializeNBT(): CompoundTag {
+    override fun save(): CompoundTag {
         val compoundTag = CompoundTag()
         compoundTag.putString("model_id", modelId)
         compoundTag.putString("select_texture", selectTexture)
@@ -210,7 +212,7 @@ class ModelInfoCapability {
         return compoundTag
     }
 
-    fun deserializeNBT(compoundTag: CompoundTag) {
+    fun loadFrom(compoundTag: CompoundTag) {
         val modelIdStr = compoundTag.getStringOr("model_id", "")
         modelId = modelIdStr
         var selectTextureStr = compoundTag.getStringOr("select_texture", "")
@@ -236,7 +238,13 @@ class ModelInfoCapability {
         }
     }
 
-    companion object {
+    companion object : NbtLoad<ModelInfoCapability> {
+        override fun load(tag: CompoundTag): ModelInfoCapability {
+            val capability = ModelInfoCapability()
+            capability.loadFrom(tag)
+            return capability
+        }
+
         @JvmStatic
         operator fun get(player: Player): ModelInfoCapability? = ModelInfoCapabilityImpl[player]
     }

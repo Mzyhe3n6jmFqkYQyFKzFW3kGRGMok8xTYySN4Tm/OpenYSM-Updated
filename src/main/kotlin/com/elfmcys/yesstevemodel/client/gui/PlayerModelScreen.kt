@@ -2,11 +2,10 @@ package com.elfmcys.yesstevemodel.client.gui
 
 import com.elfmcys.yesstevemodel.NameSpaces
 import com.elfmcys.yesstevemodel.NativeLibLoader
-import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
-import com.elfmcys.yesstevemodel.capability.StarModelsCapability
 import com.elfmcys.yesstevemodel.client.ClientModelManager
 import com.elfmcys.yesstevemodel.client.ClientOnlyMode
+import com.elfmcys.yesstevemodel.client.ClientOnlySelection
 import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity
 import com.elfmcys.yesstevemodel.client.gui.button.*
 import com.elfmcys.yesstevemodel.client.input.PlayerModelToggleKey
@@ -130,23 +129,18 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             }
 
             Category.AUTH -> {
-                val authCap = AuthModelsCapability[localPlayer]
-                if (authCap != null) {
-                    for ((key, value) in ClientModelManager.modelAssemblyMap) {
-                        if (authCap.containsModel(key) || !value.textureRegistry.isAuthModel) {
-                            filteredModels[key] = value
-                        }
+                for ((key, value) in ClientModelManager.modelAssemblyMap) {
+                    if (ClientModelManager.hasAuthModel(key) || !value.textureRegistry.isAuthModel) {
+                        filteredModels[key] = value
                     }
                 }
             }
 
             Category.STAR -> {
-                val starCap = StarModelsCapability[localPlayer]
-                if (starCap != null) {
-                    for ((key, value) in ClientModelManager.modelAssemblyMap) {
-                        if (starCap.containsModel(key)) {
-                            filteredModels[key] = value
-                        }
+                val starred = ClientOnlySelection.getStarModels()
+                for ((key, value) in ClientModelManager.modelAssemblyMap) {
+                    if (starred.contains(key)) {
+                        filteredModels[key] = value
                     }
                 }
             }
@@ -392,8 +386,6 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
             }
         )
 
-        val player = minecraft.player ?: return
-        val capability = AuthModelsCapability[player]
         for (i in 0 until 10) {
             val slotIndex = i + currentPage * 10
             val slotX = guiLeft + 143 + 55 * (i % 5)
@@ -421,9 +413,9 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                 val modelAssembly = filteredModels[modelId]
                 if (modelAssembly != null) {
                     val isAuthLocked =
-                        !ClientOnlyMode.isActive && modelAssembly.textureRegistry.isAuthModel && (capability == null || !capability.containsModel(
+                        !ClientOnlyMode.isActive && modelAssembly.textureRegistry.isAuthModel && !ClientModelManager.hasAuthModel(
                             modelId
-                        ))
+                        )
                     previewEntity.initModelWithTexture(modelId, modelAssembly.animationBundle.defaultTextureName)
                     previewEntity.animationStateMachine
                         .setCurrentAnimation(modelAssembly.modelData.modelProperties.previewAnimation)
