@@ -193,7 +193,10 @@ object ClientModelManager {
                     if (result.isSuccess) {
                         registerClientOnlyCatalog()
                     } else {
-                        Constants.LOGGER.error("Client-only model loading failed: {}", result.errorMessage?.getString(256))
+                        Constants.LOGGER.error(
+                            "Client-only model loading failed: {}",
+                            result.errorMessage?.getString(256)
+                        )
                         Minecraft.getInstance().execute { syncState.setState(SyncState.IDLE) }
                     }
                 })
@@ -220,7 +223,7 @@ object ClientModelManager {
                 syncState.setState(SyncState.IDLE)
             }
             val models = modelAssemblyMap
-            val mutableModels = (models as? MutableMap<String, ModelAssembly>) ?: Object2ReferenceOpenHashMap(models)
+            val mutableModels = models as? MutableMap<String, ModelAssembly> ?: Object2ReferenceOpenHashMap(models)
             forEachGuiWidget {
                 it.onModelsUpdated(mutableModels)
                 it.onSyncComplete()
@@ -274,7 +277,10 @@ object ClientModelManager {
                 val isAuth = modelData.isAuth
                 runCatching {
                     val sha256 = modelData.loadedModelData.modelHash
-                    val hashes = if (currentServerKey != null) YsmCrypt.calculateModelHashes(sha256, currentServerKey) else longArrayOf(0L, 0L)
+                    val hashes = if (currentServerKey != null) YsmCrypt.calculateModelHashes(
+                        sha256,
+                        currentServerKey
+                    ) else longArrayOf(0L, 0L)
                     val cacheFileName = String.format("%016x%016x", hashes[0], hashes[1])
                     val cacheFile = ServerModelManager.CACHE_SERVER.resolve(cacheFileName)
                     if (Files.exists(cacheFile) && currentServerKey != null) {
@@ -284,7 +290,8 @@ object ClientModelManager {
                             val rawModel = deserializer.deserializeKeepOpen()
                             deserializer.parseYSMFooter(rawModel)
                             val parsedBundle = YSMClientMapper.buildParsedBundle(rawModel, modelId)
-                            val assembly = ModelAssemblyFactory.buildAssembly(parsedBundle, isPrimary = false, isAuth = isAuth)
+                            val assembly =
+                                ModelAssemblyFactory.buildAssembly(parsedBundle, isPrimary = false, isAuth = isAuth)
                             pendingModelQueue.add(Pair.of(assembly, modelId))
                         }
                     }
