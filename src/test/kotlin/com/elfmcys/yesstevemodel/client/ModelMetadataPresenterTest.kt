@@ -75,4 +75,53 @@ class ModelMetadataPresenterTest {
         }
         assertEquals(emptyMap<String, List<String>>(), allMissing, "All language files should have all keys from en_us.json")
     }
+
+    @Test
+    fun testBuiltinDefaultLangFiles() {
+        val langDir = File("src/main/resources/assets/yes_steve_model/builtin/default/lang")
+        val gson = Gson()
+        val enUsFile = File(langDir, "en_us.json")
+        val enUsJson = gson.fromJson(enUsFile.readText(StandardCharsets.UTF_8), JsonObject::class.java)
+        val enUsKeys = enUsJson.keySet()
+
+        val expectedLocales = listOf(
+            "en_us", "es_es", "fr_fr", "id_id", "ja_jp", "ko_kr",
+            "pt_br", "ru_ru", "tr_tr", "uk_ua", "vi_vn", "zh_cn", "zh_tw"
+        )
+
+        for (locale in expectedLocales) {
+            val file = File(langDir, "$locale.json")
+            assertEquals(true, file.exists(), "Language file $locale.json must exist in default/lang")
+            val json = gson.fromJson(file.readText(StandardCharsets.UTF_8), JsonObject::class.java)
+            val missing = enUsKeys.filter { !json.has(it) }
+            assertEquals(emptyList<String>(), missing, "default/lang/$locale.json missing keys: $missing")
+        }
+    }
+
+    @Test
+    fun testBuiltinPackJsonLangKeys() {
+        val gson = Gson()
+        val packPaths = listOf(
+            "src/main/resources/assets/yes_steve_model/builtin/misc/ysm-pack.json",
+            "src/main/resources/assets/yes_steve_model/builtin/wine_fox/ysm-pack.json"
+        )
+        val expectedLocales = listOf(
+            "en_us", "es_es", "fr_fr", "id_id", "ja_jp", "ko_kr",
+            "pt_br", "ru_ru", "tr_tr", "uk_ua", "vi_vn", "zh_cn", "zh_tw"
+        )
+
+        for (packPath in packPaths) {
+            val file = File(packPath)
+            assertEquals(true, file.exists(), "Pack file $packPath must exist")
+            val json = gson.fromJson(file.readText(StandardCharsets.UTF_8), JsonObject::class.java)
+            val langObj = json.getAsJsonObject("lang")
+            assertEquals(true, langObj != null, "Pack $packPath must have 'lang' object")
+            for (locale in expectedLocales) {
+                val localeObj = langObj.getAsJsonObject(locale)
+                assertEquals(true, localeObj != null, "Pack $packPath missing locale '$locale'")
+                assertEquals(true, localeObj.has("name"), "Pack $packPath locale '$locale' missing 'name'")
+                assertEquals(true, localeObj.has("description"), "Pack $packPath locale '$locale' missing 'description'")
+            }
+        }
+    }
 }

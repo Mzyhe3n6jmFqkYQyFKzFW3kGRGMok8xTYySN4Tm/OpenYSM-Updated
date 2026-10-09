@@ -2,6 +2,50 @@
   "name": "Misc Model",
   "description": "Some miscellaneous models",
   "lang": {
+    "en_us": {
+      "name": "Misc Model",
+      "description": "Some miscellaneous models"
+    },
+    "es_es": {
+      "name": "Modelos variados",
+      "description": "Algunos modelos variados"
+    },
+    "fr_fr": {
+      "name": "Modèles divers",
+      "description": "Quelques modèles divers"
+    },
+    "id_id": {
+      "name": "Model Lain-lain",
+      "description": "Beberapa model lain-lain"
+    },
+    "ja_jp": {
+      "name": "その他モデル",
+      "description": "いくつかのその他モデル"
+    },
+    "ko_kr": {
+      "name": "기타 모델",
+      "description": "몇 가지 기타 모델"
+    },
+    "pt_br": {
+      "name": "Modelos Variados",
+      "description": "Alguns modelos variados"
+    },
+    "ru_ru": {
+      "name": "Разные модели",
+      "description": "Некоторые разные модели"
+    },
+    "tr_tr": {
+      "name": "Çeşitli Modeller",
+      "description": "Bazı çeşitli modeller"
+    },
+    "uk_ua": {
+      "name": "Різні моделі",
+      "description": "Деякі різноманітні моделі"
+    },
+    "vi_vn": {
+      "name": "Mô hình linh tinh",
+      "description": "Một số mô hình linh tinh"
+    },
     "zh_cn": {
       "name": "杂项模型",
       "description": "一些杂项模型"
