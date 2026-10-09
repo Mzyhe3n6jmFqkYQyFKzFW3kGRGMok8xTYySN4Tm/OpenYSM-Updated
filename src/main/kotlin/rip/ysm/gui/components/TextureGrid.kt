@@ -1,6 +1,8 @@
 package rip.ysm.gui.components
 
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
+import com.elfmcys.yesstevemodel.client.ClientOnlyMode
+import com.elfmcys.yesstevemodel.client.ClientOnlySelection
 import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity
 import com.elfmcys.yesstevemodel.client.gui.ModelMetadataPresenter
 import com.elfmcys.yesstevemodel.client.renderer.ModelPreviewRenderer
@@ -145,9 +147,14 @@ class TextureGrid(private val owner: ModernPlayerTextureScreen) : OptionRow<Any?
         val name = textureNames[idx]
         val mc = Minecraft.getInstance()
         val player = mc.player ?: return
-        PlayerCapability[player]?.let { cap ->
-            cap.currentTexture = name
-            NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(owner.modelId, name))
+        if (NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced()) {
+            PlayerCapability[player]?.let { cap ->
+                cap.currentTexture = name
+                NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(owner.modelId, name))
+            }
+        } else {
+            ClientOnlySelection.save(owner.modelId, name)
+            PlayerCapability[player]?.initModelWithTexture(owner.modelId, name)
         }
     }
 

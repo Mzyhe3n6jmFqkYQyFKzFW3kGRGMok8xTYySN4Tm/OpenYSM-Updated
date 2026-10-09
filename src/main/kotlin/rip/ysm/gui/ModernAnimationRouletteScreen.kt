@@ -2,6 +2,7 @@ package rip.ysm.gui
 
 import com.elfmcys.yesstevemodel.NameSpaces
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
+import com.elfmcys.yesstevemodel.client.ClientOnlyMode
 import com.elfmcys.yesstevemodel.client.event.AnimationLockEvent
 import com.elfmcys.yesstevemodel.client.gui.ModelMetadataPresenter
 import com.elfmcys.yesstevemodel.client.gui.custom.ExtraAnimationButtons
@@ -487,7 +488,7 @@ open class ModernAnimationRouletteScreen(
     private fun playAnimation(key: String) {
         val player: LocalPlayer? = Minecraft.getInstance().player
         when {
-            NetworkHandler.isClientConnected() -> {
+            NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced() -> {
                 val last = navigationStack.peekLast()
                 val submenu = if (last != null && !last.left.isNullOrBlank()) last.left else StringPool.EMPTY
                 val entity: Entity = animatableModel.entity

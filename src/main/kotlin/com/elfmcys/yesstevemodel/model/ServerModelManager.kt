@@ -45,6 +45,7 @@ import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.nio.file.*
 import java.nio.file.attribute.BasicFileAttributes
+import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -90,6 +91,9 @@ object ServerModelManager {
 
     @Volatile
     private var initialized = false
+
+    @Volatile
+    private var loadedSourceState: String? = null
 
     private var bandwidthLimiter: RateLimiter? = null
     private var threadLimiter: Semaphore? = null
@@ -391,6 +395,7 @@ object ServerModelManager {
 
             val result = ModelLoadResult(true, null, loadedModels, authIds.toTypedArray())
             AUTH_MODELS = authIds
+            loadedSourceState = computeModelSourceState()
 
             onModelLoadComplete(result, callback)
             true
@@ -695,8 +700,9 @@ object ServerModelManager {
                     outBuf.writeVarInt(32) // format
                 }
 
-                outBuf.writeVarInt(packs.size)
-                for (pack in packs.values) {
+                val visiblePacks = if (shouldHideModelsFrom(uuid)) emptyList() else packs.values
+                outBuf.writeVarInt(visiblePacks.size)
+                for (pack in visiblePacks) {
                     outBuf.writeString(pack.folderPath)
 
                     when {
@@ -757,6 +763,7 @@ object ServerModelManager {
     }
 
     private fun sendPacket05(uuid: UUID, state: PlayerSyncState, requestedHashes: List<LongArray>) {
+        if (shouldHideModelsFrom(uuid)) return
         YSMThreadPool.launchSync {
             runCatching {
                 threadLimiter?.acquire()
@@ -1083,6 +1090,54 @@ object ServerModelManager {
                 modelInfoCap.resetToDefault()
             }
             modelInfoCap.retainAnimationKeys(modelHashSet)
+        }
+    }
+
+    @JvmStatic
+    fun isClientOnlyHost(): Boolean {
+        if (PlatformAPIImpl.isServer) return false
+        return ClientOnlyHostBridge.isActive()
+    }
+
+    private fun shouldHideModelsFrom(uuid: UUID): Boolean =
+        isClientOnlyHost() && !ClientOnlyHostBridge.isLocalHost(uuid)
+
+    @JvmStatic
+    fun getPacks(): Map<String, ServerPackData> = packs
+
+    @JvmStatic
+    fun canReuseLoadedModels(): Boolean {
+        if (!initialized || loadedSourceState == null) return false
+        return runCatching {
+            loadedSourceState == computeModelSourceState()
+        }.getOrDefault(false)
+    }
+
+    private fun computeModelSourceState(): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        addSourceTreeState(BUILT, "built", digest)
+        addSourceTreeState(CUSTOM, "custom", digest)
+        addSourceTreeState(AUTH, "auth", digest)
+        return HexFormat.of().formatHex(digest.digest())
+    }
+
+    private fun addSourceTreeState(root: Path, group: String, digest: MessageDigest) {
+        if (!Files.isDirectory(root)) return
+        runCatching {
+            Files.walk(root, FileVisitOption.FOLLOW_LINKS).use { stream ->
+                val files = stream.filter(Files::isRegularFile)
+                    .sorted(Comparator.comparing { path: Path -> root.relativize(path).toString() })
+                    .toList()
+                for (file in files) {
+                    val relative = group + '/' + root.relativize(file).toString().replace('\\', '/')
+                    digest.update(relative.toByteArray(StandardCharsets.UTF_8))
+                    digest.update(0.toByte())
+                    digest.update(Files.size(file).toString().toByteArray(StandardCharsets.US_ASCII))
+                    digest.update(0.toByte())
+                    digest.update(Files.getLastModifiedTime(file).toMillis().toString().toByteArray(StandardCharsets.US_ASCII))
+                    digest.update(0.toByte())
+                }
+            }
         }
     }
 

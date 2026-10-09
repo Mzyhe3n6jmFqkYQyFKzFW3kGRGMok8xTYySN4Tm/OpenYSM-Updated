@@ -33,6 +33,8 @@ object GeneralConfig {
     lateinit var DISABLE_VEHICLE_MODEL: ForgeConfigSpec.BooleanValue
     lateinit var DISABLE_EXTERNAL_FP_ANIM: ForgeConfigSpec.BooleanValue
     lateinit var USE_COMPATIBILITY_RENDERER: ForgeConfigSpec.BooleanValue
+    lateinit var FORCE_CLIENT_MODE: ForgeConfigSpec.BooleanValue
+    lateinit var HANDSHAKE_TIMEOUT: ForgeConfigSpec.DoubleValue
     lateinit var SOUND_VOLUME: ForgeConfigSpec.DoubleValue
     lateinit var SHOW_MODEL_ID_FIRST: ForgeConfigSpec.BooleanValue
     lateinit var SOPHISTICATEDBACKPACK: ForgeConfigSpec.BooleanValue
@@ -85,6 +87,10 @@ object GeneralConfig {
         DISABLE_EXTERNAL_FP_ANIM = builder.define("DisableExternalFirstPersonAnim", false)
         builder.comment("If rendering errors occur, try turning on this.")
         USE_COMPATIBILITY_RENDERER = builder.define("UseCompatibilityRenderer", false)
+        builder.comment("Force client-only mode")
+        FORCE_CLIENT_MODE = builder.define("ForceClientMode", false)
+        builder.comment("Handshake timeout (seconds)")
+        HANDSHAKE_TIMEOUT = builder.defineInRange("HandshakeTimeout", 5.0, 1.0, 60.0)
         builder.comment("Test renderer.")
         USE_GPU_RENDERER = builder.define("UseGpuRenderer", true)
         ROULETTE_SETTINGS_MODE = builder.defineEnum("RouletteSettingsMode", RouletteSettingsMode.MODERN)

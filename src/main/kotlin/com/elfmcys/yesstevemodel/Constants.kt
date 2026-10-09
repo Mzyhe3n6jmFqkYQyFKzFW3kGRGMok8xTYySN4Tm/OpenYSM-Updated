@@ -14,8 +14,10 @@ import kotlin.io.path.createDirectories
 @Suppress("unused")
 object Constants {
     init {
-        ServerLifecycleEvents.SERVER_STARTING.register { getServer = it }
-        ServerLifecycleEvents.SERVER_STOPPED.register { getServer = null }
+        runCatching {
+            ServerLifecycleEvents.SERVER_STARTING.register { getServer = it }
+            ServerLifecycleEvents.SERVER_STOPPED.register { getServer = null }
+        }
     }
 
     const val MOD_NAME: String = "Open YSM"
@@ -25,21 +27,29 @@ object Constants {
 
     @JvmStatic
     val ConfigDir: Path by lazy {
-        val dir = FabricLoader.getInstance().configDir.resolve(NameSpaces.MOD())
-        dir.createDirectories()
+        val dir = runCatching {
+            FabricLoader.getInstance().configDir.resolve(NameSpaces.MOD())
+        }.getOrElse {
+            Path.of("config", NameSpaces.MOD())
+        }
+        runCatching { dir.createDirectories() }
         dir
     }
 
     @JvmStatic
     val MainConfigDir: Path by lazy {
-        val dir = FabricLoader.getInstance().configDir
-        dir.createDirectories()
+        val dir = runCatching {
+            FabricLoader.getInstance().configDir
+        }.getOrElse {
+            Path.of("config")
+        }
+        runCatching { dir.createDirectories() }
         dir
     }
 
     @JvmStatic
     val IsServer: Boolean
-        get() = FabricLoader.getInstance().environmentType == EnvType.SERVER
+        get() = runCatching { FabricLoader.getInstance().environmentType == EnvType.SERVER }.getOrDefault(false)
 
     val ForceInitialize: Unit by lazy {
         doNothing()

@@ -5,6 +5,7 @@ package com.elfmcys.yesstevemodel.client
 import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.NativeLibLoader
 import com.elfmcys.yesstevemodel.YesSteveModel
+import com.elfmcys.yesstevemodel.capability.PlayerCapability
 import com.elfmcys.yesstevemodel.client.gui.IGuiWidget
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
 import com.elfmcys.yesstevemodel.client.model.ModelAssemblyFactory
@@ -176,6 +177,129 @@ object ClientModelManager {
             }
         }.onFailure { e ->
             Constants.LOGGER.error("Failed to load builtin default model", e)
+        }
+    }
+
+    fun enterClientOnlyMode() {
+        if (!ClientOnlyMode.markCatalogLoaded()) return
+        Minecraft.getInstance().execute { syncState.setState(SyncState.LOADING) }
+        YSMThreadPool.launch {
+            runCatching {
+                if (ServerModelManager.canReuseLoadedModels()) {
+                    registerClientOnlyCatalog()
+                    return@launch
+                }
+                ServerModelManager.loadModels({ result ->
+                    if (result.isSuccess) {
+                        registerClientOnlyCatalog()
+                    } else {
+                        Constants.LOGGER.error("Client-only model loading failed: {}", result.errorMessage?.getString(256))
+                        Minecraft.getInstance().execute { syncState.setState(SyncState.IDLE) }
+                    }
+                }, null)
+            }.onFailure { e ->
+                Constants.LOGGER.error("Failed to enter client-only mode", e)
+                Minecraft.getInstance().execute { syncState.setState(SyncState.IDLE) }
+            }
+        }
+    }
+
+    private fun registerClientOnlyCatalog() {
+        val serverModelInfo = ServerModelManager.serverModelInfo
+        val total = serverModelInfo.size
+        Minecraft.getInstance().execute {
+            if (total > 0) {
+                syncState.startSyncing(total)
+            }
+            forEachGuiWidget { it.onSyncProgress(total, 0) }
+        }
+        registerLocalModelPacks()
+        Minecraft.getInstance().execute {
+            registerLocalModelCatalog()
+            if (!NetworkHandler.isClientConnected()) {
+                syncState.setState(SyncState.IDLE)
+            }
+            val models = modelAssemblyMap
+            val mutableModels = (models as? MutableMap<String, ModelAssembly>) ?: Object2ReferenceOpenHashMap(models)
+            forEachGuiWidget {
+                it.onModelsUpdated(mutableModels)
+                it.onSyncComplete()
+            }
+            applyClientOnlySelection()
+            Constants.LOGGER.info("Client-only catalog registered, {} model(s) available.", models.size)
+        }
+    }
+
+    fun applyClientOnlySelection() {
+        if (!ClientOnlyMode.isActive() || !ClientOnlySelection.hasSelection()) return
+        val player = Minecraft.getInstance().player ?: return
+        val modelId = ClientOnlySelection.getModelId() ?: return
+        if (!modelAssemblyMap.containsKey(modelId)) return
+        val textureId = ClientOnlySelection.getTextureId() ?: ""
+        PlayerCapability[player]?.let { cap ->
+            if (modelId != cap.modelId || textureId != cap.currentTextureName) {
+                cap.initModelWithTexture(modelId, textureId)
+            }
+        }
+    }
+
+    private fun registerLocalModelPacks() {
+        val packs = ServerModelManager.getPacks()
+        if (packs.isEmpty()) return
+        val parsedPacks = ArrayList<ModelPackData>()
+        for (pack in packs.values) {
+            val iconTexture = if (pack.iconData != null) OuterFileTexture(pack.iconData) else null
+            parsedPacks.add(
+                ModelPackData(
+                    pack.folderPath,
+                    pack.name ?: "",
+                    pack.description ?: "",
+                    iconTexture,
+                    pack.lang ?: emptyMap()
+                )
+            )
+        }
+        if (parsedPacks.isNotEmpty()) {
+            onModelPacksReceived(parsedPacks.toTypedArray())
+        }
+    }
+
+    private fun registerLocalModelCatalog() {
+        val serverModelInfo = ServerModelManager.serverModelInfo
+        if (serverModelInfo.isNotEmpty()) {
+            runPendingModelCallback()
+            val currentServerKey = ServerModelManager.serverKey
+            for ((modelId, modelData) in serverModelInfo) {
+                if ("default" == modelId) continue
+                val isAuth = modelData.isAuth
+                runCatching {
+                    val sha256 = modelData.loadedModelData.modelHash
+                    val hashes = if (currentServerKey != null) YsmCrypt.calculateModelHashes(sha256, currentServerKey) else longArrayOf(0L, 0L)
+                    val cacheFileName = String.format("%016x%016x", hashes[0], hashes[1])
+                    val cacheFile = ServerModelManager.CACHE_SERVER.resolve(cacheFileName)
+                    if (Files.exists(cacheFile) && currentServerKey != null) {
+                        val fileBytes = Files.readAllBytes(cacheFile)
+                        val decompressed = YsmCrypt.read(fileBytes, currentServerKey)
+                        YSMBinaryDeserializer(decompressed).use { deserializer ->
+                            val rawModel = deserializer.deserializeKeepOpen()
+                            deserializer.parseYSMFooter(rawModel)
+                            val parsedBundle = YSMClientMapper.buildParsedBundle(rawModel, modelId)
+                            val assembly = ModelAssemblyFactory.buildAssembly(parsedBundle, isPrimary = false, isAuth = isAuth)
+                            pendingModelQueue.add(Pair.of(assembly, modelId))
+                        }
+                    }
+                }.onFailure { e ->
+                    Constants.LOGGER.error("Failed to register local model: $modelId", e)
+                }
+            }
+            flushPendingModels()
+            Minecraft.getInstance().execute {
+                if (syncState.currentState == SyncState.SYNCING) {
+                    syncState.syncedModels = syncState.totalModels
+                    val currentTotal = syncState.totalModels
+                    forEachGuiWidget { it.onSyncProgress(currentTotal, currentTotal) }
+                }
+            }
         }
     }
 
@@ -640,6 +764,7 @@ object ClientModelManager {
     }
 
     fun resetSync() {
+        ClientOnlyMode.reset()
         isOysmServer = false
         allowUpload = false
         processServerData(null)
