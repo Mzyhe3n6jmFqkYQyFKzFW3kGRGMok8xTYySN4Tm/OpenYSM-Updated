@@ -13,7 +13,7 @@ object YSMClientCache {
     @JvmStatic
     fun generateCacheFileName(hash1: Long, hash2: Long, rtKey: ByteArray?): String? {
         if (rtKey == null || rtKey.size != 56) return null
-        val seed = 114514 // todo: 换成真随机数
+        val seed = 114514 // TODO: 换成真随机数
 
         val mt = MT19937(Integer.toUnsignedLong(seed))
         val m1 = hash1 xor mt.extract_number()
