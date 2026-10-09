@@ -515,13 +515,14 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
 
     private fun renderSyncStatus(guiGraphics: GuiGraphics) {
         val currentState = ClientModelManager.syncStatus
+        val isClientOnly = ClientOnlyMode.isActive
         val text = when (currentState.currentState) {
-            ClientModelManager.SyncState.WAITING -> Component.translatable("gui.yes_steve_model.sync_hint.waiting")
-            ClientModelManager.SyncState.LOADING -> Component.translatable("gui.yes_steve_model.sync_hint.loading")
-            ClientModelManager.SyncState.PREPARING -> Component.translatable("gui.yes_steve_model.sync_hint.preparing")
+            ClientModelManager.SyncState.WAITING -> Component.translatable(if (isClientOnly) "gui.yes_steve_model.client_hint.waiting" else "gui.yes_steve_model.sync_hint.waiting")
+            ClientModelManager.SyncState.LOADING -> Component.translatable(if (isClientOnly) "gui.yes_steve_model.client_hint.loading" else "gui.yes_steve_model.sync_hint.loading")
+            ClientModelManager.SyncState.PREPARING -> Component.translatable(if (isClientOnly) "gui.yes_steve_model.client_hint.preparing" else "gui.yes_steve_model.sync_hint.preparing")
             ClientModelManager.SyncState.SYNCING -> {
                 if (currentState.syncedModels == 0) {
-                    Component.translatable("gui.yes_steve_model.sync_hint.syncing")
+                    Component.translatable(if (isClientOnly) "gui.yes_steve_model.client_hint.loading" else "gui.yes_steve_model.sync_hint.syncing")
                 } else {
                     Component.literal("${currentState.syncedModels}/${currentState.totalModels}")
                 }

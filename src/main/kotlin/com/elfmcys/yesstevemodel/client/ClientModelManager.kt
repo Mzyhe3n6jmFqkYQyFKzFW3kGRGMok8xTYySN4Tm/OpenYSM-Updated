@@ -217,19 +217,26 @@ object ClientModelManager {
             forEachGuiWidget { it.onSyncProgress(total, 0) }
         }
         registerLocalModelPacks()
-        Minecraft.getInstance().execute {
-            registerLocalModelCatalog()
-            if (!NetworkHandler.isClientConnected()) {
-                syncState.setState(SyncState.IDLE)
+        YSMThreadPool.launch {
+            registerLocalModelCatalog { current, totalCount ->
+                Minecraft.getInstance().execute {
+                    syncState.syncedModels = current
+                    forEachGuiWidget { it.onSyncProgress(totalCount, current) }
+                }
             }
-            val models = modelAssemblyMap
-            val mutableModels = models as? MutableMap<String, ModelAssembly> ?: Object2ReferenceOpenHashMap(models)
-            forEachGuiWidget {
-                it.onModelsUpdated(mutableModels)
-                it.onSyncComplete()
+            Minecraft.getInstance().execute {
+                if (!NetworkHandler.isClientConnected()) {
+                    syncState.setState(SyncState.IDLE)
+                }
+                val models = modelAssemblyMap
+                val mutableModels = models as? MutableMap<String, ModelAssembly> ?: Object2ReferenceOpenHashMap(models)
+                forEachGuiWidget {
+                    it.onModelsUpdated(mutableModels)
+                    it.onSyncComplete()
+                }
+                applyClientOnlySelection()
+                Constants.LOGGER.info("Client-only catalog registered, {} model(s) available.", models.size)
             }
-            applyClientOnlySelection()
-            Constants.LOGGER.info("Client-only catalog registered, {} model(s) available.", models.size)
         }
     }
 
@@ -267,46 +274,44 @@ object ClientModelManager {
         }
     }
 
-    private fun registerLocalModelCatalog() {
+    private fun registerLocalModelCatalog(onProgress: ((Int, Int) -> Unit)? = null) {
         val serverModelInfo = ServerModelManager.serverModelInfo
         if (serverModelInfo.isNotEmpty()) {
             runPendingModelCallback()
             val currentServerKey = ServerModelManager.serverKey
+            var processed = 0
+            val total = serverModelInfo.size
             for ((modelId, modelData) in serverModelInfo) {
-                if ("default" == modelId) continue
-                val isAuth = modelData.isAuth
-                runCatching {
-                    val sha256 = modelData.loadedModelData.modelHash
-                    val hashes = if (currentServerKey != null) YsmCrypt.calculateModelHashes(
-                        sha256,
-                        currentServerKey
-                    ) else longArrayOf(0L, 0L)
-                    val cacheFileName = String.format("%016x%016x", hashes[0], hashes[1])
-                    val cacheFile = ServerModelManager.CACHE_SERVER.resolve(cacheFileName)
-                    if (Files.exists(cacheFile) && currentServerKey != null) {
-                        val fileBytes = Files.readAllBytes(cacheFile)
-                        val decompressed = YsmCrypt.read(fileBytes, currentServerKey)
-                        YSMBinaryDeserializer(decompressed, 32).use { deserializer ->
-                            val rawModel = deserializer.deserializeKeepOpen()
-                            deserializer.parseYSMFooter(rawModel)
-                            val parsedBundle = YSMClientMapper.buildParsedBundle(rawModel, modelId)
-                            val assembly =
-                                ModelAssemblyFactory.buildAssembly(parsedBundle, isPrimary = false, isAuth = isAuth)
-                            pendingModelQueue.add(Pair.of(assembly, modelId))
+                if ("default" != modelId) {
+                    val isAuth = modelData.isAuth
+                    runCatching {
+                        val sha256 = modelData.loadedModelData.modelHash
+                        val hashes = if (currentServerKey != null) YsmCrypt.calculateModelHashes(
+                            sha256,
+                            currentServerKey
+                        ) else longArrayOf(0L, 0L)
+                        val cacheFileName = String.format("%016x%016x", hashes[0], hashes[1])
+                        val cacheFile = ServerModelManager.CACHE_SERVER.resolve(cacheFileName)
+                        if (Files.exists(cacheFile) && currentServerKey != null) {
+                            val fileBytes = Files.readAllBytes(cacheFile)
+                            val decompressed = YsmCrypt.read(fileBytes, currentServerKey)
+                            YSMBinaryDeserializer(decompressed, 32).use { deserializer ->
+                                val rawModel = deserializer.deserializeKeepOpen()
+                                deserializer.parseYSMFooter(rawModel)
+                                val parsedBundle = YSMClientMapper.buildParsedBundle(rawModel, modelId)
+                                val assembly =
+                                    ModelAssemblyFactory.buildAssembly(parsedBundle, isPrimary = false, isAuth = isAuth)
+                                pendingModelQueue.add(Pair.of(assembly, modelId))
+                            }
                         }
+                    }.onFailure { e ->
+                        Constants.LOGGER.error("Failed to register local model: $modelId", e)
                     }
-                }.onFailure { e ->
-                    Constants.LOGGER.error("Failed to register local model: $modelId", e)
                 }
+                processed++
+                onProgress?.invoke(processed, total)
             }
             flushPendingModels()
-            Minecraft.getInstance().execute {
-                if (syncState.currentState == SyncState.SYNCING) {
-                    syncState.syncedModels = syncState.totalModels
-                    val currentTotal = syncState.totalModels
-                    forEachGuiWidget { it.onSyncProgress(currentTotal, currentTotal) }
-                }
-            }
         }
     }
 

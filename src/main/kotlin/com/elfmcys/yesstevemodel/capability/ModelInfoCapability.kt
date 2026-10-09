@@ -6,6 +6,7 @@ import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.capability.fabric.ModelInfoCapabilityImpl
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import com.elfmcys.yesstevemodel.model.ServerModelManager
+import com.elfmcys.yesstevemodel.model.ServerModelSelection
 import com.elfmcys.yesstevemodel.network.message.FeedbackData
 import com.elfmcys.yesstevemodel.network.message.S2CSetModelAndTexturePacket
 import com.elfmcys.yesstevemodel.network.sync.PlayerStateSynchronizer
@@ -96,8 +97,22 @@ class ModelInfoCapability {
 
     fun createSyncMessage(serverPlayer: ServerPlayer, fullSync: Boolean): S2CSetModelAndTexturePacket? =
         ServerModelManager[modelId]?.let {
+            val hashId = it.loadedModelData.hashId
             val molangVars =
-                molangStorage.computeIfAbsent(it.loadedModelData.hashId) { Object2FloatOpenHashMap(0) }
+                molangStorage.computeIfAbsent(hashId) {
+                    val savedVars = ServerModelSelection.getRoamingVars(serverPlayer.uuid, modelId)
+                    val map = Object2FloatOpenHashMap<String>(savedVars.size)
+                    for ((k, v) in savedVars) {
+                        map.put(k, v)
+                    }
+                    map
+                }
+            val savedVars = ServerModelSelection.getRoamingVars(serverPlayer.uuid, modelId)
+            for ((k, v) in savedVars) {
+                if (!molangVars.containsKey(k)) {
+                    molangVars.put(k, v)
+                }
+            }
 
             while (true) {
                 val callback = pendingCallbacks.poll()
@@ -139,6 +154,7 @@ class ModelInfoCapability {
                 Object2FloatOpenHashMap(stringValues)
             }
         }
+        ServerModelSelection.updateRoamingVars(serverPlayer.uuid, modelId, stringValues)
         animSync.syncMolangVars(serverPlayer, !dirty, feedbackData.entityId, stringValues)
     }
 

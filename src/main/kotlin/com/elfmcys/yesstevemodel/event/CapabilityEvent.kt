@@ -4,6 +4,7 @@ import com.elfmcys.yesstevemodel.YesSteveModel
 import com.elfmcys.yesstevemodel.capability.*
 import com.elfmcys.yesstevemodel.config.ServerConfig
 import com.elfmcys.yesstevemodel.model.ServerModelManager
+import com.elfmcys.yesstevemodel.model.ServerModelSelection
 import com.elfmcys.yesstevemodel.network.NetworkHandler
 import com.elfmcys.yesstevemodel.network.message.*
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
@@ -45,6 +46,19 @@ object CapabilityEvent {
         if (!YesSteveModel.isAvailable) return
         if (entity is ServerPlayer) {
             getModelInfoCap(entity)?.let { modelInfoCap ->
+                val savedModel = ServerModelSelection.getPlayerModel(entity.uuid)
+                val savedTexture = ServerModelSelection.getPlayerTexture(entity.uuid)
+                if (savedModel != null && ServerModelManager.serverModelInfo.containsKey(savedModel)) {
+                    val modelData = ServerModelManager.serverModelInfo[savedModel]
+                    val validTexture = if (savedTexture != null && modelData?.modelInfo?.textures?.contains(savedTexture) == true) {
+                        savedTexture
+                    } else {
+                        modelData?.modelInfo?.textures?.firstOrNull() ?: "default"
+                    }
+                    modelInfoCap.setModelAndTexture(savedModel, validTexture)
+                } else if (modelInfoCap.modelId.isNotBlank()) {
+                    ServerModelSelection.savePlayerSelection(entity.uuid, modelInfoCap.modelId, modelInfoCap.selectTexture)
+                }
                 if (!NetworkHandler.isPlayerConnected(entity) && !modelInfoCap.isMandatory) {
                     modelInfoCap.markDirty()
                     return@let

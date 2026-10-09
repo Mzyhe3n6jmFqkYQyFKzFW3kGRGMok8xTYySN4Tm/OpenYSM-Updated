@@ -4,6 +4,7 @@ import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
 import com.elfmcys.yesstevemodel.config.ServerConfig
 import com.elfmcys.yesstevemodel.model.ServerModelManager
+import com.elfmcys.yesstevemodel.model.ServerModelSelection
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.server.level.ServerPlayer
 import rip.ysm.api.network.PacketContext
@@ -48,8 +49,10 @@ class C2SRequestSwitchModelPacket(
                         !serverModelData.modelInfo.textures.contains(message.textureId)
                     ) {
                         cap.resetToDefault()
+                        ServerModelSelection.savePlayerSelection(sender.uuid, cap.modelId, cap.selectTexture)
                     } else {
                         cap.setModelAndTexture(message.modelId, message.textureId)
+                        ServerModelSelection.savePlayerSelection(sender.uuid, message.modelId, message.textureId)
                     }
                     cap.stopAnimation(sender)
                 }
