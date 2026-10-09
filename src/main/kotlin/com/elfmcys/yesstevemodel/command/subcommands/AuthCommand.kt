@@ -109,7 +109,11 @@ object AuthCommand {
                             .contains(modelIdCap.modelId) && !ownModelsCap.containsModel(modelIdCap.modelId)
                     ) {
                         modelIdCap.resetToDefault()
-                        ServerModelSelection.savePlayerSelection(player.uuid, modelIdCap.modelId, modelIdCap.selectTexture)
+                        ServerModelSelection.savePlayerSelection(
+                            player.uuid,
+                            modelIdCap.modelId,
+                            modelIdCap.selectTexture
+                        )
                     }
                 }
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelsCap.authModels), player)
@@ -134,7 +138,11 @@ object AuthCommand {
                 ModelInfoCapability[player]?.let { modelIdCap ->
                     if (ServerModelManager.authModels.contains(modelIdCap.modelId)) {
                         modelIdCap.resetToDefault()
-                        ServerModelSelection.savePlayerSelection(player.uuid, modelIdCap.modelId, modelIdCap.selectTexture)
+                        ServerModelSelection.savePlayerSelection(
+                            player.uuid,
+                            modelIdCap.modelId,
+                            modelIdCap.selectTexture
+                        )
                     }
                 }
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.authModels), player)

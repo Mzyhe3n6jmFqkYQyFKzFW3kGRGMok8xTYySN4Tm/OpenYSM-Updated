@@ -8,10 +8,10 @@ import com.elfmcys.yesstevemodel.util.ThreadLocalItemTagSets
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet
 import net.minecraft.core.Holder
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.Item
 import rip.ysm.compat.curios.CuriosCompat
+import kotlin.jvm.optionals.getOrNull
 
 class HasAnyCurios : LivingEntityFunction() {
     override fun eval(context: ExecutionContext<IContext<LivingEntity>>, arguments: ArgumentCollection): Any? {
@@ -22,8 +22,8 @@ class HasAnyCurios : LivingEntityFunction() {
         val referenceOpenHashSet: ReferenceOpenHashSet<Item> = ThreadLocalItemTagSets.ITEM_SET.get()
         referenceOpenHashSet.clear()
         for (i in 1 until arguments.size()) {
-            val name: Identifier = arguments.getResourceLocation(context, i) ?: return null
-            val item: Item? = BuiltInRegistries.ITEM.get(name).map(Holder<Item>::value).orElse(null)
+            val name = arguments.getResourceLocation(context, i) ?: return null
+            val item = BuiltInRegistries.ITEM.get(name).map(Holder<Item>::value).getOrNull()
             if (item != null) {
                 referenceOpenHashSet.add(item)
             }

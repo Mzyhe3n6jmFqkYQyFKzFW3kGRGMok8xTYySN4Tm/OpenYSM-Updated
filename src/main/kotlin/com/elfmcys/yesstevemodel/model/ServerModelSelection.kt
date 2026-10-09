@@ -13,6 +13,7 @@ import net.minecraft.nbt.*
 import java.nio.file.Files
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.jvm.optionals.getOrNull
 
 data class PlayerServerData(
     var modelId: String? = null,
@@ -71,8 +72,7 @@ data class PlayerServerData(
             }
             tag.getListOrNull("auth_models")?.let { authList ->
                 for (i in authList.indices) {
-                    val authStr = authList.getString(i).orElse("")!!
-                    if (authStr.isNotEmpty()) record.authModels.add(authStr)
+                    authList.getString(i).getOrNull()?.let { record.authModels.add(it) }
                 }
             }
             return record
