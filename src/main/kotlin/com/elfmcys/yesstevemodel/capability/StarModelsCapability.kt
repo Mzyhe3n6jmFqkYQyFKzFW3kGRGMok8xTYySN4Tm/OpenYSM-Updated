@@ -21,7 +21,9 @@ class StarModelsCapability {
     }
 
     fun containsModel(str: String): Boolean =
-        starModels.contains(str) || (FabricLoader.getInstance().environmentType == EnvType.CLIENT && ClientOnlySelection.isModelStarred(str))
+        starModels.contains(str) || FabricLoader.getInstance().environmentType == EnvType.CLIENT && ClientOnlySelection.isModelStarred(
+            str
+        )
 
     fun addModel(str: String): Boolean {
         val added = starModels.add(str)
