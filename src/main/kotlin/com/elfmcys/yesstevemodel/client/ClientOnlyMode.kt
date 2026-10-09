@@ -13,13 +13,12 @@ object ClientOnlyMode {
     @Volatile
     private var catalogLoaded = false
 
-    @JvmStatic
-    fun isForced(): Boolean = runCatching { GeneralConfig.FORCE_CLIENT_MODE.get() }.getOrDefault(false)
+    val isForced: Boolean
+        get() = runCatching { GeneralConfig.FORCE_CLIENT_MODE.get() }.getOrDefault(false)
 
-    @JvmStatic
-    fun isActive(): Boolean = standalone || isForced()
+    val isActive: Boolean
+        get() = standalone || isForced
 
-    @JvmStatic
     fun activateStandalone() {
         if (standalone) return
         standalone = true
@@ -27,20 +26,17 @@ object ClientOnlyMode {
         ClientModelManager.enterClientOnlyMode()
     }
 
-    @JvmStatic
     fun leaveStandalone() {
-        if (!standalone || isForced()) return
+        if (!standalone || isForced) return
         standalone = false
         Constants.LOGGER.info("Server-side mod responded late, leaving client-only mode.")
     }
 
-    @JvmStatic
     fun reset() {
         standalone = false
         catalogLoaded = false
     }
 
-    @JvmStatic
     fun markCatalogLoaded(): Boolean {
         if (catalogLoaded) return false
         catalogLoaded = true

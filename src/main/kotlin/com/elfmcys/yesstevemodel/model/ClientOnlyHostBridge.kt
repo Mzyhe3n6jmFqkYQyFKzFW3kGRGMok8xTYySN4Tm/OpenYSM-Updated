@@ -8,7 +8,7 @@ import java.util.*
 
 @Environment(EnvType.CLIENT)
 internal object ClientOnlyHostBridge {
-    fun isActive(): Boolean = ClientOnlyMode.isActive()
+    fun isActive(): Boolean = ClientOnlyMode.isActive
 
     fun isLocalHost(uuid: UUID?): Boolean {
         if (uuid == null) return false

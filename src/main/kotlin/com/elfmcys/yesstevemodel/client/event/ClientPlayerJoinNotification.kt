@@ -59,7 +59,7 @@ object ClientPlayerJoinNotification {
             return
         }
         if (Minecraft.getInstance().isLocalServer) return
-        if (ClientOnlyMode.isForced()) {
+        if (ClientOnlyMode.isForced) {
             ClientOnlyMode.activateStandalone()
             return
         }
@@ -71,7 +71,7 @@ object ClientPlayerJoinNotification {
             runCatching {
                 delay(1.minutes)
                 Minecraft.getInstance().execute {
-                    if (currentSession != sessionId || ClientOnlyMode.isActive()) return@execute
+                    if (currentSession != sessionId || ClientOnlyMode.isActive) return@execute
                     val localPlayer = Minecraft.getInstance().player
                     if (localPlayer != null && localPlayer.connection.isAcceptingMessages && !NetworkHandler.isConnectionValid(
                             localPlayer.connection.connection

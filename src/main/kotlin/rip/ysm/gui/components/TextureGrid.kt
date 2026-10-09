@@ -147,7 +147,7 @@ class TextureGrid(private val owner: ModernPlayerTextureScreen) : OptionRow<Any?
         val name = textureNames[idx]
         val mc = Minecraft.getInstance()
         val player = mc.player ?: return
-        if (NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced()) {
+        if (NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced) {
             PlayerCapability[player]?.let { cap ->
                 cap.currentTexture = name
                 NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(owner.modelId, name))

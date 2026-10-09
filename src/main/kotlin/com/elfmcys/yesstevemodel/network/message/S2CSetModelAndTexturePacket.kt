@@ -47,7 +47,7 @@ class S2CSetModelAndTexturePacket(
 
         @JvmStatic
         fun applyOnClient(entity: Entity, other: S2CSetModelAndTexturePacket) {
-            val keepLocalModel = ClientOnlyMode.isForced() && entity == Minecraft.getInstance().player
+            val keepLocalModel = ClientOnlyMode.isForced && entity == Minecraft.getInstance().player
             PlayerCapability[entity]?.let { cap ->
                 if (!keepLocalModel) {
                     cap.initModelWithTexture(other.modelId, other.textureId)

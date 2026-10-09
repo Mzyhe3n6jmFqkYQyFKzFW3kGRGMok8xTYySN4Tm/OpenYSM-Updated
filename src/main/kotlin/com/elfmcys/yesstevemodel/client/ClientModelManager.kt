@@ -196,7 +196,7 @@ object ClientModelManager {
                         Constants.LOGGER.error("Client-only model loading failed: {}", result.errorMessage?.getString(256))
                         Minecraft.getInstance().execute { syncState.setState(SyncState.IDLE) }
                     }
-                }, null)
+                })
             }.onFailure { e ->
                 Constants.LOGGER.error("Failed to enter client-only mode", e)
                 Minecraft.getInstance().execute { syncState.setState(SyncState.IDLE) }
@@ -231,11 +231,11 @@ object ClientModelManager {
     }
 
     fun applyClientOnlySelection() {
-        if (!ClientOnlyMode.isActive() || !ClientOnlySelection.hasSelection()) return
+        if (!ClientOnlyMode.isActive || !ClientOnlySelection.hasSelection) return
         val player = Minecraft.getInstance().player ?: return
-        val modelId = ClientOnlySelection.getModelId() ?: return
+        val modelId = ClientOnlySelection.modelId ?: return
         if (!modelAssemblyMap.containsKey(modelId)) return
-        val textureId = ClientOnlySelection.getTextureId() ?: ""
+        val textureId = ClientOnlySelection.textureId ?: ""
         PlayerCapability[player]?.let { cap ->
             if (modelId != cap.modelId || textureId != cap.currentTextureName) {
                 cap.initModelWithTexture(modelId, textureId)

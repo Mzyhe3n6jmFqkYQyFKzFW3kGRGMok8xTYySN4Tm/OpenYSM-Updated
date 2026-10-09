@@ -24,7 +24,6 @@ object ClientOnlySelection {
     private var loaded: Boolean = false
 
     @Synchronized
-    @JvmStatic
     fun save(model: String?, texture: String?) {
         _modelId = model
         _textureId = texture
@@ -36,8 +35,8 @@ object ClientOnlySelection {
                 addProperty("texture_id", texture)
             }
             Files.write(FILE, GSON.toJson(json).toByteArray(StandardCharsets.UTF_8))
-        }.onFailure { e ->
-            Constants.LOGGER.error("Failed to save client-only model selection", e)
+        }.onFailure {
+            Constants.LOGGER.error("Failed to save client-only model selection", it)
         }
     }
 
@@ -61,21 +60,21 @@ object ClientOnlySelection {
         }
     }
 
-    @JvmStatic
-    fun getModelId(): String? {
-        load()
-        return _modelId
-    }
+    val modelId: String?
+        get() {
+            load()
+            return _modelId
+        }
 
-    @JvmStatic
-    fun getTextureId(): String? {
-        load()
-        return _textureId
-    }
+    val textureId: String?
+        get() {
+            load()
+            return _textureId
+        }
 
-    @JvmStatic
-    fun hasSelection(): Boolean {
-        load()
-        return getModelId() != null && getTextureId() != null
-    }
+    val hasSelection: Boolean
+        get() {
+            load()
+            return modelId != null && textureId != null
+        }
 }
