@@ -280,7 +280,7 @@ object ClientModelManager {
                     if (Files.exists(cacheFile) && currentServerKey != null) {
                         val fileBytes = Files.readAllBytes(cacheFile)
                         val decompressed = YsmCrypt.read(fileBytes, currentServerKey)
-                        YSMBinaryDeserializer(decompressed).use { deserializer ->
+                        YSMBinaryDeserializer(decompressed, 32).use { deserializer ->
                             val rawModel = deserializer.deserializeKeepOpen()
                             deserializer.parseYSMFooter(rawModel)
                             val parsedBundle = YSMClientMapper.buildParsedBundle(rawModel, modelId)

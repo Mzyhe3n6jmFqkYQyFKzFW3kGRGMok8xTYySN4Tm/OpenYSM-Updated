@@ -56,12 +56,15 @@ class YSMBinaryDeserializer : AutoCloseable {
             }
 
             model.footer.unkInt1 = reader.readVarInt()
-            model.footer.rand = reader.readString()
+            if (model.footer.unkInt1 != 0) {
+                model.footer.rand = reader.readString()
+            }
             model.footer.time = reader.readVarLong()
-            model.footer.extra = reader.readString()
-
-            if (format >= 24) {
-                model.footer.unkInt2 = reader.readVarInt()
+            if (model.footer.unkInt1 != 0) {
+                model.footer.extra = reader.readString()
+                if (format >= 24) {
+                    model.footer.unkInt2 = reader.readVarInt()
+                }
             }
         }.onFailure {
             Constants.LOGGER.error("Failed to parse YSM footer", it)
