@@ -13,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.item.enchantment.Enchantment
 import net.minecraft.world.item.enchantment.ItemEnchantments
 import rip.ysm.compat.cosmeticarmorreworked.CosmeticArmorHelper
+import kotlin.jvm.optionals.getOrNull
 
 class DumpEquippedItem : LivingEntityFunction() {
     override fun eval(context: ExecutionContext<IContext<LivingEntity>>, arguments: ArgumentCollection): Any? {
@@ -36,7 +37,7 @@ class DumpEquippedItem : LivingEntityFunction() {
         for (entry in enchantments.entrySet()) {
             val holder = entry.key
             val lvl = entry.intValue
-            val name = holder.unwrapKey().map { it.identifier() }.orElse(null)
+            val name = holder.unwrapKey().map { it.identifier() }.getOrNull()
             if (name != null) {
                 context.entity.logWarningComponent(
                     Component.literal("Enchantment: display ")

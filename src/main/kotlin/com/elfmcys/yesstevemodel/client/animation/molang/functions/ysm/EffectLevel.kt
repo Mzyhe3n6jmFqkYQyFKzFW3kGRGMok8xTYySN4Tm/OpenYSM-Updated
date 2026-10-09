@@ -17,6 +17,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.projectile.arrow.Arrow
 import net.minecraft.world.item.alchemy.PotionContents
+import kotlin.jvm.optionals.getOrNull
 
 class EffectLevel : ContextFunction<Entity>() {
     override fun validateArgumentSize(size: Int): Boolean {
@@ -29,7 +30,7 @@ class EffectLevel : ContextFunction<Entity>() {
             val effectId: Identifier? = arguments.getResourceLocation(context, i)
             if (effectId != null) {
                 val mobEffectHolder: Holder<MobEffect>? =
-                    BuiltInRegistries.MOB_EFFECT.get(ResourceKey.create(Registries.MOB_EFFECT, effectId)).orElse(null)
+                    BuiltInRegistries.MOB_EFFECT.get(ResourceKey.create(Registries.MOB_EFFECT, effectId)).getOrNull()
                 if (mobEffectHolder != null) {
                     val geoInstance = context.entity.geoInstance
                     if (geoInstance is PlayerCapability && !geoInstance.isLocalPlayerModel) {

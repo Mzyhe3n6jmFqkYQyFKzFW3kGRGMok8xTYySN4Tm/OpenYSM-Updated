@@ -6,6 +6,7 @@ import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.Minecraft
 import net.minecraft.server.MinecraftServer
 import java.nio.file.Path
+import kotlin.jvm.optionals.getOrNull
 
 object PlatformAPIImpl {
     @Volatile
@@ -40,8 +41,8 @@ object PlatformAPIImpl {
     fun isModLoaded(modId: String): Boolean = FabricLoader.getInstance().isModLoaded(modId)
 
     @JvmStatic
-    fun getModVersion(modId: String): String = FabricLoader.getInstance().getModContainer(modId)
-        .orElse(null)?.metadata?.version?.friendlyString ?: "unknown"
+    fun getModVersion(modId: String): String =
+        FabricLoader.getInstance().getModContainer(modId).getOrNull()?.metadata?.version?.friendlyString ?: "unknown"
 
     @JvmStatic
     val isDevelopmentEnvironment: Boolean

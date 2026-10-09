@@ -8,6 +8,7 @@ import net.minecraft.core.UUIDUtil
 import net.minecraft.core.Vec3i
 import net.minecraft.nbt.*
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 object NBTHelper {
     fun getBlockPos(tag: CompoundTag): BlockPos =
@@ -139,35 +140,35 @@ inline fun <reified T> Map<String, Map<String, T>>.save(): CompoundTag {
 
 fun CompoundTag.getOrNull(key: String): Tag? = if (contains(key)) get(key) else null
 
-fun CompoundTag.getByteOrNull(key: String): Byte? = if (contains(key)) getByte(key).orElse(null) else null
+fun CompoundTag.getByteOrNull(key: String): Byte? = if (contains(key)) getByte(key).getOrNull() else null
 
-fun CompoundTag.getShortOrNull(key: String): Short? = if (contains(key)) getShort(key).orElse(null) else null
+fun CompoundTag.getShortOrNull(key: String): Short? = if (contains(key)) getShort(key).getOrNull() else null
 
-fun CompoundTag.getIntOrNull(key: String): Int? = if (contains(key)) getInt(key).orElse(null) else null
+fun CompoundTag.getIntOrNull(key: String): Int? = if (contains(key)) getInt(key).getOrNull() else null
 
-fun CompoundTag.getLongOrNull(key: String): Long? = if (contains(key)) getLong(key).orElse(null) else null
+fun CompoundTag.getLongOrNull(key: String): Long? = if (contains(key)) getLong(key).getOrNull() else null
 
-fun CompoundTag.getFloatOrNull(key: String): Float? = if (contains(key)) getFloat(key).orElse(null) else null
+fun CompoundTag.getFloatOrNull(key: String): Float? = if (contains(key)) getFloat(key).getOrNull() else null
 
-fun CompoundTag.getDoubleOrNull(key: String): Double? = if (contains(key)) getDouble(key).orElse(null) else null
+fun CompoundTag.getDoubleOrNull(key: String): Double? = if (contains(key)) getDouble(key).getOrNull() else null
 
-fun CompoundTag.getStringOrNull(key: String): String? = if (contains(key)) getString(key).orElse(null) else null
+fun CompoundTag.getStringOrNull(key: String): String? = if (contains(key)) getString(key).getOrNull() else null
 
 fun CompoundTag.getByteArrayOrNull(key: String): ByteArray? =
-    if (contains(key)) getByteArray(key).orElse(null) else null
+    if (contains(key)) getByteArray(key).getOrNull() else null
 
-fun CompoundTag.getIntArrayOrNull(key: String): IntArray? = if (contains(key)) getIntArray(key).orElse(null) else null
+fun CompoundTag.getIntArrayOrNull(key: String): IntArray? = if (contains(key)) getIntArray(key).getOrNull() else null
 
 fun CompoundTag.getLongArrayOrNull(key: String): LongArray? =
-    if (contains(key)) getLongArray(key).orElse(null) else null
+    if (contains(key)) getLongArray(key).getOrNull() else null
 
 fun CompoundTag.getCompoundOrNull(key: String): CompoundTag? =
-    if (contains(key)) getCompound(key).orElse(null) else null
+    if (contains(key)) getCompound(key).getOrNull() else null
 
-fun CompoundTag.getListOrNull(key: String): ListTag? = if (contains(key)) getList(key).orElse(null) else null
+fun CompoundTag.getListOrNull(key: String): ListTag? = if (contains(key)) getList(key).getOrNull() else null
 
-fun CompoundTag.getBooleanOrNull(key: String): Boolean? = if (contains(key)) getBoolean(key).orElse(null) else null
+fun CompoundTag.getBooleanOrNull(key: String): Boolean? = if (contains(key)) getBoolean(key).getOrNull() else null
 
 fun CompoundTag.getUUIDOrNull(key: String): UUID? =
-    if (contains(key)) getIntArray(key).orElse(null)
+    if (contains(key)) getIntArray(key).getOrNull()
         ?.let { if (it.size == 4) UUIDUtil.uuidFromIntArray(it) else null } else null

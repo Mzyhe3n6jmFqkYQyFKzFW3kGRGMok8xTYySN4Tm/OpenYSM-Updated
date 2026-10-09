@@ -51,6 +51,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Semaphore
 import java.util.regex.Pattern
+import kotlin.jvm.optionals.getOrNull
 import kotlin.math.max
 import kotlin.math.min
 
@@ -204,7 +205,7 @@ object ServerModelManager {
         try {
             val assetsBuiltin = FabricLoader.getInstance().getModContainer(NameSpaces.MOD())
                 .flatMap { it.findPath("assets/" + NameSpaces.MOD() + "/builtin") }
-                .orElse(null)
+                .getOrNull()
 
             if (assetsBuiltin == null || !Files.isDirectory(assetsBuiltin)) return
 
@@ -1095,8 +1096,7 @@ object ServerModelManager {
 
     @JvmStatic
     fun isClientOnlyHost(): Boolean {
-        if (PlatformAPIImpl.isServer) return false
-        return ClientOnlyHostBridge.isActive()
+        return !PlatformAPIImpl.isServer && ClientOnlyHostBridge.isActive()
     }
 
     private fun shouldHideModelsFrom(uuid: UUID): Boolean =
@@ -1107,8 +1107,7 @@ object ServerModelManager {
 
     @JvmStatic
     fun canReuseLoadedModels(): Boolean {
-        if (!initialized || loadedSourceState == null) return false
-        return runCatching {
+        return !(!initialized || loadedSourceState == null) && runCatching {
             loadedSourceState == computeModelSourceState()
         }.getOrDefault(false)
     }
@@ -1134,7 +1133,9 @@ object ServerModelManager {
                     digest.update(0.toByte())
                     digest.update(Files.size(file).toString().toByteArray(StandardCharsets.US_ASCII))
                     digest.update(0.toByte())
-                    digest.update(Files.getLastModifiedTime(file).toMillis().toString().toByteArray(StandardCharsets.US_ASCII))
+                    digest.update(
+                        Files.getLastModifiedTime(file).toMillis().toString().toByteArray(StandardCharsets.US_ASCII)
+                    )
                     digest.update(0.toByte())
                 }
             }

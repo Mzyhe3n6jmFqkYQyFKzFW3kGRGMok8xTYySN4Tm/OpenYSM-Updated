@@ -7,6 +7,7 @@ import com.google.common.collect.Sets
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.StringTag
 import net.minecraft.world.entity.player.Player
+import kotlin.jvm.optionals.getOrNull
 
 class AuthModelsCapability {
     var authModels: MutableSet<String> = Sets.newHashSet()
@@ -30,7 +31,7 @@ class AuthModelsCapability {
     fun deserializeNBT(listTag: ListTag) {
         authModels.clear()
         for (tag in listTag) {
-            tag.asString().orElse("")?.let { authModels.add(it) }
+            tag.asString().getOrNull()?.let { authModels.add(it) }
         }
     }
 

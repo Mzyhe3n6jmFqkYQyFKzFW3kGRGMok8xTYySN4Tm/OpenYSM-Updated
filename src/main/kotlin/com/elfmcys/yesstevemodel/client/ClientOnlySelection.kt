@@ -14,6 +14,7 @@ import net.fabricmc.api.Environment
 import net.minecraft.nbt.*
 import java.nio.file.Files
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.jvm.optionals.getOrNull
 
 data class ClientSelectionData(
     var modelId: String? = null,
@@ -72,8 +73,7 @@ data class ClientSelectionData(
             }
             tag.getListOrNull("star_models")?.let { starList ->
                 for (i in starList.indices) {
-                    val starStr = starList.getString(i).orElse("")
-                    if (starStr.isNotEmpty()) data.starModels.add(starStr)
+                    starList.getString(i).getOrNull()?.let { data.starModels.add(it) }
                 }
             }
             return data
