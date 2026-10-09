@@ -185,6 +185,10 @@ object ServerModelSelection : AbstractManager<ServerSelectionData>("server_selec
         data.players[uuid.toString()]?.authModels?.toSet() ?: emptySet()
 
     @Synchronized
+    fun hasAuthModel(uuid: UUID, modelId: String): Boolean =
+        data.players[uuid.toString()]?.authModels?.contains(modelId) ?: false
+
+    @Synchronized
     fun addAuthModel(uuid: UUID, modelId: String) {
         val record = data.players.computeIfAbsent(uuid.toString()) { PlayerServerData() }
         if (record.authModels.add(modelId)) save()

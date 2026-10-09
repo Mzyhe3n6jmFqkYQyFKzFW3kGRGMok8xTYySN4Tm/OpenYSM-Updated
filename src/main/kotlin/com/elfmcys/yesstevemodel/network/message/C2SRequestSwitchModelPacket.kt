@@ -1,6 +1,5 @@
 package com.elfmcys.yesstevemodel.network.message
 
-import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
 import com.elfmcys.yesstevemodel.config.ServerConfig
 import com.elfmcys.yesstevemodel.model.ServerModelManager
@@ -40,22 +39,21 @@ class C2SRequestSwitchModelPacket(
         @JvmStatic
         fun handleCapability(message: C2SRequestSwitchModelPacket, sender: ServerPlayer) {
             ModelInfoCapability[sender]?.let { cap ->
-                AuthModelsCapability[sender]?.let { cap2 ->
-                    val str = message.modelId
-                    val serverModelInfo = ServerModelManager.serverModelInfo
-                    val serverModelData = serverModelInfo[str]
-                    if (serverModelData == null ||
-                        (ServerModelManager.authModels.contains(str) && !cap2.containsModel(message.modelId)) ||
-                        !serverModelData.modelInfo.textures.contains(message.textureId)
-                    ) {
-                        cap.resetToDefault()
-                        ServerModelSelection.savePlayerSelection(sender.uuid, cap.modelId, cap.selectTexture)
-                    } else {
-                        cap.setModelAndTexture(message.modelId, message.textureId)
-                        ServerModelSelection.savePlayerSelection(sender.uuid, message.modelId, message.textureId)
-                    }
-                    cap.stopAnimation(sender)
+                val str = message.modelId
+                val serverModelInfo = ServerModelManager.serverModelInfo
+                val serverModelData = serverModelInfo[str]
+                val hasAuth = !ServerModelManager.authModels.contains(str) || ServerModelSelection.hasAuthModel(sender.uuid, str)
+                if (serverModelData == null ||
+                    !hasAuth ||
+                    !serverModelData.modelInfo.textures.contains(message.textureId)
+                ) {
+                    cap.resetToDefault()
+                    ServerModelSelection.savePlayerSelection(sender.uuid, cap.modelId, cap.selectTexture)
+                } else {
+                    cap.setModelAndTexture(message.modelId, message.textureId)
+                    ServerModelSelection.savePlayerSelection(sender.uuid, message.modelId, message.textureId)
                 }
+                cap.stopAnimation(sender)
             }
         }
     }

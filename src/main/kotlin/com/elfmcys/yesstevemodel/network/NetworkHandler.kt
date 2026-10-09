@@ -117,22 +117,6 @@ object NetworkHandler {
             PacketDirection.PLAY_TO_SERVER
         )
         YSMChannel.register(
-            8,
-            S2CSyncStarModelsPacket::class.java,
-            S2CSyncStarModelsPacket::encode,
-            S2CSyncStarModelsPacket::decode,
-            S2CSyncStarModelsPacket::handle,
-            PacketDirection.PLAY_TO_CLIENT
-        )
-        YSMChannel.register(
-            9,
-            C2SSetStarModelPacket::class.java,
-            C2SSetStarModelPacket::encode,
-            C2SSetStarModelPacket::decode,
-            C2SSetStarModelPacket::handle,
-            PacketDirection.PLAY_TO_SERVER
-        )
-        YSMChannel.register(
             15,
             C2SCompleteFeedbackPacket::class.java,
             C2SCompleteFeedbackPacket::encode,

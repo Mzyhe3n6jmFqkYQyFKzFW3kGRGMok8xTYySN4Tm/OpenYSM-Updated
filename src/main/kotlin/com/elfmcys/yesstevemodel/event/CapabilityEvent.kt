@@ -1,7 +1,9 @@
 package com.elfmcys.yesstevemodel.event
 
 import com.elfmcys.yesstevemodel.YesSteveModel
-import com.elfmcys.yesstevemodel.capability.*
+import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
+import com.elfmcys.yesstevemodel.capability.ProjectileModelCapability
+import com.elfmcys.yesstevemodel.capability.VehicleModelCapability
 import com.elfmcys.yesstevemodel.config.ServerConfig
 import com.elfmcys.yesstevemodel.model.ServerModelManager
 import com.elfmcys.yesstevemodel.model.ServerModelSelection
@@ -31,14 +33,8 @@ object CapabilityEvent {
         if (!YesSteveModel.isAvailable) return
         CapabilityLifecycle.revive(oldPlayer)
         val oldModelInfoCap = getModelInfoCap(oldPlayer)
-        val oldAuthModelsCap = getAuthModelsCap(oldPlayer)
-        val oldStarModelsCap = getStarModelsCap(oldPlayer)
         val modelInfoCap = getModelInfoCap(newPlayer)
-        val authModelsCap = getAuthModelsCap(newPlayer)
-        val starModelsCap = getStarModelsCap(newPlayer)
         if (modelInfoCap != null && oldModelInfoCap != null) modelInfoCap.copyFrom(oldModelInfoCap)
-        if (authModelsCap != null && oldAuthModelsCap != null) authModelsCap.authModels = oldAuthModelsCap.authModels
-        if (starModelsCap != null && oldStarModelsCap != null) starModelsCap.starModels = oldStarModelsCap.starModels
         CapabilityLifecycle.invalidate(oldPlayer)
     }
 
@@ -71,13 +67,8 @@ object CapabilityEvent {
                     modelInfoCap.markDirty()
                 }
             }
-            getAuthModelsCap(entity)?.let { authModelsCap ->
-                val savedAuth = ServerModelSelection.getAuthModels(entity.uuid)
-                for (modelId in savedAuth) {
-                    authModelsCap.addModel(modelId)
-                }
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.authModels), entity)
-            }
+            val savedAuth = ServerModelSelection.getAuthModels(entity.uuid)
+            NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(savedAuth.toMutableSet()), entity)
         }
     }
 
@@ -145,10 +136,4 @@ object CapabilityEvent {
 
     @JvmStatic
     fun getModelInfoCap(player: Player): ModelInfoCapability? = ModelInfoCapability[player]
-
-    @JvmStatic
-    fun getAuthModelsCap(player: Player): AuthModelsCapability? = AuthModelsCapability[player]
-
-    @JvmStatic
-    fun getStarModelsCap(player: Player): StarModelsCapability? = StarModelsCapability[player]
 }

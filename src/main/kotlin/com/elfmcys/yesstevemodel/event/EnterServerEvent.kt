@@ -1,14 +1,11 @@
 package com.elfmcys.yesstevemodel.event
 
 import com.elfmcys.yesstevemodel.YesSteveModel
-import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
-import com.elfmcys.yesstevemodel.capability.StarModelsCapability
 import com.elfmcys.yesstevemodel.model.ServerModelManager
 import com.elfmcys.yesstevemodel.model.ServerModelSelection
 import com.elfmcys.yesstevemodel.network.NetworkHandler
 import com.elfmcys.yesstevemodel.network.message.S2CSyncAuthModelsPacket
-import com.elfmcys.yesstevemodel.network.message.S2CSyncStarModelsPacket
 import com.elfmcys.yesstevemodel.network.message.S2CVersionCheckPacket
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 
@@ -46,13 +43,8 @@ object EnterServerEvent {
                     modelInfoCap.markDirty()
                 }
             }
-            AuthModelsCapability[player]?.let { authModelsCap ->
-                val savedAuth = ServerModelSelection.getAuthModels(player.uuid)
-                for (modelId in savedAuth) {
-                    authModelsCap.addModel(modelId)
-                }
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModelsCap.authModels), player)
-            }
+            val savedAuth = ServerModelSelection.getAuthModels(player.uuid)
+            NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(savedAuth.toMutableSet()), player)
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.elfmcys.yesstevemodel.command.subcommands
 
-import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
 import com.elfmcys.yesstevemodel.event.CommandRegistry
 import com.elfmcys.yesstevemodel.model.ServerModelManager
@@ -124,28 +123,26 @@ object ModelCommand {
         }
         targets.forEach { player ->
             ModelInfoCapability[player]?.let { cap ->
-                AuthModelsCapability[player]?.let { authCap ->
-                    if (!ServerModelManager.authModels.contains(modelName) || authCap.containsModel(modelName)) {
-                        cap.setModelAndTexture(modelName, finalTextureName)
-                        cap.setMandatory(true)
-                        ServerModelSelection.savePlayerSelection(player.uuid, modelName, finalTextureName)
-                        context.source.sendSuccess({
-                            Component.translatable(
-                                "message.yes_steve_model.model.set.success",
-                                modelName,
-                                player.scoreboardName
-                            )
-                        }, true)
-                        return@let
-                    }
+                if (!ServerModelManager.authModels.contains(modelName) || ServerModelSelection.hasAuthModel(player.uuid, modelName)) {
+                    cap.setModelAndTexture(modelName, finalTextureName)
+                    cap.setMandatory(true)
+                    ServerModelSelection.savePlayerSelection(player.uuid, modelName, finalTextureName)
                     context.source.sendSuccess({
                         Component.translatable(
-                            "message.yes_steve_model.model.set.need_auth",
+                            "message.yes_steve_model.model.set.success",
                             modelName,
                             player.scoreboardName
                         )
                     }, true)
+                    return@let
                 }
+                context.source.sendSuccess({
+                    Component.translatable(
+                        "message.yes_steve_model.model.set.need_auth",
+                        modelName,
+                        player.scoreboardName
+                    )
+                }, true)
             }
         }
         return Command.SINGLE_SUCCESS

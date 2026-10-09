@@ -10,8 +10,8 @@ class VehicleModelComponent : Component {
     val capability: VehicleModelCapability = VehicleModelCapability()
 
     override fun readData(input: ValueInput) =
-        input.read("VehicleModel", CompoundTag.CODEC).ifPresent(capability::deserializeNBT)
+        input.read("VehicleModel", CompoundTag.CODEC).ifPresent(capability::loadFrom)
 
     override fun writeData(output: ValueOutput) =
-        output.store("VehicleModel", CompoundTag.CODEC, capability.serializeNBT())
+        output.store("VehicleModel", CompoundTag.CODEC, capability.save())
 }

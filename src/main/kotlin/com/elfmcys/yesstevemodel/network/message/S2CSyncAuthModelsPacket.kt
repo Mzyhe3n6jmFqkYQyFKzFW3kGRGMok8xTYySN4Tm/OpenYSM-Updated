@@ -1,9 +1,8 @@
 package com.elfmcys.yesstevemodel.network.message
 
-import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
+import com.elfmcys.yesstevemodel.client.ClientModelManager
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
-import net.minecraft.client.Minecraft
 import net.minecraft.network.FriendlyByteBuf
 import rip.ysm.api.network.PacketContext
 
@@ -34,8 +33,7 @@ class S2CSyncAuthModelsPacket(val authModels: MutableSet<String>) {
         @JvmStatic
         @Environment(EnvType.CLIENT)
         fun handleCapability(message: S2CSyncAuthModelsPacket) {
-            val player = Minecraft.getInstance().player ?: return
-            AuthModelsCapability[player]?.authModels = message.authModels
+            ClientModelManager.authModels = message.authModels.toSet()
         }
     }
 }

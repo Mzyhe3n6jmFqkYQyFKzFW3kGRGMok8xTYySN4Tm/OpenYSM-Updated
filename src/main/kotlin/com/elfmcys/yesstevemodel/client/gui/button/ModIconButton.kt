@@ -2,7 +2,7 @@ package com.elfmcys.yesstevemodel.client.gui.button
 
 import com.elfmcys.yesstevemodel.NameSpaces
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
-import com.elfmcys.yesstevemodel.capability.StarModelsCapability
+import com.elfmcys.yesstevemodel.client.ClientOnlySelection
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.input.InputWithModifiers
@@ -18,8 +18,7 @@ class ModIconButton(x: Int, y: Int) : FlatColorButton(x, y, 20, 20, Component.em
         val iconOffsetY = (height - 16) / 2
         val localPlayer = Minecraft.getInstance().player ?: return
         val cap = PlayerCapability[localPlayer] ?: return
-        val starCap = StarModelsCapability[localPlayer] ?: return
-        val u = if (starCap.containsModel(cap.modelId)) 16.0f else 0.0f
+        val u = if (ClientOnlySelection.isModelStarred(cap.modelId)) 16.0f else 0.0f
         guiGraphics.blit(
             RenderPipelines.GUI_TEXTURED,
             ICON_TEXTURE,
@@ -37,12 +36,11 @@ class ModIconButton(x: Int, y: Int) : FlatColorButton(x, y, 20, 20, Component.em
     override fun onPress(input: InputWithModifiers) {
         val localPlayer = Minecraft.getInstance().player ?: return
         val cap = PlayerCapability[localPlayer] ?: return
-        val starCap = StarModelsCapability[localPlayer] ?: return
         val modelId = cap.modelId
-        if (starCap.containsModel(modelId)) {
-            starCap.removeModel(modelId)
+        if (ClientOnlySelection.isModelStarred(modelId)) {
+            ClientOnlySelection.removeStarModel(modelId)
         } else {
-            starCap.addModel(modelId)
+            ClientOnlySelection.addStarModel(modelId)
         }
     }
 

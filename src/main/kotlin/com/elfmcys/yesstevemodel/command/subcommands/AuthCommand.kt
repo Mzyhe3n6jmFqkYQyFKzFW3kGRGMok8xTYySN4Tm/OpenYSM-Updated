@@ -1,6 +1,5 @@
 package com.elfmcys.yesstevemodel.command.subcommands
 
-import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
 import com.elfmcys.yesstevemodel.event.CommandRegistry
 import com.elfmcys.yesstevemodel.model.ServerModelManager
@@ -60,18 +59,16 @@ object AuthCommand {
             return Command.SINGLE_SUCCESS
         }
         targets.forEach { player ->
-            AuthModelsCapability[player]?.let { ownModelCap ->
-                ownModelCap.addModel(string)
-                ServerModelSelection.addAuthModel(player.uuid, string)
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.authModels), player)
-                context.source.sendSuccess({
-                    Component.translatable(
-                        "commands.yes_steve_model.auth_model.add.info",
-                        string,
-                        player.scoreboardName
-                    )
-                }, true)
-            }
+            ServerModelSelection.addAuthModel(player.uuid, string)
+            val authModels = ServerModelSelection.getAuthModels(player.uuid).toMutableSet()
+            NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModels), player)
+            context.source.sendSuccess({
+                Component.translatable(
+                    "commands.yes_steve_model.auth_model.add.info",
+                    string,
+                    player.scoreboardName
+                )
+            }, true)
         }
         return Command.SINGLE_SUCCESS
     }
@@ -80,18 +77,16 @@ object AuthCommand {
     private fun addAllAuthModel(context: CommandContext<CommandSourceStack>): Int {
         val targets = EntityArgument.getPlayers(context, TARGETS_NAME)
         targets.forEach { player ->
-            AuthModelsCapability[player]?.let { ownModelCap ->
-                val setKeySet = ServerModelManager.serverModelInfo.keys
-                setKeySet.forEach(ownModelCap::addModel)
-                ServerModelSelection.addAllAuthModels(player.uuid, setKeySet)
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.authModels), player)
-                context.source.sendSuccess({
-                    Component.translatable(
-                        "commands.yes_steve_model.auth_model.all.info",
-                        player.scoreboardName
-                    )
-                }, true)
-            }
+            val setKeySet = ServerModelManager.serverModelInfo.keys
+            ServerModelSelection.addAllAuthModels(player.uuid, setKeySet)
+            val authModels = ServerModelSelection.getAuthModels(player.uuid).toMutableSet()
+            NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModels), player)
+            context.source.sendSuccess({
+                Component.translatable(
+                    "commands.yes_steve_model.auth_model.all.info",
+                    player.scoreboardName
+                )
+            }, true)
         }
         return Command.SINGLE_SUCCESS
     }
@@ -101,30 +96,28 @@ object AuthCommand {
         val targets: Collection<ServerPlayer> = EntityArgument.getPlayers(context, TARGETS_NAME)
         val modelName: String = StringArgumentType.getString(context, MODEL_ID_NAME)
         targets.forEach { player ->
-            AuthModelsCapability[player]?.let { ownModelsCap ->
-                ownModelsCap.removeModel(modelName)
-                ServerModelSelection.removeAuthModel(player.uuid, modelName)
-                ModelInfoCapability[player]?.let { modelIdCap ->
-                    if (ServerModelManager.authModels
-                            .contains(modelIdCap.modelId) && !ownModelsCap.containsModel(modelIdCap.modelId)
-                    ) {
-                        modelIdCap.resetToDefault()
-                        ServerModelSelection.savePlayerSelection(
-                            player.uuid,
-                            modelIdCap.modelId,
-                            modelIdCap.selectTexture
-                        )
-                    }
-                }
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelsCap.authModels), player)
-                context.source.sendSuccess({
-                    Component.translatable(
-                        "commands.yes_steve_model.auth_model.remove.info",
-                        modelName,
-                        player.scoreboardName
+            ServerModelSelection.removeAuthModel(player.uuid, modelName)
+            val authModels = ServerModelSelection.getAuthModels(player.uuid).toMutableSet()
+            ModelInfoCapability[player]?.let { modelIdCap ->
+                if (ServerModelManager.authModels
+                        .contains(modelIdCap.modelId) && !authModels.contains(modelIdCap.modelId)
+                ) {
+                    modelIdCap.resetToDefault()
+                    ServerModelSelection.savePlayerSelection(
+                        player.uuid,
+                        modelIdCap.modelId,
+                        modelIdCap.selectTexture
                     )
-                }, true)
+                }
             }
+            NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModels), player)
+            context.source.sendSuccess({
+                Component.translatable(
+                    "commands.yes_steve_model.auth_model.remove.info",
+                    modelName,
+                    player.scoreboardName
+                )
+            }, true)
         }
         return Command.SINGLE_SUCCESS
     }
@@ -132,27 +125,24 @@ object AuthCommand {
     @Throws(CommandSyntaxException::class)
     private fun executeClear(context: CommandContext<CommandSourceStack>): Int {
         EntityArgument.getPlayers(context, TARGETS_NAME).forEach { player ->
-            AuthModelsCapability[player]?.let { ownModelCap ->
-                ownModelCap.clear()
-                ServerModelSelection.clearAuthModels(player.uuid)
-                ModelInfoCapability[player]?.let { modelIdCap ->
-                    if (ServerModelManager.authModels.contains(modelIdCap.modelId)) {
-                        modelIdCap.resetToDefault()
-                        ServerModelSelection.savePlayerSelection(
-                            player.uuid,
-                            modelIdCap.modelId,
-                            modelIdCap.selectTexture
-                        )
-                    }
-                }
-                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(ownModelCap.authModels), player)
-                context.source.sendSuccess({
-                    Component.translatable(
-                        "commands.yes_steve_model.auth_model.clear.info",
-                        player.scoreboardName
+            ServerModelSelection.clearAuthModels(player.uuid)
+            ModelInfoCapability[player]?.let { modelIdCap ->
+                if (ServerModelManager.authModels.contains(modelIdCap.modelId)) {
+                    modelIdCap.resetToDefault()
+                    ServerModelSelection.savePlayerSelection(
+                        player.uuid,
+                        modelIdCap.modelId,
+                        modelIdCap.selectTexture
                     )
-                }, true)
+                }
             }
+            NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(mutableSetOf()), player)
+            context.source.sendSuccess({
+                Component.translatable(
+                    "commands.yes_steve_model.auth_model.clear.info",
+                    player.scoreboardName
+                )
+            }, true)
         }
         return Command.SINGLE_SUCCESS
     }

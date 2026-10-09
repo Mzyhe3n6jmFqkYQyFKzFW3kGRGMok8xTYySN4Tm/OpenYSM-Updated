@@ -2,7 +2,6 @@ package com.elfmcys.yesstevemodel.client.gui.button
 
 import com.elfmcys.yesstevemodel.NameSpaces
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
-import com.elfmcys.yesstevemodel.capability.StarModelsCapability
 import com.elfmcys.yesstevemodel.client.ClientOnlyMode
 import com.elfmcys.yesstevemodel.client.ClientOnlySelection
 import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity
@@ -170,23 +169,19 @@ open class ModelButton(
             guiGraphics.fillGradient(x, y, x + width, y + height, -1625152990, -1625152990)
         }
 
-        val player = minecraft.player
-        if (player != null) {
-            val starCap = StarModelsCapability[player]
-            if (starCap != null && starCap.containsModel(modelIdHolder.modelId)) {
-                guiGraphics.blit(
-                    RenderPipelines.GUI_TEXTURED,
-                    ICON_TEXTURE,
-                    (x + width) - 14,
-                    y,
-                    16.0f,
-                    0.0f,
-                    16,
-                    16,
-                    256,
-                    256
-                )
-            }
+        if (ClientOnlySelection.isModelStarred(modelIdHolder.modelId)) {
+            guiGraphics.blit(
+                RenderPipelines.GUI_TEXTURED,
+                ICON_TEXTURE,
+                (x + width) - 14,
+                y,
+                16.0f,
+                0.0f,
+                16,
+                16,
+                256,
+                256
+            )
         }
     }
 

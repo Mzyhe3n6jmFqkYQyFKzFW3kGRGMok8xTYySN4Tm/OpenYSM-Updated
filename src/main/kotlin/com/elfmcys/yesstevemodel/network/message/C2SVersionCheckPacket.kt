@@ -1,9 +1,8 @@
 package com.elfmcys.yesstevemodel.network.message
 
-import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
 import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
-import com.elfmcys.yesstevemodel.capability.StarModelsCapability
 import com.elfmcys.yesstevemodel.model.ServerModelManager
+import com.elfmcys.yesstevemodel.model.ServerModelSelection
 import com.elfmcys.yesstevemodel.network.NetworkHandler
 import net.minecraft.network.FriendlyByteBuf
 import rip.ysm.api.network.PacketContext
@@ -29,12 +28,8 @@ class C2SVersionCheckPacket(val version: String = NetworkHandler.VERSION) {
                     cap.setMandatory(false)
                     cap.stopAnimation(sender)
                 }
-                AuthModelsCapability[sender]?.let { cap ->
-                    NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(cap.authModels), sender)
-                }
-                StarModelsCapability[sender]?.let { cap ->
-                    NetworkHandler.sendToClientPlayer(S2CSyncStarModelsPacket(cap.starModels), sender)
-                }
+                val authModels = ServerModelSelection.getAuthModels(sender.uuid)
+                NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(authModels.toMutableSet()), sender)
                 ServerModelManager.requestPlayerAuth(sender)
             }
         }

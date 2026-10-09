@@ -88,6 +88,12 @@ object ClientModelManager {
     var modelPackMap: Map<String, ModelPackData> = Object2ReferenceOpenHashMap()
         private set
 
+    @Volatile
+    var authModels: Set<String> = emptySet()
+
+    fun hasAuthModel(modelId: String): Boolean =
+        authModels.contains(modelId)
+
     private val pendingModelQueue: ConcurrentLinkedQueue<Pair<ModelAssembly, String>> = ConcurrentLinkedQueue()
     private val guiWidgets: WeakHashMap<IGuiWidget, Any?> = WeakHashMap()
     private val syncState: SyncStatus = SyncStatus()
@@ -701,6 +707,7 @@ object ClientModelManager {
         }
 
         modelPackMap = Object2ReferenceOpenHashMap()
+        authModels = emptySet()
         _localModelContext = null
         _defaultTexture = null
         pendingModelCallback = null
