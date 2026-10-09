@@ -79,7 +79,7 @@ open class ModelButton(
         if (!isStarred && localPlayer != null) {
             val cap = PlayerCapability[localPlayer] ?: return
             val currentTexture = modelIdHolder.currentTextureName ?: ""
-            if (NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced()) {
+            if (NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced) {
                 val modelAssembly = modelIdHolder.modelAssembly
                 if (modelAssembly != null && cap.hasMolangVars(modelAssembly.modelData.hashId)) {
                     cap.initModelWithTexture(modelIdHolder.modelId, currentTexture)

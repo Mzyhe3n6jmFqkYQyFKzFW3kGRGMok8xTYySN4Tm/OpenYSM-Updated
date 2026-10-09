@@ -12,16 +12,16 @@ class ClientOnlyModeTest {
     @Test
     fun testClientOnlySelection() {
         ClientOnlySelection.save("custom/steve_special", "texture_01")
-        assertTrue(ClientOnlySelection.hasSelection())
-        assertEquals("custom/steve_special", ClientOnlySelection.getModelId())
-        assertEquals("texture_01", ClientOnlySelection.getTextureId())
+        assertTrue(ClientOnlySelection.hasSelection)
+        assertEquals("custom/steve_special", ClientOnlySelection.modelId)
+        assertEquals("texture_01", ClientOnlySelection.textureId)
     }
 
     @Test
     fun testClientOnlyModeState() {
         ClientOnlyMode.reset()
-        assertFalse(ClientOnlyMode.isActive())
-        assertFalse(ClientOnlyMode.isForced())
+        assertFalse(ClientOnlyMode.isActive)
+        assertFalse(ClientOnlyMode.isForced)
 
         assertTrue(ClientOnlyMode.markCatalogLoaded())
         assertFalse(ClientOnlyMode.markCatalogLoaded())

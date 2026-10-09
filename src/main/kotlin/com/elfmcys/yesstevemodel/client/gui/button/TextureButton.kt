@@ -25,7 +25,7 @@ open class TextureButton(
         val localPlayer = Minecraft.getInstance().player ?: return
         val cap = PlayerCapability[localPlayer] ?: return
         val textureName = previewEntity.currentTextureName ?: ""
-        if (NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced()) {
+        if (NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced) {
             cap.currentTexture = textureName
             NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(previewEntity.modelId, textureName))
         } else {

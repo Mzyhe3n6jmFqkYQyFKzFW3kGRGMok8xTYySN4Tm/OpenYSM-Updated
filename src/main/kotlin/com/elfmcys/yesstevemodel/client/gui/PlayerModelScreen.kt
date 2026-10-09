@@ -421,7 +421,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                 val modelAssembly = filteredModels[modelId]
                 if (modelAssembly != null) {
                     val isAuthLocked =
-                        !ClientOnlyMode.isActive() && modelAssembly.textureRegistry.isAuthModel && (capability == null || !capability.containsModel(
+                        !ClientOnlyMode.isActive && modelAssembly.textureRegistry.isAuthModel && (capability == null || !capability.containsModel(
                             modelId
                         ))
                     previewEntity.initModelWithTexture(modelId, modelAssembly.animationBundle.defaultTextureName)

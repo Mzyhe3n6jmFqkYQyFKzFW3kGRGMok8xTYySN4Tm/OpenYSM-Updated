@@ -488,7 +488,7 @@ open class ModernAnimationRouletteScreen(
     private fun playAnimation(key: String) {
         val player: LocalPlayer? = Minecraft.getInstance().player
         when {
-            NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced() -> {
+            NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced -> {
                 val last = navigationStack.peekLast()
                 val submenu = if (last != null && !last.left.isNullOrBlank()) last.left else StringPool.EMPTY
                 val entity: Entity = animatableModel.entity
