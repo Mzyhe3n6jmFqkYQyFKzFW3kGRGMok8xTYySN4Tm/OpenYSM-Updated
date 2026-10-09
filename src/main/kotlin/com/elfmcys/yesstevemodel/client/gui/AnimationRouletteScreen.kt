@@ -2,6 +2,7 @@ package com.elfmcys.yesstevemodel.client.gui
 
 import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
+import com.elfmcys.yesstevemodel.client.ClientOnlyMode
 import com.elfmcys.yesstevemodel.client.event.AnimationLockEvent
 import com.elfmcys.yesstevemodel.client.gui.button.AnimationSlider
 import com.elfmcys.yesstevemodel.client.gui.button.ConfigCheckBox
@@ -303,7 +304,7 @@ class AnimationRouletteScreen : Screen {
             ) {
                 executeExpression(expr, null)
                 val entity = animatableModel.entity
-                if (!GeckoLibCache.isRoamingVariableAssignment(expr) && NetworkHandler.isClientConnected() && !ServerConfig.LOW_BANDWIDTH_USAGE.get())
+                if (!GeckoLibCache.isRoamingVariableAssignment(expr) && NetworkHandler.isClientConnected() && !ServerConfig.LOW_BANDWIDTH_USAGE.get() && !ClientOnlyMode.isForced())
                     NetworkHandler.sendToServer(C2SRequestExecuteMolangPacket(expr, entity.id))
                 init()
             }
@@ -381,7 +382,7 @@ class AnimationRouletteScreen : Screen {
                 val expr = "${checkboxConfig.value}=${if (it) "1" else "0"}"
                 executeExpression(expr, null)
                 val entity = animatableModel.entity
-                if (!GeckoLibCache.isRoamingVariableAssignment(expr) && NetworkHandler.isClientConnected() && !ServerConfig.LOW_BANDWIDTH_USAGE.get()) {
+                if (!GeckoLibCache.isRoamingVariableAssignment(expr) && NetworkHandler.isClientConnected() && !ServerConfig.LOW_BANDWIDTH_USAGE.get() && !ClientOnlyMode.isForced()) {
                     NetworkHandler.sendToServer(C2SRequestExecuteMolangPacket(expr, entity.id))
                 }
             }
@@ -581,7 +582,7 @@ class AnimationRouletteScreen : Screen {
     private fun playAnimation(animKey: String) {
         val localPlayer = Minecraft.getInstance().player
         when {
-            NetworkHandler.isClientConnected() -> {
+            NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced() -> {
                 val lastNav = navigationStack.peekLast()
                 val category = if (lastNav != null && lastNav.left.isNotBlank()) lastNav.left else StringPool.EMPTY
                 when (val entity = animatableModel.entity) {

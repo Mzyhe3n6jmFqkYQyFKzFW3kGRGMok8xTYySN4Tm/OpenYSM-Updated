@@ -262,6 +262,13 @@ object NetworkHandler {
     }
 
     @JvmStatic
+    fun sendVersionCheck(connection: Connection?) {
+        if (connection != null && connection.isConnected) {
+            connection.send(toServerboundPacket(C2SVersionCheckPacket()))
+        }
+    }
+
+    @JvmStatic
     fun sendToClientPlayer(obj: Any, player: Player) {
         YSMChannel.sendToClientPlayer(obj, player as ServerPlayer)
     }

@@ -3,6 +3,8 @@ package com.elfmcys.yesstevemodel.client.gui.button
 import com.elfmcys.yesstevemodel.NameSpaces
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
 import com.elfmcys.yesstevemodel.capability.StarModelsCapability
+import com.elfmcys.yesstevemodel.client.ClientOnlyMode
+import com.elfmcys.yesstevemodel.client.ClientOnlySelection
 import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity
 import com.elfmcys.yesstevemodel.client.gui.ModelMetadataPresenter
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
@@ -77,7 +79,7 @@ open class ModelButton(
         if (!isStarred && localPlayer != null) {
             val cap = PlayerCapability[localPlayer] ?: return
             val currentTexture = modelIdHolder.currentTextureName ?: ""
-            if (NetworkHandler.isClientConnected()) {
+            if (NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced()) {
                 val modelAssembly = modelIdHolder.modelAssembly
                 if (modelAssembly != null && cap.hasMolangVars(modelAssembly.modelData.hashId)) {
                     cap.initModelWithTexture(modelIdHolder.modelId, currentTexture)
@@ -92,8 +94,10 @@ open class ModelButton(
                     NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(modelIdHolder.modelId, currentTexture))
                     return
                 }
+            } else {
+                ClientOnlySelection.save(modelIdHolder.modelId, currentTexture)
+                cap.initModelWithTexture(modelIdHolder.modelId, currentTexture)
             }
-            cap.initModelWithTexture(modelIdHolder.modelId, currentTexture)
         }
     }
 

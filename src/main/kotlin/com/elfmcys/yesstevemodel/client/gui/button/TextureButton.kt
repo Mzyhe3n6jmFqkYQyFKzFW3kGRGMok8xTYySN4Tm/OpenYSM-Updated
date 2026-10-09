@@ -1,6 +1,8 @@
 package com.elfmcys.yesstevemodel.client.gui.button
 
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
+import com.elfmcys.yesstevemodel.client.ClientOnlyMode
+import com.elfmcys.yesstevemodel.client.ClientOnlySelection
 import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity
 import com.elfmcys.yesstevemodel.client.gui.ModelMetadataPresenter
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
@@ -23,8 +25,13 @@ open class TextureButton(
         val localPlayer = Minecraft.getInstance().player ?: return
         val cap = PlayerCapability[localPlayer] ?: return
         val textureName = previewEntity.currentTextureName ?: ""
-        cap.currentTexture = textureName
-        NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(previewEntity.modelId, textureName))
+        if (NetworkHandler.isClientConnected() && !ClientOnlyMode.isForced()) {
+            cap.currentTexture = textureName
+            NetworkHandler.sendToServer(C2SRequestSwitchModelPacket(previewEntity.modelId, textureName))
+        } else {
+            ClientOnlySelection.save(previewEntity.modelId, textureName)
+            cap.initModelWithTexture(previewEntity.modelId, textureName)
+        }
     }
 
     override fun renderContents(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {

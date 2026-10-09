@@ -59,15 +59,16 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
         get() = super.currentModel
         set(value) {
             super.currentModel = value
-            val varHolder = molangVarsMap.get(currentModelHashId)
-            varHolder?.currentVars?.let {
-                if (isLocalPlayerModel) {
-                    serverVarContainer = RoamingStruct(currentModelHashId, it)
-                    return
-                } else {
-                    serverVarContainer = Int2FloatOpenHashMapStruct(it)
-                    return
-                }
+            val varHolder = molangVarsMap[currentModelHashId]
+            if (varHolder?.currentVars != null) {
+                serverVarContainer = if (isLocalPlayerModel) RoamingStruct(currentModelHashId, varHolder.currentVars!!) else Int2FloatOpenHashMapStruct(varHolder.currentVars!!)
+                return
+            }
+            if (isLocalPlayerModel && currentModelHashId != 0) {
+                val newVars = Int2FloatOpenHashMap()
+                molangVarsMap.computeIfAbsent(currentModelHashId) { MolangVarHolder() }.currentVars = newVars
+                serverVarContainer = RoamingStruct(currentModelHashId, newVars)
+                return
             }
             serverVarContainer = null
         }

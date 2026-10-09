@@ -57,6 +57,28 @@ class ExtraPlayerConfigScreen(modelScreen: PlayerModelScreen? = null) :
                     Option.ofBoolean("disable_self_hands", GeneralConfig.DISABLE_SELF_HANDS)
                 )
             )
+            .add(
+                BooleanOptionRow(
+                    0,
+                    0,
+                    0,
+                    22,
+                    Option.ofBoolean("force_client_mode", GeneralConfig.FORCE_CLIENT_MODE)
+                )
+            )
+            .add(
+                SliderOptionRow(
+                    0,
+                    0,
+                    0,
+                    22,
+                    Option.ofDouble("handshake_timeout", GeneralConfig.HANDSHAKE_TIMEOUT),
+                    1.0,
+                    60.0,
+                    0.5,
+                    "s"
+                )
+            )
 
         val rendering = OptionGroup("rendering")
             .add(

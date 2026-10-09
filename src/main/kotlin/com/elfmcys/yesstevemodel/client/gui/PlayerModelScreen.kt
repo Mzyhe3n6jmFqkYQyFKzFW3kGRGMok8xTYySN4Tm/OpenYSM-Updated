@@ -6,6 +6,7 @@ import com.elfmcys.yesstevemodel.capability.AuthModelsCapability
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
 import com.elfmcys.yesstevemodel.capability.StarModelsCapability
 import com.elfmcys.yesstevemodel.client.ClientModelManager
+import com.elfmcys.yesstevemodel.client.ClientOnlyMode
 import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity
 import com.elfmcys.yesstevemodel.client.gui.button.*
 import com.elfmcys.yesstevemodel.client.input.PlayerModelToggleKey
@@ -420,7 +421,7 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                 val modelAssembly = filteredModels[modelId]
                 if (modelAssembly != null) {
                     val isAuthLocked =
-                        modelAssembly.textureRegistry.isAuthModel && (capability == null || !capability.containsModel(
+                        !ClientOnlyMode.isActive() && modelAssembly.textureRegistry.isAuthModel && (capability == null || !capability.containsModel(
                             modelId
                         ))
                     previewEntity.initModelWithTexture(modelId, modelAssembly.animationBundle.defaultTextureName)
