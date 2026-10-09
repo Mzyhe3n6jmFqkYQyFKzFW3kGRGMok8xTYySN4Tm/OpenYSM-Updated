@@ -325,9 +325,7 @@ object NativeModelRenderer {
         a: Float,
         isPreview: Boolean
     ) {
-        if (mesh.nativeModelHandle == 0L) {
-            return
-        }
+        if (mesh.nativeModelHandle == 0L) return
         pose.pose().get(matrixTransferArray, 0)
         pose.normal().get(matrixTransferArray, 16)
         projectionModelViewMatrix.get(matrixTransferArray, 32)
