@@ -660,9 +660,9 @@ object ServerModelManager {
                         outBuf.writeGarbageHeader(garbageLen, garbage)
                         outBuf.writeByte(0x01.toByte())
                         val result = YsmCrypt.encrypt(outBuf.toArray(), YsmCrypt.publicKey, true)
-                        state.key1 = result.nextKey()
+                        state.key1 = result.nextKey
 
-                        sendModelData(uuid, ByteBuffer.wrap(result.data()), PendingTransfer())
+                        sendModelData(uuid, ByteBuffer.wrap(result.data), PendingTransfer())
                     }
                 }
             }.onFailure {
@@ -755,7 +755,7 @@ object ServerModelManager {
                 outBuf.writeVarInt(0)
 
                 val result = YsmCrypt.encrypt(outBuf.toArray(), clientNextKey, false)
-                sendModelData(uuid, ByteBuffer.wrap(result.data()), PendingTransfer())
+                sendModelData(uuid, ByteBuffer.wrap(result.data), PendingTransfer())
             }
         }.onFailure {
             Constants.LOGGER.error("Fail to send packet 03", it)
@@ -806,7 +806,7 @@ object ServerModelManager {
                             val result = if (key1 != null) YsmCrypt.encrypt(outBuf.toArray(), key1, false) else null
 
                             if (result != null) {
-                                val success = sendModelData(uuid, ByteBuffer.wrap(result.data()), transfer)
+                                val success = sendModelData(uuid, ByteBuffer.wrap(result.data), transfer)
                                 if (success) offset += length else yield()
                             } else break
                         }
