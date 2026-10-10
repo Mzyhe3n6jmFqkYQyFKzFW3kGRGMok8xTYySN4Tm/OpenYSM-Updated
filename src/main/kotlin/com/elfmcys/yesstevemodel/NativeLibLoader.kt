@@ -8,22 +8,17 @@ import java.util.*
 object NativeLibLoader {
     private const val NATIVE_DIR = "natives"
 
-    @Volatile
     private var available = false
-
-    @Volatile
     private var loaded = false
-
-    @Volatile
     private var isAndroid = false
 
-    val isAvailable
+    val isAvailable: Boolean
         get() = available
 
-    val isLoaded
+    val isLoaded: Boolean
         get() = loaded
 
-    val isOnAndroid
+    val isOnAndroid: Boolean
         get() = isAndroid
 
     private var lastError: ErrorState? = null
@@ -178,9 +173,9 @@ object NativeLibLoader {
         )
     }
 
-    val errorComponent
+    val errorComponent: Component?
         get() = lastError?.component
 
-    val errorMessage
+    val errorMessage: String?
         get() = lastError?.logMsg
 }
