@@ -44,9 +44,9 @@ object NativeLibLoader {
         init()
     }
 
-    @Synchronized
     fun init() {
         if (available) return
+
         if (System.getProperty("OYSM_DISABLE_SMID") != null) {
             available = true
             loaded = false

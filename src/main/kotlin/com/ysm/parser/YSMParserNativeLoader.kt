@@ -44,7 +44,6 @@ object YSMParserNativeLoader {
      * @return `true` if JNI loaded successfully, `false` if JNI is
      *         unavailable (caller should skip native parsing)
      */
-    @Synchronized
     fun load(): Boolean {
         if (loaded) return jniAvailable
 
@@ -85,10 +84,7 @@ object YSMParserNativeLoader {
             val start = System.currentTimeMillis()
             Constants.LOGGER.info("Begin load YSMParser native library")
             System.load(extractedLib.toAbsolutePath().toString())
-            Constants.LOGGER.info(
-                "Successfully load YSMParser native library in {}ms",
-                System.currentTimeMillis() - start
-            )
+            Constants.LOGGER.info("Successfully load YSMParser native library in {}ms", System.currentTimeMillis() - start)
 
             extractedLib.toFile().deleteOnExit()
 
@@ -105,7 +101,6 @@ object YSMParserNativeLoader {
         return jniAvailable
     }
 
-    @Synchronized
     fun isJniAvailable(): Boolean {
         if (!loaded) {
             val platform = detectPlatform()
