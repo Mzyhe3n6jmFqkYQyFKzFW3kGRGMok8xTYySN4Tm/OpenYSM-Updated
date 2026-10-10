@@ -14,7 +14,9 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.player.AbstractClientPlayer
 import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.player.PlayerSkin
 import rip.ysm.api.event.EventResult
+import kotlin.jvm.optionals.getOrNull
 
 @Environment(EnvType.CLIENT)
 object PlayerSkinTextureManager {
@@ -67,7 +69,7 @@ object PlayerSkinTextureManager {
     fun isDefaultSkin(location: Identifier?): Boolean =
         location != null && (
                 location in WIDE_DEFAULT_SKINS ||
-                        location in SLIM_DEFAULT_SKINS 
+                        location in SLIM_DEFAULT_SKINS
                 )
 
     fun getUseMcDefaultTexture(modelId: String?): Int {
@@ -112,7 +114,7 @@ object PlayerSkinTextureManager {
         return defaultTex
     }
 
-    fun getPlayerSkinLocation(player: Player?, modelId: String? = null): Identifier? {
+    fun getPlayerSkinLocation(player: Player?, modelId: String? = null, skinOverride: PlayerSkin? = null): Identifier? {
         val targetPlayer = if (PlayerPreviewEntity.isPreviewPlayer(player) || player == null) {
             runCatching { Minecraft.getInstance().player }.getOrNull() ?: player
         } else {
@@ -121,21 +123,31 @@ object PlayerSkinTextureManager {
 
         val isCustomSkin = isCustomSkinModel(modelId)
 
-        if (isCustomSkin && targetPlayer is AbstractClientPlayer) {
-            val loc = runCatching {
-                targetPlayer.skin.body().texturePath()
-            }.getOrNull()
+        if (isCustomSkin) {
+            val directLoc = runCatching { skinOverride?.body()?.texturePath() }.getOrNull()
+            if (directLoc != null && !isDefaultSkin(directLoc)) return directLoc
+
+            val loc = runCatching { (targetPlayer as? AbstractClientPlayer)?.skin?.body()?.texturePath() }.getOrNull()
             if (loc != null && !isDefaultSkin(loc)) return loc
 
-            val lookupLoc = runCatching {
-                val minecraft = Minecraft.getInstance()
-                val skinLookup = minecraft.skinManager.createLookup(targetPlayer.gameProfile, false)
-                skinLookup.get().body()
+            if (targetPlayer != null) {
+                val infoLoc = runCatching {
+                    Minecraft.getInstance().connection?.getPlayerInfo(targetPlayer.uuid)?.skin?.body()?.texturePath()
+                }.getOrNull()
+                if (infoLoc != null && !isDefaultSkin(infoLoc)) return infoLoc
+
+                val lookupLoc = runCatching {
+                    Minecraft.getInstance().skinManager.createLookup(targetPlayer.gameProfile, false).get().body()
                         .texturePath()
                 }.getOrNull()
                 if (lookupLoc != null && !isDefaultSkin(lookupLoc)) return lookupLoc
 
-
+                val futureLoc = runCatching {
+                    Minecraft.getInstance().skinManager.get(targetPlayer.gameProfile).getNow(null)?.getOrNull()?.body()
+                        ?.texturePath()
+                }.getOrNull()
+                if (futureLoc != null && !isDefaultSkin(futureLoc)) return futureLoc
+            }
         }
 
         if (modelId != null) {

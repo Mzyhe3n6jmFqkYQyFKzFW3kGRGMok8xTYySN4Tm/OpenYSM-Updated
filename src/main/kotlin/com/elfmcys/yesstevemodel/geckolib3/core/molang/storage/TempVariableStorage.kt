@@ -55,7 +55,7 @@ class TempVariableStorage : ITempVariableStorage {
             for (i3 in 0 until size) {
                 currentElements[i + i3] = list[i3]
             }
-            scopeStack.add((scopeSize.toLong() shl 32) or (scopeStart.toLong() and 0xFFFFFFFFL))
+            scopeStack.add(scopeSize.toLong() shl 32 or (scopeStart.toLong() and 0xFFFFFFFFL))
             scopeStart = i
             scopeSize = size
             baseOffset = i2
@@ -76,7 +76,7 @@ class TempVariableStorage : ITempVariableStorage {
             for (i3 in 0 until i4) {
                 currentElements[i + i3] = function.getValue(executionContext, i3)
             }
-            scopeStack.add((scopeSize.toLong() shl 32) or (scopeStart.toLong() and 0xFFFFFFFFL))
+            scopeStack.add(scopeSize.toLong() shl 32 or (scopeStart.toLong() and 0xFFFFFFFFL))
             scopeStart = i
             scopeSize = i4
             baseOffset = i2

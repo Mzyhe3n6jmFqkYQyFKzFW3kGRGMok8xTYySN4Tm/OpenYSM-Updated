@@ -43,7 +43,7 @@ class YSMBinarySerializationTest {
         val serializedBuf = YSMBinarySerializer.serialize(model, 32, true)
         val data = serializedBuf.toArray()
 
-        YSMBinaryDeserializer(data, 32).use { deserializer ->
+        YSMBinaryDeserializer(data, 40).use { deserializer ->
             val deserializedModel = deserializer.deserializeKeepOpen()
             deserializer.parseYSMFooter(deserializedModel)
 
@@ -75,7 +75,7 @@ class YSMBinarySerializationTest {
         val serializedBuf = YSMBinarySerializer.serialize(model, 32, true)
         val data = serializedBuf.toArray()
 
-        YSMBinaryDeserializer(data, 32).use { deserializer ->
+        YSMBinaryDeserializer(data, 40).use { deserializer ->
             val deserializedModel = deserializer.deserializeKeepOpen()
             deserializer.parseYSMFooter(deserializedModel)
 
@@ -99,7 +99,7 @@ class YSMBinarySerializationTest {
         val serializedBuf = YSMBinarySerializer.serialize(rawModel, 32, true)
         val data = serializedBuf.toArray()
 
-        YSMBinaryDeserializer(data, 32).use { deserializer ->
+        YSMBinaryDeserializer(data, 40).use { deserializer ->
             val deserializedModel = deserializer.deserializeKeepOpen()
             deserializer.parseYSMFooter(deserializedModel)
 
