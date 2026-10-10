@@ -9,11 +9,18 @@ import com.elfmcys.yesstevemodel.molang.runtime.binding.ObjectBinding
 import com.elfmcys.yesstevemodel.molang.runtime.binding.StandardBindings
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
 
-open class PrimaryBinding(map: MutableMap<String, Any>?) : ObjectBinding {
-    @JvmField val bindings: Object2ReferenceOpenHashMap<String, Any> = Object2ReferenceOpenHashMap()
-    @JvmField val scopedBinding: ScopedVariableBinding = ScopedVariableBinding()
-    @JvmField val foreignBinding: ControllerVariableBinding = ControllerVariableBinding()
-    @JvmField val tempBinding: TempVariableRegistry = TempVariableRegistry()
+class PrimaryBinding(map: MutableMap<String, Any>?) : ObjectBinding {
+    @JvmField
+    val bindings: Object2ReferenceOpenHashMap<String, Any> = Object2ReferenceOpenHashMap()
+
+    @JvmField
+    val scopedBinding: ScopedVariableBinding = ScopedVariableBinding()
+
+    @JvmField
+    val foreignBinding: ControllerVariableBinding = ControllerVariableBinding()
+
+    @JvmField
+    val tempBinding: TempVariableRegistry = TempVariableRegistry()
     val closeables: List<CloseVariable>
     val resettables: List<ResetVariable>
 
@@ -21,30 +28,30 @@ open class PrimaryBinding(map: MutableMap<String, Any>?) : ObjectBinding {
         if (map != null) {
             bindings.putAll(map)
         }
-        bindings.put("math", MathBinding)
-        bindings.put("query", QueryBinding)
-        bindings.put("q", QueryBinding)
-        bindings.put("loop", StandardBindings.LOOP_FUNC)
-        bindings.put("for_each", StandardBindings.FOR_EACH_FUNC)
-        bindings.put("variable", scopedBinding)
-        bindings.put("v", scopedBinding)
-        bindings.put("context", foreignBinding)
-        bindings.put("c", foreignBinding)
-        bindings.put("temp", tempBinding)
-        bindings.put("t", tempBinding)
+        bindings["math"] = MathBinding
+        bindings["query"] = QueryBinding
+        bindings["q"] = QueryBinding
+        bindings["loop"] = StandardBindings.LOOP_FUNC
+        bindings["for_each"] = StandardBindings.FOR_EACH_FUNC
+        bindings["variable"] = scopedBinding
+        bindings["v"] = scopedBinding
+        bindings["context"] = foreignBinding
+        bindings["c"] = foreignBinding
+        bindings["temp"] = tempBinding
+        bindings["t"] = tempBinding
         closeables = bindings.values.filterIsInstance<CloseVariable>()
         resettables = bindings.values.filterIsInstance<ResetVariable>()
     }
 
-    override fun getProperty(name: String): Any? = bindings.get(name)
+    override fun getProperty(name: String): Any? = bindings[name]
 
-    open fun reset() {
+    fun reset() {
         for (resetVariable in resettables) {
             resetVariable.reset()
         }
     }
 
-    open fun dispose() {
+    fun dispose() {
         for (closeVariable in closeables) {
             closeVariable.dispose()
         }

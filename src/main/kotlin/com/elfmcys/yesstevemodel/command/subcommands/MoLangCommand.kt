@@ -35,7 +35,10 @@ object MoLangCommand {
 
     @Throws(CommandSyntaxException::class)
     private fun executeMoLang(context: CommandContext<CommandSourceStack>): Int {
-        return sendMoLangToPlayers(StringArgumentType.getString(context, EXP_NAME), EntityArgument.getPlayers(context, TARGETS_NAME))
+        return sendMoLangToPlayers(
+            StringArgumentType.getString(context, EXP_NAME),
+            EntityArgument.getPlayers(context, TARGETS_NAME)
+        )
     }
 
     private fun sendMoLangToPlayers(str: String, collection: Collection<ServerPlayer>): Int {

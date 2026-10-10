@@ -30,15 +30,16 @@ object ClientRawInputEvent {
     }
 
     @JvmField
-    val MOUSE_CLICKED_PRE: Event<MouseClickedPre> = EventFactory.createArrayBacked(MouseClickedPre::class.java) { listeners ->
-        MouseClickedPre { client, buttonInfo, action ->
-            for (listener in listeners) {
-                val result = listener.onMouseClick(client, buttonInfo, action)
-                if (result.interrupts()) {
-                    return@MouseClickedPre result
+    val MOUSE_CLICKED_PRE: Event<MouseClickedPre> =
+        EventFactory.createArrayBacked(MouseClickedPre::class.java) { listeners ->
+            MouseClickedPre { client, buttonInfo, action ->
+                for (listener in listeners) {
+                    val result = listener.onMouseClick(client, buttonInfo, action)
+                    if (result.interrupts()) {
+                        return@MouseClickedPre result
+                    }
                 }
+                EventResult.pass()
             }
-            EventResult.pass()
         }
-    }
 }

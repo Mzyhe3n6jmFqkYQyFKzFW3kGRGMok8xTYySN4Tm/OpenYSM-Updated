@@ -29,9 +29,11 @@ open class ParallelProcessor<T : GeoEntity<*>, TModel>(
                 Pattern.compile("^${Pattern.quote(prefix)}_ctrl_${Pattern.quote(slotName)}_.+").asMatchPredicate()::test
         } else {
             animationEntryMatcher =
-                Pattern.compile("^${Pattern.quote(prefix)}\\.${Pattern.quote(slotName)}_[0-7]$").asMatchPredicate()::test
+                Pattern.compile("^${Pattern.quote(prefix)}\\.${Pattern.quote(slotName)}_[0-7]$")
+                    .asMatchPredicate()::test
             controllerEntryMatcher =
-                Pattern.compile("^${Pattern.quote(prefix)}_ctrl_${Pattern.quote(slotName)}_[0-7]$").asMatchPredicate()::test
+                Pattern.compile("^${Pattern.quote(prefix)}_ctrl_${Pattern.quote(slotName)}_[0-7]$")
+                    .asMatchPredicate()::test
         }
     }
 

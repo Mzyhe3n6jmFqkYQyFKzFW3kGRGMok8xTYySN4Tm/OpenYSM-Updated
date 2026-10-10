@@ -64,7 +64,9 @@ class ModelMetadataPresenterTest {
         val enUsJson = gson.fromJson(enUsFile.readText(StandardCharsets.UTF_8), JsonObject::class.java)
         val enUsKeys = enUsJson.keySet()
 
-        val langFiles = langDir.listFiles { _, name -> name.endsWith(".json") && name != "en_us.json" }?.sortedBy { it.name } ?: emptyList()
+        val langFiles =
+            langDir.listFiles { _, name -> name.endsWith(".json") && name != "en_us.json" }?.sortedBy { it.name }
+                ?: emptyList()
         val allMissing = mutableMapOf<String, List<String>>()
         for (langFile in langFiles) {
             val json = gson.fromJson(langFile.readText(StandardCharsets.UTF_8), JsonObject::class.java)
@@ -73,7 +75,11 @@ class ModelMetadataPresenterTest {
                 allMissing[langFile.name] = missingKeys
             }
         }
-        assertEquals(emptyMap<String, List<String>>(), allMissing, "All language files should have all keys from en_us.json")
+        assertEquals(
+            emptyMap<String, List<String>>(),
+            allMissing,
+            "All language files should have all keys from en_us.json"
+        )
     }
 
     @Test
@@ -120,7 +126,11 @@ class ModelMetadataPresenterTest {
                 val localeObj = langObj.getAsJsonObject(locale)
                 assertEquals(true, localeObj != null, "Pack $packPath missing locale '$locale'")
                 assertEquals(true, localeObj.has("name"), "Pack $packPath locale '$locale' missing 'name'")
-                assertEquals(true, localeObj.has("description"), "Pack $packPath locale '$locale' missing 'description'")
+                assertEquals(
+                    true,
+                    localeObj.has("description"),
+                    "Pack $packPath locale '$locale' missing 'description'"
+                )
             }
         }
     }

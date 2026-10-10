@@ -2,8 +2,7 @@ package rip.ysm.api.entity.fabric
 
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.entity.Entity
-import java.util.Collections
-import java.util.WeakHashMap
+import java.util.*
 
 object EntityDataBridgeImpl {
     private val PERSISTENT_DATA: MutableMap<Entity, CompoundTag> = Collections.synchronizedMap(WeakHashMap())

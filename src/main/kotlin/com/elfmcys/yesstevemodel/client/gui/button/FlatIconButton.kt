@@ -15,10 +15,13 @@ class FlatIconButton(
     private val backgroundHeight: Int,
     component: Component
 ) : AbstractWidget(x, y, 115, 15, component), ISpecialWidget {
-
     override fun renderWidget(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         guiGraphics.fill(x, y, x + width, y + backgroundHeight, -280804798)
-        renderScrollingStringOverContents(guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE), getMessage(), 2)
+        renderScrollingStringOverContents(
+            guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE),
+            getMessage(),
+            2
+        )
     }
 
     override fun updateWidgetNarration(narrationElementOutput: NarrationElementOutput) {

@@ -2,11 +2,7 @@ package com.elfmcys.yesstevemodel.client
 
 import com.elfmcys.yesstevemodel.client.animation.molang.struct.RoamingStruct
 import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class ClientOnlyModeTest {
 

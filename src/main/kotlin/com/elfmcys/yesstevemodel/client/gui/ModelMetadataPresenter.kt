@@ -13,10 +13,10 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Locale
+import java.util.*
 
 object ModelMetadataPresenter {
-    const val DEFAULT_LOCALE = "en_us"
+    private const val DEFAULT_LOCALE = "en_us"
 
     @JvmStatic
     fun normalizeLocale(locale: String): String =

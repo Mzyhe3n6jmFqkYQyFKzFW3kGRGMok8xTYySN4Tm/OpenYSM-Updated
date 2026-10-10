@@ -1,6 +1,6 @@
 package com.elfmcys.yesstevemodel.molang.lexer
 
-import java.util.EnumSet
+import java.util.*
 
 enum class TokenKind(vararg tags: Tag) {
     EOF,

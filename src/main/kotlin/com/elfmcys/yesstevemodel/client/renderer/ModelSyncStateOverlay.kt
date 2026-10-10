@@ -33,36 +33,42 @@ class ModelSyncStateOverlay : HudOverlay {
                 barX = 10
                 barY = 22
             }
+
             LoadingStateConfig.Position.TOP_CENTER -> {
                 textX = screenWidth / 2
                 textY = 10
                 barX = (screenWidth - 150) / 2
                 barY = 22
             }
+
             LoadingStateConfig.Position.TOP_RIGHT -> {
                 textX = screenWidth - 10
                 textY = 10
                 barX = (screenWidth - 10) - 150
                 barY = 22
             }
+
             LoadingStateConfig.Position.BOTTOM_LEFT -> {
                 textX = 10
                 textY = screenHeight - 30
                 barX = 10
                 barY = (screenHeight - 8) - 10
             }
+
             LoadingStateConfig.Position.BOTTOM_CENTER -> {
                 textX = screenWidth / 2
                 textY = screenHeight - 85
                 barX = (screenWidth - 150) / 2
                 barY = (screenHeight - 63) - 10
             }
+
             LoadingStateConfig.Position.BOTTOM_RIGHT -> {
                 textX = screenWidth - 10
                 textY = screenHeight - 30
                 barX = (screenWidth - 10) - 150
                 barY = (screenHeight - 8) - 10
             }
+
             else -> {
                 textX = screenWidth / 2
                 textY = 10
@@ -73,14 +79,16 @@ class ModelSyncStateOverlay : HudOverlay {
 
         val syncStatus = ClientModelManager.syncStatus
         val isClientOnly = ClientOnlyMode.isActive
-        val titleKey = if (isClientOnly) "gui.yes_steve_model.client_hint.title" else "gui.yes_steve_model.sync_hint.title"
+        val titleKey =
+            if (isClientOnly) "gui.yes_steve_model.client_hint.title" else "gui.yes_steve_model.sync_hint.title"
 
         if (syncStatus.currentState == ClientModelManager.SyncState.IDLE) {
             val pendingModelCount = ClientModelManager.pendingModelCount
             if (pendingModelCount > 0) {
                 val loadedModelCount = ClientModelManager.modelAssemblyMap.size
                 val totalModelCount = loadedModelCount + pendingModelCount
-                val loadingTextKey = if (isClientOnly) "gui.yes_steve_model.client_hint.loading_models" else "gui.yes_steve_model.sync_hint.loading_models"
+                val loadingTextKey =
+                    if (isClientOnly) "gui.yes_steve_model.client_hint.loading_models" else "gui.yes_steve_model.sync_hint.loading_models"
                 val loadingText: MutableComponent = Component.translatable(titleKey)
                     .append(
                         Component.translatable(
@@ -90,7 +98,14 @@ class ModelSyncStateOverlay : HudOverlay {
                         ).withStyle(ChatFormatting.YELLOW)
                     )
                 renderSyncText(font, guiGraphics, loadingText, textX, textY, screenWidth)
-                drawAnimatedBar(guiGraphics, barX, barY, loadedModelCount.toFloat() / totalModelCount, 0xFFFFD11A.toInt(), true)
+                drawAnimatedBar(
+                    guiGraphics,
+                    barX,
+                    barY,
+                    loadedModelCount.toFloat() / totalModelCount,
+                    0xFFFFD11A.toInt(),
+                    true
+                )
             } else {
                 resetAnimation()
             }
@@ -101,23 +116,30 @@ class ModelSyncStateOverlay : HudOverlay {
 
         when (syncStatus.currentState) {
             ClientModelManager.SyncState.WAITING -> {
-                val waitKey = if (isClientOnly) "gui.yes_steve_model.client_hint.waiting" else "gui.yes_steve_model.sync_hint.waiting"
+                val waitKey =
+                    if (isClientOnly) "gui.yes_steve_model.client_hint.waiting" else "gui.yes_steve_model.sync_hint.waiting"
                 prefixText.append(Component.translatable(waitKey).withStyle(ChatFormatting.AQUA))
                 resetAnimation()
             }
+
             ClientModelManager.SyncState.LOADING -> {
-                val loadKey = if (isClientOnly) "gui.yes_steve_model.client_hint.loading" else "gui.yes_steve_model.sync_hint.loading"
+                val loadKey =
+                    if (isClientOnly) "gui.yes_steve_model.client_hint.loading" else "gui.yes_steve_model.sync_hint.loading"
                 prefixText.append(Component.translatable(loadKey).withStyle(ChatFormatting.GOLD))
                 resetAnimation()
             }
+
             ClientModelManager.SyncState.PREPARING -> {
-                val prepKey = if (isClientOnly) "gui.yes_steve_model.client_hint.preparing" else "gui.yes_steve_model.sync_hint.preparing"
+                val prepKey =
+                    if (isClientOnly) "gui.yes_steve_model.client_hint.preparing" else "gui.yes_steve_model.sync_hint.preparing"
                 prefixText.append(Component.translatable(prepKey).withStyle(ChatFormatting.LIGHT_PURPLE))
                 resetAnimation()
             }
+
             ClientModelManager.SyncState.SYNCING -> {
                 if (syncStatus.syncedModels == 0) {
-                    val syncKey = if (isClientOnly) "gui.yes_steve_model.client_hint.loading" else "gui.yes_steve_model.sync_hint.syncing"
+                    val syncKey =
+                        if (isClientOnly) "gui.yes_steve_model.client_hint.loading" else "gui.yes_steve_model.sync_hint.syncing"
                     prefixText.append(Component.translatable(syncKey).withStyle(ChatFormatting.RED))
                     resetAnimation()
                 } else {
@@ -135,12 +157,20 @@ class ModelSyncStateOverlay : HudOverlay {
                     )
                 }
             }
+
             else -> {}
         }
         renderSyncText(font, guiGraphics, prefixText, textX, textY, screenWidth)
     }
 
-    private fun renderSyncText(font: Font, guiGraphics: GuiGraphics, textComponent: MutableComponent, baseX: Int, textY: Int, screenWidth: Int) {
+    private fun renderSyncText(
+        font: Font,
+        guiGraphics: GuiGraphics,
+        textComponent: MutableComponent,
+        baseX: Int,
+        textY: Int,
+        screenWidth: Int
+    ) {
         val textWidth = font.width(textComponent)
         val drawX = when (LoadingStateConfig.LOADING_STATE_POSITION.get()) {
             LoadingStateConfig.Position.TOP_LEFT, LoadingStateConfig.Position.BOTTOM_LEFT -> baseX

@@ -14,7 +14,8 @@ class YSMPayload(val data: ByteArray) : CustomPacketPayload {
 
     companion object {
         @JvmField
-        var TYPE: CustomPacketPayload.Type<YSMPayload> = CustomPacketPayload.Type(Identifier.fromNamespaceAndPath("yes_steve_model", "main"))
+        var TYPE: CustomPacketPayload.Type<YSMPayload> =
+            CustomPacketPayload.Type(Identifier.fromNamespaceAndPath("yes_steve_model", "main"))
 
         @JvmField
         var CODEC: StreamCodec<RegistryFriendlyByteBuf, YSMPayload> = StreamCodec.of(

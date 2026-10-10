@@ -2,7 +2,6 @@ package com.elfmcys.yesstevemodel.client.gui.button
 
 import com.elfmcys.yesstevemodel.NameSpaces
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.Button
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
@@ -14,7 +13,7 @@ open class IconButton(
     height: Int,
     private val iconU: Int,
     private val iconV: Int,
-    onPress: Button.OnPress
+    onPress: OnPress
 ) : FlatColorButton(x, y, width, height, Component.empty(), onPress) {
 
     override fun renderContents(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {

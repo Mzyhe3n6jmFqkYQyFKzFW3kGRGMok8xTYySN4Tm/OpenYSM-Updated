@@ -22,14 +22,19 @@ object EnterServerEvent {
                 val savedTexture = ServerModelSelection.getPlayerTexture(player.uuid)
                 if (savedModel != null && ServerModelManager.serverModelInfo.containsKey(savedModel)) {
                     val modelData = ServerModelManager.serverModelInfo[savedModel]
-                    val validTexture = if (savedTexture != null && modelData?.modelInfo?.textures?.contains(savedTexture) == true) {
-                        savedTexture
-                    } else {
-                        modelData?.modelInfo?.textures?.firstOrNull() ?: "default"
-                    }
+                    val validTexture =
+                        if (savedTexture != null && modelData?.modelInfo?.textures?.contains(savedTexture) == true) {
+                            savedTexture
+                        } else {
+                            modelData?.modelInfo?.textures?.firstOrNull() ?: "default"
+                        }
                     modelInfoCap.setModelAndTexture(savedModel, validTexture)
                 } else if (modelInfoCap.modelId.isNotBlank()) {
-                    ServerModelSelection.savePlayerSelection(player.uuid, modelInfoCap.modelId, modelInfoCap.selectTexture)
+                    ServerModelSelection.savePlayerSelection(
+                        player.uuid,
+                        modelInfoCap.modelId,
+                        modelInfoCap.selectTexture
+                    )
                 }
                 if (!NetworkHandler.isPlayerConnected(player) && !modelInfoCap.isMandatory) {
                     modelInfoCap.markDirty()

@@ -1,11 +1,7 @@
 package com.elfmcys.yesstevemodel.model
 
-import java.util.UUID
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import java.util.*
+import kotlin.test.*
 
 class ServerModelSelectionTest {
 
@@ -27,7 +23,11 @@ class ServerModelSelectionTest {
         assertEquals("default", ServerModelSelection.getPlayerTexture(player1))
 
         // Roaming variables persistence per model
-        ServerModelSelection.updateRoamingVars(player1, "wine_fox/01_taisho_maid", mapOf("hat" to 1.0f, "expression" to 3.0f))
+        ServerModelSelection.updateRoamingVars(
+            player1,
+            "wine_fox/01_taisho_maid",
+            mapOf("hat" to 1.0f, "expression" to 3.0f)
+        )
         val vars1 = ServerModelSelection.getRoamingVars(player1, "wine_fox/01_taisho_maid")
         assertEquals(2, vars1.size)
         assertEquals(1.0f, vars1["hat"])
