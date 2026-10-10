@@ -3,9 +3,8 @@
 package com.ysm.parser
 
 import com.elfmcys.yesstevemodel.Constants
-import com.ysm.parser.YSMParserNativeLoader.init
-import java.io.IOException
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.util.*
 
@@ -17,7 +16,7 @@ import java.util.*
  * via [System.load]. Subsequent calls are no-ops.
  *
  * Platforms that lack a JNI library are detected and reported via a
- * `false` return from [init].
+ * `false` return from [load].
  */
 object YSMParserNativeLoader {
     private const val NATIVE_DIR = "natives/ysmparser"
@@ -43,30 +42,40 @@ object YSMParserNativeLoader {
      *         unavailable (caller should skip native parsing)
      */
     @Synchronized
-    private fun init() {
-        if (loaded) return
+    @JvmStatic
+    fun load(): Boolean {
+        if (loaded) return jniAvailable
 
         val platform = detectPlatform()
         val libName = platform.libraryName
-        if (libName == null) {
+        val folder = platform.folder
+        if (libName == null || folder == null) {
+            Constants.LOGGER.warn("Unsupported platform for YSMParser: {} {}", platform.osTag, platform.archTag)
             loaded = true
             jniAvailable = false
+            return false
         }
 
-        val resourcePath = "$NATIVE_DIR/${platform.folder}/$libName"
+        val resourcePath = "$NATIVE_DIR/$folder/$libName"
+        val classLoader = YSMParserNativeLoader::class.java.classLoader
+            ?: ClassLoader.getSystemClassLoader()
+
+        val inStream = classLoader?.getResourceAsStream(resourcePath)
+        if (inStream == null) {
+            Constants.LOGGER.warn("Native library not found in JAR: {}", resourcePath)
+            loaded = true
+            jniAvailable = false
+            return false
+        }
+
         runCatching {
-            val tempDir = Files.createTempDirectory("ysm_native_")
+            val tempDir: Path = Files.createTempDirectory("ysm_native_")
             tempDir.toFile().deleteOnExit()
 
-            val extractedLib = tempDir.resolve(libName)
+            val extractedLib: Path = tempDir.resolve(libName)
 
-            val classLoader = YSMParserNativeLoader::class.java.classLoader
-                ?: ClassLoader.getSystemClassLoader()
-            classLoader.getResourceAsStream(resourcePath).use { inStream ->
-                if (inStream == null) {
-                    throw IOException("Native library not found in JAR: $resourcePath")
-                }
-                Files.copy(inStream, extractedLib, StandardCopyOption.REPLACE_EXISTING)
+            inStream.use { stream ->
+                Files.copy(stream, extractedLib, StandardCopyOption.REPLACE_EXISTING)
             }
 
             if (!platform.osTag.contains("win")) {
@@ -76,31 +85,29 @@ object YSMParserNativeLoader {
             val start = System.currentTimeMillis()
             Constants.LOGGER.info("Begin load YSMParser native library")
             System.load(extractedLib.toAbsolutePath().toString())
-            Constants.LOGGER.info(
-                "Successfully load YSMParser native library in {}ms",
-                System.currentTimeMillis() - start
-            )
+            Constants.LOGGER.info("Successfully load YSMParser native library in {}ms", System.currentTimeMillis() - start)
 
             extractedLib.toFile().deleteOnExit()
 
             loaded = true
             jniAvailable = true
+            return true
         }.onFailure {
             Constants.LOGGER.warn("Failed to load YSMParser native lib: $resourcePath", it)
             loaded = true
             jniAvailable = false
+            return false
         }
-    }
 
-    init {
-        init()
+        return jniAvailable
     }
 
     @Synchronized
+    @JvmStatic
     fun isJniAvailable(): Boolean {
         if (!loaded) {
             val platform = detectPlatform()
-            return platform.libraryName != null
+            return platform.libraryName != null && platform.folder != null
         }
         return jniAvailable
     }
