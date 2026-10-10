@@ -81,7 +81,9 @@
         "arm": "animations/arm.animation.json",
         "tac": "animations/tac.animation.json"
       },
-      "animation_controllers": ["controller/main_controllers.json"],
+      "animation_controllers": [
+        "controller/main_controllers.json"
+      ],
       "texture": [
         {
           "uv": "textures/texture.png"
