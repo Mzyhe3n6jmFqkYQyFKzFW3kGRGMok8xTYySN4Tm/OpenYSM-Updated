@@ -13,15 +13,15 @@ import java.util.*
  *
  * The library is extracted to a temporary directory on first call and loaded
  * via [System.load]. Subsequent calls are no-ops.
+ *
+ * Platforms that lack a JNI library are detected and reported via a
+ * `false` return from [load].
  */
 object YSMParserNativeLoader {
     private const val NATIVE_DIR = "natives/ysmparser"
 
-    @Volatile
     private var loaded = false
-
-    @Volatile
-    private var available = false
+    private var jniAvailable = false
 
     private data class PlatformInfo(
         var osTag: String = "",
@@ -31,11 +31,18 @@ object YSMParserNativeLoader {
     )
 
     init {
-        init()
+        load()
     }
 
-    fun init() {
-        if (loaded) return
+    /**
+     * Load the YSMParser JNI library for the current platform.
+     * Thread-safe and idempotent — safe to call multiple times.
+     *
+     * @return `true` if JNI loaded successfully, `false` if JNI is
+     *         unavailable (caller should skip native parsing)
+     */
+    fun load(): Boolean {
+        if (loaded) return jniAvailable
 
         val platform = detectPlatform()
         val libName = platform.libraryName
@@ -43,8 +50,8 @@ object YSMParserNativeLoader {
         if (libName == null || folder == null) {
             Constants.LOGGER.warn("Unsupported platform for YSMParser: {} {}", platform.osTag, platform.archTag)
             loaded = true
-            available = false
-            return
+            jniAvailable = false
+            return false
         }
 
         val resourcePath = "$NATIVE_DIR/$folder/$libName"
@@ -55,8 +62,8 @@ object YSMParserNativeLoader {
         if (inStream == null) {
             Constants.LOGGER.warn("Native library not found in JAR: {}", resourcePath)
             loaded = true
-            available = false
-            return
+            jniAvailable = false
+            return false
         }
 
         runCatching {
@@ -74,30 +81,34 @@ object YSMParserNativeLoader {
             val start = System.currentTimeMillis()
             Constants.LOGGER.info("Begin load YSMParser native library")
             System.load(extractedLib.toAbsolutePath().toString())
-            Constants.LOGGER.info(
-                "Successfully load YSMParser native library in {}ms",
-                System.currentTimeMillis() - start
-            )
+            Constants.LOGGER.info("Successfully load YSMParser native library in {}ms", System.currentTimeMillis() - start)
 
             extractedLib.toFile().deleteOnExit()
 
             loaded = true
-            available = true
+            jniAvailable = true
+            return true
         }.onFailure {
             Constants.LOGGER.warn("Failed to load YSMParser native lib: $resourcePath", it)
             loaded = true
-            available = false
+            jniAvailable = false
+            return false
         }
+
+        return jniAvailable
     }
 
-    val isAvailable: Boolean
+    val isJniAvailable: Boolean
         get() {
             if (!loaded) {
                 val platform = detectPlatform()
                 return platform.libraryName != null && platform.folder != null
             }
-            return available
+            return jniAvailable
         }
+
+    val isAvailable: Boolean
+        get() = isJniAvailable
 
     private fun detectPlatform(): PlatformInfo {
         val os = System.getProperty("os.name", "").lowercase(Locale.ROOT)
