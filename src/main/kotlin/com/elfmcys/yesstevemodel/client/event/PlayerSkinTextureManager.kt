@@ -41,6 +41,7 @@ object PlayerSkinTextureManager {
     fun isCustomSkinModel(modelId: String?): Boolean =
         modelId != null && (isDefaultSkin(modelId) || ClientModelManager.isCustomSkinModel(modelId))
 
+    // TODO: Remove this
     fun isDefaultSkin(str: String): Boolean = str == STEVE_TEXTURE_ID || str == ALEX_TEXTURE_ID
 
     fun getSkinTexture(str: String): Identifier = if (str == ALEX_TEXTURE_ID) ALEX_SKIN else STEVE_SKIN

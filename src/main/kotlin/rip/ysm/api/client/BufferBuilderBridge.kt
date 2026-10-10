@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder
 import rip.ysm.api.client.fabric.BufferBuilderBridgeImpl
 import java.nio.ByteBuffer
 
+// TODO: What is this?
 object BufferBuilderBridge {
     fun putBulkData(builder: BufferBuilder, buffer: ByteBuffer): Boolean =
         BufferBuilderBridgeImpl.putBulkData(builder, buffer)

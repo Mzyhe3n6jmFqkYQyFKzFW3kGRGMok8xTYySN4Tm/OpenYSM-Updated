@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate", "unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.core.util
 
 import net.minecraft.util.Mth
@@ -127,9 +129,8 @@ object MathUtil {
         return f2
     }
 
-    fun lerpAngles(targetAngles: Vector3f, t: Float): Vector3f {
-        return Vector3f(lerpAngle(targetAngles.x, t), lerpAngle(targetAngles.y, t), lerpAngle(targetAngles.z, t))
-    }
+    fun lerpAngles(targetAngles: Vector3f, t: Float): Vector3f =
+        Vector3f(lerpAngle(targetAngles.x, t), lerpAngle(targetAngles.y, t), lerpAngle(targetAngles.z, t))
 
     fun lerpAnglesInPlace(targetAngles: Vector3f, t: Float, outResult: Vector3f) {
         outResult.set(lerpAngle(targetAngles.x, t), lerpAngle(targetAngles.y, t), lerpAngle(targetAngles.z, t))

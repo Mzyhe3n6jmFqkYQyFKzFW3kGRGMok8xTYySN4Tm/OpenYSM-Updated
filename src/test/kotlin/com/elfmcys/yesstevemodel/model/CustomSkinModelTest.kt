@@ -13,7 +13,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CustomSkinModelTest {
-
     @Test
     fun testBuiltinSteveAndAlexSkinSupportProperties() {
         val stevePath = Paths.get("src/main/resources/assets/yes_steve_model/builtin/misc/2_steve")

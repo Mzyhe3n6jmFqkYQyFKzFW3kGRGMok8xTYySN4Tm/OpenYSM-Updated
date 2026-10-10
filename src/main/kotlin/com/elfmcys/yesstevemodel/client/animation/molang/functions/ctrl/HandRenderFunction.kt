@@ -18,43 +18,41 @@ import java.util.*
 class HandRenderFunction(private val handItemPredicate: HandItemPredicate) : LivingEntityFunction() {
     override fun eval(context: ExecutionContext<IContext<LivingEntity>>, arguments: ArgumentCollection): Any {
         val slotType = MolangUtils.parseSlotType(context, arguments, 0)
-        if (slotType == null || slotType.isArmor) return 0
-        val id = arguments.getAsString(context, 1) ?: return 0
+        if (slotType == null || slotType.isArmor) return RESULT_FALSE
+        val id = arguments.getAsString(context, 1) ?: return RESULT_FALSE
         val entity = context.entity.entity
-        if (id.isBlank()) return 0
+        if (id.isBlank()) return RESULT_FALSE
         val itemBySlot = entity.getItemBySlot(slotType)
         if (!handItemPredicate.test(
                 entity,
                 if (slotType == EquipmentSlot.OFFHAND) InteractionHand.OFF_HAND else InteractionHand.MAIN_HAND
             )
-        ) return 0
-        if (itemBySlot.isEmpty && id == EMPTY_ITEM) return 1
+        ) return RESULT_FALSE
+        if (itemBySlot.isEmpty && id == EMPTY_ITEM) return RESULT_TRUE
         val strSubstring = id.substring(1)
         when {
             id.startsWith(PREFIX_ITEM_ID) -> {
                 val key = BuiltInRegistries.ITEM.getKey(itemBySlot.item)
-                return if (strSubstring == key.toString()) 1 else 0
+                return if (strSubstring == key.toString()) RESULT_TRUE else RESULT_FALSE
             }
 
             id.startsWith(PREFIX_ITEM_TAG) -> {
                 val tag = TagKey.create(Registries.ITEM, Identifier.parse(strSubstring))
-                return if (itemBySlot.`is`(tag)) 1 else 0
+                return if (itemBySlot.`is`(tag)) RESULT_TRUE else RESULT_FALSE
             }
 
             id.startsWith(TYPE_PREFIX) -> {
                 val itemType = InnerClassify.getItemType(itemBySlot)
                 if (itemType.isNotBlank() && (itemType == strSubstring || itemBySlot.useAnimation.name.lowercase(Locale.ENGLISH) == strSubstring))
-                    return 1
-                return 0
+                    return RESULT_TRUE
+                return RESULT_FALSE
             }
 
-            else -> return 0
+            else -> return RESULT_FALSE
         }
     }
 
-    override fun validateArgumentSize(size: Int): Boolean {
-        return size == 2 || size == 3
-    }
+    override fun validateArgumentSize(size: Int): Boolean = size == 2 || size == 3
 
     fun interface HandItemPredicate {
         fun test(livingEntity: LivingEntity, interactionHand: InteractionHand): Boolean

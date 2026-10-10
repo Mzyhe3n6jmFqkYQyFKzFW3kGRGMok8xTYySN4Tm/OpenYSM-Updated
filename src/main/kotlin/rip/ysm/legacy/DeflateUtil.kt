@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package rip.ysm.legacy
 
 import java.io.ByteArrayOutputStream

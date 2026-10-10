@@ -6,15 +6,12 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.immersivemelodies.fabric.ImmersiveMelodiesCompatImpl
 
 object ImmersiveMelodiesCompat : ModCompat("immersive_melodies") {
+    // TODO: To data class
     class ImmersiveMelodiesData {
         var pitch: Float = 0f
-
         var volume: Float = 0f
-
         var current: Float = 0f
-
         var delta: Long = 0L
-
         var time: Long = 0L
     }
 

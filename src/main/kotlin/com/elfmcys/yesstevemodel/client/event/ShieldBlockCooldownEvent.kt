@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.client.event
 
 import net.minecraft.world.entity.LivingEntity
@@ -5,7 +7,7 @@ import rip.ysm.api.entity.EntityDataBridge
 import kotlin.jvm.optionals.getOrNull
 
 object ShieldBlockCooldownEvent {
-    const val TAG_KEY: String = "ysm\$shield_block_cooldown"
+    private const val TAG_KEY: String = $$"ysm$shield_block_cooldown"
 
     fun onShieldBlock(entity: LivingEntity) {
         EntityDataBridge.getPersistentData(entity).putInt(TAG_KEY, 5)
@@ -23,7 +25,6 @@ object ShieldBlockCooldownEvent {
         }
     }
 
-    fun isOnCooldown(livingEntity: LivingEntity): Boolean {
-        return EntityDataBridge.getPersistentData(livingEntity).getInt(TAG_KEY).isPresent
-    }
+    fun isOnCooldown(livingEntity: LivingEntity): Boolean =
+        EntityDataBridge.getPersistentData(livingEntity).getInt(TAG_KEY).isPresent
 }
