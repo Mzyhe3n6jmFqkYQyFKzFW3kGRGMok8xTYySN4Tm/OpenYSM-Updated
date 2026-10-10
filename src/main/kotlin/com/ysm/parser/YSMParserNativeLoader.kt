@@ -21,7 +21,7 @@ object YSMParserNativeLoader {
     private var loaded = false
 
     @Volatile
-    private var jniAvailable = false
+    private var available = false
 
     private data class PlatformInfo(
         var osTag: String = "",
@@ -43,7 +43,7 @@ object YSMParserNativeLoader {
         if (libName == null || folder == null) {
             Constants.LOGGER.warn("Unsupported platform for YSMParser: {} {}", platform.osTag, platform.archTag)
             loaded = true
-            jniAvailable = false
+            available = false
             return
         }
 
@@ -55,7 +55,7 @@ object YSMParserNativeLoader {
         if (inStream == null) {
             Constants.LOGGER.warn("Native library not found in JAR: {}", resourcePath)
             loaded = true
-            jniAvailable = false
+            available = false
             return
         }
 
@@ -82,21 +82,22 @@ object YSMParserNativeLoader {
             extractedLib.toFile().deleteOnExit()
 
             loaded = true
-            jniAvailable = true
+            available = true
         }.onFailure {
             Constants.LOGGER.warn("Failed to load YSMParser native lib: $resourcePath", it)
             loaded = true
-            jniAvailable = false
+            available = false
         }
     }
 
-    fun isJniAvailable(): Boolean {
-        if (!loaded) {
-            val platform = detectPlatform()
-            return platform.libraryName != null && platform.folder != null
+    val isAvailable: Boolean
+        get() {
+            if (!loaded) {
+                val platform = detectPlatform()
+                return platform.libraryName != null && platform.folder != null
+            }
+            return available
         }
-        return jniAvailable
-    }
 
     private fun detectPlatform(): PlatformInfo {
         val os = System.getProperty("os.name", "").lowercase(Locale.ROOT)
