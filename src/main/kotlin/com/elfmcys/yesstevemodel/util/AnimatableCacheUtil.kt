@@ -6,10 +6,10 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.Entity
-import java.util.concurrent.TimeUnit
+import java.time.Duration
 
 @Environment(EnvType.CLIENT)
 object AnimatableCacheUtil {
     val ENTITIES_CACHE: Cache<Identifier, Entity> =
-        CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build()
+        CacheBuilder.newBuilder().expireAfterAccess(Duration.ofMinutes(5)).build()
 }

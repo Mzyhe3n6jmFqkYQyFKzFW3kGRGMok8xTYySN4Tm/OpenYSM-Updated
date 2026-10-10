@@ -18,16 +18,14 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3d
-import java.util.concurrent.ExecutionException
-import java.util.concurrent.TimeUnit
+import java.time.Duration
 import kotlin.math.max
 
 @Environment(EnvType.CLIENT)
 object ParticleEffectUtil {
     private val particleCache: Cache<String, ParticleOptions> =
-        CacheBuilder.newBuilder().expireAfterAccess(60, TimeUnit.SECONDS).build()
+        CacheBuilder.newBuilder().expireAfterAccess(Duration.ofSeconds(60)).build()
 
-    @Throws(ExecutionException::class, CommandSyntaxException::class)
     fun handleParticle(
         context: ExecutionContext<IContext<Entity>>,
         arguments: Function.ArgumentCollection,

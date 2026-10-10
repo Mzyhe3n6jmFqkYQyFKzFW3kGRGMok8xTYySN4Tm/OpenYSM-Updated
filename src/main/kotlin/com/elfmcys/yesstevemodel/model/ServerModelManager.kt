@@ -26,6 +26,8 @@ import com.google.gson.JsonParser
 import io.netty.buffer.Unpooled
 import it.unimi.dsi.fastutil.floats.FloatReferencePair
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.yield
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.network.Connection
@@ -48,7 +50,6 @@ import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.Semaphore
 import java.util.regex.Pattern
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.max
@@ -755,9 +756,8 @@ object ServerModelManager {
     private fun sendPacket05(uuid: UUID, state: PlayerSyncState, requestedHashes: List<LongArray>) {
         if (shouldHideModelsFrom(uuid)) return
         YSMThreadPool.launchSync {
-            runCatching {
-                threadLimiter?.acquire()
-
+            val limiter = threadLimiter
+            val sendAction = suspend {
                 val transfer = PendingTransfer()
 
                 for (hashes in requestedHashes) {
@@ -802,10 +802,16 @@ object ServerModelManager {
                         }
                     }
                 }
+            }
+
+            runCatching {
+                if (limiter != null) {
+                    limiter.withPermit { sendAction() }
+                } else {
+                    sendAction()
+                }
             }.onFailure {
                 Constants.LOGGER.error("Failed to send model chunks to $uuid", it)
-            }.also {
-                threadLimiter?.release()
             }
         }
     }

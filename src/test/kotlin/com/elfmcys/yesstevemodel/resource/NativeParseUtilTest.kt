@@ -1,5 +1,9 @@
 package com.elfmcys.yesstevemodel.resource
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertNull
 
@@ -18,15 +22,13 @@ class NativeParseUtilTest {
     }
 
     @Test
-    fun testParseNativeConcurrentSafety() {
-        val threads = (1..10).map { i ->
-            Thread {
+    fun testParseNativeConcurrentSafety() = runBlocking {
+        (1..10).map { i ->
+            async(Dispatchers.Default) {
                 val dummyData = "corrupt_data_$i".toByteArray()
                 val result = NativeParseUtil.parseNative(dummyData, "test_concurrent_$i")
                 assertNull(result)
             }
-        }
-        threads.forEach { it.start() }
-        threads.forEach { it.join() }
+        }.awaitAll()
     }
 }

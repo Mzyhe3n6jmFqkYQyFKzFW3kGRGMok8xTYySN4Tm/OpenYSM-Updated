@@ -16,9 +16,8 @@ import net.minecraft.commands.Commands
 import net.minecraft.commands.arguments.EntityArgument
 import net.minecraft.network.chat.Component
 import org.apache.commons.lang3.StringUtils
-import org.apache.commons.lang3.time.StopWatch
 import rip.ysm.api.PlatformAPI
-import java.util.concurrent.TimeUnit
+import kotlin.time.TimeSource
 
 object ModelCommand {
     private const val MODEL_NAME: String = "model"
@@ -139,25 +138,24 @@ object ModelCommand {
 
     private fun reloadAllPack(context: CommandContext<CommandSourceStack>): Int {
         context.source.sendSuccess({ Component.translatable("message.yes_steve_model.model.reload.start") }, true)
-        val watch = StopWatch.createStarted()
+        var mark = TimeSource.Monotonic.markNow()
         if (!ServerModelManager.loadModels({ result ->
                 result.errorMessage?.let {
                     YSMMessageFormatter.sendServerMessage(context.source, YSMMessageFormatter.withPrefix(it), true)
                 }
                 if (result.isSuccess) {
+                    val elapsedMs = mark.elapsedNow().inWholeMicroseconds / 1000.0
                     YSMMessageFormatter.sendServerMessage(
                         context.source,
                         Component.translatable(
                             "message.yes_steve_model.model.reload.complete",
-                            watch.getTime(TimeUnit.MICROSECONDS) / 1000.0
+                            elapsedMs
                         ),
                         true
                     )
-                    watch.reset()
-                    watch.start()
+                    mark = TimeSource.Monotonic.markNow()
                 }
             }, { data ->
-                watch.stop()
                 if (!data.isEnabled) {
                     data.displayComponent?.let { comp ->
                         YSMMessageFormatter.sendServerMessage(
@@ -178,11 +176,12 @@ object ModelCommand {
                         )
                     }
                     if (PlatformAPI.isServer) {
+                        val elapsedMs = mark.elapsedNow().inWholeMicroseconds / 1000.0
                         YSMMessageFormatter.sendServerMessage(
                             context.source,
                             Component.translatable(
                                 "message.yes_steve_model.model.sync.complete",
-                                watch.getTime(TimeUnit.MICROSECONDS) / 1000.0
+                                elapsedMs
                             ),
                             true
                         )

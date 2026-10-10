@@ -9,11 +9,11 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents
 import net.minecraft.client.Minecraft
 import net.minecraft.world.entity.Entity
 import rip.ysm.api.PlatformAPI
-import java.util.concurrent.TimeUnit
+import java.time.Duration
 
 object EntityJoinCallbackEvent {
     private val callbackCache: Cache<Int, MutableList<(Entity) -> Unit>> =
-        CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.SECONDS).build()
+        CacheBuilder.newBuilder().expireAfterAccess(Duration.ofSeconds(30)).build()
 
     init {
         @Environment(EnvType.CLIENT)
