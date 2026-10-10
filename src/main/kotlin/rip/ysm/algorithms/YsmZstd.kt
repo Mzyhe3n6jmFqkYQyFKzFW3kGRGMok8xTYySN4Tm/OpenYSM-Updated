@@ -62,11 +62,11 @@ object YsmZstd {
             throw IllegalArgumentException("Invalid data length")
         }
 
-        val magic = (data[base].toInt() and 0xFF) or
-                ((data[base + 1].toInt() and 0xFF) shl 8) or
-                ((data[base + 2].toInt() and 0xFF) shl 16) or
-                ((data[base + 3].toInt() and 0xFF) shl 24)
-        if (magic != (0xFD2FB528).toInt()) {
+        val magic = data[base].toInt() and 0xFF or
+                (data[base + 1].toInt() and 0xFF shl 8) or
+                (data[base + 2].toInt() and 0xFF shl 16) or
+                (data[base + 3].toInt() and 0xFF shl 24)
+        if (magic != 0xFD2FB528.toInt()) {
             throw IllegalArgumentException("Not a standard ZSTD Magic Number. May be skippable frame or unknown.")
         }
 
@@ -82,10 +82,10 @@ object YsmZstd {
             val b0 = data[offset].toInt() and 0xFF
             val b1 = data[offset + 1].toInt() and 0xFF
             val b2 = data[offset + 2].toInt() and 0xFF
-            val lastBlock = (b0 shr 7) and 1
-            val blockTypeYSM = (b0 shr 5) and 3
+            val lastBlock = b0 shr 7 and 1
+            val blockTypeYSM = b0 shr 5 and 3
 
-            val rawSize = ((b0 and 0x1F) shl 16) or b1 or (b2 shl 8)
+            val rawSize = b0 and 0x1F shl 16 or b1 or (b2 shl 8)
             val cSize = rawSize xor 0xD4E9
             val blockTypeStd = when (blockTypeYSM) {
                 0 -> 2
@@ -98,8 +98,8 @@ object YsmZstd {
             val stdHeader = lastBlock or (blockTypeStd shl 1) or (cSize shl 3)
 
             data[offset] = (stdHeader and 0xFF).toByte()
-            data[offset + 1] = ((stdHeader shr 8) and 0xFF).toByte()
-            data[offset + 2] = ((stdHeader shr 16) and 0xFF).toByte()
+            data[offset + 1] = (stdHeader shr 8 and 0xFF).toByte()
+            data[offset + 2] = (stdHeader shr 16 and 0xFF).toByte()
 
             val blockDataSize = if (blockTypeStd == 1) 1 else cSize
             offset += 3 + blockDataSize
@@ -119,7 +119,7 @@ object YsmZstd {
 
         val buffer = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN)
         val magic = buffer.getInt(0)
-        if (magic != (0xFD2FB528).toInt()) {
+        if (magic != 0xFD2FB528.toInt()) {
             throw IllegalArgumentException("Not a standard ZSTD frame.")
         }
 
@@ -134,7 +134,7 @@ object YsmZstd {
             val cBlockHeader = b0 or (b1 shl 8) or (b2 shl 16)
 
             val lastBlock = cBlockHeader and 1
-            val blockTypeStd = (cBlockHeader shr 1) and 3
+            val blockTypeStd = cBlockHeader shr 1 and 3
             val cSize = cBlockHeader shr 3
 
             val blockDataSize = if (blockTypeStd == 1) 1 else cSize
@@ -148,9 +148,9 @@ object YsmZstd {
             }
 
             val rawSize = cSize xor 0xD4E9
-            val ysmB0 = (lastBlock shl 7) or (blockTypeYSM shl 5) or ((rawSize shr 16) and 0x1F)
+            val ysmB0 = lastBlock shl 7 or (blockTypeYSM shl 5) or (rawSize shr 16 and 0x1F)
             val ysmB1 = rawSize and 0xFF
-            val ysmB2 = (rawSize shr 8) and 0xFF
+            val ysmB2 = rawSize shr 8 and 0xFF
 
             data[offset] = ysmB0.toByte()
             data[offset + 1] = ysmB1.toByte()
@@ -168,7 +168,7 @@ object YsmZstd {
 
     private fun calculateFrameHeaderSize(fhd: Byte): Int {
         val fhdInt = fhd.toInt() and 0xFF
-        val singleSegment = ((fhdInt shr 5) and 1) == 1
+        val singleSegment = fhdInt shr 5 and 1 == 1
 
         var dictIdSize = 0
         val dictIdBits = fhdInt and 3
@@ -179,7 +179,7 @@ object YsmZstd {
         }
 
         var fcsSize = 0
-        val fcsBits = (fhdInt shr 6) and 3
+        val fcsBits = fhdInt shr 6 and 3
         when (fcsBits) {
             0 -> fcsSize = if (singleSegment) 1 else 0
             1 -> fcsSize = 2
