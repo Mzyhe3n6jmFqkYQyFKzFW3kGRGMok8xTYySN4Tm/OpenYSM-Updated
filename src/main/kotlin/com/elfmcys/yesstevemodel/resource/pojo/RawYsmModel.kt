@@ -460,6 +460,9 @@ class RawYsmModel {
         var disablePreviewRotation: Boolean = false
 
         @JvmField
+        var isCustomSkinModel: Boolean = false
+
+        @JvmField
         var guiNoLighting: Boolean = false
 
         @JvmField

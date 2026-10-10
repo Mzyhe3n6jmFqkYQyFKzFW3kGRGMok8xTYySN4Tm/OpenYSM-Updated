@@ -738,7 +738,8 @@ object YSMClientMapper {
             classifyList.toTypedArray(),
             rp.isFree,
             rp.renderLayersFirst,
-            rp.disablePreviewRotation
+            rp.disablePreviewRotation,
+            rp.isCustomSkinModel
         )
 
         var bones = 0

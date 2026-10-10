@@ -200,6 +200,8 @@ class YSMFolderDeserializer : AutoCloseable {
         model.properties.renderLayersFirst = getBool(propsObj, "render_layers_first", false)
         model.properties.allCutout = getBool(propsObj, "all_cutout", false)
         model.properties.disablePreviewRotation = getBool(propsObj, "disable_preview_rotation", false)
+        model.properties.isCustomSkinModel =
+            getBool(propsObj, "isCustomSkinModel", false) || getBool(propsObj, "is_custom_skin_model", false)
         model.properties.guiNoLighting = getBool(propsObj, "gui_no_lighting", false)
         model.properties.mergeMultilineExpr = getBool(propsObj, "merge_multiline_expr", false)
         model.properties.guiForeground = getStr(propsObj, "gui_foreground", "")

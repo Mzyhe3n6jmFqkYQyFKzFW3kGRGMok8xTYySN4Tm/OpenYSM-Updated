@@ -73,11 +73,12 @@ interface IGeoRenderer<T : AnimatableEntity<*>> {
         f2: Float,
         f3: Float,
         f4: Float,
-        f5: Float
+        f5: Float,
+        textureLocation: Identifier? = null
     ) {
         val consumer = vertexConsumer ?: bufferSource?.getBuffer(renderType)
         animatable.resetAnimationState()
-        val tex = animatable.textureLocation
+        val tex = textureLocation ?: animatable.textureLocation
         if (consumer != null) {
             NativeModelRenderer.renderMesh(
                 consumer,

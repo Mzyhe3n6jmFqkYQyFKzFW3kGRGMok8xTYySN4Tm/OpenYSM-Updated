@@ -603,7 +603,8 @@ object ServerModelManager {
             }
             validCacheFiles.add(cacheFileName)
 
-            val isCustomSkinModel = "misc/2_steve" == modelId || "misc/1_alex" == modelId
+            val isCustomSkinModel =
+                model.properties.isCustomSkinModel || "misc/2_steve" == modelId || "misc/1_alex" == modelId
 
             mapToDataClass(modelId, model, isAuth, isCustomSkinModel)
         }.getOrElse {
@@ -928,6 +929,9 @@ object ServerModelManager {
     }
 
     fun getModelDefinition(str: String): Optional<ServerModelData> = Optional.ofNullable(CACHE_NAME_INFO[str])
+
+    fun isCustomSkinModel(modelId: String): Boolean =
+        CACHE_NAME_INFO[modelId]?.isCustomSkinModel ?: ("misc/2_steve" == modelId || "misc/1_alex" == modelId)
 
     operator fun get(str: String): ServerModelData? = CACHE_NAME_INFO[str]
 

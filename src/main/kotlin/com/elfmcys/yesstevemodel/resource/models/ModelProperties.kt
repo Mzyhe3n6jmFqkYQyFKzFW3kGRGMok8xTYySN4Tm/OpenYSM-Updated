@@ -20,7 +20,9 @@ class ModelProperties(
     @get:JvmName("isRenderLayersFirst")
     val renderLayersFirst: Boolean,
     @get:JvmName("isDisablePreviewRotation")
-    val disablePreviewRotation: Boolean
+    val disablePreviewRotation: Boolean,
+    @get:JvmName("isCustomSkinModel")
+    val isCustomSkinModel: Boolean = false
 ) {
     val extraAnimationButtons: Map<String, ExtraAnimationButtons> = buildExtraAnimationButtonsMap(extraAnimationButtons)
     val extraAnimationClassify: Map<String, OrderedStringMap<String, String>> =

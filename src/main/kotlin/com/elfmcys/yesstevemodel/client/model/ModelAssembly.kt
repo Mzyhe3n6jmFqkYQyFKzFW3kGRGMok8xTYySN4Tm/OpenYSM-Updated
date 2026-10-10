@@ -21,4 +21,7 @@ data class ModelAssembly(
         val metadata = modelData.metadata ?: return defaultName
         return ModelMetadataPresenter.getLocalizedModelString(this, "metadata.name", metadata.name)
     }
+
+    val isCustomSkinModel: Boolean
+        get() = modelData.modelProperties.isCustomSkinModel
 }

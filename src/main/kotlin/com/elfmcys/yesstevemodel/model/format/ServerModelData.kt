@@ -11,7 +11,6 @@ data class ServerModelData(
     private var projectiles: List<Array<String>>?,
     private var vehicles: List<Array<String>>?,
     private val info: ServerModelInfo,
-    // TODO: Custom skin support
     val isCustomSkinModel: Boolean,
     val isAuth: Boolean
 ) {

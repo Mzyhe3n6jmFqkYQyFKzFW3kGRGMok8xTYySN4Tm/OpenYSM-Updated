@@ -221,7 +221,8 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
                     color.red / 255.0f,
                     color.green / 255.0f,
                     color.blue / 255.0f,
-                    color.alpha / 255.0f
+                    color.alpha / 255.0f,
+                    textureLocation
                 )
             }
             if (!useExtraPlayer && !entity.isSpectator) {

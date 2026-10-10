@@ -70,7 +70,8 @@ open class HandItemRenderer {
             1.0f,
             1.0f,
             1.0f,
-            1.0f
+            1.0f,
+            textureLocation
         )
         poseStack.popPose()
     }
