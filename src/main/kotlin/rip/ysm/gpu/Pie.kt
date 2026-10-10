@@ -13,9 +13,6 @@ import org.lwjgl.opengl.GL20
 object Pie {
     const val TAU: Float = (Math.PI * 2.0).toFloat()
 
-    @Suppress("MayBeConstant")
-    val tau: Float = TAU
-
     private val mvpScratch: Matrix4f = Matrix4f()
     private val mvpFloats: FloatArray = FloatArray(16)
 

@@ -13,39 +13,25 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 
 object MaidInteractionAnimHandler {
-
     fun handleMaidInteractionAnim(
         event: AnimationEvent<LivingAnimatable<*>>,
         livingEntity: LivingEntity,
         entity: Entity
     ): PlayState? {
-        if (event.animatable is IPreviewAnimatable) {
-            return null
+        if (event.animatable is IPreviewAnimatable) return null
+        return when (entity) {
+            is EntitySit -> when (entity.joyType) {
+                Type.GOMOKU.typeName -> IAnimationPredicate.playLoopAnimation(event, "gomoku")
+                Type.BOOKSHELF.typeName -> IAnimationPredicate.playLoopAnimation(event, "bookshelf")
+                Type.COMPUTER.typeName -> IAnimationPredicate.playLoopAnimation(event, "computer")
+                Type.KEYBOARD.typeName -> IAnimationPredicate.playLoopAnimation(event, "keyboard")
+                Type.ON_HOME_MEAL.typeName -> IAnimationPredicate.playLoopAnimation(event, "picnic")
+                else -> null
+            }
+
+            is EntityChair -> IAnimationPredicate.playLoopAnimation(event, "chair")
+            is EntityBroom -> IAnimationPredicate.playLoopAnimation(event, "broom")
+            else -> null
         }
-        if (entity is EntitySit) {
-            val joyType = entity.joyType
-            if (joyType == Type.GOMOKU.typeName) {
-                return IAnimationPredicate.playLoopAnimation(event, "gomoku")
-            }
-            if (joyType == Type.BOOKSHELF.typeName) {
-                return IAnimationPredicate.playLoopAnimation(event, "bookshelf")
-            }
-            if (joyType == Type.COMPUTER.typeName) {
-                return IAnimationPredicate.playLoopAnimation(event, "computer")
-            }
-            if (joyType == Type.KEYBOARD.typeName) {
-                return IAnimationPredicate.playLoopAnimation(event, "keyboard")
-            }
-            if (joyType == Type.ON_HOME_MEAL.typeName) {
-                return IAnimationPredicate.playLoopAnimation(event, "picnic")
-            }
-        }
-        if (entity is EntityChair) {
-            return IAnimationPredicate.playLoopAnimation(event, "chair")
-        }
-        if (entity is EntityBroom) {
-            return IAnimationPredicate.playLoopAnimation(event, "broom")
-        }
-        return null
     }
 }

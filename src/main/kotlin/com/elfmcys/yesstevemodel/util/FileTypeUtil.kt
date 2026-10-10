@@ -19,32 +19,24 @@ object FileTypeUtil {
 
     fun splitFileNameAndParentDir(filePath: String): Pair<String, String> {
         val lastSlashIndex = filePath.lastIndexOf('/')
-        if (lastSlashIndex == -1) {
-            return Pair.of(filePath, StringPool.EMPTY)
-        }
+        if (lastSlashIndex == -1) return Pair.of(filePath, StringPool.EMPTY)
         return Pair.of(filePath.substring(lastSlashIndex + 1), filePath.substring(0, lastSlashIndex + 1))
     }
 
     fun getNameWithoutArchiveExtension(filePath: String): String {
         val fileName = filePath.substringAfterLast('/')
         val dotIndex = fileName.lastIndexOf('.')
-        if (dotIndex < 1 || fileName.substring(dotIndex).lowercase(Locale.US) !in ARCHIVE_EXTENSIONS) {
-            return fileName
-        }
+        if (dotIndex < 1 || fileName.substring(dotIndex).lowercase(Locale.US) !in ARCHIVE_EXTENSIONS) return fileName
         return fileName.substring(0, dotIndex)
     }
 
     fun getFinalPathSegment(path: String?): String {
-        if (path.isNullOrEmpty()) {
-            return StringPool.EMPTY
-        }
+        if (path.isNullOrEmpty()) return StringPool.EMPTY
         val trimmedPath = if (path.endsWith('/')) path.dropLast(1) else path
         return trimmedPath.substringAfterLast('/')
     }
 
-    fun getPackIconLocation(str: String): Identifier {
-        return NameSpaces.MOD.path("model_pack_icon/${str.hashCode()}")
-    }
+    fun getPackIconLocation(str: String): Identifier = NameSpaces.MOD.path("model_pack_icon/${str.hashCode()}")
 
     fun resolveEntityTypes(strArr: Array<String>): Set<Identifier> {
         val hashSet = HashSet<Identifier>()

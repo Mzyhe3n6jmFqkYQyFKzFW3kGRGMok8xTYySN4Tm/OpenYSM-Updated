@@ -21,6 +21,7 @@ class FloatValue(val value: Float) : IValue {
 
     fun value(): Float = boxedValue
 
+    @Suppress("unused")
     companion object {
         val ONE: FloatValue = FloatValue(1.0f)
 

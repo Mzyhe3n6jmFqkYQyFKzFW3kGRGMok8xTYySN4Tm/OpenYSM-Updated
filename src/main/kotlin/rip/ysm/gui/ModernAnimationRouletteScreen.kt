@@ -97,7 +97,7 @@ open class ModernAnimationRouletteScreen(
 
     private fun page(): Int = currentNavEntry.right
 
-    private fun sliceStartOffset(): Float = -Pie.tau / 16.0f
+    private fun sliceStartOffset(): Float = -Pie.TAU / 16.0f
 
     override fun render(g: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         if (GeneralConfig.BLUR_GUI.get() == true) {
@@ -113,7 +113,7 @@ open class ModernAnimationRouletteScreen(
     }
 
     private fun collectAndFlushBlur(g: GuiGraphics) {
-        val sliceSpan: Float = Pie.tau / 8.0f
+        val sliceSpan: Float = Pie.TAU / 8.0f
         for (i in 0 until 8) {
             val absoluteIdx: Int = i + page() * 8
             if (absoluteIdx >= currentProperties.size) {
@@ -124,8 +124,8 @@ open class ModernAnimationRouletteScreen(
             BlurStack.pushBlurPie(centerX.toFloat(), centerY.toFloat(), 22.0f, 100.0f, start, end, 20.0f)
         }
         if (pageCount() > 1) {
-            BlurStack.pushBlurPie(centerX - 128.0f, centerY.toFloat(), 0.0f, 16.0f, 0.0f, Pie.tau, 20.0f)
-            BlurStack.pushBlurPie(centerX + 128.0f, centerY.toFloat(), 0.0f, 16.0f, 0.0f, Pie.tau, 20.0f)
+            BlurStack.pushBlurPie(centerX - 128.0f, centerY.toFloat(), 0.0f, 16.0f, 0.0f, Pie.TAU, 20.0f)
+            BlurStack.pushBlurPie(centerX + 128.0f, centerY.toFloat(), 0.0f, 16.0f, 0.0f, Pie.TAU, 20.0f)
         }
         BlurStack.flush(g)
     }
@@ -136,10 +136,10 @@ open class ModernAnimationRouletteScreen(
         val r: Float = sqrt(dx * dx + dy * dy)
         var ang: Float = atan2(dy, dx)
         if (ang < 0.0f) {
-            ang += Pie.tau
+            ang += Pie.TAU
         }
-        ang = (ang - sliceStartOffset() + Pie.tau) % Pie.tau
-        val idx: Int = Mth.clamp((ang / (Pie.tau / 8.0f)).toInt(), 0, 7)
+        ang = (ang - sliceStartOffset() + Pie.TAU) % Pie.TAU
+        val idx: Int = Mth.clamp((ang / (Pie.TAU / 8.0f)).toInt(), 0, 7)
         hoveredIndex = -1
         hoveredGearIndex = -1
         val absoluteIdx: Int = idx + page() * 8
@@ -159,7 +159,7 @@ open class ModernAnimationRouletteScreen(
     }
 
     private fun renderSlices(g: GuiGraphics) {
-        val sliceSpan: Float = Pie.tau / 8.0f
+        val sliceSpan: Float = Pie.TAU / 8.0f
         for (i in 0 until 8) {
             val absoluteIdx: Int = i + page() * 8
             if (absoluteIdx >= currentProperties.size) {
@@ -206,7 +206,7 @@ open class ModernAnimationRouletteScreen(
     }
 
     private fun renderLabels(g: GuiGraphics) {
-        val sliceSpan: Float = Pie.tau / 8.0f
+        val sliceSpan: Float = Pie.TAU / 8.0f
         for (i in 0 until 8) {
             val absoluteIdx: Int = i + page() * 8
             if (absoluteIdx >= currentProperties.size) {
@@ -311,7 +311,7 @@ open class ModernAnimationRouletteScreen(
 
     private fun drawPageButton(g: GuiGraphics, cx: Float, cy: Float, enabled: Boolean, hover: Boolean, arrow: String) {
         val color: Int = if (!enabled) 0x40000000 else if (hover) 0xD0FFFFFF.toInt() else 0x90000000.toInt()
-        Pie.draw(g, cx, cy, 0.0f, 16.0f, 0.0f, Pie.tau, color, 1.0f)
+        Pie.draw(g, cx, cy, 0.0f, 16.0f, 0.0f, Pie.TAU, color, 1.0f)
         val textColor: Int = if (enabled) (if (hover) 0xFF000000.toInt() else 0xFFFFFFFF.toInt()) else 0x60FFFFFF
         g.drawCenteredString(font, arrow, cx.toInt(), cy.toInt() - 4, textColor)
     }

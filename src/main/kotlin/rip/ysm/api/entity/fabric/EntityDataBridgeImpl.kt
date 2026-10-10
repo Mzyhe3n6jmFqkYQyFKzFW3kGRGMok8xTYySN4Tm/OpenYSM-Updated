@@ -11,6 +11,7 @@ object EntityDataBridgeImpl {
         return PERSISTENT_DATA.computeIfAbsent(entity) { CompoundTag() }
     }
 
+    // TODO: Implement
     fun shouldRiderSit(vehicle: Entity): Boolean {
         return true
     }

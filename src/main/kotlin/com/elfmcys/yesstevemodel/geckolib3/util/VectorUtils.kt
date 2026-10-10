@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.geckolib3.util
 
 import net.minecraft.world.phys.Vec3
@@ -16,11 +18,9 @@ object VectorUtils {
         return Vector3f(array[0], array[1], array[2])
     }
 
-    fun convertDoubleToFloat(vector: Vec3): Vector3f {
-        return Vector3f(vector.x.toFloat(), vector.y.toFloat(), vector.z.toFloat())
-    }
+    fun convertDoubleToFloat(vector: Vec3): Vector3f =
+        Vector3f(vector.x.toFloat(), vector.y.toFloat(), vector.z.toFloat())
 
-    fun convertFloatToDouble(vector: Vector3f): Vec3 {
-        return Vec3(vector.x().toDouble(), vector.y().toDouble(), vector.z().toDouble())
-    }
+    fun convertFloatToDouble(vector: Vector3f): Vec3 =
+        Vec3(vector.x().toDouble(), vector.y().toDouble(), vector.z().toDouble())
 }

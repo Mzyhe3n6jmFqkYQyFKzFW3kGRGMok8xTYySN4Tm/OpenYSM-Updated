@@ -10,20 +10,14 @@ object KeyMappingFactoryImpl {
         type: InputConstants.Type,
         keyCode: Int,
         category: KeyMapping.Category
-    ): KeyMapping {
-        return KeyMapping(name, type, keyCode, category)
-    }
+    ): KeyMapping = KeyMapping(name, type, keyCode, category)
 
     fun createInGameNone(
         name: String,
         type: InputConstants.Type,
         keyCode: Int,
         category: KeyMapping.Category
-    ): KeyMapping {
-        return KeyMapping(name, type, keyCode, category)
-    }
+    ): KeyMapping = KeyMapping(name, type, keyCode, category)
 
-    fun isActiveAndMatches(keyMapping: KeyMapping, event: KeyEvent): Boolean {
-        return keyMapping.matches(event)
-    }
+    fun isActiveAndMatches(keyMapping: KeyMapping, event: KeyEvent): Boolean = keyMapping.matches(event)
 }

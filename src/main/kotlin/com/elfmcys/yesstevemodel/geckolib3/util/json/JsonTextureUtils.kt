@@ -9,6 +9,7 @@ import com.google.gson.JsonObject
 import org.apache.commons.compress.utils.Lists
 import org.apache.commons.lang3.tuple.Pair
 import rip.ysm.compat.oculus.ShadersTextureType
+import java.util.*
 
 /**
  * error.yes_steve_model.decode_texture
@@ -47,7 +48,7 @@ object JsonTextureUtils {
                     val bytes = resource[uvPath] ?: return null
                     val name = extractTextureName(uvPath)
                     val texture = OuterFileTexture(bytes)
-                    val fbo: MutableMap<ShadersTextureType, OuterFileTexture> = HashMap()
+                    val fbo: MutableMap<ShadersTextureType, OuterFileTexture> = EnumMap(ShadersTextureType::class.java)
                     if (jsonObj.has("normal")) {
                         val normalPath = jsonObj.get("normal").asString
                         resource[normalPath]?.let { fbo[ShadersTextureType.NORMAL] = OuterFileTexture(it) }

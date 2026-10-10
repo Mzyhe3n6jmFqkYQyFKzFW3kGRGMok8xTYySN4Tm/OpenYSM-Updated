@@ -734,6 +734,7 @@ object ClientModelManager {
 
     fun findModelContext(str: String): ModelAssembly? = modelAssemblyMap[str]
 
+    // TODO: Only check `is_custom_skin_model`
     fun isCustomSkinModel(modelId: String): Boolean {
         val model = modelAssemblyMap[modelId]
         if (model != null) return model.isCustomSkinModel || modelId == "misc/2_steve" || modelId == "misc/1_alex"
