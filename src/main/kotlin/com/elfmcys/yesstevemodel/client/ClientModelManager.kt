@@ -736,17 +736,12 @@ object ClientModelManager {
 
     fun isCustomSkinModel(modelId: String): Boolean {
         val model = modelAssemblyMap[modelId]
-        if (model != null && model.isCustomSkinModel) return true
+        if (model != null) return model.isCustomSkinModel
         val ctx = serverModels.values.find { it.modelId == modelId }
-        if (ctx != null && ctx.isCustomSkinModel != 0) return true
-        return ServerModelManager.isCustomSkinModel(modelId)
+        return ctx != null && ctx.isCustomSkinModel != 0
     }
 
-    fun getUseMcDefaultTexture(modelId: String): Int {
-        val model = modelAssemblyMap[modelId]
-        if (model != null && model.useMcDefaultTexture != 0) return model.useMcDefaultTexture
-        return ServerModelManager.getUseMcDefaultTexture(modelId)
-    }
+    fun getUseMcDefaultTexture(modelId: String): Int = modelAssemblyMap[modelId]?.useMcDefaultTexture ?: 0
 
     val localModelContext: ModelAssembly
         get() {
@@ -971,18 +966,6 @@ object ClientModelManager {
     private fun processModelData(parsedBundle: ClientModelInfo?, modelId: String, isPrimary: Boolean, isAuth: Boolean) {
         if (parsedBundle != null) {
             runCatching {
-                val serverData = ServerModelManager[modelId]
-                val serverCtx = serverModels.values.find { it.modelId == modelId }
-                if (serverData != null || serverCtx != null) {
-                    val isCustom = serverData?.isCustomSkinModel ?: (serverCtx?.isCustomSkinModel != 0)
-                    val defaultTex = serverData?.useMcDefaultTexture ?: 0
-                    if (isCustom && !parsedBundle.info.modelProperties.isCustomSkinModel) {
-                        parsedBundle.info.modelProperties.isCustomSkinModel = true
-                    }
-                    if (defaultTex > 0 && parsedBundle.info.modelProperties.useMcDefaultTexture == 0) {
-                        parsedBundle.info.modelProperties.useMcDefaultTexture = defaultTex
-                    }
-                }
                 val runtimeModel = ModelAssemblyFactory.buildAssembly(parsedBundle, isPrimary, isAuth)
                 pendingModelQueue.add(Pair.of(runtimeModel, modelId))
                 if (isPrimary) {

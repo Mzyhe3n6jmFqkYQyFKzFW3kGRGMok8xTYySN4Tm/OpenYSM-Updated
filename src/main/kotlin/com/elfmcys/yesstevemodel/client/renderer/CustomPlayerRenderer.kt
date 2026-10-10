@@ -48,7 +48,7 @@ class CustomPlayerRenderer(context: EntityRendererProvider.Context) :
         val capability = PlayerCapability[player] ?: return
         currentPlayer = player
         capability.tickModel()
-        val renderEvent = SpecialPlayerRenderEvent(player, capability, capability.modelId, renderState, renderState.skin)
+        val renderEvent = SpecialPlayerRenderEvent(player, capability, capability.modelId)
         if (SpecialPlayerRenderEvent.post(renderEvent).isFalse()) return
         currentTexture = renderEvent.textureLocation
         renderEntityWithTexture(
