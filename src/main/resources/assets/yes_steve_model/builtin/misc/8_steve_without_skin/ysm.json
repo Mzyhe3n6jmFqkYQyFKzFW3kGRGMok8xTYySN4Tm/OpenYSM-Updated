@@ -1,8 +1,8 @@
 {
   "spec": 2,
   "metadata": {
-    "name": "Wide Model MC Texture",
-    "tips": "Minecraft Wide Model Default Texture",
+    "name": "Steve Without Skin",
+    "tips": "Minecraft Steve Model Without Skin",
     "license": {
       "type": "CC 0"
     },
@@ -39,8 +39,8 @@
     "height_scale": 1,
     "width_scale": 1,
     "free": true,
-    "is_custom_skin_model": true,
-    "use_mc_default_texture": 3
+    "is_custom_skin_model": false,
+    "use_mc_default_texture": 1
   },
   "files": {
     "player": {
