@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package rip.ysm.gpu
 
@@ -11,23 +11,22 @@ import org.lwjgl.opengl.GL45
 import org.lwjgl.system.MemoryUtil
 import java.nio.ByteBuffer
 
-class GpuMesh(
-    @JvmField val pointer: Long,
-    @JvmField val vao: Int,
-    @JvmField val vbo: Int,
-    @JvmField val ibo: GpuBuffer,
-    @JvmField val boneSsbo: Int,
-    @JvmField val vertexCount: Int,
-    @JvmField val indexCount: Int,
-    @JvmField val boneCount: Int,
-    @JvmField val partMask1Start: Int,
-    @JvmField val partMask1Count: Int,
-    @JvmField val partMask2Start: Int,
-    @JvmField val partMask2Count: Int,
-    @JvmField val partMask3Start: Int,
-    @JvmField val partMask3Count: Int
+data class GpuMesh(
+    val pointer: Long,
+    val vao: Int,
+    val vbo: Int,
+    val ibo: GpuBuffer,
+    val boneSsbo: Int,
+    val vertexCount: Int,
+    val indexCount: Int,
+    val boneCount: Int,
+    val partMask1Start: Int,
+    val partMask1Count: Int,
+    val partMask2Start: Int,
+    val partMask2Count: Int,
+    val partMask3Start: Int,
+    val partMask3Count: Int
 ) {
-    @JvmField
     val perFrameBoneBuffer: ByteBuffer = MemoryUtil.memAlloc(boneCount * 144)
 
     private var xformVbo: GpuBuffer? = null
