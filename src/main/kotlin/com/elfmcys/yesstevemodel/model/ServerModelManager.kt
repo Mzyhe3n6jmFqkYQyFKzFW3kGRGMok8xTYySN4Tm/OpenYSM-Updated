@@ -686,7 +686,7 @@ object ServerModelManager {
                     outBuf.writeString(model.modelId)
                     outBuf.writeVarInt(if (model.isAuth) 1 else 0)
                     outBuf.writeVarInt(if (model.isCustomSkinModel) 1 else 0)
-                    outBuf.writeVarInt(32) // format
+                    outBuf.writeVarInt(40) // format
                 }
 
                 val visiblePacks = if (shouldHideModelsFrom(uuid)) emptyList() else packs.values
@@ -866,15 +866,15 @@ object ServerModelManager {
                 val clearText = YsmCrypt.read(cacheData, currentServerKey)
 
                 val coreDataLength: Int
-                YSMBinaryDeserializer(clearText, 32).use { deserializer ->
+                YSMBinaryDeserializer(clearText, 40).use { deserializer ->
                     deserializer.deserializeKeepOpen()
                     coreDataLength = deserializer.reader.offset
                 }
 
                 YSMByteBuf(Unpooled.buffer()).use { outBuf ->
-                    outBuf.writeDword(32)
+                    outBuf.writeDword(40)
                     outBuf.rawBuf.writeBytes(clearText, 0, coreDataLength)
-                    outBuf.writeVarInt(32) // version
+                    outBuf.writeVarInt(40) // version
                     outBuf.writeVarInt(1)
                     val randBytes = ByteArray(8)
                     theRandom.nextBytes(randBytes)
@@ -1081,8 +1081,10 @@ object ServerModelManager {
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(userAuthModels), serverPlayer)
             }
             val modelId = modelInfoCap.modelId
+            val modelData = CACHE_NAME_INFO[modelId]
+            val isCustomSkin = modelData?.isCustomSkinModel == true
             if (!serverModelInfo.containsKey(modelId) || AUTH_MODELS.contains(modelId) && !userAuthModels
-                    .contains(modelInfoCap.modelId) || !(CACHE_NAME_INFO[modelId] ?: return).modelInfo.textures
+                    .contains(modelInfoCap.modelId) || !isCustomSkin && !(modelData ?: return).modelInfo.textures
                     .contains(modelInfoCap.selectTexture)
             ) {
                 modelInfoCap.resetToDefault()

@@ -302,7 +302,7 @@ object ClientModelManager {
                         if (Files.exists(cacheFile) && currentServerKey != null) {
                             val fileBytes = Files.readAllBytes(cacheFile)
                             val decompressed = YsmCrypt.read(fileBytes, currentServerKey)
-                            YSMBinaryDeserializer(decompressed, 32).use { deserializer ->
+                            YSMBinaryDeserializer(decompressed, 40).use { deserializer ->
                                 val rawModel = deserializer.deserializeKeepOpen()
                                 deserializer.parseYSMFooter(rawModel)
                                 val parsedBundle = YSMClientMapper.buildParsedBundle(rawModel, modelId)
@@ -647,7 +647,7 @@ object ClientModelManager {
 
     private fun parseAndLoadModel(decompressed: ByteArray, modelId: String, isAuth: Boolean) {
         runCatching {
-            YSMBinaryDeserializer(decompressed, 32).use { deserializer ->
+            YSMBinaryDeserializer(decompressed, 40).use { deserializer ->
                 val rawModel = deserializer.deserializeKeepOpen()
                 val reader = deserializer.reader
 
@@ -736,12 +736,16 @@ object ClientModelManager {
 
     fun isCustomSkinModel(modelId: String): Boolean {
         val model = modelAssemblyMap[modelId]
-        if (model != null) return model.isCustomSkinModel
+        if (model != null && model.isCustomSkinModel) return true
         val ctx = serverModels.values.find { it.modelId == modelId }
-        return ctx != null && ctx.isCustomSkinModel != 0
+        return ctx != null && ctx.isCustomSkinModel != 0 || ServerModelManager.isCustomSkinModel(modelId)
     }
 
-    fun getUseMcDefaultTexture(modelId: String): Int = modelAssemblyMap[modelId]?.useMcDefaultTexture ?: 0
+    fun getUseMcDefaultTexture(modelId: String): Int {
+        val model = modelAssemblyMap[modelId]
+        if (model != null && model.useMcDefaultTexture != 0) return model.useMcDefaultTexture
+        return ServerModelManager.getUseMcDefaultTexture(modelId)
+    }
 
     val localModelContext: ModelAssembly
         get() {
@@ -1105,7 +1109,7 @@ object ClientModelManager {
                         val coreDataLength: Int
                         var exportName = file.name
 
-                        YSMBinaryDeserializer(clearText, 32).use { deserializer ->
+                        YSMBinaryDeserializer(clearText, 40).use { deserializer ->
                             val rawModel = deserializer.deserializeKeepOpen()
                             coreDataLength = deserializer.reader.rawBuf.readerIndex()
 
@@ -1127,10 +1131,10 @@ object ClientModelManager {
                         exportName = exportName.replace(Regex("[\\\\/:*?\"<>|]"), "_")
 
                         YSMByteBuf(Unpooled.buffer()).use { outBuf ->
-                            outBuf.writeDword(32)
+                            outBuf.writeDword(40)
                             outBuf.rawBuf.writeBytes(clearText, 0, coreDataLength)
 
-                            outBuf.writeVarInt(32)
+                            outBuf.writeVarInt(40)
                             outBuf.writeVarInt(1)
 
                             val randBytes = ByteArray(8)

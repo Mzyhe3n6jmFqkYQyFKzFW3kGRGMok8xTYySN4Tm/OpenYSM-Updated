@@ -154,7 +154,7 @@ object YsmCrypt {
             headerBuf.writeVarInt(0)
             headerBuf.writeVarInt(0)
             headerBuf.writeVarInt(0)
-            headerBuf.writeVarInt(32) // format
+            headerBuf.writeVarInt(40) // format
             headerBuf.writeVarInt(0)
             headerBuf.writeVarInt(0)
             headerBuf.writeVarInt(0)
