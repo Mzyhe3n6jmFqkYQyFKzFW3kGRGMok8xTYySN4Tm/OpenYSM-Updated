@@ -48,7 +48,7 @@ object CapabilityEvent {
                 val savedModel = ServerModelSelection.getPlayerModel(entity.uuid)
                 val savedTexture = ServerModelSelection.getPlayerTexture(entity.uuid)
                 if (savedModel != null && ServerModelManager.serverModelInfo.containsKey(savedModel)) {
-                    val modelData = ServerModelManager.serverModelInfo[savedModel]
+                    val modelData = ServerModelManager[savedModel]
                     val validTexture =
                         if (savedTexture != null && modelData?.modelInfo?.textures?.contains(savedTexture) == true) {
                             savedTexture

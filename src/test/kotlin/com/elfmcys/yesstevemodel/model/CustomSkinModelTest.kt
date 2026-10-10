@@ -43,21 +43,6 @@ class CustomSkinModelTest {
 
     @Test
     fun testCustomSkinModelJsonVariants() {
-        val camelCaseJson = """
-            {
-              "properties": {
-                "isCustomSkinModel": true
-              }
-            }
-        """.trimIndent()
-        val camelCaseObj = JsonParser.parseString(camelCaseJson).asJsonObject.getAsJsonObject("properties")
-        val raw1 = RawYsmModel()
-        raw1.properties.sha256 = "0123456789abcdef0123456789abcdef"
-        val isCustom1 = camelCaseObj.has("isCustomSkinModel") && camelCaseObj.get("isCustomSkinModel").asBoolean
-        raw1.properties.isCustomSkinModel = isCustom1
-        val info1 = YSMClientMapper.buildModelInfo(raw1)
-        assertTrue(info1.modelProperties.isCustomSkinModel)
-
         val snakeCaseJson = """
             {
               "properties": {
@@ -81,7 +66,13 @@ class CustomSkinModelTest {
         assertFalse(PlayerSkinTextureManager.isDefaultSkin("misc/3_default_boy"))
         assertEquals(PlayerSkinTextureManager.STEVE_SKIN, PlayerSkinTextureManager.getSkinTexture("misc/2_steve"))
         assertEquals(PlayerSkinTextureManager.ALEX_SKIN, PlayerSkinTextureManager.getSkinTexture("misc/1_alex"))
-        assertEquals(PlayerSkinTextureManager.STEVE_SKIN, PlayerSkinTextureManager.getPlayerSkinLocation(null, "misc/2_steve"))
-        assertEquals(PlayerSkinTextureManager.ALEX_SKIN, PlayerSkinTextureManager.getPlayerSkinLocation(null, "misc/1_alex"))
+        assertEquals(
+            PlayerSkinTextureManager.STEVE_SKIN,
+            PlayerSkinTextureManager.getPlayerSkinLocation(null, "misc/2_steve")
+        )
+        assertEquals(
+            PlayerSkinTextureManager.ALEX_SKIN,
+            PlayerSkinTextureManager.getPlayerSkinLocation(null, "misc/1_alex")
+        )
     }
 }

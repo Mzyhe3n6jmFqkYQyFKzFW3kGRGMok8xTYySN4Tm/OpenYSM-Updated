@@ -13,18 +13,14 @@ class C2SRequestSwitchModelPacket(
     val textureId: String
 ) {
     companion object {
-        @JvmStatic
         fun encode(message: C2SRequestSwitchModelPacket, buf: FriendlyByteBuf) {
             buf.writeUtf(message.modelId)
             buf.writeUtf(message.textureId)
         }
 
-        @JvmStatic
-        fun decode(buf: FriendlyByteBuf): C2SRequestSwitchModelPacket {
-            return C2SRequestSwitchModelPacket(buf.readUtf(), buf.readUtf())
-        }
+        fun decode(buf: FriendlyByteBuf): C2SRequestSwitchModelPacket =
+            C2SRequestSwitchModelPacket(buf.readUtf(), buf.readUtf())
 
-        @JvmStatic
         fun handle(message: C2SRequestSwitchModelPacket, ctx: PacketContext) {
             if (ctx.isServerSide()) {
                 val sender = ctx.sender
@@ -36,7 +32,6 @@ class C2SRequestSwitchModelPacket(
             }
         }
 
-        @JvmStatic
         fun handleCapability(message: C2SRequestSwitchModelPacket, sender: ServerPlayer) {
             ModelInfoCapability[sender]?.let { cap ->
                 val str = message.modelId
@@ -47,8 +42,7 @@ class C2SRequestSwitchModelPacket(
                 val isCustomSkin =
                     serverModelData?.isCustomSkinModel == true || ServerModelManager.isCustomSkinModel(str)
                 if (serverModelData == null ||
-                    !hasAuth ||
-                    (!isCustomSkin && !serverModelData.modelInfo.textures.contains(message.textureId))
+                    !hasAuth || !isCustomSkin && !serverModelData.modelInfo.textures.contains(message.textureId)
                 ) {
                     cap.resetToDefault()
                     ServerModelSelection.savePlayerSelection(sender.uuid, cap.modelId, cap.selectTexture)
