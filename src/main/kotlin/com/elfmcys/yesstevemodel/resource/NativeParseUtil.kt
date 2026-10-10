@@ -11,7 +11,7 @@ import java.nio.file.Path
 object NativeParseUtil {
     fun parseNative(raw: ByteArray?, modelId: String): RawYsmModel? {
         if (raw == null || raw.isEmpty()) return null
-        if (!YSMParserNativeLoader.isJniAvailable()) {
+        if (!YSMParserNativeLoader.isAvailable) {
             Constants.LOGGER.warn("Native YSMParser unavailable, skipping model: {}", modelId)
             return null
         }
