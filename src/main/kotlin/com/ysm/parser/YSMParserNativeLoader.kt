@@ -6,7 +6,6 @@ import com.elfmcys.yesstevemodel.Constants
 import com.ysm.parser.YSMParserNativeLoader.init
 import java.io.IOException
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.util.*
 
@@ -56,10 +55,10 @@ object YSMParserNativeLoader {
 
         val resourcePath = "$NATIVE_DIR/${platform.folder}/$libName"
         runCatching {
-            val tempDir: Path = Files.createTempDirectory("ysm_native_")
+            val tempDir = Files.createTempDirectory("ysm_native_")
             tempDir.toFile().deleteOnExit()
 
-            val extractedLib: Path = tempDir.resolve(libName)
+            val extractedLib = tempDir.resolve(libName)
 
             val classLoader = YSMParserNativeLoader::class.java.classLoader
                 ?: ClassLoader.getSystemClassLoader()

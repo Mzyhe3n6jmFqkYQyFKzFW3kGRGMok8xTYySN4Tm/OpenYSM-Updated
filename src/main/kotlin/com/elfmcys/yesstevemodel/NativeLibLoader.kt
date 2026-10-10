@@ -5,7 +5,6 @@ package com.elfmcys.yesstevemodel
 import net.minecraft.network.chat.Component
 import java.io.IOException
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.util.*
 
@@ -45,7 +44,6 @@ object NativeLibLoader {
     )
 
     @Synchronized
-    @JvmStatic
     private fun init() {
         if (available) return
         if (System.getProperty("OYSM_DISABLE_SMID") != null) {
@@ -65,10 +63,10 @@ object NativeLibLoader {
 
         val resourcePath = "$NATIVE_DIR/${platform.folder}/$libName"
         runCatching {
-            val tempDir: Path = Files.createTempDirectory("ysm_native_")
+            val tempDir = Files.createTempDirectory("ysm_native_")
             tempDir.toFile().deleteOnExit()
 
-            val extractedLib: Path = tempDir.resolve(libName)
+            val extractedLib = tempDir.resolve(libName)
 
             val classLoader = NativeLibLoader::class.java.classLoader
                 ?: ClassLoader.getSystemClassLoader()
@@ -183,11 +181,9 @@ object NativeLibLoader {
         )
     }
 
-    @JvmStatic
     val errorComponent: Component?
         get() = lastError?.component
 
-    @JvmStatic
     val errorMessage: String?
         get() = lastError?.logMsg
 }
