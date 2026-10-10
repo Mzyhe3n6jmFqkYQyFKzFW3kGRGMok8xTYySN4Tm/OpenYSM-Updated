@@ -196,7 +196,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
         get() = modelAssembly?.modelData?.modelProperties?.heightScale ?: 1.0f
 
     open val isRenderLayersFirst: Boolean
-        get() = modelAssembly?.modelData?.modelProperties?.renderLayersFirst ?: false
+        get() = modelAssembly?.modelData?.modelProperties?.isRenderLayersFirst ?: false
 
     open val isExtraRenderFlag: Boolean
         get() = extraRenderFlag

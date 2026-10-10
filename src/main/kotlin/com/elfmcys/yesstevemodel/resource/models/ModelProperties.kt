@@ -15,13 +15,9 @@ class ModelProperties(
     val extraAnimation: OrderedStringMap<String, String>,
     extraAnimationButtons: Array<ExtraAnimationButtons>,
     extraAnimationClassify: Array<StringMapPair>,
-    @get:JvmName("isFree")
-    val free: Boolean,
-    @get:JvmName("isRenderLayersFirst")
-    val renderLayersFirst: Boolean,
-    @get:JvmName("isDisablePreviewRotation")
-    val disablePreviewRotation: Boolean,
-    @get:JvmName("isCustomSkinModel")
+    val isFree: Boolean,
+    val isRenderLayersFirst: Boolean,
+    val isDisablePreviewRotation: Boolean,
     val isCustomSkinModel: Boolean = false
 ) {
     val extraAnimationButtons: Map<String, ExtraAnimationButtons> = buildExtraAnimationButtonsMap(extraAnimationButtons)
@@ -41,8 +37,8 @@ class ModelProperties(
         @JvmStatic
         fun buildExtraAnimationClassifyMap(extraAnimationClassify: Array<StringMapPair>): Map<String, OrderedStringMap<String, String>> {
             val map = Maps.newHashMap<String, OrderedStringMap<String, String>>()
-            for (classify in extraAnimationClassify) {
-                map[classify.key] = classify.valueMap
+            for ((key, valueMap) in extraAnimationClassify) {
+                map[key] = valueMap
             }
             return map
         }

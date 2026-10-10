@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.resources.Identifier
 
 object IrisRenderPath {
-    @JvmStatic
+    // TODO: Implement IrisRenderPath
     fun tryRender(
         model: GeoModel,
         pose: PoseStack.Pose,

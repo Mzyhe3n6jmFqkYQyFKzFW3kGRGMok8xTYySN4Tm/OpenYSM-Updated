@@ -39,7 +39,7 @@ open class ModelButton(
     private val modelName: String
     private val authorName: String
     private val animationDuration: Double
-    private val disablePreviewRotation: Boolean = renderContext.modelData.modelProperties.disablePreviewRotation
+    private val disablePreviewRotation: Boolean = renderContext.modelData.modelProperties.isDisablePreviewRotation
     private val displayName: Component =
         Component.literal(FileTypeUtil.getNameWithoutArchiveExtension(modelIdHolder.modelId))
     private var backgroundTexture: IResourceLocatable? = renderContext.textureRegistry.guiBackground?.let {

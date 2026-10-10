@@ -7,7 +7,7 @@ import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.player.Player
 import rip.ysm.api.event.EventResult
 
-open class SpecialPlayerRenderEvent(
+class SpecialPlayerRenderEvent(
     val player: Player? = null,
     val customPlayer: CustomPlayerEntity? = null,
     val modelId: String? = null
