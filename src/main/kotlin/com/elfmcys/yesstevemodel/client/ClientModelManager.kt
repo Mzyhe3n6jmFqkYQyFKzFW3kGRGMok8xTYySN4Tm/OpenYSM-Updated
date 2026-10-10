@@ -19,7 +19,6 @@ import com.elfmcys.yesstevemodel.resource.YSMBinaryDeserializer
 import com.elfmcys.yesstevemodel.resource.YSMClientMapper
 import com.elfmcys.yesstevemodel.resource.YSMFolderDeserializer
 import com.elfmcys.yesstevemodel.resource.models.ModelPackData
-import com.elfmcys.yesstevemodel.resource.pojo.RawYsmModel
 import com.elfmcys.yesstevemodel.util.FileTypeUtil
 import com.elfmcys.yesstevemodel.util.YSMThreadPool
 import com.elfmcys.yesstevemodel.util.data.OrderedStringMap
@@ -43,7 +42,10 @@ import rip.ysm.security.YsmCrypt
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
-import java.nio.file.*
+import java.nio.file.FileSystem
+import java.nio.file.FileSystems
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.security.SecureRandom
 import java.time.Instant
 import java.util.*
@@ -160,7 +162,7 @@ object ClientModelManager {
 
             val uri = resourceUrl.toURI()
             var jarFs: FileSystem?
-            val defaultPath: Path = if ("jar" == uri.scheme) {
+            val defaultPath = if ("jar" == uri.scheme) {
                 jarFs = runCatching {
                     FileSystems.getFileSystem(uri)
                 }.getOrElse {
@@ -173,8 +175,8 @@ object ClientModelManager {
 
             runCatching {
                 YSMFolderDeserializer(defaultPath).use { deserializer ->
-                    val rawModel: RawYsmModel = deserializer.deserialize()
-                    val parsedBundle: ClientModelInfo = YSMClientMapper.buildParsedBundle(rawModel, "default")
+                    val rawModel = deserializer.deserialize()
+                    val parsedBundle = YSMClientMapper.buildParsedBundle(rawModel, "default")
                     onModelDataReceived(parsedBundle, "default", isPrimary = true, isAuth = false)
                     Constants.LOGGER.info("Successfully pushed Default Model to render queue.")
                 }
