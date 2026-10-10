@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.client.renderer
 
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
@@ -19,7 +21,7 @@ import net.minecraft.world.scores.Team
 import rip.ysm.compat.gun.swarfare.SWarfareCompat
 import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat
 
-open class CustomPlayerRenderer(context: EntityRendererProvider.Context) :
+class CustomPlayerRenderer(context: EntityRendererProvider.Context) :
     GeoReplacedEntityRenderer<Player, CustomPlayerEntity, AvatarRenderState>(context) {
 
     private var currentTexture: Identifier? = null
@@ -33,7 +35,7 @@ open class CustomPlayerRenderer(context: EntityRendererProvider.Context) :
         addLayerRenderer(CustomPlayerCarryOnLayer())
     }
 
-    open fun render(
+    fun render(
         player: Player,
         renderState: AvatarRenderState,
         entityYaw: Float,
@@ -47,9 +49,7 @@ open class CustomPlayerRenderer(context: EntityRendererProvider.Context) :
         currentPlayer = player
         capability.tickModel()
         val renderEvent = SpecialPlayerRenderEvent(player, capability, capability.modelId)
-        if (SpecialPlayerRenderEvent.post(renderEvent).isFalse()) {
-            return
-        }
+        if (SpecialPlayerRenderEvent.post(renderEvent).isFalse()) return
         currentTexture = renderEvent.textureLocation
         renderEntityWithTexture(
             capability,
@@ -90,7 +90,7 @@ open class CustomPlayerRenderer(context: EntityRendererProvider.Context) :
         return AvatarRenderState()
     }
 
-    open fun getTextureLocation(player: Player): Identifier {
+    fun getTextureLocation(player: Player): Identifier {
         return currentTexture ?: PlayerCapability[player]?.textureLocation
         ?: MissingTextureAtlasSprite.getLocation()
     }

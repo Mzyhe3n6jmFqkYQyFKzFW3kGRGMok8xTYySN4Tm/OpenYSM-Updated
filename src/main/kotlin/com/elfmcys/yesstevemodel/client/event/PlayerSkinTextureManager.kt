@@ -16,10 +16,7 @@ import rip.ysm.api.event.EventResult
 
 @Environment(EnvType.CLIENT)
 object PlayerSkinTextureManager {
-    @JvmField
     val STEVE_SKIN: Identifier = Identifier.parse("textures/entity/player/wide/steve.png")
-
-    @JvmField
     val ALEX_SKIN: Identifier = Identifier.parse("textures/entity/player/slim/alex.png")
 
     private const val STEVE_TEXTURE_ID: String = "misc/2_steve"
@@ -41,10 +38,8 @@ object PlayerSkinTextureManager {
         return EventResult.pass()
     }
 
-    fun isCustomSkinModel(modelId: String?): Boolean {
-        if (modelId == null) return false
-        return isDefaultSkin(modelId) || ClientModelManager.isCustomSkinModel(modelId)
-    }
+    fun isCustomSkinModel(modelId: String?): Boolean =
+        modelId != null && (isDefaultSkin(modelId) || ClientModelManager.isCustomSkinModel(modelId))
 
     fun isDefaultSkin(str: String): Boolean = str == STEVE_TEXTURE_ID || str == ALEX_TEXTURE_ID
 

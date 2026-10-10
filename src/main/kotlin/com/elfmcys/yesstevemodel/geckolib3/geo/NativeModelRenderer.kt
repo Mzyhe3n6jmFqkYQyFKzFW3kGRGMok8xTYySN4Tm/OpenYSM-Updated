@@ -77,9 +77,7 @@ object NativeModelRenderer {
                         alpha,
                         textureLocation
                     )
-                ) {
-                    return
-                }
+                ) return
             } else {
                 if (GpuRenderPath.tryRender(
                         model,
@@ -95,9 +93,7 @@ object NativeModelRenderer {
                         alpha,
                         textureLocation
                     )
-                ) {
-                    return
-                }
+                ) return
             }
         }
 
