@@ -18,7 +18,8 @@ class ModelProperties(
     val isFree: Boolean,
     val isRenderLayersFirst: Boolean,
     val isDisablePreviewRotation: Boolean,
-    val isCustomSkinModel: Boolean = false
+    val isCustomSkinModel: Boolean = false,
+    val useMcDefaultTexture: Int = 0
 ) {
     val extraAnimationButtons: Map<String, ExtraAnimationButtons> = buildExtraAnimationButtonsMap(extraAnimationButtons)
     val extraAnimationClassify: Map<String, OrderedStringMap<String, String>> =

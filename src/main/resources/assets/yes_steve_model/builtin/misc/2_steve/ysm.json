@@ -39,7 +39,8 @@
     "height_scale": 1,
     "width_scale": 1,
     "free": true,
-    "is_custom_skin_model": true
+    "is_custom_skin_model": true,
+    "use_mc_default_texture": 1
   },
   "files": {
     "player": {
