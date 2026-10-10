@@ -85,7 +85,10 @@ object YSMParserNativeLoader {
             val start = System.currentTimeMillis()
             Constants.LOGGER.info("Begin load YSMParser native library")
             System.load(extractedLib.toAbsolutePath().toString())
-            Constants.LOGGER.info("Successfully load YSMParser native library in {}ms", System.currentTimeMillis() - start)
+            Constants.LOGGER.info(
+                "Successfully load YSMParser native library in {}ms",
+                System.currentTimeMillis() - start
+            )
 
             extractedLib.toFile().deleteOnExit()
 
