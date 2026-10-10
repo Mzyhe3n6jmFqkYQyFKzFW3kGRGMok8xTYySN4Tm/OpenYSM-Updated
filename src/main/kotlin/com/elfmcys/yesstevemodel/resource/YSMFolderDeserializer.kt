@@ -3,6 +3,7 @@
 package com.elfmcys.yesstevemodel.resource
 
 import com.elfmcys.yesstevemodel.Constants
+import com.elfmcys.yesstevemodel.extensions.*
 import com.elfmcys.yesstevemodel.resource.pojo.RawYsmModel
 import com.elfmcys.yesstevemodel.util.DigestUtil
 import com.google.gson.JsonArray
@@ -138,12 +139,12 @@ class YSMFolderDeserializer : AutoCloseable {
     }
 
     private fun parseMetadata(metaObj: JsonObject) {
-        model.metadata.name = getStr(metaObj, "name", "")
-        model.metadata.tips = getStr(metaObj, "tips", "")
+        model.metadata.name = metaObj.getString("name", "")
+        model.metadata.tips = metaObj.getString("tips", "")
         if (metaObj.has("license") && metaObj.get("license").isJsonObject) {
             val licObj = metaObj.getAsJsonObject("license")
-            model.metadata.licenseType = getStr(licObj, "type", "")
-            model.metadata.licenseDescription = getStr(licObj, "desc", "")
+            model.metadata.licenseType = licObj.getString("type", "")
+            model.metadata.licenseDescription = licObj.getString("desc", "")
         }
 
         if (metaObj.has("authors") && metaObj.get("authors").isJsonArray) {
@@ -151,9 +152,9 @@ class YSMFolderDeserializer : AutoCloseable {
                 if (!elem.isJsonObject) continue
                 val authorObj = elem.asJsonObject
                 val author = RawYsmModel.RawMetadata.Author()
-                author.name = getStr(authorObj, "name", "")
-                author.role = getStr(authorObj, "role", "")
-                author.comment = getStr(authorObj, "comment", "")
+                author.name = authorObj.getString("name", "")
+                author.role = authorObj.getString("role", "")
+                author.comment = authorObj.getString("comment", "")
 
                 if (authorObj.has("contact") && authorObj.get("contact").isJsonObject) {
                     for ((key, value) in authorObj.getAsJsonObject("contact").entrySet()) {
@@ -162,7 +163,7 @@ class YSMFolderDeserializer : AutoCloseable {
                 }
 
                 if (authorObj.has("avatar")) {
-                    val avatarPath = getStr(authorObj, "avatar", "")
+                    val avatarPath = authorObj.getString("avatar", "")
                     if (avatarPath.isNotEmpty()) {
                         val avatarData = readResource(avatarPath)
                         if (avatarData != null) {
@@ -192,28 +193,20 @@ class YSMFolderDeserializer : AutoCloseable {
     }
 
     private fun parseProperties(propsObj: JsonObject) {
-        model.properties.widthScale = getDouble(propsObj, "width_scale", 0.7).toFloat()
-        model.properties.heightScale = getDouble(propsObj, "height_scale", 0.7).toFloat()
-        model.properties.defaultTexture = getStr(propsObj, "default_texture", "default")
-        model.properties.previewAnimation = getStr(propsObj, "preview_animation", "")
-        model.properties.isFree = getBool(propsObj, "free", false)
-        model.properties.renderLayersFirst = getBool(propsObj, "render_layers_first", false)
-        model.properties.allCutout = getBool(propsObj, "all_cutout", false)
-        model.properties.disablePreviewRotation = getBool(propsObj, "disable_preview_rotation", false)
-        model.properties.isCustomSkinModel = when {
-            propsObj.has("is_custom_skin_model") -> getBool(propsObj, "is_custom_skin_model", false)
-            propsObj.has("isCustomSkinModel") -> getBool(propsObj, "isCustomSkinModel", false)
-            else -> false
-        }
-        model.properties.useMcDefaultTexture = when {
-            propsObj.has("use_mc_default_texture") -> getInt(propsObj, "use_mc_default_texture", 0)
-            propsObj.has("useMcDefaultTexture") -> getInt(propsObj, "useMcDefaultTexture", 0)
-            else -> 0
-        }
-        model.properties.guiNoLighting = getBool(propsObj, "gui_no_lighting", false)
-        model.properties.mergeMultilineExpr = getBool(propsObj, "merge_multiline_expr", false)
-        model.properties.guiForeground = getStr(propsObj, "gui_foreground", "")
-        model.properties.guiBackground = getStr(propsObj, "gui_background", "")
+        model.properties.widthScale = propsObj.getDouble("width_scale", 0.7).toFloat()
+        model.properties.heightScale = propsObj.getDouble("height_scale", 0.7).toFloat()
+        model.properties.defaultTexture = propsObj.getString("default_texture", "default")
+        model.properties.previewAnimation = propsObj.getString("preview_animation", "")
+        model.properties.isFree = propsObj.getBoolean("free", false)
+        model.properties.renderLayersFirst = propsObj.getBoolean("render_layers_first", false)
+        model.properties.allCutout = propsObj.getBoolean("all_cutout", false)
+        model.properties.disablePreviewRotation = propsObj.getBoolean("disable_preview_rotation", false)
+        model.properties.isCustomSkinModel = propsObj.getBoolean("is_custom_skin_model", false)
+        model.properties.useMcDefaultTexture = propsObj.getInt("use_mc_default_texture", 0)
+        model.properties.guiNoLighting = propsObj.getBoolean("gui_no_lighting", false)
+        model.properties.mergeMultilineExpr = propsObj.getBoolean("merge_multiline_expr", false)
+        model.properties.guiForeground = propsObj.getString("gui_foreground", "")
+        model.properties.guiBackground = propsObj.getString("gui_background", "")
         if (propsObj.has("extra_animation") && propsObj.get("extra_animation").isJsonObject) {
             for ((key, value) in propsObj.getAsJsonObject("extra_animation").entrySet()) {
                 model.properties.extraAnimations[key] = value.asString
@@ -225,7 +218,7 @@ class YSMFolderDeserializer : AutoCloseable {
                 if (!elem.isJsonObject) continue
                 val clsObj = elem.asJsonObject
                 val classify = RawYsmModel.ExtraAnimationClassify()
-                classify.id = getStr(clsObj, "id", "")
+                classify.id = clsObj.getString("id", "")
                 if (clsObj.has("extra_animation") && clsObj.get("extra_animation").isJsonObject) {
                     for ((key, value) in clsObj.getAsJsonObject("extra_animation").entrySet()) {
                         classify.extras[key] = value.asString
@@ -240,22 +233,22 @@ class YSMFolderDeserializer : AutoCloseable {
                 if (!elem.isJsonObject) continue
                 val btnObj = elem.asJsonObject
                 val btn = RawYsmModel.ExtraAnimationButton()
-                btn.id = getStr(btnObj, "id", "")
-                btn.name = getStr(btnObj, "name", "")
-                btn.description = getStr(btnObj, "description", "")
+                btn.id = btnObj.getString("id", "")
+                btn.name = btnObj.getString("name", "")
+                btn.description = btnObj.getString("description", "")
 
                 if (btnObj.has("config_forms") && btnObj.get("config_forms").isJsonArray) {
                     for (formElem in btnObj.getAsJsonArray("config_forms")) {
                         if (!formElem.isJsonObject) continue
                         val formObj = formElem.asJsonObject
                         val form = RawYsmModel.ConfigForm()
-                        form.type = getStr(formObj, "type", "")
-                        form.title = getStr(formObj, "title", "")
-                        form.description = getStr(formObj, "description", "")
-                        form.defaultValue = getStr(formObj, "value", "")
-                        form.step = getDouble(formObj, "step", 0.0).toFloat()
-                        form.min = getDouble(formObj, "min", 0.0).toFloat()
-                        form.max = getDouble(formObj, "max", 0.0).toFloat()
+                        form.type = formObj.getString("type", "")
+                        form.title = formObj.getString("title", "")
+                        form.description = formObj.getString("description", "")
+                        form.defaultValue = formObj.getString("value", "")
+                        form.step = formObj.getDouble("step", 0.0).toFloat()
+                        form.min = formObj.getDouble("min", 0.0).toFloat()
+                        form.max = formObj.getDouble("max", 0.0).toFloat()
                         if (formObj.has("labels") && formObj.get("labels").isJsonObject) {
                             for ((key, value) in formObj.getAsJsonObject("labels").entrySet()) {
                                 form.labels[key] = value.asString
@@ -508,11 +501,11 @@ class YSMFolderDeserializer : AutoCloseable {
 
         if (geoObj.has("description")) {
             val desc = geoObj.getAsJsonObject("description")
-            geo.identifier = getStr(desc, "identifier", "")
-            geo.textureWidth = getDouble(desc, "texture_width", 64.0).toFloat()
-            geo.textureHeight = getDouble(desc, "texture_height", 64.0).toFloat()
-            geo.visibleBoundsWidth = getDouble(desc, "visible_bounds_width", 0.0).toFloat()
-            geo.visibleBoundsHeight = getDouble(desc, "visible_bounds_height", 0.0).toFloat()
+            geo.identifier = desc.getString("identifier", "")
+            geo.textureWidth = desc.getDouble("texture_width", 64.0).toFloat()
+            geo.textureHeight = desc.getDouble("texture_height", 64.0).toFloat()
+            geo.visibleBoundsWidth = desc.getDouble("visible_bounds_width", 0.0).toFloat()
+            geo.visibleBoundsHeight = desc.getDouble("visible_bounds_height", 0.0).toFloat()
             if (desc.has("visible_bounds_offset") && desc.get("visible_bounds_offset").isJsonArray) {
                 val offsetArr = desc.getAsJsonArray("visible_bounds_offset")
                 geo.visibleBoundsOffset = FloatArray(offsetArr.size()) { offsetArr.get(it).asFloat }
@@ -530,8 +523,8 @@ class YSMFolderDeserializer : AutoCloseable {
                 if (!boneElem.isJsonObject) continue
                 val bObj = boneElem.asJsonObject
                 val bone = RawYsmModel.RawBone()
-                bone.name = getStr(bObj, "name", "")
-                bone.parentName = getStr(bObj, "parent", "")
+                bone.name = bObj.getString("name", "")
+                bone.parentName = bObj.getString("parent", "")
 
                 if (bObj.has("pivot")) {
                     val pivot = bObj.getAsJsonArray("pivot")
@@ -546,8 +539,8 @@ class YSMFolderDeserializer : AutoCloseable {
                     )
                 }
 
-                val boneInflate = getDouble(bObj, "inflate", 0.0).toFloat()
-                val boneMirror = getBool(bObj, "mirror", false)
+                val boneInflate = bObj.getDouble("inflate", 0.0).toFloat()
+                val boneMirror = bObj.getBoolean("mirror", false)
 
                 if (bObj.has("cubes") && bObj.get("cubes").isJsonArray) {
                     for (cElem in bObj.getAsJsonArray("cubes")) {
@@ -558,8 +551,8 @@ class YSMFolderDeserializer : AutoCloseable {
                         val inflate = if (cObj.has("inflate")) cObj.get("inflate").asFloat else boneInflate
                         val mirror = if (cObj.has("mirror")) cObj.get("mirror").asBoolean else boneMirror
 
-                        val origin = getFloatArray(cObj, "origin", 3)
-                        val size = getFloatArray(cObj, "size", 3)
+                        val origin = cObj.getFloatArray("origin", 3)
+                        val size = cObj.getFloatArray("size", 3)
 
                         val cx = -origin[0] - size[0] - inflate
                         val cy = origin[1] - inflate
@@ -570,8 +563,8 @@ class YSMFolderDeserializer : AutoCloseable {
 
                         val cubeBakeMat = Matrix4f()
                         if (cObj.has("rotation") || cObj.has("pivot")) {
-                            val cpvt = getFloatArray(cObj, "pivot", 3)
-                            val crot = getFloatArray(cObj, "rotation", 3)
+                            val cpvt = cObj.getFloatArray("pivot", 3)
+                            val crot = cObj.getFloatArray("rotation", 3)
                             cubeBakeMat.translate(-cpvt[0] / 16f, cpvt[1] / 16f, cpvt[2] / 16f)
                             cubeBakeMat.rotateZ(Math.toRadians(crot[2].toDouble()).toFloat())
                             cubeBakeMat.rotateY(-Math.toRadians(crot[1].toDouble()).toFloat())
@@ -852,8 +845,8 @@ class YSMFolderDeserializer : AutoCloseable {
     ) {
         if (!uvObj.has(uvFaceName)) return
         val faceData = uvObj.getAsJsonObject(uvFaceName)
-        val uv = getFloatArray(faceData, "uv", 2)
-        val uvSize = getFloatArray(faceData, "uv_size", 2)
+        val uv = faceData.getFloatArray("uv", 2)
+        val uvSize = faceData.getFloatArray("uv_size", 2)
 
         var u0 = uv[0] / tw
         val v0 = uv[1] / th
@@ -932,7 +925,7 @@ class YSMFolderDeserializer : AutoCloseable {
                 val aObj = value.asJsonObject
                 val anim = RawYsmModel.RawAnimation()
                 anim.name = key
-                anim.length = getDouble(aObj, "animation_length", Float.POSITIVE_INFINITY.toDouble()).toFloat()
+                anim.length = aObj.getDouble("animation_length", Float.POSITIVE_INFINITY.toDouble()).toFloat()
 
                 if (aObj.has("loop")) {
                     val loopStr = aObj.get("loop").asString
@@ -987,7 +980,7 @@ class YSMFolderDeserializer : AutoCloseable {
                     for ((sfxKey, sfxVal) in sfxObj.entrySet()) {
                         val sfx = RawYsmModel.RawSoundEffect()
                         sfx.timestamp = sfxKey.toFloat()
-                        sfx.effectName = getStr(sfxVal.asJsonObject, "effect", "")
+                        sfx.effectName = sfxVal.asJsonObject.getString("effect", "")
                         anim.soundEffects.add(sfx)
                     }
                 }
@@ -1090,7 +1083,7 @@ class YSMFolderDeserializer : AutoCloseable {
 
             val ac = RawYsmModel.RawAnimationController()
             ac.animationName = key
-            ac.initialState = getStr(acObj, "initial_state", "default")
+            ac.initialState = acObj.getString("initial_state", "default")
 
             if (acObj.has("states") && acObj.get("states").isJsonObject) {
                 val statesObj = acObj.getAsJsonObject("states")
@@ -1139,7 +1132,7 @@ class YSMFolderDeserializer : AutoCloseable {
                         for (se in sObj.getAsJsonArray("sound_effects")) {
                             when {
                                 se.isJsonObject -> {
-                                    state.soundEffects.add(getStr(se.asJsonObject, "effect", ""))
+                                    state.soundEffects.add(se.asJsonObject.getString("effect", ""))
                                 }
 
                                 se.isJsonPrimitive -> {
@@ -1426,17 +1419,17 @@ class YSMFolderDeserializer : AutoCloseable {
     private fun parseLegacyMetadata(infoObj: JsonObject?, overwrite: Boolean) {
         if (infoObj == null) return
         if (infoObj.has("name") && (overwrite || model.metadata.name.isEmpty())) {
-            model.metadata.name = getStr(infoObj, "name", "")
+            model.metadata.name = infoObj.getString("name", "")
         }
         if (infoObj.has("tips") && (overwrite || model.metadata.tips.isEmpty())) {
-            model.metadata.tips = getStr(infoObj, "tips", "")
+            model.metadata.tips = infoObj.getString("tips", "")
         }
         if (infoObj.has("license") && (overwrite || model.metadata.licenseDescription.isEmpty())) {
-            model.metadata.licenseDescription = getStr(infoObj, "license", "")
+            model.metadata.licenseDescription = infoObj.getString("license", "")
         }
         if (infoObj.has("free")) {
             if (overwrite || !model.properties.isFree) {
-                model.properties.isFree = getBool(infoObj, "free", false)
+                model.properties.isFree = infoObj.getBoolean("free", false)
             }
         }
 
@@ -1521,28 +1514,6 @@ class YSMFolderDeserializer : AutoCloseable {
                 13 -> "irons_spell_books"
                 else -> "unknown"
             }
-        }
-
-        fun getStr(obj: JsonObject, key: String, def: String): String = if (obj.has(key)) obj.get(key).asString else def
-
-        fun getBool(obj: JsonObject, key: String, def: Boolean): Boolean =
-            if (obj.has(key)) obj.get(key).asBoolean else def
-
-        fun getInt(obj: JsonObject, key: String, def: Int): Int =
-            if (obj.has(key)) obj.get(key).asInt else def
-
-        fun getDouble(obj: JsonObject, key: String, def: Double): Double =
-            if (obj.has(key)) obj.get(key).asDouble else def
-
-        fun getFloatArray(obj: JsonObject, key: String, size: Int): FloatArray {
-            val result = FloatArray(size)
-            if (obj.has(key)) {
-                val arr = obj.getAsJsonArray(key)
-                for (i in 0 until min(arr.size(), size)) {
-                    result[i] = arr.get(i).asFloat
-                }
-            }
-            return result
         }
 
         fun extractFileName(fullPath: String): String {
