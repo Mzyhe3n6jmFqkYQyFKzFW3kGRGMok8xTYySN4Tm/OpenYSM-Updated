@@ -502,8 +502,6 @@ object YSMBinarySerializer {
             buf.writeVarInt(if (props.guiNoLighting) 1 else 0)
             if (format >= 32) {
                 buf.writeVarInt(if (props.mergeMultilineExpr) 1 else 0)
-                buf.writeVarInt(if (props.isCustomSkinModel) 1 else 0)
-                buf.writeVarInt(props.useMcDefaultTexture)
             }
             buf.writeString(props.guiForeground)
             buf.writeString(props.guiBackground)
