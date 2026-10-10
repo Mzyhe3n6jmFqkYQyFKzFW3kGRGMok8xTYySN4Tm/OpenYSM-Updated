@@ -55,7 +55,7 @@ object PlayerSkinTextureManager {
         if (!YesSteveModel.isAvailable) return EventResult.pass()
         val modelId = event.modelId ?: return EventResult.pass()
         if (isCustomSkinModel(modelId) || getUseMcDefaultTexture(modelId) > 0) {
-            val location = getPlayerSkinLocation(event.player, modelId)
+            val location = getPlayerSkinLocation(event.player, modelId, event.skin)
             if (location != null) {
                 event.textureLocation = location
             }

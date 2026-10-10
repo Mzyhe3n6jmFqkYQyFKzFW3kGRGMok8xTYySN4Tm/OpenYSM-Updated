@@ -135,4 +135,28 @@ class CustomSkinModelTest {
         assertFalse(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("yes_steve_model:textures/custom.png")))
         assertFalse(PlayerSkinTextureManager.isDefaultSkin(null))
     }
+
+    @Test
+    fun testFormat40BinarySerializationWithCustomSkinProperties() {
+        val model = RawYsmModel().apply {
+            formatVersion = 40
+            metadata.name = "Custom Skin Model"
+            properties.sha256 = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+            properties.isCustomSkinModel = true
+            properties.useMcDefaultTexture = 2
+            footer.version = 40
+            footer.unkInt1 = 1
+            footer.rand = "test"
+            footer.time = 12345L
+        }
+
+        val serializedBuf = com.elfmcys.yesstevemodel.resource.YSMBinarySerializer.serialize(model, 40, true)
+        val data = serializedBuf.toArray()
+
+        com.elfmcys.yesstevemodel.resource.YSMBinaryDeserializer(data, 40).use { deserializer ->
+            val deserialized = deserializer.deserializeKeepOpen()
+            assertTrue(deserialized.properties.isCustomSkinModel)
+            assertEquals(2, deserialized.properties.useMcDefaultTexture)
+        }
+    }
 }
