@@ -4,7 +4,6 @@ package com.ysm.parser
 
 import com.elfmcys.yesstevemodel.Constants
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.util.*
 
@@ -34,6 +33,10 @@ object YSMParserNativeLoader {
         var libraryName: String? = null
     )
 
+    init {
+        load()
+    }
+
     /**
      * Load the YSMParser JNI library for the current platform.
      * Thread-safe and idempotent — safe to call multiple times.
@@ -42,7 +45,6 @@ object YSMParserNativeLoader {
      *         unavailable (caller should skip native parsing)
      */
     @Synchronized
-    @JvmStatic
     fun load(): Boolean {
         if (loaded) return jniAvailable
 
@@ -69,18 +71,16 @@ object YSMParserNativeLoader {
         }
 
         runCatching {
-            val tempDir: Path = Files.createTempDirectory("ysm_native_")
+            val tempDir = Files.createTempDirectory("ysm_native_")
             tempDir.toFile().deleteOnExit()
 
-            val extractedLib: Path = tempDir.resolve(libName)
+            val extractedLib = tempDir.resolve(libName)
 
-            inStream.use { stream ->
-                Files.copy(stream, extractedLib, StandardCopyOption.REPLACE_EXISTING)
+            inStream.use {
+                Files.copy(it, extractedLib, StandardCopyOption.REPLACE_EXISTING)
             }
 
-            if (!platform.osTag.contains("win")) {
-                extractedLib.toFile().setExecutable(true)
-            }
+            if (!platform.osTag.contains("win")) extractedLib.toFile().setExecutable(true)
 
             val start = System.currentTimeMillis()
             Constants.LOGGER.info("Begin load YSMParser native library")
@@ -103,7 +103,6 @@ object YSMParserNativeLoader {
     }
 
     @Synchronized
-    @JvmStatic
     fun isJniAvailable(): Boolean {
         if (!loaded) {
             val platform = detectPlatform()
@@ -117,13 +116,8 @@ object YSMParserNativeLoader {
         var arch = System.getProperty("os.arch", "").lowercase(Locale.ROOT)
 
         when (arch) {
-            "amd64", "x86_64" -> {
-                arch = "x64"
-            }
-
-            "aarch64", "arm64" -> {
-                arch = "arm64"
-            }
+            "amd64", "x86_64" -> arch = "x64"
+            "aarch64", "arm64" -> arch = "arm64"
         }
 
         val info = PlatformInfo(osTag = os, archTag = arch)

@@ -1,10 +1,7 @@
-@file:Suppress("unused", "MemberVisibilityCanBePrivate")
-
 package com.elfmcys.yesstevemodel
 
 import net.minecraft.network.chat.Component
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.util.*
 
@@ -20,16 +17,13 @@ object NativeLibLoader {
     @Volatile
     private var isAndroid = false
 
-    @JvmStatic
-    val isAvailable: Boolean
+    val isAvailable
         get() = available
 
-    @JvmStatic
-    val isLoaded: Boolean
+    val isLoaded
         get() = loaded
 
-    @JvmStatic
-    val isOnAndroid: Boolean
+    val isOnAndroid
         get() = isAndroid
 
     private var lastError: ErrorState? = null
@@ -46,8 +40,11 @@ object NativeLibLoader {
         var libraryName: String? = null
     )
 
+    init {
+        init()
+    }
+
     @Synchronized
-    @JvmStatic
     fun init() {
         if (available) return
 
@@ -81,18 +78,16 @@ object NativeLibLoader {
         }
 
         runCatching {
-            val tempDir: Path = Files.createTempDirectory("ysm_native_")
+            val tempDir = Files.createTempDirectory("ysm_native_")
             tempDir.toFile().deleteOnExit()
 
-            val extractedLib: Path = tempDir.resolve(libName)
+            val extractedLib = tempDir.resolve(libName)
 
-            inStream.use { stream ->
-                Files.copy(stream, extractedLib, StandardCopyOption.REPLACE_EXISTING)
+            inStream.use {
+                Files.copy(it, extractedLib, StandardCopyOption.REPLACE_EXISTING)
             }
 
-            if (!platform.osTag.contains("win")) {
-                extractedLib.toFile().setExecutable(true)
-            }
+            if (!platform.osTag.contains("win")) extractedLib.toFile().setExecutable(true)
 
             val start = System.currentTimeMillis()
             Constants.LOGGER.info("Begin load native library")
@@ -116,13 +111,8 @@ object NativeLibLoader {
         var arch = System.getProperty("os.arch", "").lowercase(Locale.ROOT)
 
         when (arch) {
-            "amd64", "x86_64" -> {
-                arch = "x64"
-            }
-
-            "aarch64", "arm64" -> {
-                arch = "arm64"
-            }
+            "amd64", "x86_64" -> arch = "x64"
+            "aarch64", "arm64" -> arch = "arm64"
         }
 
         val info = PlatformInfo(osTag = os, archTag = arch)
@@ -189,11 +179,9 @@ object NativeLibLoader {
         )
     }
 
-    @JvmStatic
-    val errorComponent: Component?
+    val errorComponent
         get() = lastError?.component
 
-    @JvmStatic
-    val errorMessage: String?
+    val errorMessage
         get() = lastError?.logMsg
 }

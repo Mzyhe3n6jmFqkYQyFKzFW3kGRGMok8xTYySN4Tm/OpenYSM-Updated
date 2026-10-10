@@ -9,7 +9,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 object NativeParseUtil {
-    @JvmStatic
     fun parseNative(raw: ByteArray?, modelId: String): RawYsmModel? {
         if (raw == null || raw.isEmpty()) return null
         if (!YSMParserNativeLoader.isJniAvailable()) {
