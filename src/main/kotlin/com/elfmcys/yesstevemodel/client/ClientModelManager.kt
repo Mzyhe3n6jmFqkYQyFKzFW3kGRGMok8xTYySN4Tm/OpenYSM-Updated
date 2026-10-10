@@ -302,7 +302,7 @@ object ClientModelManager {
                         if (Files.exists(cacheFile) && currentServerKey != null) {
                             val fileBytes = Files.readAllBytes(cacheFile)
                             val decompressed = YsmCrypt.read(fileBytes, currentServerKey)
-                            YSMBinaryDeserializer(decompressed, 40).use { deserializer ->
+                            YSMBinaryDeserializer(decompressed, Constants.FORMAT_VERSION).use { deserializer ->
                                 val rawModel = deserializer.deserializeKeepOpen()
                                 deserializer.parseYSMFooter(rawModel)
                                 val parsedBundle = YSMClientMapper.buildParsedBundle(rawModel, modelId)
@@ -647,7 +647,7 @@ object ClientModelManager {
 
     private fun parseAndLoadModel(decompressed: ByteArray, modelId: String, isAuth: Boolean) {
         runCatching {
-            YSMBinaryDeserializer(decompressed, 40).use { deserializer ->
+            YSMBinaryDeserializer(decompressed, Constants.FORMAT_VERSION).use { deserializer ->
                 val rawModel = deserializer.deserializeKeepOpen()
                 val reader = deserializer.reader
 
@@ -1109,7 +1109,7 @@ object ClientModelManager {
                         val coreDataLength: Int
                         var exportName = file.name
 
-                        YSMBinaryDeserializer(clearText, 40).use { deserializer ->
+                        YSMBinaryDeserializer(clearText, Constants.FORMAT_VERSION).use { deserializer ->
                             val rawModel = deserializer.deserializeKeepOpen()
                             coreDataLength = deserializer.reader.rawBuf.readerIndex()
 
@@ -1131,10 +1131,10 @@ object ClientModelManager {
                         exportName = exportName.replace(Regex("[\\\\/:*?\"<>|]"), "_")
 
                         YSMByteBuf(Unpooled.buffer()).use { outBuf ->
-                            outBuf.writeDword(40)
+                            outBuf.writeDword(Constants.FORMAT_VERSION)
                             outBuf.rawBuf.writeBytes(clearText, 0, coreDataLength)
 
-                            outBuf.writeVarInt(40)
+                            outBuf.writeVarInt(Constants.FORMAT_VERSION)
                             outBuf.writeVarInt(1)
 
                             val randBytes = ByteArray(8)

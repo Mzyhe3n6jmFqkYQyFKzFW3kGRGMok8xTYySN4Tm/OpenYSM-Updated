@@ -21,6 +21,7 @@ object Constants {
     }
 
     const val MOD_NAME: String = "Open YSM"
+    const val FORMAT_VERSION: Int = 40
 
     val LOGGER: Logger = LogManager.getLogger(MOD_NAME)
 
@@ -51,9 +52,7 @@ object Constants {
     private var getServer: MinecraftServer? = null
 
     val Server: MinecraftServer
-        get() {
-            return getServer ?: error("Server is not initialized")
-        }
+        get() = getServer ?: error("Server is not initialized")
 
     fun doNothing(vararg objects: Any) {}
 }
