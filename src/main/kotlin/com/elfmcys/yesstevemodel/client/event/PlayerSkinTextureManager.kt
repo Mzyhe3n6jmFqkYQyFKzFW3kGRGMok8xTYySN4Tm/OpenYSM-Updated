@@ -64,16 +64,8 @@ object PlayerSkinTextureManager {
     fun isCustomSkinModel(modelId: String?): Boolean =
         modelId != null && ClientModelManager.isCustomSkinModel(modelId)
 
-    fun isDefaultSkin(location: Identifier?): Boolean {
-        if (location == null) return false
-        val path = location.path
-        return when {
-            location in WIDE_DEFAULT_SKINS || location in SLIM_DEFAULT_SKINS -> true
-            path.startsWith("textures/entity/player/wide/") || path.startsWith("textures/entity/player/slim/") -> true
-            path == "textures/entity/steve.png" || path == "textures/entity/alex.png" -> true
-            else -> false
-        }
-    }
+    fun isDefaultSkin(location: Identifier?): Boolean =
+        location != null && (location in WIDE_DEFAULT_SKINS || location in SLIM_DEFAULT_SKINS)
 
     fun getUseMcDefaultTexture(modelId: String?): Int {
         if (modelId == null) return 0
@@ -83,11 +75,8 @@ object PlayerSkinTextureManager {
     }
 
     fun getDefaultSkinTexture(useMcDefaultTexture: Int, player: Player? = null): Identifier? {
-        val targetPlayer = if (PlayerPreviewEntity.isPreviewPlayer(player) || player == null) {
-            runCatching { Minecraft.getInstance().player }.getOrNull() ?: player
-        } else {
-            player
-        }
+        val targetPlayer = if (PlayerPreviewEntity.isPreviewPlayer(player) || player == null)
+            runCatching { Minecraft.getInstance().player }.getOrNull() ?: player else player
 
         return when (useMcDefaultTexture) {
             1 -> STEVE_SKIN
@@ -117,8 +106,7 @@ object PlayerSkinTextureManager {
     fun getSkinTexture(str: String): Identifier? {
         val defaultType = getUseMcDefaultTexture(str)
         val defaultTex = getDefaultSkinTexture(defaultType)
-        if (defaultTex != null) return defaultTex
-        return if (str.contains("alex", ignoreCase = true) || str == "misc/1_alex") ALEX_SKIN else STEVE_SKIN
+        return defaultTex
     }
 
     fun getPlayerSkinLocation(player: Player?, modelId: String? = null): Identifier? {
