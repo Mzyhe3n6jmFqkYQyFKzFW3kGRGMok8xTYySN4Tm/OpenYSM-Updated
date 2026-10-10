@@ -200,7 +200,16 @@ class YSMFolderDeserializer : AutoCloseable {
         model.properties.renderLayersFirst = getBool(propsObj, "render_layers_first", false)
         model.properties.allCutout = getBool(propsObj, "all_cutout", false)
         model.properties.disablePreviewRotation = getBool(propsObj, "disable_preview_rotation", false)
-        model.properties.isCustomSkinModel = getBool(propsObj, "is_custom_skin_model", false)
+        model.properties.isCustomSkinModel = when {
+            propsObj.has("is_custom_skin_model") -> getBool(propsObj, "is_custom_skin_model", false)
+            propsObj.has("isCustomSkinModel") -> getBool(propsObj, "isCustomSkinModel", false)
+            else -> false
+        }
+        model.properties.useMcDefaultTexture = when {
+            propsObj.has("use_mc_default_texture") -> getInt(propsObj, "use_mc_default_texture", 0)
+            propsObj.has("useMcDefaultTexture") -> getInt(propsObj, "useMcDefaultTexture", 0)
+            else -> 0
+        }
         model.properties.guiNoLighting = getBool(propsObj, "gui_no_lighting", false)
         model.properties.mergeMultilineExpr = getBool(propsObj, "merge_multiline_expr", false)
         model.properties.guiForeground = getStr(propsObj, "gui_foreground", "")
@@ -1518,6 +1527,9 @@ class YSMFolderDeserializer : AutoCloseable {
 
         fun getBool(obj: JsonObject, key: String, def: Boolean): Boolean =
             if (obj.has(key)) obj.get(key).asBoolean else def
+
+        fun getInt(obj: JsonObject, key: String, def: Int): Int =
+            if (obj.has(key)) obj.get(key).asInt else def
 
         fun getDouble(obj: JsonObject, key: String, def: Double): Double =
             if (obj.has(key)) obj.get(key).asDouble else def

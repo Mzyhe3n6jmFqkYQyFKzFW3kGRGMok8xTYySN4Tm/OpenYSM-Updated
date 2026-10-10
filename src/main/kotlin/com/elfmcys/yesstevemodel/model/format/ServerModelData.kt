@@ -43,4 +43,7 @@ data class ServerModelData(
 
     val loadedModelData: ServerModelInfo
         get() = info
+
+    val useMcDefaultTexture: Int
+        get() = info.modelProperties.useMcDefaultTexture
 }

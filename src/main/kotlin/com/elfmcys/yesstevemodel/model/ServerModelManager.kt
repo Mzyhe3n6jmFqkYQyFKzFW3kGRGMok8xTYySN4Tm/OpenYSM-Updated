@@ -920,6 +920,8 @@ object ServerModelManager {
 
     fun isCustomSkinModel(modelId: String): Boolean = CACHE_NAME_INFO[modelId]?.isCustomSkinModel ?: false
 
+    fun getUseMcDefaultTexture(modelId: String): Int = CACHE_NAME_INFO[modelId]?.useMcDefaultTexture ?: 0
+
     operator fun get(str: String): ServerModelData? = CACHE_NAME_INFO[str]
 
     val size: Int

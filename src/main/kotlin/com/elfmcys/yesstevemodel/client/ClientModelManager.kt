@@ -741,6 +741,8 @@ object ClientModelManager {
         return ctx != null && ctx.isCustomSkinModel != 0
     }
 
+    fun getUseMcDefaultTexture(modelId: String): Int = modelAssemblyMap[modelId]?.useMcDefaultTexture ?: 0
+
     val localModelContext: ModelAssembly
         get() {
             runPendingModelCallback()

@@ -173,7 +173,7 @@ abstract class LivingAnimatable<T : LivingEntity>(
 
     override val textureLocation: Identifier
         get() = if (isModelReady) {
-            if (PlayerSkinTextureManager.isCustomSkinModel(modelId)) {
+            if (PlayerSkinTextureManager.isCustomSkinModel(modelId) || PlayerSkinTextureManager.getUseMcDefaultTexture(modelId) > 0) {
                 val skinLoc = PlayerSkinTextureManager.getPlayerSkinLocation(entity as? Player, modelId)
                 if (skinLoc != null) return skinLoc
             }

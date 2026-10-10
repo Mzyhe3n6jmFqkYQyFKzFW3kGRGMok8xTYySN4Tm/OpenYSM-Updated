@@ -24,4 +24,7 @@ data class ModelAssembly(
 
     val isCustomSkinModel: Boolean
         get() = modelData.modelProperties.isCustomSkinModel
+
+    val useMcDefaultTexture: Int
+        get() = modelData.modelProperties.useMcDefaultTexture
 }

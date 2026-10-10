@@ -731,7 +731,8 @@ object YSMClientMapper {
             rp.isFree,
             rp.renderLayersFirst,
             rp.disablePreviewRotation,
-            rp.isCustomSkinModel
+            rp.isCustomSkinModel,
+            rp.useMcDefaultTexture
         )
 
         var bones = 0

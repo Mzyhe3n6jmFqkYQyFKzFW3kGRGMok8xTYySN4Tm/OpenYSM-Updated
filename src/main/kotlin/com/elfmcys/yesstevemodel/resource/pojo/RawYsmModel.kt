@@ -203,6 +203,7 @@ class RawYsmModel {
         var allCutout: Boolean = false
         var disablePreviewRotation: Boolean = false
         var isCustomSkinModel: Boolean = false
+        var useMcDefaultTexture: Int = 0
         var guiNoLighting: Boolean = false
         var mergeMultilineExpr: Boolean = false
         var guiForeground: String = ""
