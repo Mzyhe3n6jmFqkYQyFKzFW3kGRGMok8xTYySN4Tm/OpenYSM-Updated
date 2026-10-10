@@ -7,13 +7,16 @@ import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.file.Files
+import java.security.SecureRandom
 import java.util.*
 
 object YSMClientCache {
+    private val SECURE_RANDOM: SecureRandom = SecureRandom()
+
     @JvmStatic
     fun generateCacheFileName(hash1: Long, hash2: Long, rtKey: ByteArray?): String? {
         if (rtKey == null || rtKey.size != 56) return null
-        val seed = 114514 // TODO: 换成真随机数
+        val seed = SECURE_RANDOM.nextInt()
 
         val mt = MT19937(Integer.toUnsignedLong(seed))
         val m1 = hash1 xor mt.extract_number()
