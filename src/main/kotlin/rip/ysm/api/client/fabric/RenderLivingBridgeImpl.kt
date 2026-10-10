@@ -6,7 +6,6 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer
 import net.minecraft.world.entity.LivingEntity
 
 object RenderLivingBridgeImpl {
-    @JvmStatic
     fun firePre(
         entity: LivingEntity,
         renderer: LivingEntityRenderer<*, *, *>,
@@ -16,7 +15,6 @@ object RenderLivingBridgeImpl {
         packedLight: Int
     ): Boolean = false
 
-    @JvmStatic
     fun firePost(
         entity: LivingEntity,
         renderer: LivingEntityRenderer<*, *, *>,

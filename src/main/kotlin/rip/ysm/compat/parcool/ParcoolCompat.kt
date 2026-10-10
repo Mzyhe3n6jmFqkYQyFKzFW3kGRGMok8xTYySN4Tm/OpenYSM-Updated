@@ -11,30 +11,25 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.parcool.fabric.ParcoolCompatImpl
 
 object ParcoolCompat : ModCompat("parcool") {
-    @JvmStatic
     val inCompatibleInfo: Pair<String, String>?
         get() {
             if (!isModLoaded) return null
             return ParcoolCompatImpl.inCompatibleInfo
         }
 
-    @JvmStatic
     val controllerFactory: ((String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>)?
         get() {
             if (!isModLoaded) return null
             return ParcoolCompatImpl.controllerFactory
         }
 
-    @JvmStatic
     fun isPlayerParcooling(player: Player): Boolean = isModLoaded && ParcoolCompatImpl.isPlayerParcooling(player)
 
-    @JvmStatic
     fun getActionName(player: Player): String {
         if (!isModLoaded) return ""
         return ParcoolCompatImpl.getActionName(player)
     }
 
-    @JvmStatic
     fun registerBindings(binding: CtrlBinding) {
         if (!isModLoaded) return
         ParcoolCompatImpl.registerBindings(binding)

@@ -6,10 +6,7 @@ import it.unimi.dsi.fastutil.ints.Int2ReferenceMaps
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap
 
 class AnimationController(initialState: String, animationStates: Array<AnimationState>) {
-    @JvmField
     val stateId: Int = StringPool.computeIfAbsent(initialState)
-
-    @JvmField
     val states: Int2ReferenceMap<AnimationState>
 
     init {

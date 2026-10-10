@@ -20,7 +20,6 @@ import rip.ysm.api.event.EventResult
 
 @Environment(EnvType.CLIENT)
 object PlayerModelToggleKey {
-    @JvmField
     val KEY_MAPPING: KeyMapping = KeyMappingFactory.createInGameAlt(
         "key.yes_steve_model.player_model.desc",
         InputConstants.Type.KEYSYM,
@@ -35,7 +34,6 @@ object PlayerModelToggleKey {
         }
     }
 
-    @JvmStatic
     private fun onKeyInput(action: Int, event: KeyEvent) {
         if (InputUtil.isPlayerReady() && action == 1 && InputUtil.isKeyPressed(event, KEY_MAPPING)) {
             if (!YesSteveModel.isAvailable) {

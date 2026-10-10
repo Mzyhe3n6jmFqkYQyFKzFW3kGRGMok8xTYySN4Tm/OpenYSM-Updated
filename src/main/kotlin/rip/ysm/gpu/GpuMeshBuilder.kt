@@ -10,7 +10,6 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 object GpuMeshBuilder {
-    @JvmStatic
     fun build(model: GeoModel): GpuMesh? {
         val bakedBones = model.bakedBones ?: return null
         if (bakedBones.isEmpty()) return null

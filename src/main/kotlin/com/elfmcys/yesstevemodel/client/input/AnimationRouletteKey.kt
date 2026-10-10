@@ -20,7 +20,6 @@ import rip.ysm.gui.ModernAnimationRouletteScreen
 
 @Environment(EnvType.CLIENT)
 object AnimationRouletteKey {
-    @JvmField
     val KEY_ROULETTE: KeyMapping = KeyMappingFactory.createInGameNone(
         "key.yes_steve_model.animation_roulette.desc",
         InputConstants.Type.KEYSYM,
@@ -28,7 +27,6 @@ object AnimationRouletteKey {
         KeyMappingFactory.YSM_CATEGORY
     )
 
-    @JvmField
     val KEY_LOCK: KeyMapping = KeyMappingFactory.createInGameAlt(
         "key.yes_steve_model.lock_roulette.desc",
         InputConstants.Type.KEYSYM,

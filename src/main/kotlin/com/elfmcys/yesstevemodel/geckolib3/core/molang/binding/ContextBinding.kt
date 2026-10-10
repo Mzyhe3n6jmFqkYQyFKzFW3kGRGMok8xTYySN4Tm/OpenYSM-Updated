@@ -34,7 +34,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour
 import net.minecraft.world.level.block.state.BlockState
 
 open class ContextBinding : ObjectBinding {
-    @JvmField
     val bindings: Object2ReferenceOpenHashMap<String, Any> = Object2ReferenceOpenHashMap()
 
     override fun getProperty(name: String): Any? = bindings[name]

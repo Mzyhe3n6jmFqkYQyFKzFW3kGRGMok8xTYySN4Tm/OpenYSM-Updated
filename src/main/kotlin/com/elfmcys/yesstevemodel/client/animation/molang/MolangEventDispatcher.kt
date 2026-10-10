@@ -13,17 +13,14 @@ object MolangEventDispatcher {
     const val SYNC: String = "sync"
     const val DEFER: String = "defer"
 
-    @JvmStatic
     fun createExpression(list: List<IValue>, floatArrayList: FloatArrayList?): IValue {
         return createUpdateExpression(list, floatArrayList ?: FloatLists.emptyList())
     }
 
-    @JvmStatic
     fun createInitExpression(list: List<IValue>): IValue {
         return createUpdateExpression(list, ObjectLists.emptyList<Any>())
     }
 
-    @JvmStatic
     fun createUpdateExpression(list: List<IValue>, list2: List<*>): IValue {
         return IValue { evaluator: ExpressionEvaluator<*> ->
             val entity = evaluator.entity

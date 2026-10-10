@@ -174,7 +174,7 @@ abstract class GeoEntity<T : Entity>(t: T, registerWithCache: Boolean) : Animata
 
     override val logger: ILogger?
         get() {
-            if (AnimationDebugOverlay.isDebugActive()) return ChatLogger
+            if (AnimationDebugOverlay.isDebugActive) return ChatLogger
             return null
         }
 

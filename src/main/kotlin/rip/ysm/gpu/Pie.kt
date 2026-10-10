@@ -14,13 +14,11 @@ object Pie {
     const val TAU: Float = (Math.PI * 2.0).toFloat()
 
     @Suppress("MayBeConstant")
-    @JvmField
     val tau: Float = TAU
 
     private val mvpScratch: Matrix4f = Matrix4f()
     private val mvpFloats: FloatArray = FloatArray(16)
 
-    @JvmStatic
     fun draw(
         graphics: GuiGraphics,
         centerX: Float,
@@ -34,7 +32,6 @@ object Pie {
         draw(graphics, centerX, centerY, innerRadius, outerRadius, startAngle, endAngle, rgba, 1.0f)
     }
 
-    @JvmStatic
     fun draw(
         graphics: GuiGraphics,
         centerX: Float,

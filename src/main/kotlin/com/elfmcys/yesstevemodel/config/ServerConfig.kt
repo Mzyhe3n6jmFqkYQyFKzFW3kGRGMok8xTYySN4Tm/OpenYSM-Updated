@@ -15,7 +15,6 @@ object ServerConfig {
     lateinit var ACCEPT_SOUND_FX: ForgeConfigSpec.IntValue
     lateinit var CLIENT_NOT_DISPLAY_MODELS: ForgeConfigSpec.ConfigValue<List<String>>
 
-    @JvmStatic
     fun buildSpec(): ForgeConfigSpec {
         val builder = ForgeConfigSpec.Builder()
         defineOptions(builder)
@@ -24,7 +23,6 @@ object ServerConfig {
         return spec
     }
 
-    @JvmStatic
     fun save() {
         if (::SPEC.isInitialized) runCatching { SPEC.save() }
     }

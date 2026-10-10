@@ -417,8 +417,8 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
                             modelId
                         )
                     previewEntity.initModelWithTexture(modelId, modelAssembly.animationBundle.defaultTextureName)
-                    previewEntity.animationStateMachine
-                        .setCurrentAnimation(modelAssembly.modelData.modelProperties.previewAnimation)
+                    previewEntity.animationStateMachine.currentAnimation =
+                        modelAssembly.modelData.modelProperties.previewAnimation
                     addRenderableWidget(createModelButton(slotX, slotY, isAuthLocked, previewEntity, modelAssembly))
                 }
             }
@@ -711,7 +711,6 @@ open class PlayerModelScreen : Screen(Component.literal("YSM Player Model GUI"))
         val pageIndexMap: Object2IntMap<String> = Object2IntOpenHashMap()
         var currentPath: String = StringPool.EMPTY
 
-        @JvmStatic
         fun ensurePackHierarchy(str: String, map: MutableMap<String, ModelPackData>) {
             if (str.isBlank() || !str.contains("/")) return
             val split = str.split("/")

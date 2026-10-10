@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.elfmcys.yesstevemodel.client.renderer
 
 import com.elfmcys.yesstevemodel.capability.PlayerCapability
@@ -24,23 +26,18 @@ object AnimationDebugOverlay {
     private val DEBUG_LINES: ReferenceArrayList<String> = ReferenceArrayList()
     private var _activeModel: WeakReference<GeoEntity<*>>? = null
 
-    @JvmStatic
     fun createOverlay(): HudOverlay {
         return HudOverlay { guiGraphics, font, _, screenWidth, screenHeight ->
             renderOverlay(font, guiGraphics, screenWidth, screenHeight)
         }
     }
 
-    @JvmStatic
     val molangWatch: MolangWatchRegistry
         get() = MOLANG_WATCH
 
-    @JvmStatic
-    fun isDebugActive(): Boolean {
-        return activeModel != null
-    }
+    val isDebugActive: Boolean
+        get() = activeModel != null
 
-    @JvmStatic
     fun tryUpdateFromHitResult(): Boolean {
         val hitResult = Minecraft.getInstance().hitResult
         if (hitResult is EntityHitResult) {
@@ -49,7 +46,6 @@ object AnimationDebugOverlay {
         return tryUpdateFromLocalPlayer()
     }
 
-    @JvmStatic
     fun tryUpdateFromLocalPlayer(): Boolean {
         val localPlayer = Minecraft.getInstance().player
         if (localPlayer != null) {
@@ -63,7 +59,6 @@ object AnimationDebugOverlay {
         return false
     }
 
-    @JvmStatic
     fun tryUpdateFromEntity(entity: Entity): Boolean {
         val capability = when {
             entity is Player -> PlayerCapability[entity]
@@ -79,7 +74,6 @@ object AnimationDebugOverlay {
         return false
     }
 
-    @JvmStatic
     fun clearActiveModel() {
         val currentModel = _activeModel
         if (currentModel != null) {
@@ -94,17 +88,14 @@ object AnimationDebugOverlay {
         }
     }
 
-    @JvmStatic
     fun addDebugLine(str: String) {
         DEBUG_LINES.add(0, str)
     }
 
-    @JvmStatic
     fun clearDebugLines() {
         DEBUG_LINES.clear()
     }
 
-    @JvmStatic
     var activeModel: GeoEntity<*>?
         get() {
             val currentModel = _activeModel
@@ -135,7 +126,6 @@ object AnimationDebugOverlay {
             }
         }
 
-    @JvmStatic
     fun renderOverlay(font: Font, guiGraphics: GuiGraphics, screenWidth: Int, screenHeight: Int) {
         val geoEntity = activeModel ?: return
         val currentY = intArrayOf(5)
@@ -156,7 +146,6 @@ object AnimationDebugOverlay {
         }
     }
 
-    @JvmStatic
     fun renderDebugOverlay(
         font: Font,
         guiGraphics: GuiGraphics,

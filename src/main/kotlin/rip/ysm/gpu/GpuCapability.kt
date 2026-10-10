@@ -18,14 +18,12 @@ object GpuCapability {
     @Volatile
     private var _reason: String? = null
 
-    @JvmStatic
     val isAvailable: Boolean
         get() {
             if (!checked) check()
             return available
         }
 
-    @JvmStatic
     val reason: String?
         get() {
             if (!checked) check()
@@ -33,7 +31,6 @@ object GpuCapability {
         }
 
     @Synchronized
-    @JvmStatic
     fun check() {
         if (checked) return
         checked = true

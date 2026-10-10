@@ -55,10 +55,8 @@ class LinearKeyframeInterpolator : IInterpolable {
         @JvmField val startValue: Float,
         endValue: Float
     ) {
-        @JvmField
         val duration: Float = endTime - startTime
 
-        @JvmField
         val valueDelta: Float = endValue - startValue
     }
 }

@@ -7,7 +7,6 @@ import com.google.gson.JsonElement
 
 object JsonMolangUtils {
     // 默认不合并
-    @JvmStatic
     fun getExpressions(element: JsonElement?, parser: MolangParser, mergeMultilineExpr: Boolean): Array<IValue> {
         if (element == null) {
             return emptyArray()

@@ -75,7 +75,6 @@ class PackIconButton(
     companion object {
         val DEFAULT_PACK_ICON: Identifier = NameSpaces.MOD.path("texture/default_pack_icon.png")
 
-        @JvmStatic
         fun drawCenteredString(
             guiGraphics: GuiGraphics,
             font: Font,
@@ -87,7 +86,6 @@ class PackIconButton(
             guiGraphics.drawString(font, component, centerX - (font.width(component) / 2), y, color, false)
         }
 
-        @JvmStatic
         fun drawCenteredString(
             guiGraphics: GuiGraphics,
             font: Font,

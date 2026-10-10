@@ -44,15 +44,12 @@ open class Option<T>(
     }
 
     companion object {
-        @JvmStatic
         fun ofBoolean(key: String, cfg: ForgeConfigSpec.BooleanValue): Option<Boolean> =
             Option(key, { cfg.get() }, { cfg.setAndSave(it) })
 
-        @JvmStatic
         fun ofDouble(key: String, cfg: ForgeConfigSpec.DoubleValue): Option<Double> =
             Option(key, { cfg.get() }, { cfg.setAndSave(it) })
 
-        @JvmStatic
         fun <E : Enum<E>> ofEnum(key: String, cfg: ForgeConfigSpec.EnumValue<E>): Option<E> =
             Option(key, { cfg.get() }, { cfg.setAndSave(it) })
     }

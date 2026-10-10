@@ -63,7 +63,6 @@ abstract class OptionRow<T>(
     }
 
     companion object {
-        @JvmStatic
         fun blendBg(hover: Boolean, base: Int): Int {
             if (!hover) return base
             val a = (base ushr 24) and 0xFF

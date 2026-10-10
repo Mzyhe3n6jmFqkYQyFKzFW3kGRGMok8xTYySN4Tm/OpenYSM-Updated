@@ -15,7 +15,7 @@ open class MaidIdleAnimPredicate : IAnimationPredicate<MaidAnimatable> {
         val animatable: MaidAnimatable = event.animatable
         if (animatable is IPreviewAnimatable) {
             val previewAnimatable = animatable as IPreviewAnimatable
-            if (previewAnimatable.animationStateMachine.hasAnimation())
+            if (previewAnimatable.animationStateMachine.hasAnimation)
                 return IAnimationPredicate.playLoopAnimation(
                     event,
                     previewAnimatable.animationStateMachine.currentAnimation

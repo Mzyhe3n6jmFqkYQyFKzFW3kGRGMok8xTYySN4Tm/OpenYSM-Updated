@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils
 
 object MaidModelHandler {
 
-    @JvmStatic
     fun executeMaidMolang(entity: Entity, expression: String) {
         if (entity !is EntityMaid || !entity.isYsmModel) {
             return
@@ -22,7 +21,6 @@ object MaidModelHandler {
         }
     }
 
-    @JvmStatic
     fun activateRouletteAnimation(entity: Entity, classify: String, index: Int) {
         if (entity !is EntityMaid || !entity.isYsmModel) return
         if (index == -1) {

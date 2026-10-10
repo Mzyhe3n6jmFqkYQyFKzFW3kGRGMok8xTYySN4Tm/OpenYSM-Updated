@@ -9,7 +9,6 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 object MathInterpolation {
-    @JvmStatic
     fun getYawInterpolation(context: IContext<Entity>): Double {
         val entity = context.entity
         val frameTime = context.animationEvent.frameTime
@@ -24,7 +23,6 @@ object MathInterpolation {
         return cos(rad.toDouble())
     }
 
-    @JvmStatic
     fun getPitchInterpolation(context: IContext<Entity>): Double {
         val entity = context.entity
         val frameTime = context.animationEvent.frameTime

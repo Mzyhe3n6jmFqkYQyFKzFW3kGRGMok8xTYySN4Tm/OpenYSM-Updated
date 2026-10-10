@@ -21,7 +21,6 @@ object MaidClientSetup {
     var maidRenderer: MaidGeoRenderer? = null
         private set
 
-    @JvmStatic
     fun init() {
         EntityMaidRenderer.YSM_ENTITY_MAID_RENDERER = { _ ->
             val renderer = MaidGeoRenderer()

@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.entity.state.EntityRenderState
 import java.util.*
 
 object PreviewEntityRegistry {
-
     fun interface SceneryRenderer {
         fun render(poseStack: PoseStack, bufferSource: MultiBufferSource, packedLight: Int)
     }
@@ -25,15 +24,12 @@ object PreviewEntityRegistry {
         fun poseYOffset(): Float = poseYOffset
     }
 
-    @JvmField
     val ENTRIES: MutableMap<EntityRenderState, Entry> = IdentityHashMap()
 
-    @JvmStatic
     fun register(state: EntityRenderState, animatable: CustomPlayerEntity) {
         ENTRIES[state] = Entry(animatable)
     }
 
-    @JvmStatic
     fun register(
         state: EntityRenderState,
         animatable: CustomPlayerEntity,
@@ -43,7 +39,6 @@ object PreviewEntityRegistry {
         ENTRIES[state] = Entry(animatable, beforeEntity, afterEntity)
     }
 
-    @JvmStatic
     fun register(
         state: EntityRenderState,
         animatable: CustomPlayerEntity,
@@ -54,7 +49,6 @@ object PreviewEntityRegistry {
         ENTRIES[state] = Entry(animatable, beforeEntity, afterEntity, poseYOffset)
     }
 
-    @JvmStatic
     fun get(state: EntityRenderState?): CustomPlayerEntity? {
         if (state == null) return null
         return ENTRIES[state]?.animatable

@@ -6,10 +6,8 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 abstract class ChaCha20Base {
-    @JvmField
     val state: IntArray = IntArray(16)
 
-    @JvmField
     var rounds: Int = 0
 
     protected val workingState: IntArray = IntArray(16)
@@ -45,17 +43,14 @@ abstract class ChaCha20Base {
     }
 
     companion object {
-        @JvmField
         val SIGMA: IntArray = toIntArray(
             byteArrayOf(101, 120, 112, 97, 110, 100, 32, 51, 50, 45, 98, 121, 116, 101, 32, 107)
         )
 
-        @JvmStatic
         fun rotateLeft(i: Int, i2: Int): Int {
             return (i ushr -i2) or (i shl i2)
         }
 
-        @JvmStatic
         fun quarterRound(x: IntArray, a: Int, b: Int, c: Int, d: Int) {
             x[a] += x[b]
             x[d] = rotateLeft(x[d] xor x[a], 16)
@@ -67,7 +62,6 @@ abstract class ChaCha20Base {
             x[b] = rotateLeft(x[b] xor x[c], 7)
         }
 
-        @JvmStatic
         fun shuffleState(x: IntArray, rounds: Int) {
             val halfRounds = rounds / 2
             for (i in 0 until halfRounds) {
@@ -82,7 +76,6 @@ abstract class ChaCha20Base {
             }
         }
 
-        @JvmStatic
         fun toIntArray(bArr: ByteArray): IntArray {
             val asIntBuffer = ByteBuffer.wrap(bArr).order(ByteOrder.LITTLE_ENDIAN).asIntBuffer()
             val iArr = IntArray(asIntBuffer.remaining())

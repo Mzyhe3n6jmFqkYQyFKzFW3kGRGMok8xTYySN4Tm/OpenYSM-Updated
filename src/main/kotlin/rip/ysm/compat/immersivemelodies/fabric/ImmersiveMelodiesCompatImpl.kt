@@ -6,11 +6,9 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.immersivemelodies.ImmersiveMelodiesCompat.ImmersiveMelodiesData
 
 object ImmersiveMelodiesCompatImpl : ModCompat("immersive_melodies") {
-    @JvmStatic
     fun updateMelodyProgress(livingEntity: LivingEntity, imData: ImmersiveMelodiesData) {
     }
 
-    @JvmStatic
     fun registerBindings(binding: CtrlBinding) {
     }
 }

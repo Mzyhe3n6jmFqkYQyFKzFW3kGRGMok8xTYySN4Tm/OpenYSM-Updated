@@ -28,7 +28,6 @@ object GpuRenderPath {
     private val pivotAbsScratchMat: Matrix4f = Matrix4f()
     private var pivotAbsPathScratch: IntArray = IntArray(64)
 
-    @JvmStatic
     fun tryRender(
         model: GeoModel,
         pose: PoseStack.Pose,
@@ -235,7 +234,6 @@ object GpuRenderPath {
         return true
     }
 
-    @JvmStatic
     fun disposeMesh(model: GeoModel) {
         if (model.gpuMeshHandle == 0L) return
         val mesh = meshMap.remove(model.gpuMeshHandle)
@@ -243,7 +241,6 @@ object GpuRenderPath {
         model.gpuMeshHandle = 0L
     }
 
-    @JvmStatic
     fun getOrBuildMesh(model: GeoModel): GpuMesh? {
         if (model.gpuMeshHandle == 0L) {
             val mesh = GpuMeshBuilder.build(model) ?: return null
@@ -252,19 +249,16 @@ object GpuRenderPath {
         return decodeMeshRef(model.gpuMeshHandle)
     }
 
-    @JvmStatic
     fun encodeMeshRef(mesh: GpuMesh): Long {
         val nextRef = ref.getAndIncrement()
         meshMap[nextRef] = mesh
         return nextRef
     }
 
-    @JvmStatic
     fun decodeMeshRef(meshRef: Long): GpuMesh? {
         return meshMap[meshRef]
     }
 
-    @JvmStatic
     fun updatePivotAbsStateBuffer(model: GeoModel, boneParams: FloatArray?, stateBuffer: FloatArray?) {
         if (stateBuffer == null || boneParams == null) return
         val bones = model.bakedBones ?: return
@@ -282,7 +276,6 @@ object GpuRenderPath {
         }
     }
 
-    @JvmStatic
     private fun computeOnePivotAbs(
         targetIdx: Int,
         bones: List<GeoModel.BakedBone>,

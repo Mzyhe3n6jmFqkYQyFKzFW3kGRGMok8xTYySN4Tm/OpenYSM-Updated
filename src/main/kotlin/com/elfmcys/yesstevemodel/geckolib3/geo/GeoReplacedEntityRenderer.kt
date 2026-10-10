@@ -37,16 +37,12 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
     PlayerModel(context.bakeLayer(ModelLayers.PLAYER_SLIM), true),
     0.5f
 ), IGeoRenderer<T> {
-    @JvmField
     val layerRenderers: MutableList<GeoLayerRenderer<T>> = ObjectArrayList()
 
-    @JvmField
     var dispatchedMat: Matrix4f = Matrix4f()
 
-    @JvmField
     var renderEarlyMat: Matrix4f = Matrix4f()
 
-    @JvmField
     var rtb: MultiBufferSource? = null
 
     override var currentModelRenderCycle: IRenderCycle = EModelRenderCycle.INITIAL
@@ -324,7 +320,6 @@ abstract class GeoReplacedEntityRenderer<TEntity : Player, T : LivingAnimatable<
     }
 
     companion object {
-        @JvmStatic
         fun packOverlayCoords(entity: LivingEntity, u: Float): Int {
             return OverlayTexture.pack(
                 OverlayTexture.u(u),

@@ -130,7 +130,6 @@ object CtrlBinding : ContextBinding() {
 
     private var data: Array<ReferenceArrayList<AnimationStatePredicate>>? = null
 
-    @JvmStatic
     fun isPlayingExtraAnimation(context: IContext<Any>): Boolean {
         val animatableEntity = context.geoInstance
         return animatableEntity is CustomPlayerEntity && animatableEntity.isModelSwitching && animatableEntity.getAnimationState(
@@ -138,7 +137,6 @@ object CtrlBinding : ContextBinding() {
         ) != AnimationState.IDLE
     }
 
-    @JvmStatic
     fun evaluateState(name: String, context: IContext<LivingEntity>): Boolean {
         val livingEntity: LivingEntity = context.entity
         val positionTracker: EntityFrameStateTracker<*> = context.geoInstance.positionTracker
@@ -171,7 +169,6 @@ object CtrlBinding : ContextBinding() {
         return false
     }
 
-    @JvmStatic
     fun isWalking(livingEntity: LivingEntity): Boolean = abs(
         livingEntity.walkAnimation.speed(
             Minecraft.getInstance().deltaTracker.getGameTimeDeltaPartialTick(
@@ -180,11 +177,9 @@ object CtrlBinding : ContextBinding() {
         )
     ) > 0.05f
 
-    @JvmStatic
     fun getVerticalVelocity(livingEntity: LivingEntity): Float =
         20.0f * (livingEntity.position().y - livingEntity.yo).toFloat()
 
-    @JvmStatic
     fun isFlying(context: IContext<LivingEntity>): Boolean {
         val animatableEntity: AnimatableEntity<*> = context.geoInstance
         if (animatableEntity is PlayerCapability) {

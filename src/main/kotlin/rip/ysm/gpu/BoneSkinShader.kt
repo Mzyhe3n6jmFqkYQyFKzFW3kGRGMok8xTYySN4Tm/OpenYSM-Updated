@@ -24,7 +24,6 @@ object BoneSkinShader {
     private var failed: Boolean = false
 
     @Synchronized
-    @JvmStatic
     fun ensureCompiled(): Boolean {
         if (program != 0) return true
         if (failed) return false
@@ -89,30 +88,21 @@ object BoneSkinShader {
         }
     }
 
-    @JvmStatic
     fun program(): Int = program
 
-    @JvmStatic
     fun locModelView(): Int = locModelView
 
-    @JvmStatic
     fun locColor(): Int = locColor
 
-    @JvmStatic
     fun locOverlay(): Int = locOverlay
 
-    @JvmStatic
     fun locFogStart(): Int = locFogStart
 
-    @JvmStatic
     fun locFogEnd(): Int = locFogEnd
 
-    @JvmStatic
     fun locFogColor(): Int = locFogColor
 
-    @JvmStatic
     fun locFogShape(): Int = locFogShape
 
-    @JvmStatic
     fun locAlphaMode(): Int = locAlphaMode
 }

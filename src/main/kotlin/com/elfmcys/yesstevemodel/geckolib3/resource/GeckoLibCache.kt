@@ -16,17 +16,14 @@ object GeckoLibCache {
     private val ROAMING_VAR_PATTERN =
         Pattern.compile("^([;\\s]*(v|variable)\\.roaming\\.[A-Za-z0-9_]+\\s*=[^;]+[;\\s]*)+$", Pattern.CASE_INSENSITIVE)
 
-    @JvmStatic
     val molangParser: MolangParser
         get() = PARSER_POOL.poll() ?: createMolangParser()
 
-    @JvmStatic
     fun releaseParser(parser: MolangParser) {
         parser.reset()
         PARSER_POOL.add(parser)
     }
 
-    @JvmStatic
     @Throws(ParseException::class)
     fun parseSimpleExpression(molangExpression: String): IValue {
         val parser = molangParser
@@ -37,7 +34,6 @@ object GeckoLibCache {
         }
     }
 
-    @JvmStatic
     fun createMolangParser(): MolangParser {
         if (EXTRA_BINDING.isEmpty()) {
             runCatching {
@@ -54,7 +50,6 @@ object GeckoLibCache {
         return MolangParser(map)
     }
 
-    @JvmStatic
     val globalBindings: MutableMap<String, Any>
         get() {
             if (bindings.isEmpty()) {
@@ -65,7 +60,6 @@ object GeckoLibCache {
             return bindings
         }
 
-    @JvmStatic
     fun isRoamingVariableAssignment(str: String): Boolean {
         return ROAMING_VAR_PATTERN.matcher(str).find()
     }

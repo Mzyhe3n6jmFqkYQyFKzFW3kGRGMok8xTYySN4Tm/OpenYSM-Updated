@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component
 object RootCommand {
     private const val ROOT_NAME: String = "ysm"
 
-    @JvmStatic
     fun registerCommands(dispatcher: CommandDispatcher<CommandSourceStack>) {
         val root = Commands.literal(ROOT_NAME)
         root.then(ModelCommand.register())
@@ -24,7 +23,6 @@ object RootCommand {
         dispatcher.register(root)
     }
 
-    @JvmStatic
     fun registerFallbackCommands(dispatcher: CommandDispatcher<CommandSourceStack>) {
         val root: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(ROOT_NAME)
         root.then(Commands.argument("any", StringArgumentType.greedyString()).executes { commandContext ->

@@ -644,7 +644,6 @@ abstract class OptionScreen(title: Component, var parentScreen: Screen? = null) 
     override fun isPauseScreen(): Boolean = false
 
     companion object {
-        @JvmField
         val lastSelectedGroup: MutableMap<Class<out OptionScreen>, String> = HashMap()
     }
 }

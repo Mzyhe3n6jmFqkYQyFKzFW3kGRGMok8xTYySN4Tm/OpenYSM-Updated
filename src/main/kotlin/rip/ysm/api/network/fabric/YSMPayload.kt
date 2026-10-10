@@ -13,11 +13,9 @@ class YSMPayload(val data: ByteArray) : CustomPacketPayload {
     override fun type(): CustomPacketPayload.Type<out CustomPacketPayload> = TYPE
 
     companion object {
-        @JvmField
         var TYPE: CustomPacketPayload.Type<YSMPayload> =
             CustomPacketPayload.Type(Identifier.fromNamespaceAndPath("yes_steve_model", "main"))
 
-        @JvmField
         var CODEC: StreamCodec<RegistryFriendlyByteBuf, YSMPayload> = StreamCodec.of(
             { buf, payload ->
                 buf.writeVarInt(payload.data.size)
@@ -31,7 +29,6 @@ class YSMPayload(val data: ByteArray) : CustomPacketPayload {
             }
         )
 
-        @JvmStatic
         fun init(channelId: Identifier) {
             TYPE = CustomPacketPayload.Type(channelId)
             CODEC = StreamCodec.of(
@@ -48,7 +45,6 @@ class YSMPayload(val data: ByteArray) : CustomPacketPayload {
             )
         }
 
-        @JvmStatic
         fun fromBuf(buf: FriendlyByteBuf): YSMPayload {
             val readable = buf.readableBytes()
             val arr = ByteArray(readable)

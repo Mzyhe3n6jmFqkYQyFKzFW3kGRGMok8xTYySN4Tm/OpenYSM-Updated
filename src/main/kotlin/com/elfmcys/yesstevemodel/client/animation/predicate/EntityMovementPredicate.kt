@@ -15,7 +15,6 @@ class EntityMovementPredicate : IAnimationPredicate<GeckoVehicleEntity> {
     }
 
     companion object {
-        @JvmField
         val MOVEMENT_STATES: Array<String> = arrayOf("water", "ground", "fly")
     }
 }

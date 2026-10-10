@@ -17,35 +17,27 @@ import rip.ysm.api.network.YSMChannel
 object NetworkHandler {
     const val VERSION: String = "2.6.0"
 
-    @JvmField
     val CHANNEL_ID: Identifier = NameSpaces.MOD.path(VERSION.replace('.', '_'))
 
-    @JvmField
     val CHANNEL_VERSION_KEY: AttributeKey<String> = AttributeKey.valueOf("yes_steve_model_channel_version")
 
-    @JvmField
     var clientHandshakeComplete: Boolean = false
 
-    @JvmStatic
     fun setChannelVersion(connection: Connection, str: String): Boolean =
         connection.channel.attr(CHANNEL_VERSION_KEY).compareAndSet(null, str)
 
-    @JvmStatic
     fun markClientHandshakeComplete() {
         clientHandshakeComplete = true
     }
 
-    @JvmStatic
     fun resetClientHandshake() {
         clientHandshakeComplete = false
     }
 
-    @JvmStatic
     fun isPlayerConnected(serverPlayer: ServerPlayer): Boolean {
         return isConnectionValid((serverPlayer.connection as ServerCommonPacketListenerImplAccessor).`ysm$getConnection`())
     }
 
-    @JvmStatic
     fun isClientConnected(): Boolean {
         if (clientHandshakeComplete) {
             return true
@@ -54,7 +46,6 @@ object NetworkHandler {
         return isConnectionValid(connection.connection)
     }
 
-    @JvmStatic
     fun isConnectionValid(connection: Connection?): Boolean =
         connection?.channel != null && VERSION == connection.channel.attr(CHANNEL_VERSION_KEY).get()
 
@@ -238,46 +229,38 @@ object NetworkHandler {
         )
     }
 
-    @JvmStatic
     fun sendToServer(obj: Any) {
         if (isClientConnected()) {
             YSMChannel.sendToServer(obj)
         }
     }
 
-    @JvmStatic
     fun sendVersionCheck(connection: Connection?) {
         if (connection != null && connection.isConnected) {
             connection.send(toServerboundPacket(C2SVersionCheckPacket()))
         }
     }
 
-    @JvmStatic
     fun sendToClientPlayer(obj: Any, player: Player) {
         YSMChannel.sendToClientPlayer(obj, player as ServerPlayer)
     }
 
-    @JvmStatic
     fun sendToAll(obj: Any) {
         YSMChannel.sendToAll(obj)
     }
 
-    @JvmStatic
     fun sendToTrackingEntity(obj: Any, entity: Entity) {
         YSMChannel.sendToTrackingEntity(obj, entity)
     }
 
-    @JvmStatic
     fun sendToTrackingEntityAndSelf(obj: Any, player: Player) {
         YSMChannel.sendToTrackingEntityAndSelf(obj, player)
     }
 
-    @JvmStatic
     fun toClientboundPacket(obj: Any): Packet<*> {
         return YSMChannel.toClientboundPacket(obj)
     }
 
-    @JvmStatic
     fun toServerboundPacket(obj: Any): Packet<*> {
         return YSMChannel.toServerboundPacket(obj)
     }

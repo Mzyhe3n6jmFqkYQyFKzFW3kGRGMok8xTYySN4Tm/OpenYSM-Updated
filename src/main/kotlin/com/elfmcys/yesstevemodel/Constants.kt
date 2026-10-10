@@ -22,17 +22,14 @@ object Constants {
 
     const val MOD_NAME: String = "Open YSM"
 
-    @JvmField
     val LOGGER: Logger = LogManager.getLogger(MOD_NAME)
 
-    @JvmStatic
     val ConfigDir: Path by lazy {
         val dir = MainConfigDir.resolve(NameSpaces.MOD())
         runCatching { dir.createDirectories() }
         dir
     }
 
-    @JvmStatic
     val MainConfigDir: Path by lazy {
         val dir = runCatching {
             FabricLoader.getInstance().configDir
@@ -43,7 +40,6 @@ object Constants {
         dir
     }
 
-    @JvmStatic
     val IsServer: Boolean
         get() = runCatching { FabricLoader.getInstance().environmentType == EnvType.SERVER }.getOrDefault(false)
 

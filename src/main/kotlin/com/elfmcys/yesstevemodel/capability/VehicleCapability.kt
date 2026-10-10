@@ -37,7 +37,6 @@ class VehicleCapability(entity: Entity) : GeckoVehicleEntity(entity) {
     }
 
     companion object {
-        @JvmStatic
         operator fun get(entity: Entity): VehicleCapability? = VehicleCapabilityImpl[entity]
     }
 }

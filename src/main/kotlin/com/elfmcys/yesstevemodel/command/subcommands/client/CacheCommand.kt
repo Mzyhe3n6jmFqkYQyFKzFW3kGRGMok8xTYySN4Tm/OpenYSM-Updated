@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 
 object CacheCommand {
-    @JvmStatic
     fun register(): LiteralArgumentBuilder<FabricClientCommandSource> {
         return LiteralArgumentBuilder.literal<FabricClientCommandSource>("cache")
             .then(

@@ -8,21 +8,16 @@ import org.apache.commons.lang3.tuple.Pair
 import rip.ysm.compat.ModCompat
 
 object ParcoolCompatImpl : ModCompat("parcool") {
-    @JvmStatic
     val inCompatibleInfo: Pair<String, String>?
         get() = null
 
-    @JvmStatic
     val controllerFactory: ((String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>)?
         get() = null
 
-    @JvmStatic
     fun isPlayerParcooling(player: Player): Boolean = false
 
-    @JvmStatic
     fun getActionName(player: Player): String = ""
 
-    @JvmStatic
     fun registerBindings(binding: CtrlBinding) {
     }
 }

@@ -11,7 +11,6 @@ import net.fabricmc.api.Environment
 
 @Environment(EnvType.CLIENT)
 object MaidBoneBridge {
-    @JvmStatic
     fun createLocationBone(bone: AnimatedGeoBone): ILocationBone {
         return object : ILocationBone {
             override fun getRotationX(): Float = bone.rotationX
@@ -32,7 +31,6 @@ object MaidBoneBridge {
         }
     }
 
-    @JvmStatic
     fun createLocationModel(model: AnimatedGeoModel): ILocationModel {
         return object : ILocationModel {
             override fun leftHandBones(): List<ILocationBone> {

@@ -7,7 +7,6 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.carryon.fabric.CarryOnRendererImpl
 
 object CarryOnRenderer : ModCompat("carryon") {
-    @JvmStatic
     fun render(
         player: Player,
         poseStack: PoseStack,

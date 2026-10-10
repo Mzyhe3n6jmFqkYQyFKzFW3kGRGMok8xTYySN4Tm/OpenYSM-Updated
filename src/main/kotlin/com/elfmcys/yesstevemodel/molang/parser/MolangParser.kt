@@ -26,27 +26,22 @@ interface MolangParser : Closeable {
     override fun close()
 
     companion object {
-        @JvmStatic
         fun parser(molangLexer: MolangLexer, objectBinding: ObjectBinding): MolangParser {
             return MolangParserImpl(molangLexer, objectBinding)
         }
 
-        @JvmStatic
         fun parser(reader: Reader, objectBinding: ObjectBinding): MolangParser {
             return parser(MolangLexer.lexer(reader), objectBinding)
         }
 
-        @JvmStatic
         fun parser(str: String, objectBinding: ObjectBinding): MolangParser {
             return parser(MolangLexer.lexer(str), objectBinding)
         }
 
-        @JvmStatic
         fun parseExpressions(reader: Reader, objectBinding: ObjectBinding): List<Expression> {
             return parser(reader, objectBinding).use { it.parseAll() }
         }
 
-        @JvmStatic
         fun parseExpressions(str: String, objectBinding: ObjectBinding): List<Expression> {
             return parser(str, objectBinding).use { it.parseAll() }
         }

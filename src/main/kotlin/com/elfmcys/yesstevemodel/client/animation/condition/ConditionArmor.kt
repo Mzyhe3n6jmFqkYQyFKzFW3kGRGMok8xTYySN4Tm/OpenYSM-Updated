@@ -79,7 +79,6 @@ class ConditionArmor {
         private val TAG_PRE_REG: Pattern = Pattern.compile("^(.+?)#(.*?)$")
         const val EMPTY: String = ""
 
-        @JvmStatic
         fun getType(type: String): EquipmentSlot? = EquipmentUtil.getEquipmentSlot(type)
     }
 }

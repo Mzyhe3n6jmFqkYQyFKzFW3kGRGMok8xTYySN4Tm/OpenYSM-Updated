@@ -25,7 +25,6 @@ import rip.ysm.api.PlatformAPI
 object RootClientCommand {
     private const val ROOT_NAME: String = "ysmclient"
 
-    @JvmField
     val VARS_SUGGESTION_PROVIDER: SuggestionProvider<CommandSourceStack> = SuggestionProviders.register(
         NameSpaces.MOD.path("vars")
     ) { context, builder ->
@@ -60,7 +59,6 @@ object RootClientCommand {
         Suggestions.empty()
     }
 
-    @JvmField
     val CONTROLLERS_SUGGESTION_PROVIDER: SuggestionProvider<CommandSourceStack> = SuggestionProviders.register(
         NameSpaces.MOD.path("controllers")
     ) { commandContext, suggestionsBuilder ->
@@ -75,7 +73,6 @@ object RootClientCommand {
         Suggestions.empty()
     }
 
-    @JvmStatic
     fun registerClientCommands(commandDispatcher: CommandDispatcher<CommandSourceStack>) {
         val root = Commands.literal(ROOT_NAME)
             .requires { commandSourceStack -> YSMMessageFormatter.isCurrentClientPlayer(commandSourceStack.entity) }
@@ -85,7 +82,6 @@ object RootClientCommand {
         commandDispatcher.register(root)
     }
 
-    @JvmStatic
     val activeGeoModel: GeoEntity<*>?
         get() {
             var geoEntity = AnimationDebugOverlay.activeModel

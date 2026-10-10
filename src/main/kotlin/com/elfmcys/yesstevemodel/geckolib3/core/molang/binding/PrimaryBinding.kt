@@ -10,16 +10,12 @@ import com.elfmcys.yesstevemodel.molang.runtime.binding.StandardBindings
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap
 
 class PrimaryBinding(map: MutableMap<String, Any>?) : ObjectBinding {
-    @JvmField
     val bindings: Object2ReferenceOpenHashMap<String, Any> = Object2ReferenceOpenHashMap()
 
-    @JvmField
     val scopedBinding: ScopedVariableBinding = ScopedVariableBinding()
 
-    @JvmField
     val foreignBinding: ControllerVariableBinding = ControllerVariableBinding()
 
-    @JvmField
     val tempBinding: TempVariableRegistry = TempVariableRegistry()
     val closeables: List<CloseVariable>
     val resettables: List<ResetVariable>

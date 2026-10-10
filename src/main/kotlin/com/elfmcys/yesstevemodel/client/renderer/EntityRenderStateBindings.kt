@@ -5,7 +5,6 @@ import net.minecraft.client.renderer.entity.state.EntityRenderState
 import net.minecraft.world.entity.Entity
 
 object EntityRenderStateBindings {
-    @JvmField
     val BINDINGS: MutableMap<EntityRenderState, Entity> = MapMaker().weakKeys().makeMap()
 
     @JvmStatic

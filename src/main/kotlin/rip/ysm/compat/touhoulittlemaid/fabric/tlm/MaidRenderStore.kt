@@ -10,12 +10,10 @@ import java.util.*
 object MaidRenderStore {
     private val CACHE: MutableMap<EntityMaid, MaidAnimatable> = WeakHashMap()
 
-    @JvmStatic
     fun getOrCreate(maid: EntityMaid): MaidAnimatable {
         return CACHE.computeIfAbsent(maid) { m -> MaidAnimatable(m, true) }
     }
 
-    @JvmStatic
     fun get(entity: Entity): MaidAnimatable? {
         if (entity is EntityMaid) {
             return CACHE[entity]
@@ -23,7 +21,6 @@ object MaidRenderStore {
         return null
     }
 
-    @JvmStatic
     fun clear() {
         CACHE.clear()
     }

@@ -42,10 +42,8 @@ object VehicleAnimationController {
     private const val VEHICLE_PREFIX: String = "vehicle"
     const val ORIGIN_CONTROLLER_KEY: String = "vehicle.origin"
 
-    @JvmField
     val REGISTRY: ProcessorPipeline<GeckoVehicleEntity, VehicleModelBundle> = ProcessorPipeline()
 
-    @JvmStatic
     fun registerControllers() {
         registerParallelController("pre_parallel") { animationEntryKey, entity, linkedAnimationName ->
             CompositeAnimationController(
@@ -88,7 +86,6 @@ object VehicleAnimationController {
         }
     }
 
-    @JvmStatic
     fun buildControllers(
         modelBundle: VehicleModelBundle,
         resourceBundle: ModelResourceBundle
@@ -97,7 +94,6 @@ object VehicleAnimationController {
         return REGISTRY.buildAll(modelBundle, resourceBundle)
     }
 
-    @JvmStatic
     fun registerOriginController(
         controllerName: String,
         controllerFactory: (String, GeckoVehicleEntity) -> IAnimationController<GeckoVehicleEntity>
@@ -108,7 +104,6 @@ object VehicleAnimationController {
         }
     }
 
-    @JvmStatic
     fun registerNamedController(
         slotName: String,
         requiredAnimations: Array<String>?,
@@ -127,7 +122,6 @@ object VehicleAnimationController {
         )
     }
 
-    @JvmStatic
     fun registerParallelController(
         slotName: String,
         controllerFactory: (String, GeckoVehicleEntity, String?) -> IAnimationController<GeckoVehicleEntity>

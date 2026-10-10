@@ -12,7 +12,6 @@ data class FeedbackData(
     val flags: Int
 ) {
     companion object {
-        @JvmStatic
         fun writeToBuf(message: FeedbackData, buf: FriendlyByteBuf) {
             buf.writeInt(message.entityId)
             buf.writeVarInt(message.flags)
@@ -28,7 +27,6 @@ data class FeedbackData(
             }
         }
 
-        @JvmStatic
         fun readFromBuf(buf: FriendlyByteBuf, useInternedKeys: Boolean): FeedbackData {
             val entityId = buf.readInt()
             val varInt = buf.readVarInt()

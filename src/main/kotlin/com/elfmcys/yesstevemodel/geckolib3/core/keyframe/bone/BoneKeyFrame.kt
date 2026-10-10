@@ -13,10 +13,8 @@ abstract class BoneKeyFrame(
     abstract fun evaluate(evaluator: ExpressionEvaluator<*>, percentCompleted: Float): Vector3f
 
     companion object {
-        @JvmStatic
         fun isBegin(percentCompleted: Float): Boolean = percentCompleted < 0.00001f
 
-        @JvmStatic
         fun isEnd(percentCompleted: Float): Boolean = percentCompleted > 0.99999f
     }
 }

@@ -19,7 +19,6 @@ object MoLangCommand {
     private const val EXP_NAME: String = "exp"
     private const val TARGETS_NAME: String = "targets"
 
-    @JvmStatic
     fun register(): LiteralArgumentBuilder<CommandSourceStack> {
         val molang: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(MOLANG_NAME)
             .requires { commandSourceStack -> YSMMessageFormatter.hasCommandPermission(commandSourceStack, 2) }

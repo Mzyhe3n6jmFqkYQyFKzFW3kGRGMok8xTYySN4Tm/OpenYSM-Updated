@@ -13,7 +13,6 @@ import rip.ysm.api.event.EventResult
 
 @Environment(EnvType.CLIENT)
 object DebugAnimationKey {
-    @JvmField
     val KEY_MAPPING: KeyMapping = KeyMappingFactory.createInGameAlt(
         "key.yes_steve_model.debug_animation.desc",
         InputConstants.Type.KEYSYM,
@@ -28,7 +27,7 @@ object DebugAnimationKey {
                     KEY_MAPPING
                 )
             ) {
-                if (!AnimationDebugOverlay.isDebugActive()) {
+                if (!AnimationDebugOverlay.isDebugActive) {
                     AnimationDebugOverlay.tryUpdateFromHitResult()
                 } else {
                     AnimationDebugOverlay.clearActiveModel()

@@ -4,22 +4,16 @@ import com.elfmcys.yesstevemodel.geckolib3.core.processor.IBone
 import org.joml.Vector3f
 
 open class BoneSnapshot(bone: IBone) {
-    @JvmField
     var boneId: Int = bone.boneId
 
-    @JvmField
     val position: Vector3f = Vector3f()
 
-    @JvmField
     val rotation: Vector3f = Vector3f()
 
-    @JvmField
     val scale: Vector3f = Vector3f(1.0f, 1.0f, 1.0f)
 
-    @JvmField
     var hidden: Boolean = false
 
-    @JvmField
     var childrenHidden: Boolean = false
 
     init {

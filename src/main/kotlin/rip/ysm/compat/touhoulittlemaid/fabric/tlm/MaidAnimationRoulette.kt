@@ -12,12 +12,10 @@ import java.util.*
 @Environment(EnvType.CLIENT)
 object MaidAnimationRoulette {
 
-    @JvmStatic
     fun canOpenRoulette(): Boolean {
         return lookedAtOwnedYsmMaid() != null
     }
 
-    @JvmStatic
     fun openRouletteScreen() {
         val maid = lookedAtOwnedYsmMaid() ?: return
         val animatable = MaidRenderStore.get(maid) ?: return

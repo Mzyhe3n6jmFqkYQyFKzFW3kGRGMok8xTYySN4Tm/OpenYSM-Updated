@@ -39,7 +39,6 @@ object EntityJoinCallbackEvent {
         }
     }
 
-    @JvmStatic
     fun addCallback(i: Int, callback: (Entity) -> Unit) {
         Minecraft.getInstance().execute {
             val clientLevel = Minecraft.getInstance().level

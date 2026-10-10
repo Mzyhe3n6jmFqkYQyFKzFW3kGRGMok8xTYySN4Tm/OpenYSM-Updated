@@ -42,19 +42,16 @@ object ModelPreviewRenderer {
         isPreviewMode = previewMode
     }
 
-    @JvmStatic
     var isPreview: Boolean
         get() = isPreviewMode
         set(value) {
             isPreviewMode = value
         }
 
-    @JvmStatic
     fun setExtraPlayerMode(extraPlayerMode: Boolean) {
         isExtraPlayerMode = extraPlayerMode
     }
 
-    @JvmStatic
     fun isExtraPlayer(): Boolean {
         return isExtraPlayerMode
     }
@@ -64,12 +61,10 @@ object ModelPreviewRenderer {
         isFirstPersonMode = firstPersonMode
     }
 
-    @JvmStatic
     fun isFirstPerson(): Boolean {
         return isFirstPersonMode || OculusCompat.isModLoaded || FirstPersonCompat.isFirstPersonActive()
     }
 
-    @JvmStatic
     fun isFirstPersonOnRenderThread(): Boolean {
         RenderSystem.assertOnRenderThread()
         return isFirstPersonMode && !FirstPersonCompat.isFirstPersonActive()
@@ -109,7 +104,6 @@ object ModelPreviewRenderer {
     }
 
     // 动画测试界面的模型
-    @JvmStatic
     fun <TEntity : Player, TAnimatable : LivingAnimatable<TEntity>, TRenderState : AvatarRenderState> renderEntityPreview(
         x: Float,
         y: Float,
@@ -210,7 +204,6 @@ object ModelPreviewRenderer {
         setPreviewMode(false)
     }
 
-    @JvmStatic
     fun renderBedPreview(scale: Float, pitch: Float, yaw: Float, bufferSource: MultiBufferSource) {
         val poseStack = PoseStack()
         poseStack.translate(0.0, 0.0, 1000.0)
@@ -230,7 +223,6 @@ object ModelPreviewRenderer {
         )
     }
 
-    @JvmStatic
     fun renderGroundPreview(scale: Float, pitch: Float, yaw: Float, bufferSource: MultiBufferSource) {
         val poseStack = PoseStack()
         poseStack.translate(0.0, 0.0, 1000.0)
@@ -272,7 +264,6 @@ object ModelPreviewRenderer {
         )
     }
 
-    @JvmStatic
     fun renderVehicleForAnimation(
         yaw: Float,
         animatableEntity: AnimatableEntity<*>,
@@ -334,7 +325,6 @@ object ModelPreviewRenderer {
         }
     }
 
-    @JvmStatic
     fun renderVehicleEntity(
         yaw: Float,
         riderEntity: Entity,
@@ -349,7 +339,6 @@ object ModelPreviewRenderer {
         poseStack.popPose()
     }
 
-    @JvmStatic
     fun <T : Player, TAnimatable : LivingAnimatable<T>, S : AvatarRenderState> renderLivingEntityPreview(
         x: Float,
         y: Float,
@@ -433,7 +422,6 @@ object ModelPreviewRenderer {
         setPreviewMode(false)
     }
 
-    @JvmStatic
     fun renderPlayerOverlay(
         guiGraphics: GuiGraphics,
         localPlayer: LocalPlayer,
@@ -468,7 +456,6 @@ object ModelPreviewRenderer {
         setExtraPlayerMode(false)
     }
 
-    @JvmStatic
     fun submitLivingEntityPreview(
         guiGraphics: GuiGraphics,
         x0: Int,
@@ -526,7 +513,6 @@ object ModelPreviewRenderer {
         }
     }
 
-    @JvmStatic
     fun submitPlayerOverlay(
         guiGraphics: GuiGraphics,
         localPlayer: LocalPlayer,
@@ -559,7 +545,6 @@ object ModelPreviewRenderer {
         guiGraphics.submitEntityRenderState(state, submitScale, translation, rotation, null, x0, y0, x1, y1)
     }
 
-    @JvmStatic
     fun submitTexturePreview(
         guiGraphics: GuiGraphics,
         x0: Int,
@@ -700,7 +685,6 @@ object ModelPreviewRenderer {
         }
     }
 
-    @JvmStatic
     private fun renderGroundScenery(
         poseStack: PoseStack,
         bufferSource: MultiBufferSource,
@@ -743,7 +727,6 @@ object ModelPreviewRenderer {
         poseStack.popPose()
     }
 
-    @JvmStatic
     private fun renderBedScenery(poseStack: PoseStack, bufferSource: MultiBufferSource, packedLight: Int, yaw: Float) {
         val collector = RenderContext.collector() ?: return
         poseStack.pushPose()
@@ -761,7 +744,6 @@ object ModelPreviewRenderer {
         poseStack.popPose()
     }
 
-    @JvmStatic
     private fun cachedVehicle(rider: LivingEntity, vehicleType: EntityType<out Entity>): Entity? {
         return runCatching {
             AnimatableCacheUtil.ENTITIES_CACHE.get(EntityType.getKey(vehicleType)) {
@@ -770,7 +752,6 @@ object ModelPreviewRenderer {
         }.getOrNull()
     }
 
-    @JvmStatic
     private fun renderVehicleScenery(
         poseStack: PoseStack,
         bufferSource: MultiBufferSource,

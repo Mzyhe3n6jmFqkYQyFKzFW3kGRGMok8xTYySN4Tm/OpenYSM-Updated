@@ -9,13 +9,11 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.ironsspellbooks.fabric.SpellbooksCompatImpl
 
 object SpellbooksCompat : ModCompat("irons_spellbooks") {
-    @JvmStatic
     fun registerBindings(binding: CtrlBinding) {
         if (!isModLoaded) return
         SpellbooksCompatImpl.registerBindings(binding)
     }
 
-    @JvmStatic
     fun resolvePlayState(event: AnimationEvent<LivingAnimatable<*>>, entity: LivingEntity): PlayState? {
         if (!isModLoaded) return null
         return SpellbooksCompatImpl.resolvePlayState(event, entity)

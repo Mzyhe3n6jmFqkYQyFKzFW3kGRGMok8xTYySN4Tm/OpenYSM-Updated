@@ -18,11 +18,9 @@ import java.util.*
 object ModelMetadataPresenter {
     private const val DEFAULT_LOCALE = "en_us"
 
-    @JvmStatic
     fun normalizeLocale(locale: String): String =
         locale.lowercase(Locale.ROOT).replace('-', '_')
 
-    @JvmStatic
     fun findLocaleMap(translations: Map<String, Map<String, String>>?, targetLocale: String): Map<String, String>? {
         if (translations.isNullOrEmpty()) return null
         val normalized = normalizeLocale(targetLocale)
@@ -35,7 +33,6 @@ object ModelMetadataPresenter {
         return null
     }
 
-    @JvmStatic
     fun getLocalizedString(modelPackData: ModelPackData, key: String, defaultValue: String?): String {
         val def = defaultValue ?: StringPool.EMPTY
         val translations = modelPackData.translations ?: return def
@@ -45,7 +42,6 @@ object ModelMetadataPresenter {
         return lookupTranslation(translations, selectedLocale, key, def)
     }
 
-    @JvmStatic
     fun getLocalizedModelString(modelAssembly: ModelAssembly, key: String, defaultValue: String): String =
         getLocalizedModelStringForLocale(
             modelAssembly,
@@ -54,7 +50,6 @@ object ModelMetadataPresenter {
             defaultValue
         )
 
-    @JvmStatic
     fun getLocalizedModelStringForLocale(
         modelAssembly: ModelAssembly,
         locale: String,
@@ -66,7 +61,6 @@ object ModelMetadataPresenter {
         return lookupTranslation(metadataMap, locale, key, defaultValue)
     }
 
-    @JvmStatic
     fun lookupTranslation(
         translations: Map<String, Map<String, String>>,
         locale: String,
@@ -86,7 +80,6 @@ object ModelMetadataPresenter {
         return defaultValue
     }
 
-    @JvmStatic
     fun buildModelTooltip(
         modelAssembly: ModelAssembly,
         locale: String,

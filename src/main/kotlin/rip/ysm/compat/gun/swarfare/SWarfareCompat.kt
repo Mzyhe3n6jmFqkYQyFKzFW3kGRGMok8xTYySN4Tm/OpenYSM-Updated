@@ -13,17 +13,14 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.gun.swarfare.fabric.SWarfareCompatImpl
 
 object SWarfareCompat : ModCompat("superbwarfare") {
-    @JvmStatic
     fun isGunItem(itemStack: ItemStack): Boolean {
         return isModLoaded && SWarfareCompatImpl.isGunItem(itemStack)
     }
 
-    @JvmStatic
     fun isPlayerAiming(player: Player): Boolean {
         return isModLoaded && SWarfareCompatImpl.isPlayerAiming(player)
     }
 
-    @JvmStatic
     fun applyGunTransform(
         stack: ItemStack,
         model: AnimatedGeoModel,
@@ -36,7 +33,6 @@ object SWarfareCompat : ModCompat("superbwarfare") {
         SWarfareCompatImpl.applyGunTransform(stack, model, entity, poseStack, packedLightIn, partialTicks)
     }
 
-    @JvmStatic
     fun handleTaczAnim(
         entity: LivingEntity,
         event: AnimationEvent<*>,
@@ -47,7 +43,6 @@ object SWarfareCompat : ModCompat("superbwarfare") {
         return SWarfareCompatImpl.handleTaczAnim(entity, event, str, loopType)
     }
 
-    @JvmStatic
     fun handleGunHoldAnim(
         stack: ItemStack,
         event: AnimationEvent<*>
@@ -56,7 +51,6 @@ object SWarfareCompat : ModCompat("superbwarfare") {
         return SWarfareCompatImpl.handleGunHoldAnim(stack, event)
     }
 
-    @JvmStatic
     fun handleGunActionAnim(
         stack: ItemStack,
         event: AnimationEvent<*>
@@ -65,7 +59,6 @@ object SWarfareCompat : ModCompat("superbwarfare") {
         return SWarfareCompatImpl.handleGunActionAnim(stack, event)
     }
 
-    @JvmStatic
     fun getGunTexture(stack: ItemStack): Identifier? {
         if (!isModLoaded) return null
         return SWarfareCompatImpl.getGunTexture(stack)

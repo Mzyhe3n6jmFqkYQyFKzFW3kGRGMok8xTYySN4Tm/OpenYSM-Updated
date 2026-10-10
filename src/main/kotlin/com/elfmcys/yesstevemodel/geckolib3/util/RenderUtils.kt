@@ -9,19 +9,16 @@ import org.joml.Matrix4f
 import org.joml.Quaternionf
 
 object RenderUtils {
-    @JvmStatic
     fun translateMatrixToBone(poseStack: PoseStack, bone: IBone) {
         poseStack.translate(-bone.positionX / 16.0f, bone.positionY / 16.0f, bone.positionZ / 16.0f)
     }
 
-    @JvmStatic
     fun rotateMatrixAroundBone(poseStack: PoseStack, bone: IBone) {
         if (bone.rotationZ != 0.0f || bone.rotationY != 0.0f || bone.rotationX != 0.0f) {
             poseStack.mulPose(Quaternionf().rotateZYX(bone.rotationZ, bone.rotationY, bone.rotationX))
         }
     }
 
-    @JvmStatic
     fun scaleMatrixForBone(poseStack: PoseStack, bone: IBone): Boolean {
         val scaleX = bone.scaleX
         val scaleY = bone.scaleY
@@ -30,23 +27,19 @@ object RenderUtils {
         return scaleX == 0.0f && scaleY == 0.0f && scaleZ == 0.0f
     }
 
-    @JvmStatic
     fun translateToPivotPoint(poseStack: PoseStack, bone: IBone) {
         poseStack.translate(bone.pivotX / 16.0f, bone.pivotY / 16.0f, bone.pivotZ / 16.0f)
     }
 
-    @JvmStatic
     fun translateAwayFromPivotPoint(poseStack: PoseStack, bone: IBone) {
         poseStack.translate(-bone.pivotX / 16.0f, -bone.pivotY / 16.0f, -bone.pivotZ / 16.0f)
     }
 
-    @JvmStatic
     fun translateAndRotateMatrixForBone(poseStack: PoseStack, bone: IBone) {
         translateToPivotPoint(poseStack, bone)
         rotateMatrixAroundBone(poseStack, bone)
     }
 
-    @JvmStatic
     fun prepMatrixForBone(poseStack: PoseStack, bone: IBone): Boolean {
         translateMatrixToBone(poseStack, bone)
         translateToPivotPoint(poseStack, bone)
@@ -56,7 +49,6 @@ object RenderUtils {
         return scaleMatrixForBone
     }
 
-    @JvmStatic
     fun prepMatrixForLocator(poseStack: PoseStack, locatorHierarchy: List<IBone>): Boolean {
         var scaleCheck = false
         for (i in 0 until locatorHierarchy.size - 1) {
@@ -73,7 +65,6 @@ object RenderUtils {
         return scaleCheck
     }
 
-    @JvmStatic
     fun invertAndMultiplyMatrices(baseMatrix: Matrix4f, inputMatrix: Matrix4f): Matrix4f {
         val resultMatrix = Matrix4f(inputMatrix)
         resultMatrix.invert()
@@ -81,7 +72,6 @@ object RenderUtils {
         return resultMatrix
     }
 
-    @JvmStatic
     fun updateMatrices(bones: List<GeoBone>, boneParams: FloatArray, rootPose: Matrix4f): Array<Matrix4f> {
         val boneCount = bones.size
         val poses = Array(boneCount) { Matrix4f() }
@@ -93,7 +83,6 @@ object RenderUtils {
         return poses
     }
 
-    @JvmStatic
     fun prepMatrixForBone(bone: GeoBone, pose: Matrix4f, boneParams: FloatArray, boneIdx: Int): Matrix4f {
         val rotX = boneParams[boneIdx]
         val rotY = boneParams[boneIdx + 1]

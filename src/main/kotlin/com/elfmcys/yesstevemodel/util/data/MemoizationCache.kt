@@ -14,7 +14,6 @@ class MemoizationCache<T, U> private constructor() {
     private fun wrapFunction(function: (T) -> U): (T) -> U = { obj -> cache.computeIfAbsent(obj) { function(it) } }
 
     companion object {
-        @JvmStatic
         fun <T, U> memoize(function: Function<T, U>): Function<T, U> = MemoizationCache<T, U>().wrapFunction(function)
 
         fun <T, U> memoize(function: (T) -> U): (T) -> U = MemoizationCache<T, U>().wrapFunction(function)

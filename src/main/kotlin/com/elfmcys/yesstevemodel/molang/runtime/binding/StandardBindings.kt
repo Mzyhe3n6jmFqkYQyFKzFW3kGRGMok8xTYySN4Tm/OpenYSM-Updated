@@ -9,7 +9,6 @@ import kotlin.math.roundToLong
 object StandardBindings {
     private const val MAX_LOOP_ROUND: Int = 1024
 
-    @JvmField
     val LOOP_FUNC: Function = Function { ctx, args ->
         if (args.size() < 2) {
             return@Function null
@@ -24,7 +23,6 @@ object StandardBindings {
         null
     }
 
-    @JvmField
     val FOR_EACH_FUNC: Function = Function { ctx, args ->
         if (args.size() != 3) {
             return@Function null

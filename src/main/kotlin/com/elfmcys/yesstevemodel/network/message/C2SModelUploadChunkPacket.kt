@@ -25,19 +25,16 @@ data class C2SModelUploadChunkPacket(
     }
 
     companion object {
-        @JvmStatic
         fun encode(message: C2SModelUploadChunkPacket, buf: FriendlyByteBuf) {
             buf.writeVarLong(message.uploadId)
             buf.writeVarInt(message.offset)
             buf.writeByteArray(message.data)
         }
 
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): C2SModelUploadChunkPacket {
             return C2SModelUploadChunkPacket(buf.readVarLong(), buf.readVarInt(), buf.readByteArray())
         }
 
-        @JvmStatic
         fun handle(message: C2SModelUploadChunkPacket, ctx: PacketContext) {
         }
     }

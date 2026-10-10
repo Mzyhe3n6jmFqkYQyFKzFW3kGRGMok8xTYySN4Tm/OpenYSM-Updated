@@ -15,7 +15,6 @@ data class S2CModelUploadStartPacket(
     val message: String
 ) {
     companion object {
-        @JvmStatic
         fun encode(packet: S2CModelUploadStartPacket, buf: FriendlyByteBuf) {
             buf.writeVarLong(packet.uploadId)
             buf.writeByte(packet.status.toInt())
@@ -25,7 +24,6 @@ data class S2CModelUploadStartPacket(
             buf.writeUtf(packet.message)
         }
 
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): S2CModelUploadStartPacket {
             val uploadId = buf.readVarLong()
             val status = buf.readByte()
@@ -36,7 +34,6 @@ data class S2CModelUploadStartPacket(
             return S2CModelUploadStartPacket(uploadId, status, chunkSize, maxTotalBytes, chunksPerTick, message)
         }
 
-        @JvmStatic
         fun handle(packet: S2CModelUploadStartPacket, ctx: PacketContext) {
             if (ctx.isClientSide()) {
                 ctx.enqueueWork {
@@ -45,7 +42,6 @@ data class S2CModelUploadStartPacket(
             }
         }
 
-        @JvmStatic
         @Environment(EnvType.CLIENT)
         fun handleOnClient(packet: S2CModelUploadStartPacket) {
             ModelUploadSession.onStartAck(

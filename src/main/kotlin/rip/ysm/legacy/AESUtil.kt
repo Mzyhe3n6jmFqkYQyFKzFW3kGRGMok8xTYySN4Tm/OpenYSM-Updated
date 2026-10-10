@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package rip.ysm.legacy
 
 import java.io.ByteArrayInputStream
@@ -13,7 +15,6 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 object AESUtil {
-    @JvmStatic
     @Throws(IOException::class, GeneralSecurityException::class)
     fun encrypt(key: SecretKey, iv: AlgorithmParameterSpec, input: ByteArray): ByteArrayOutputStream {
         val inputStream = ByteArrayInputStream(input)
@@ -35,7 +36,6 @@ object AESUtil {
         return outputStream
     }
 
-    @JvmStatic
     @Throws(IOException::class, GeneralSecurityException::class)
     fun decrypt(key: SecretKey, iv: AlgorithmParameterSpec, input: ByteArray): ByteArrayOutputStream {
         val inputStream = ByteArrayInputStream(input)
@@ -57,7 +57,6 @@ object AESUtil {
         return outputStream
     }
 
-    @JvmStatic
     fun generateKey(): SecretKey {
         val generator = runCatching {
             KeyGenerator.getInstance("AES")
@@ -68,12 +67,10 @@ object AESUtil {
         return generator.generateKey()
     }
 
-    @JvmStatic
     fun getKey(bytes: ByteArray): SecretKey {
         return SecretKeySpec(bytes, "AES")
     }
 
-    @JvmStatic
     fun generateIv(): IvParameterSpec {
         val iv = ByteArray(16)
         SecureRandom().nextBytes(iv)

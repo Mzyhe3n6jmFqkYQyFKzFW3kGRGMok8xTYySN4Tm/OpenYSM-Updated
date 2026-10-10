@@ -50,7 +50,6 @@ object CustomVehicleRenderer {
         return true
     }
 
-    @JvmStatic
     fun getBodyRotation(entity: Entity, entityYaw: Float, partialTick: Float): Float {
         var bodyRotation = entityYaw
         when (entity) {
@@ -65,7 +64,6 @@ object CustomVehicleRenderer {
         return bodyRotation
     }
 
-    @JvmStatic
     private fun getLivingBodyRotation(entity: LivingEntity, partialTick: Float): Float {
         var bodyYaw = Mth.rotLerp(partialTick, entity.yBodyRotO, entity.yBodyRot)
         val headYaw = Mth.rotLerp(partialTick, entity.yHeadRotO, entity.yHeadRot)
@@ -85,7 +83,6 @@ object CustomVehicleRenderer {
         return bodyYaw
     }
 
-    @JvmStatic
     private fun getMinecartBodyRotation(minecart: AbstractMinecart, partialTick: Float, defaultYaw: Float): Float {
         val interpX = Mth.lerp(partialTick.toDouble(), minecart.xOld, minecart.x)
         val interpY = Mth.lerp(partialTick.toDouble(), minecart.yOld, minecart.y)

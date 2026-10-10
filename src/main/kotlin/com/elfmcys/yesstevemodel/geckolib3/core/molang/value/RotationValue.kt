@@ -19,7 +19,6 @@ open class RotationValue(
     }
 
     companion object {
-        @JvmStatic
         fun convert(f: Float, z: Boolean): Float {
             val radians = Math.toRadians(f.toDouble()).toFloat()
             return if (z) -radians else radians

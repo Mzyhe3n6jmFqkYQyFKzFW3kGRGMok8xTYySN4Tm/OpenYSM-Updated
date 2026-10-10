@@ -14,13 +14,11 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.gun.tacz.fabric.TacCompatImpl
 
 object TacCompat : ModCompat("tacz") {
-    @JvmStatic
     fun registerControllerFunctions(binding: CtrlBinding) {
         if (!isModLoaded) return
         TacCompatImpl.registerControllerFunctions(binding)
     }
 
-    @JvmStatic
     fun applyItemTransform(
         stack: ItemStack,
         model: AnimatedGeoModel,
@@ -33,7 +31,6 @@ object TacCompat : ModCompat("tacz") {
         TacCompatImpl.applyItemTransform(stack, model, entity, poseStack, packedLightIn, partialTicks)
     }
 
-    @JvmStatic
     fun handleTaczAnimState(
         entity: LivingEntity,
         event: AnimationEvent<out LivingAnimatable<*>>,
@@ -44,7 +41,6 @@ object TacCompat : ModCompat("tacz") {
         return TacCompatImpl.handleTaczAnimState(entity, event, animation, loopType)
     }
 
-    @JvmStatic
     fun handleGunHoldAnimState(
         stack: ItemStack,
         event: AnimationEvent<out LivingAnimatable<*>>
@@ -53,7 +49,6 @@ object TacCompat : ModCompat("tacz") {
         return TacCompatImpl.handleGunHoldAnimState(stack, event)
     }
 
-    @JvmStatic
     fun handleGunActionAnimState(
         stack: ItemStack,
         event: AnimationEvent<out LivingAnimatable<*>>
@@ -62,19 +57,16 @@ object TacCompat : ModCompat("tacz") {
         return TacCompatImpl.handleGunActionAnimState(stack, event)
     }
 
-    @JvmStatic
     fun handleGunSound(entity: LivingEntity, stack: ItemStack) {
         if (!isModLoaded) return
         TacCompatImpl.handleGunSound(entity, stack)
     }
 
-    @JvmStatic
     fun handleItemSound(stack: ItemStack) {
         if (!isModLoaded) return
         TacCompatImpl.handleItemSound(stack)
     }
 
-    @JvmStatic
     fun getGunTexture(stack: ItemStack): Identifier? {
         if (!isModLoaded) return null
         return TacCompatImpl.getGunTexture(stack)

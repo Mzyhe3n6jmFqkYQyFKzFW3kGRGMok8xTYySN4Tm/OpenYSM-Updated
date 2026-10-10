@@ -190,7 +190,6 @@ class ModelSyncStateOverlay : HudOverlay {
         private var lastFrameNanos = 0L
         private var shimmerPhase = 0.0f
 
-        @JvmStatic
         fun render(graphics: GuiGraphics, partialTick: Float) {
         }
 

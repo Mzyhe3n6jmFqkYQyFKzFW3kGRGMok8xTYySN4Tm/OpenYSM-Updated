@@ -7,18 +7,14 @@ import org.apache.commons.lang3.tuple.Pair
 import rip.ysm.compat.ModCompat
 
 object SBackpackCompatImpl : ModCompat("sophisticatedbackpacks") {
-    @JvmStatic
     fun setupRenderLayers() {
     }
 
-    @JvmStatic
     val inCompatibleInfo: Pair<String, String>?
         get() = null
 
-    @JvmStatic
     fun getBackpack(livingEntity: LivingEntity): ItemStack = ItemStack.EMPTY
 
-    @JvmStatic
     fun registerControllerFunctions(binding: CtrlBinding) {
     }
 }

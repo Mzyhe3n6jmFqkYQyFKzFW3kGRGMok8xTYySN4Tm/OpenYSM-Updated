@@ -16,10 +16,8 @@ import net.minecraft.resources.Identifier
 object ModelAssemblyFactory {
     private const val FIRST_PERSON_ARM_BONE: String = "fp_arm"
 
-    @JvmStatic
     var primaryAssembly: ModelAssembly? = null
 
-    @JvmStatic
     fun buildAssembly(clientModelInfo: ClientModelInfo, isPrimary: Boolean, isAuth: Boolean): ModelAssembly {
         val textureList = ArrayList<AbstractTexture>()
         val resourceBundle = buildResourceBundle(clientModelInfo)
@@ -41,7 +39,6 @@ object ModelAssemblyFactory {
         return assembly
     }
 
-    @JvmStatic
     fun buildPlayerModelBundle(
         clientModelInfo: ClientModelInfo,
         resourceBundle: ModelResourceBundle,
@@ -102,7 +99,6 @@ object ModelAssemblyFactory {
         )
     }
 
-    @JvmStatic
     fun buildProjectileModels(
         clientModelInfo: ClientModelInfo,
         resourceBundle: ModelResourceBundle,
@@ -128,7 +124,6 @@ object ModelAssemblyFactory {
         return projectileMap
     }
 
-    @JvmStatic
     fun buildVehicleModels(
         clientModelInfo: ClientModelInfo,
         resourceBundle: ModelResourceBundle,
@@ -152,7 +147,6 @@ object ModelAssemblyFactory {
         return vehicleMap
     }
 
-    @JvmStatic
     fun buildResourceBundle(clientModelInfo: ClientModelInfo): ModelResourceBundle {
         return ModelResourceBundle(
             clientModelInfo.extraResources.audioTracks,
@@ -162,7 +156,6 @@ object ModelAssemblyFactory {
         )
     }
 
-    @JvmStatic
     fun buildTextureRegistry(
         clientModelInfo: ClientModelInfo,
         isAuth: Boolean,
@@ -178,7 +171,6 @@ object ModelAssemblyFactory {
         )
     }
 
-    @JvmStatic
     fun buildMolangFunctions(clientModelInfo: ClientModelInfo): Object2ReferenceOpenHashMap<String, IValue> {
         val functions = Object2ReferenceOpenHashMap<String, IValue>(clientModelInfo.extraResources.functions.size)
         for ((rawKey, value) in clientModelInfo.extraResources.functions) {
@@ -191,7 +183,6 @@ object ModelAssemblyFactory {
         return functions
     }
 
-    @JvmStatic
     fun extractMolangEvents(clientModelInfo: ClientModelInfo): Object2ReferenceOpenHashMap<String, MutableList<IValue>> {
         val events = Object2ReferenceOpenHashMap<String, MutableList<IValue>>()
         for ((key, value) in clientModelInfo.extraResources.functions) {
@@ -204,7 +195,6 @@ object ModelAssemblyFactory {
         return events
     }
 
-    @JvmStatic
     fun extractExtraTextures(
         clientModelInfo: ClientModelInfo,
         textureList: MutableList<AbstractTexture>

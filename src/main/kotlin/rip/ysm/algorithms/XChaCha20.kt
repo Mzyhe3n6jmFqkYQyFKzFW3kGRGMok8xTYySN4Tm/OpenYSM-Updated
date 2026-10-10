@@ -67,7 +67,6 @@ open class XChaCha20(key: ByteArray, nonce: ByteArray, rounds: Int) : ChaCha20Ba
     }
 
     companion object {
-        @JvmStatic
         fun hChaCha20(key: IntArray, nonce: IntArray, rounds: Int): IntArray {
             val x = IntArray(16)
             System.arraycopy(SIGMA, 0, x, 0, 4)
@@ -80,7 +79,6 @@ open class XChaCha20(key: ByteArray, nonce: ByteArray, rounds: Int) : ChaCha20Ba
             return intArrayOf(x[0], x[1], x[2], x[3], x[12], x[13], x[14], x[15])
         }
 
-        @JvmStatic
         @Throws(InvalidKeyException::class)
         fun decryptYSM(data: ByteArray, key: ByteArray, iv: ByteArray, seed: Long): ByteArray {
             val keyIv = ByteArray(56)

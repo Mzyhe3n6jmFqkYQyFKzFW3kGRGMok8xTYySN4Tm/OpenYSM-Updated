@@ -21,7 +21,6 @@ object PieShader {
     private var failed: Boolean = false
 
     @Synchronized
-    @JvmStatic
     fun ensureCompiled(): Boolean {
         if (program != 0) return true
         if (failed) return false
@@ -52,36 +51,25 @@ object PieShader {
         }
     }
 
-    @JvmStatic
     fun program(): Int = program
 
-    @JvmStatic
     fun dummyVao(): Int = dummyVao
 
-    @JvmStatic
     fun locProj(): Int = locProj
 
-    @JvmStatic
     fun locRect(): Int = locRect
 
-    @JvmStatic
     fun locCenter(): Int = locCenter
 
-    @JvmStatic
     fun locOuterRadius(): Int = locOuterRadius
 
-    @JvmStatic
     fun locInnerRadius(): Int = locInnerRadius
 
-    @JvmStatic
     fun locStartAngle(): Int = locStartAngle
 
-    @JvmStatic
     fun locEndAngle(): Int = locEndAngle
 
-    @JvmStatic
     fun locColor(): Int = locColor
 
-    @JvmStatic
     fun locFeather(): Int = locFeather
 }

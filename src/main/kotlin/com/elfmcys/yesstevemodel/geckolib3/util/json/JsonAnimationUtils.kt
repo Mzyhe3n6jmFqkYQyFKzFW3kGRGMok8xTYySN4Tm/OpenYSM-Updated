@@ -24,7 +24,6 @@ import java.util.*
 import kotlin.math.max
 
 object JsonAnimationUtils {
-    @JvmStatic
     @Throws(ClassCastException::class, IllegalStateException::class)
     fun deserializeJsonToAnimation(
         element: Map.Entry<String, JsonElement>,
@@ -141,7 +140,6 @@ object JsonAnimationUtils {
         return boneKeyFrames[boneKeyFrames.size - 1].startTick
     }
 
-    @JvmStatic
     fun maxAll(vararg values: Float): Float {
         var max = 0.0f
         for (value in values) max = max(value, max)

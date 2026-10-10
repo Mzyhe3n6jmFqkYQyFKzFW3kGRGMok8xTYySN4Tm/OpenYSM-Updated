@@ -6,11 +6,9 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.create.fabric.CreateCompatImpl
 
 object CreateCompat : ModCompat("create") {
-    @JvmStatic
     fun isPlayerOnCreateContraption(player: Player): Boolean =
         isModLoaded && CreateCompatImpl.isPlayerOnCreateContraption(player)
 
-    @JvmStatic
     fun registerCreateFunctions(binding: CtrlBinding) {
         if (!isModLoaded) return
         CreateCompatImpl.registerCreateFunctions(binding)

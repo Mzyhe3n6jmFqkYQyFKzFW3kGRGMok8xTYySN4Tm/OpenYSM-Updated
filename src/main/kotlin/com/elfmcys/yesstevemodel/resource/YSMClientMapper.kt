@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.elfmcys.yesstevemodel.resource
 
 import com.elfmcys.yesstevemodel.Constants
@@ -59,7 +61,6 @@ import kotlin.math.min
 
 object YSMClientMapper {
     class TranslucencyScanner(val images: Array<BufferedImage?>, expectedCount: Int) {
-        @JvmField
         val results: BooleanArray = BooleanArray(max(expectedCount, images.size))
 
         companion object {
@@ -67,8 +68,6 @@ object YSMClientMapper {
             const val STATE_OPAQUE = 1
             const val STATE_TRANSLUCENT = 2
         }
-
-        fun getResults(): BooleanArray = results
 
         fun scan(face: RawYsmModel.RawFace): Int {
             var minU = face.u[0]
@@ -112,7 +111,7 @@ object YSMClientMapper {
 
                 for (x in startX..endX) {
                     for (y in startY..endY) {
-                        val alpha = (img.getRGB(x, y) ushr 24) and 0xFF
+                        val alpha = img.getRGB(x, y) ushr 24 and 0xFF
 
                         if (alpha > 0) {
                             imageHasVisiblePixel = true
@@ -156,9 +155,7 @@ object YSMClientMapper {
     }
 
     private fun decodeToImage(data: ByteArray?, imageFormat: Int, width: Int, height: Int): BufferedImage? {
-        if (data == null || data.isEmpty()) {
-            return null
-        }
+        if (data == null || data.isEmpty()) return null
 
         var format = imageFormat
         if (format == 0) {
@@ -179,7 +176,7 @@ object YSMClientMapper {
                             val g = data[i * 4 + 1].toInt() and 0xFF
                             val b = data[i * 4 + 2].toInt() and 0xFF
                             val a = data[i * 4 + 3].toInt() and 0xFF
-                            pixels[i] = (a shl 24) or (r shl 16) or (g shl 8) or b
+                            pixels[i] = a shl 24 or (r shl 16) or (g shl 8) or b
                         }
                         img.setRGB(0, 0, width, height, pixels, 0, width)
                         img
@@ -213,16 +210,12 @@ object YSMClientMapper {
         return fallbackData
     }
 
-    @JvmStatic
     fun toPng(data: ByteArray?, imageFormat: Int, width: Int, height: Int): ByteArray? {
-        if (imageFormat == 2) {
-            return data
-        }
+        if (imageFormat == 2) return data
         val img = decodeToImage(data, imageFormat, width, height)
         return encodeToPng(img, data)
     }
 
-    @JvmStatic
     fun buildParsedBundle(raw: RawYsmModel, modelId: String): ClientModelInfo {
         val mainTextures = LinkedHashMap<String, OuterFileTexture>()
         val textureCount = max(1, raw.mainEntity.textures.size)
@@ -321,7 +314,7 @@ object YSMClientMapper {
         allCutout: Boolean
     ): GeoModel {
         if (rawGeo == null || rawGeo.bones.isEmpty()) {
-            val fallbackArray = scanner?.getResults() ?: BooleanArray(max(1, textureCount))
+            val fallbackArray = scanner?.results ?: BooleanArray(max(1, textureCount))
             return buildMesh(emptyArray(), emptyMap(), context, fallbackArray)
         }
 
@@ -465,7 +458,7 @@ object YSMClientMapper {
             }
         }
 
-        val translucencyArray = scanner?.getResults() ?: BooleanArray(max(1, textureCount))
+        val translucencyArray = scanner?.results ?: BooleanArray(max(1, textureCount))
         val mesh = buildMesh(geoBones.toTypedArray(), parentMap, context, translucencyArray)
 
         mesh.bakedBones = bakedBones
@@ -663,7 +656,6 @@ object YSMClientMapper {
         return result
     }
 
-    @JvmStatic
     fun buildModelInfo(raw: RawYsmModel): ServerModelInfo {
         val rm = raw.metadata
         val authors = ArrayList<AuthorInfo>()
@@ -964,7 +956,6 @@ object YSMClientMapper {
         return result
     }
 
-    @JvmStatic
     fun parse(array: List<String>, mergeMultilineExpr: Boolean): List<IValue> {
         val values = ArrayList<IValue>()
 
@@ -988,7 +979,6 @@ object YSMClientMapper {
         return values
     }
 
-    @JvmStatic
     fun parse(str: String): IValue {
         return runCatching {
             GeckoLibCache.molangParser.parseExpression(str, false)
@@ -1060,7 +1050,6 @@ object YSMClientMapper {
         return arrays
     }
 
-    @JvmStatic
     fun buildMesh(
         bones: Array<GeoBone>,
         parentMap: Map<String, String>,
@@ -1076,21 +1065,15 @@ object YSMClientMapper {
         return GeoModel(bones, boneNameArrays, flags, context, translucencyArray)
     }
 
-    @JvmStatic
     fun buildTextureMap(textures: Map<String, OuterFileTexture>): OrderedStringMap<String, OuterFileTexture> {
-        if (textures.isEmpty()) {
-            return OrderedStringMap(emptyArray(), emptyArray())
-        }
+        if (textures.isEmpty()) return OrderedStringMap(emptyArray(), emptyArray())
         val keys = textures.keys.toTypedArray()
         val values = textures.values.toTypedArray()
         return OrderedStringMap(keys, values)
     }
 
-    @JvmStatic
     fun buildContext(model: RawYsmModel.RawGeometry?): GeometryDescription {
-        if (model == null) {
-            return GeometryDescription("", 64.0, 64.0, 0.0, 0.0, DoubleArray(0))
-        }
+        if (model == null) return GeometryDescription("", 64.0, 64.0, 0.0, 0.0, DoubleArray(0))
         val offset = model.visibleBoundsOffset
         val offsetArray = if (offset != null) {
             DoubleArray(offset.size) { offset[it].toDouble() }

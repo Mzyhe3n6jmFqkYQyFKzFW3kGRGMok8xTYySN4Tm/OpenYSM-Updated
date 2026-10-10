@@ -16,7 +16,6 @@ import java.util.function.BiPredicate
 object MaidAnimationStates {
     private const val MOVEMENT_THRESHOLD: Float = 0.05f
 
-    @JvmStatic
     fun register() {
         registerState(
             "death",

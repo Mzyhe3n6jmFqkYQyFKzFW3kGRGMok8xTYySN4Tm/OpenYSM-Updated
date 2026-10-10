@@ -21,7 +21,6 @@ import rip.ysm.api.event.EventResult
 
 @Environment(EnvType.CLIENT)
 object ExtraAnimationKey {
-    @JvmField
     val KEY_MAPPINGS: MutableList<KeyMapping> = Lists.newArrayList()
 
     @Volatile

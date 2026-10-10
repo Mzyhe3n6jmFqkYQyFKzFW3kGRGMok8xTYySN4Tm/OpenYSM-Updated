@@ -21,15 +21,12 @@ abstract class GeoEntityRenderer<TEntity : Entity, T : AnimatableEntity<TEntity>
     context: EntityRendererProvider.Context
 ) : EntityRenderer<TEntity, EntityRenderState>(context), IGeoRenderer<T> {
 
-    @JvmField
     var worldMatrix: Matrix4f = Matrix4f()
 
-    @JvmField
     var modelMatrix: Matrix4f = Matrix4f()
 
     private var renderState: IRenderCycle = EModelRenderCycle.INITIAL
 
-    @JvmField
     var bufferSource: MultiBufferSource? = null
 
     open fun renderEntity(
@@ -126,7 +123,6 @@ abstract class GeoEntityRenderer<TEntity : Entity, T : AnimatableEntity<TEntity>
         }
 
     companion object {
-        @JvmStatic
         fun packOverlayCoords(entity: Entity, f: Float): Int =
             OverlayTexture.pack(OverlayTexture.u(f), OverlayTexture.v(false))
     }

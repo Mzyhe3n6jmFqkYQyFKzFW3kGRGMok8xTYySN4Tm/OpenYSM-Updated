@@ -12,17 +12,14 @@ import rip.ysm.api.network.PacketContext
 
 class C2SSwingArmPacket(val hand: InteractionHand) {
     companion object {
-        @JvmStatic
         fun encode(message: C2SSwingArmPacket, buf: FriendlyByteBuf) {
             buf.writeEnum(message.hand)
         }
 
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): C2SSwingArmPacket {
             return C2SSwingArmPacket(buf.readEnum(InteractionHand::class.java))
         }
 
-        @JvmStatic
         fun handle(message: C2SSwingArmPacket, ctx: PacketContext) {
             val sender = ctx.sender
             if (ctx.isServerSide() && sender != null) {
@@ -32,7 +29,6 @@ class C2SSwingArmPacket(val hand: InteractionHand) {
             }
         }
 
-        @JvmStatic
         fun processSwingArm(message: C2SSwingArmPacket, sender: ServerPlayer) {
             val interactionHand = message.hand
             val itemInHand = sender.getItemInHand(interactionHand)
@@ -49,7 +45,6 @@ class C2SSwingArmPacket(val hand: InteractionHand) {
             }
         }
 
-        @JvmStatic
         fun getSwingDuration(entity: LivingEntity): Int {
             if (MobEffectUtil.hasDigSpeed(entity)) return 6 - 1 + MobEffectUtil.getDigSpeedAmplification(entity)
             if (entity.hasEffect(MobEffects.MINING_FATIGUE)) {

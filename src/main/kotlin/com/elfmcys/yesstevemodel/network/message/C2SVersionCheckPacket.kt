@@ -9,17 +9,14 @@ import rip.ysm.api.network.PacketContext
 
 class C2SVersionCheckPacket(val version: String = NetworkHandler.VERSION) {
     companion object {
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): C2SVersionCheckPacket {
             return C2SVersionCheckPacket(buf.readUtf())
         }
 
-        @JvmStatic
         fun encode(message: C2SVersionCheckPacket, buf: FriendlyByteBuf) {
             buf.writeUtf(message.version)
         }
 
-        @JvmStatic
         fun handle(message: C2SVersionCheckPacket, ctx: PacketContext) {
             val sender = ctx.sender
             if (sender != null && NetworkHandler.setChannelVersion(ctx.connection, message.version)) {

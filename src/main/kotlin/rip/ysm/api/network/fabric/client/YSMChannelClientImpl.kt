@@ -7,7 +7,6 @@ import rip.ysm.api.network.fabric.YSMChannelImpl
 import rip.ysm.api.network.fabric.YSMPayload
 
 object YSMChannelClientImpl {
-    @JvmStatic
     fun init(channelId: Identifier) {
         ClientPlayNetworking.registerGlobalReceiver(YSMPayload.TYPE) { payload, context ->
             YSMChannelImpl.dispatch(
@@ -17,12 +16,10 @@ object YSMChannelClientImpl {
         }
     }
 
-    @JvmStatic
     fun sendToServer(payload: YSMPayload) {
         ClientPlayNetworking.send(payload)
     }
 
-    @JvmStatic
     fun toServerboundPacket(payload: YSMPayload): Packet<*> {
         return ClientPlayNetworking.createC2SPacket(payload)
     }

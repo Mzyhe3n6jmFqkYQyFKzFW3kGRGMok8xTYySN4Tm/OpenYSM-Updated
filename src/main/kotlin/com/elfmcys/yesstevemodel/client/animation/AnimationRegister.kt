@@ -56,7 +56,6 @@ object AnimationRegister {
         register("idle", Priority.LOWEST) { _, _ -> true }
     }
 
-    @JvmStatic
     fun register(
         animationName: String,
         loopType: ILoopType,
@@ -64,13 +63,11 @@ object AnimationRegister {
         predicate: BiPredicate<Player, AnimationEvent<CustomPlayerEntity>>
     ) = AnimationManager.register(AnimationState(animationName, loopType, priority, predicate))
 
-    @JvmStatic
     fun register(
         animationName: String,
         priority: Int,
         predicate: BiPredicate<Player, AnimationEvent<CustomPlayerEntity>>
     ) = register(animationName, ILoopType.EDefaultLoopTypes.LOOP, priority, predicate)
 
-    @JvmStatic
     fun getVerticalSpeed(player: Player): Float = 20.0f * (player.position().y - player.yo).toFloat()
 }

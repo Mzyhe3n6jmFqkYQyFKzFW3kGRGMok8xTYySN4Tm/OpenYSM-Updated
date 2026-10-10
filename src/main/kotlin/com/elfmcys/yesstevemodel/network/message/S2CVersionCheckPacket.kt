@@ -8,7 +8,6 @@ import rip.ysm.api.network.PacketContext
 
 class S2CVersionCheckPacket(val version: String = NetworkHandler.VERSION) {
     companion object {
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): S2CVersionCheckPacket {
             val version = buf.readUtf()
             if (buf.readableBytes() > 0) {
@@ -21,12 +20,10 @@ class S2CVersionCheckPacket(val version: String = NetworkHandler.VERSION) {
             return S2CVersionCheckPacket(version)
         }
 
-        @JvmStatic
         fun encode(message: S2CVersionCheckPacket, buf: FriendlyByteBuf) {
             buf.writeUtf(message.version)
         }
 
-        @JvmStatic
         fun handle(message: S2CVersionCheckPacket, ctx: PacketContext) {
             if (NetworkHandler.setChannelVersion(ctx.connection, message.version)) {
                 ctx.enqueueWork {

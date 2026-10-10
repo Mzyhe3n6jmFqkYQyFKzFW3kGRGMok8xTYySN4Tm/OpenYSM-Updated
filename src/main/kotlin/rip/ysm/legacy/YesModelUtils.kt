@@ -25,7 +25,6 @@ object YesModelUtils {
     const val VERSION_II: Int = 0x00_00_00_02
     private const val ENCRYPTION_METHOD: String = "AES"
 
-    @JvmStatic
     fun getYsmCryptoVersion(fileData: ByteArray?): Int {
         if (fileData == null || fileData.size < 8) return -1
 
@@ -50,7 +49,6 @@ object YesModelUtils {
         return -1
     }
 
-    @JvmStatic
     @Throws(IOException::class)
     fun input(data: ByteArray): Map<String, ByteArray> {
         if (data.size < 24) return emptyMap()
@@ -59,7 +57,6 @@ object YesModelUtils {
         return inputInternal(data, head, version)
     }
 
-    @JvmStatic
     @Throws(IOException::class)
     fun input(ysmFile: File): Map<String, ByteArray> {
         val fileName = removeExtension(ysmFile.name)

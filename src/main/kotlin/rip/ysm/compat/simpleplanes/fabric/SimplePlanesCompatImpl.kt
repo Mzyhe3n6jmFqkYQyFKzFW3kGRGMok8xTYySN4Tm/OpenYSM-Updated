@@ -6,6 +6,5 @@ import org.joml.Vector3f
 import rip.ysm.compat.ModCompat
 
 object SimplePlanesCompatImpl : ModCompat("simpleplanes") {
-    @JvmStatic
     fun getSimplePlanesRotation(event: AnimationEvent<GeckoVehicleEntity>): Vector3f? = null
 }

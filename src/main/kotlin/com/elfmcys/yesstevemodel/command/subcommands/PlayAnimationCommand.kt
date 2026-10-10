@@ -19,7 +19,6 @@ object PlayAnimationCommand {
     private const val ANIMATION_NAME: String = "animation"
     const val STOP: String = "stop"
 
-    @JvmStatic
     fun register(): LiteralArgumentBuilder<CommandSourceStack> {
         val play: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(PLAY_NAME)
             .requires { commandSourceStack -> YSMMessageFormatter.hasCommandPermission(commandSourceStack, 2) }

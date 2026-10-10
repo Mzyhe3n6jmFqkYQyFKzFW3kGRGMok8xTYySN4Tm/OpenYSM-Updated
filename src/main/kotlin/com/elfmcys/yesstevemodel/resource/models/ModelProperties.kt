@@ -25,7 +25,6 @@ class ModelProperties(
         buildExtraAnimationClassifyMap(extraAnimationClassify)
 
     companion object {
-        @JvmStatic
         fun buildExtraAnimationButtonsMap(extraAnimationButtons: Array<ExtraAnimationButtons>): Map<String, ExtraAnimationButtons> {
             val map = Maps.newHashMap<String, ExtraAnimationButtons>()
             for (buttons in extraAnimationButtons) {
@@ -34,7 +33,6 @@ class ModelProperties(
             return map
         }
 
-        @JvmStatic
         fun buildExtraAnimationClassifyMap(extraAnimationClassify: Array<StringMapPair>): Map<String, OrderedStringMap<String, String>> {
             val map = Maps.newHashMap<String, OrderedStringMap<String, String>>()
             for ((key, valueMap) in extraAnimationClassify) {

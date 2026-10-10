@@ -9,13 +9,11 @@ fun interface EasingType {
     fun buildKeyFrame(keyFrames: MutableList<RawBoneKeyFrame>, index: Int): BoneKeyFrame
 
     companion object {
-        @JvmStatic
         fun buildTransitionKeyFrame(keyFrames: MutableList<RawBoneKeyFrame>): TransitionKeyFrame {
             val transitionDst = keyFrames[0]
             return TransitionKeyFrame(transitionDst.startTick(), transitionDst.preValue(), transitionDst.postValue())
         }
 
-        @JvmStatic
         fun buildLinearKeyFrame(keyFrames: MutableList<RawBoneKeyFrame>, index: Int): BoneKeyFrame {
             if (index == 0) {
                 return buildTransitionKeyFrame(keyFrames)
@@ -31,7 +29,6 @@ fun interface EasingType {
             )
         }
 
-        @JvmStatic
         fun buildCatmullRomKeyFrame(keyFrames: MutableList<RawBoneKeyFrame>, index: Int): BoneKeyFrame {
             if (index == 0) {
                 return buildTransitionKeyFrame(keyFrames)
@@ -51,10 +48,8 @@ fun interface EasingType {
             )
         }
 
-        @JvmField
         val LINEAR: EasingType = EasingType { keyFrames, index -> buildLinearKeyFrame(keyFrames, index) }
 
-        @JvmField
         val CATMULLROM: EasingType = EasingType { keyFrames, index -> buildCatmullRomKeyFrame(keyFrames, index) }
     }
 }

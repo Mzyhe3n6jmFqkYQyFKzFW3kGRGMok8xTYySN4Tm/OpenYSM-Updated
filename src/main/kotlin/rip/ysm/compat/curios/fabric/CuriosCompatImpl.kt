@@ -8,16 +8,12 @@ import net.minecraft.world.item.Item
 import rip.ysm.compat.ModCompat
 
 object CuriosCompatImpl : ModCompat("trinkets", "accessories") {
-    @JvmStatic
     fun hasItemInSlot(livingEntity: LivingEntity, str: String, set: ReferenceOpenHashSet<Item>): Boolean = false
 
-    @JvmStatic
     fun hasTaggedItemInSlot(livingEntity: LivingEntity, str: String, list: List<TagKey<Item>>): Boolean = false
 
-    @JvmStatic
     fun hasNoTaggedItemInSlot(entity: LivingEntity, str: String, list: List<TagKey<Item>>): Boolean = false
 
-    @JvmStatic
     fun registerCuriosItems(binding: ContextBinding) {
     }
 }

@@ -44,7 +44,6 @@ data class RadialSliceRenderState(
     override fun textureSetup(): TextureSetup = TextureSetup.noTexture()
 
     companion object {
-        @JvmStatic
         fun of(
             currentPose: Matrix3x2fc,
             x0: Float,
@@ -75,7 +74,6 @@ data class RadialSliceRenderState(
             )
         }
 
-        @JvmStatic
         fun computeBounds(
             pose: Matrix3x2fc,
             x0: Float,

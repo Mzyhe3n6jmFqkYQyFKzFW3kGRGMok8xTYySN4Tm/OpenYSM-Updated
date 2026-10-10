@@ -7,13 +7,10 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
 object VehicleCapabilityClientStore {
-    @JvmField
     val STORE: ConcurrentMap<UUID, VehicleCapability> = ConcurrentHashMap()
 
-    @JvmStatic
     operator fun get(entity: Entity): VehicleCapability? =
         STORE.computeIfAbsent(entity.uuid) { VehicleCapability(entity) }
 
-    @JvmStatic
     fun clear() = STORE.clear()
 }

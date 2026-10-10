@@ -27,7 +27,6 @@ object ParticleEffectUtil {
     private val particleCache: Cache<String, ParticleOptions> =
         CacheBuilder.newBuilder().expireAfterAccess(60, TimeUnit.SECONDS).build()
 
-    @JvmStatic
     @Throws(ExecutionException::class, CommandSyntaxException::class)
     fun handleParticle(
         context: ExecutionContext<IContext<Entity>>,

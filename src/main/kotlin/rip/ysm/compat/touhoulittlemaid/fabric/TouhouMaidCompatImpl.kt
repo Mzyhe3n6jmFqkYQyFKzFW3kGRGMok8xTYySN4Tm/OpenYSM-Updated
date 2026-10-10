@@ -10,24 +10,19 @@ import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidEventHandler
 import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidModelHandler
 
 object TouhouMaidCompatImpl : ModCompat("touhou_little_maid") {
-    @JvmStatic
     fun isMaidEntity(entity: Entity): Boolean = MaidEventHandler.isMaid(entity)
 
-    @JvmStatic
     fun handleProjectileOwner(projectile: Projectile, entity: Entity) {
     }
 
-    @JvmStatic
     fun registerAnimationRoulette(entity: Entity, classify: String, index: Int) {
         MaidModelHandler.activateRouletteAnimation(entity, classify, index)
     }
 
-    @JvmStatic
     fun applyFeedback(entity: Entity, message: FeedbackData) {
     }
 
     @Environment(EnvType.CLIENT)
-    @JvmStatic
     fun playMaidAnimation(entity: Entity, expression: String) {
         MaidModelHandler.executeMaidMolang(entity, expression)
     }

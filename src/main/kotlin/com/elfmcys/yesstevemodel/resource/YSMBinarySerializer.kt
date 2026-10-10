@@ -10,7 +10,6 @@ import javax.imageio.ImageIO
 
 object YSMBinarySerializer {
 
-    @JvmStatic
     fun serialize(model: RawYsmModel, format: Int, writeFooter: Boolean): YSMByteBuf {
         val buf = YSMByteBuf(Unpooled.buffer())
         if (format >= 16) {
@@ -24,7 +23,6 @@ object YSMBinarySerializer {
         return buf
     }
 
-    @JvmStatic
     fun writeFooter(buf: YSMByteBuf, model: RawYsmModel) {
         if (model.footer.version == 65535) {
             buf.writeVarInt(65535)
@@ -44,7 +42,6 @@ object YSMBinarySerializer {
         }
     }
 
-    @JvmStatic
     fun writeModern(buf: YSMByteBuf, model: RawYsmModel, format: Int) {
         writeSoundFiles(buf, model.soundFiles, format)
         writeFunctionFiles(buf, model.functionFiles)
@@ -80,7 +77,6 @@ object YSMBinarySerializer {
         writeYsmJson(buf, model, format)
     }
 
-    @JvmStatic
     fun writeSubEntities(
         buf: YSMByteBuf,
         entities: Map<String, RawYsmModel.RawSubEntity>,
@@ -138,7 +134,6 @@ object YSMBinarySerializer {
         }
     }
 
-    @JvmStatic
     fun writeGeometry(buf: YSMByteBuf, geo: RawYsmModel.RawGeometry, format: Int) {
         buf.writeVarInt(geo.bones.size)
         for (bone in geo.bones) {
@@ -186,7 +181,6 @@ object YSMBinarySerializer {
         buf.writeVarInt(geo.footerPad3)
     }
 
-    @JvmStatic
     fun writeAnimationFileContent(buf: YSMByteBuf, animFile: RawYsmModel.RawAnimationFile, format: Int) {
         buf.writeVarInt(animFile.animations.size)
         for (anim in animFile.animations.values) {
@@ -228,7 +222,6 @@ object YSMBinarySerializer {
         }
     }
 
-    @JvmStatic
     fun writeChannel(buf: YSMByteBuf, keyframes: List<RawYsmModel.RawKeyframe>) {
         buf.writeVarInt(keyframes.size)
         for (kf in keyframes) {
@@ -245,7 +238,6 @@ object YSMBinarySerializer {
         }
     }
 
-    @JvmStatic
     fun writeMolangValue(buf: YSMByteBuf, value: Any?) {
         when (value) {
             is Float -> {
@@ -272,7 +264,6 @@ object YSMBinarySerializer {
         }
     }
 
-    @JvmStatic
     fun writeAnimationControllers(
         buf: YSMByteBuf,
         files: List<RawYsmModel.RawAnimationControllerFile>,
@@ -287,7 +278,6 @@ object YSMBinarySerializer {
         }
     }
 
-    @JvmStatic
     fun writeAnimationControllerBody(
         buf: YSMByteBuf,
         controllers: Map<String, RawYsmModel.RawAnimationController>,
@@ -342,7 +332,6 @@ object YSMBinarySerializer {
         }
     }
 
-    @JvmStatic
     fun writeTextureFiles(buf: YSMByteBuf, textures: Map<String, RawYsmModel.RawTexture>) {
         buf.writeVarInt(textures.size)
         for (tex in textures.values) {
@@ -378,7 +367,6 @@ object YSMBinarySerializer {
         }
     }
 
-    @JvmStatic
     fun writeSoundFiles(buf: YSMByteBuf, sounds: Map<String, RawYsmModel.RawDataFile>, format: Int) {
         buf.writeVarInt(sounds.size)
         for ((key, value) in sounds) {
@@ -390,7 +378,6 @@ object YSMBinarySerializer {
         }
     }
 
-    @JvmStatic
     fun writeFunctionFiles(buf: YSMByteBuf, functions: Map<String, RawYsmModel.RawDataFile>) {
         buf.writeVarInt(functions.size)
         for ((key, value) in functions) {
@@ -400,7 +387,6 @@ object YSMBinarySerializer {
         }
     }
 
-    @JvmStatic
     fun writeLanguageFiles(buf: YSMByteBuf, languages: Map<String, RawYsmModel.RawLanguageFile>) {
         buf.writeVarInt(languages.size)
         for ((key, value) in languages) {
@@ -415,20 +401,17 @@ object YSMBinarySerializer {
         }
     }
 
-    @JvmStatic
     fun writeSpecialImage(buf: YSMByteBuf, hash: String?, data: ByteArray?) {
         buf.writeString(hash ?: "")
         buf.writeByteArray(data ?: ByteArray(0))
     }
 
-    @JvmStatic
     fun writeVector3D(buf: YSMByteBuf, vec: FloatArray) {
         buf.writeFloat(vec[0])
         buf.writeFloat(vec[1])
         buf.writeFloat(vec[2])
     }
 
-    @JvmStatic
     fun writeYsmJson(buf: YSMByteBuf, model: RawYsmModel, format: Int) {
         val props = model.properties
         val meta = model.metadata
@@ -562,7 +545,6 @@ object YSMBinarySerializer {
         }
     }
 
-    @JvmStatic
     fun convertRgbaToPng(rgbaData: ByteArray?, width: Int, height: Int): ByteArray? {
         if (rgbaData == null || width <= 0 || height <= 0 || rgbaData.size < width * height * 4) {
             return rgbaData

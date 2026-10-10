@@ -22,40 +22,34 @@ object DigestUtil {
         }
     }
 
-    @JvmStatic
     fun md5Digest(): MessageDigest {
         val md = MD5_TL.get()
         md.reset()
         return md
     }
 
-    @JvmStatic
     fun sha256Digest(): MessageDigest {
         val md = SHA256_TL.get()
         md.reset()
         return md
     }
 
-    @JvmStatic
     fun md5(input: ByteArray): ByteArray {
         val md = MD5_TL.get()
         md.reset()
         return md.digest(input)
     }
 
-    @JvmStatic
     fun sha256(input: ByteArray): ByteArray {
         val md = SHA256_TL.get()
         md.reset()
         return md.digest(input)
     }
 
-    @JvmStatic
     fun md5Hex(input: ByteArray): String {
         return HexFormat.of().formatHex(md5(input))
     }
 
-    @JvmStatic
     fun sha256Hex(input: ByteArray): String {
         return HexFormat.of().formatHex(sha256(input))
     }

@@ -12,7 +12,6 @@ import rip.ysm.gui.Option
 import kotlin.math.roundToInt
 
 object MolangOption {
-    @JvmStatic
     fun ofBoolean(title: String, description: String?, animatable: AnimatableEntity<*>, expr: String): Option<Boolean> {
         var cache = false
         evaluate(animatable, expr) { s -> cache = toFloat(s) > 0.0f }
@@ -22,7 +21,6 @@ object MolangOption {
         }
     }
 
-    @JvmStatic
     fun ofDouble(title: String, description: String?, animatable: AnimatableEntity<*>, expr: String): Option<Double> {
         var cache = 0.0
         evaluate(animatable, expr) { s -> cache = toFloat(s).toDouble() }
@@ -32,7 +30,6 @@ object MolangOption {
         }
     }
 
-    @JvmStatic
     fun ofIndex(
         title: String,
         description: String?,

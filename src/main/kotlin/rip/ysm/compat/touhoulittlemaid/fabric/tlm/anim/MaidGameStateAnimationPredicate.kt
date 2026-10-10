@@ -27,7 +27,6 @@ open class MaidGameStateAnimationPredicate : IAnimationPredicate<MaidAnimatable>
     }
 
     companion object {
-        @JvmField
         val GAME_STATE_ANIMATIONS: Array<String> = arrayOf("game_win", "game_lost", "beg")
     }
 }

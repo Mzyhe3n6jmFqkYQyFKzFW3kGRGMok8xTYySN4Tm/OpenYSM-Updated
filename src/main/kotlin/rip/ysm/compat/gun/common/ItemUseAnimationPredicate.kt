@@ -25,7 +25,6 @@ class ItemUseAnimationPredicate : IAnimationPredicate<LivingAnimatable<*>> {
     }
 
     companion object {
-        @JvmStatic
         val isModLoaded by lazy { TacCompat.isModLoaded || SWarfareCompat.isModLoaded }
     }
 }

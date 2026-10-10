@@ -15,7 +15,6 @@ data class S2CModelUploadResultPacket(
     val message: String
 ) {
     companion object {
-        @JvmStatic
         fun encode(packet: S2CModelUploadResultPacket, buf: FriendlyByteBuf) {
             buf.writeVarLong(packet.uploadId)
             buf.writeByte(packet.status.toInt())
@@ -25,7 +24,6 @@ data class S2CModelUploadResultPacket(
             buf.writeUtf(packet.message)
         }
 
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): S2CModelUploadResultPacket {
             return S2CModelUploadResultPacket(
                 buf.readVarLong(),
@@ -37,7 +35,6 @@ data class S2CModelUploadResultPacket(
             )
         }
 
-        @JvmStatic
         fun handle(packet: S2CModelUploadResultPacket, ctx: PacketContext) {
             if (ctx.isClientSide()) {
                 ctx.enqueueWork {
@@ -46,7 +43,6 @@ data class S2CModelUploadResultPacket(
             }
         }
 
-        @JvmStatic
         @Environment(EnvType.CLIENT)
         fun handleOnClient(packet: S2CModelUploadResultPacket) {
             ModelUploadSession.onResult(

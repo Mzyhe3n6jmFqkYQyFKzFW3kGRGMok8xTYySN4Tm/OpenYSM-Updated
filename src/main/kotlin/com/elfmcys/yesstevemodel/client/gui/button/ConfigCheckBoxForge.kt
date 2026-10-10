@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component
 import net.minecraftforge.common.ForgeConfigSpec
 
 object ConfigCheckBoxForge {
-    @JvmStatic
     fun create(x: Int, y: Int, key: String, booleanValue: ForgeConfigSpec.BooleanValue): Checkbox {
         return Checkbox.builder(Component.translatable("gui.yes_steve_model.config.$key"), Minecraft.getInstance().font)
             .pos(x, y)

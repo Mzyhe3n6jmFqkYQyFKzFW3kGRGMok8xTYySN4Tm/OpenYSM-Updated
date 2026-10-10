@@ -12,10 +12,8 @@ fun interface Function {
     fun validateArgumentSize(size: Int): Boolean = true
 
     companion object {
-        @JvmField
         val EMPTY_ARGUMENT: ArgumentCollection = ArgumentCollection(emptyList())
 
-        @JvmField
         val NOOP: Function = Function { _, _ -> null }
     }
 

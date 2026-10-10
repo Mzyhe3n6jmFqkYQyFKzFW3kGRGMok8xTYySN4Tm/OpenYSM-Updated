@@ -40,7 +40,6 @@ class Sync : AbstractClientPlayerFunction() {
     companion object {
         const val MAX_ARGS: Int = 16
 
-        @JvmStatic
         fun collectArgs(
             context: ExecutionContext<IContext<AbstractClientPlayer>>,
             arguments: ArgumentCollection

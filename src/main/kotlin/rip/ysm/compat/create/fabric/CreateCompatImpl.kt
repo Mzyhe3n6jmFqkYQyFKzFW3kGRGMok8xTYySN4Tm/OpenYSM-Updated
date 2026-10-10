@@ -5,10 +5,8 @@ import net.minecraft.world.entity.player.Player
 import rip.ysm.compat.ModCompat
 
 object CreateCompatImpl : ModCompat("create") {
-    @JvmStatic
     fun isPlayerOnCreateContraption(player: Player): Boolean = false
 
-    @JvmStatic
     fun registerCreateFunctions(binding: CtrlBinding) {
     }
 }

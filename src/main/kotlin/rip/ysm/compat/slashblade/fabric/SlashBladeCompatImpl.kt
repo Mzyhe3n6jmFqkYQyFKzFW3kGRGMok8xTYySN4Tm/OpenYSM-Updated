@@ -12,20 +12,15 @@ import net.minecraft.world.item.ItemStack
 import rip.ysm.compat.ModCompat
 
 object SlashBladeCompatImpl : ModCompat("slashblade") {
-    @JvmStatic
     fun isSlashBladeItem(stack: ItemStack): Boolean = false
 
-    @JvmStatic
     fun hasSlashBlade(livingEntity: LivingEntity): Boolean = false
 
-    @JvmStatic
     fun isCarry(livingEntity: LivingEntity): Boolean = false
 
-    @JvmStatic
     fun registerControllerFunctions(binding: CtrlBinding) {
     }
 
-    @JvmStatic
     fun handleSlashBladeAnim(
         player: Player,
         event: AnimationEvent<CustomPlayerEntity>,
@@ -34,6 +29,5 @@ object SlashBladeCompatImpl : ModCompat("slashblade") {
     ): PlayState? =
         null
 
-    @JvmStatic
     fun getComboAnimName(event: AnimationEvent<LivingAnimatable<*>>): String = ""
 }

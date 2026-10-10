@@ -32,7 +32,6 @@ class CallExpression(
     }
 
     companion object {
-        @JvmField
         val EMPTY: Function.ArgumentCollection = Function.ArgumentCollection(ObjectLists.emptyList())
     }
 }

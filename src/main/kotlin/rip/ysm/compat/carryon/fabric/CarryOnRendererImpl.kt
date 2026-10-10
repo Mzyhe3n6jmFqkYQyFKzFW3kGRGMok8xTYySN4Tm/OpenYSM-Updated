@@ -7,7 +7,6 @@ import rip.ysm.compat.ModCompat
 import tschipp.carryon.client.render.CarriedObjectRender
 
 object CarryOnRendererImpl : ModCompat("carryon") {
-    @JvmStatic
     fun render(
         player: Player,
         poseStack: PoseStack,

@@ -22,7 +22,6 @@ object ClientTickEvent {
         ClientTickEvents.START_CLIENT_TICK.register(::onClientPreTick)
     }
 
-    @JvmStatic
     fun onClientPreTick(client: Minecraft) {
         if (!YesSteveModel.isAvailable) return
         tickCount++

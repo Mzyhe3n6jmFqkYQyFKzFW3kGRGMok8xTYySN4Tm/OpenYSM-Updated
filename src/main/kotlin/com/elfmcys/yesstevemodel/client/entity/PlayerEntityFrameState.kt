@@ -85,13 +85,11 @@ open class PlayerEntityFrameState(player: Player, val isLocalPlayer: Boolean) : 
     }
 
     companion object {
-        @JvmStatic
         var headYawDelta: Float = 0.0f
             private set
 
         private var lastYRot: Float = 0.0f
 
-        @JvmStatic
         fun updateHeadYaw(player: Player, currentTick: Int, previousTick: Int) {
             val yRot = player.yRot
             if (previousTick > 0) headYawDelta = (yRot - lastYRot) * 20.0f / (currentTick - previousTick)

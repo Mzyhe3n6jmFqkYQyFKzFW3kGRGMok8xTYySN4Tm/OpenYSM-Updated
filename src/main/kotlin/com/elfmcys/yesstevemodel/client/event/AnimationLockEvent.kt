@@ -16,8 +16,7 @@ import kotlin.math.abs
 
 @Environment(EnvType.CLIENT)
 object AnimationLockEvent {
-    @JvmField
-    var animationLocked: Boolean = false
+    private var animationLocked: Boolean = false
 
     init {
         ClientRawInputEvent.KEY_PRESSED.register { _, action, event ->
@@ -42,7 +41,6 @@ object AnimationLockEvent {
         }
     }
 
-    @JvmStatic
     fun isPlayerMoving(localPlayer: LocalPlayer): Boolean {
         val input = localPlayer.input
         val move = input.getMoveVector()
@@ -51,11 +49,9 @@ object AnimationLockEvent {
 
     private fun isSignificantImpulse(impulse: Float): Boolean = abs(impulse) > 1.0E-5f
 
-    @JvmStatic
     fun toggleLock() {
         animationLocked = !animationLocked
     }
 
-    @JvmStatic
     fun isLocked(): Boolean = animationLocked
 }

@@ -6,7 +6,6 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.simplehats.fabric.SimpleHatsHelperImpl
 
 object SimpleHatsHelper : ModCompat("simplehats") {
-    @JvmStatic
     fun getHatItem(livingEntity: LivingEntity): ItemStack {
         if (!isModLoaded) return ItemStack.EMPTY
         return SimpleHatsHelperImpl.getHatItem(livingEntity)

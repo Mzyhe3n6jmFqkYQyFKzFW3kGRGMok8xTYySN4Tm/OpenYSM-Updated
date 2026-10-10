@@ -3,12 +3,10 @@ package com.elfmcys.yesstevemodel.geckolib3.core.keyframe.bone
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList
 
 object BoneKeyFrameProcessor {
-    @JvmStatic
     fun process(frames: Array<RawBoneKeyFrame>, isRotation: Boolean): MutableList<BoneKeyFrame> {
         return process(ReferenceArrayList.wrap(frames), isRotation)
     }
 
-    @JvmStatic
     fun process(frames: MutableList<RawBoneKeyFrame>, isRotation: Boolean): MutableList<BoneKeyFrame> {
         for (frame in frames) {
             frame.init(isRotation)

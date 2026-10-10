@@ -16,7 +16,6 @@ object ClientPlayerCloneEvent {
         ClientPlayerEvent.CLIENT_PLAYER_QUIT.register(::onClientPlayerQuit)
     }
 
-    @JvmStatic
     fun onClientPlayerRespawn(oldPlayer: LocalPlayer?, newPlayer: LocalPlayer?) {
         if (oldPlayer == null || newPlayer == null || !YesSteveModel.isAvailable) return
         CapabilityLifecycle.revive(oldPlayer)
@@ -28,7 +27,6 @@ object ClientPlayerCloneEvent {
         CapabilityLifecycle.invalidate(oldPlayer)
     }
 
-    @JvmStatic
     fun onClientPlayerQuit(player: LocalPlayer?) {
         PlayerCapabilityClientStore.clear()
     }

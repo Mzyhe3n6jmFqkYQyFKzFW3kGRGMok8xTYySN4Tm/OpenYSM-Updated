@@ -8,13 +8,11 @@ import rip.ysm.api.network.PacketContext
 
 class S2CSyncAuthModelsPacket(val authModels: MutableSet<String>) {
     companion object {
-        @JvmStatic
         fun encode(message: S2CSyncAuthModelsPacket, buf: FriendlyByteBuf) {
             buf.writeVarInt(message.authModels.size)
             for (modelId in message.authModels) buf.writeUtf(modelId)
         }
 
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): S2CSyncAuthModelsPacket {
             val size = buf.readVarInt()
             val tmp = HashSet<String>(size)
@@ -22,7 +20,6 @@ class S2CSyncAuthModelsPacket(val authModels: MutableSet<String>) {
             return S2CSyncAuthModelsPacket(tmp)
         }
 
-        @JvmStatic
         fun handle(message: S2CSyncAuthModelsPacket, ctx: PacketContext) {
             if (!ctx.isClientSide()) return
             ctx.enqueueWork {
@@ -30,7 +27,6 @@ class S2CSyncAuthModelsPacket(val authModels: MutableSet<String>) {
             }
         }
 
-        @JvmStatic
         @Environment(EnvType.CLIENT)
         fun handleCapability(message: S2CSyncAuthModelsPacket) {
             ClientModelManager.authModels = message.authModels.toSet()

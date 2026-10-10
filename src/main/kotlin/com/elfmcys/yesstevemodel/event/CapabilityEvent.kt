@@ -130,9 +130,7 @@ object CapabilityEvent {
     @JvmStatic
     fun syncVehicleModel(entity: Entity, serverPlayer: ServerPlayer) {
         ModelInfoCapability[serverPlayer]?.let { modelInfoCap ->
-            if (!NetworkHandler.isPlayerConnected(serverPlayer) && !modelInfoCap.isMandatory) {
-                return
-            }
+            if (!NetworkHandler.isPlayerConnected(serverPlayer) && !modelInfoCap.isMandatory) return
             VehicleModelCapability[entity]?.let { vehicleModelCap ->
                 modelInfoCap.molangVars?.let { vars ->
                     vehicleModelCap.setModel(modelInfoCap.modelId, vars)
@@ -142,6 +140,5 @@ object CapabilityEvent {
         }
     }
 
-    @JvmStatic
     fun getModelInfoCap(player: Player): ModelInfoCapability? = ModelInfoCapability[player]
 }

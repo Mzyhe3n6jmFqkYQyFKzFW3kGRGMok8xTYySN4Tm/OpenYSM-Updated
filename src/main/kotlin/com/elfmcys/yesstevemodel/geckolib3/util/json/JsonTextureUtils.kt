@@ -18,7 +18,6 @@ object JsonTextureUtils {
     /**
      * 给player用的
      */
-    @JvmStatic
     fun getTextures(
         resource: Map<String, ByteArray>,
         element: JsonElement?
@@ -37,7 +36,6 @@ object JsonTextureUtils {
         return OrderedStringMap(keys.toTypedArray(), values.toTypedArray())
     }
 
-    @JvmStatic
     fun getTexture(resource: Map<String, ByteArray>, element: JsonElement?): Pair<String, OuterFileTexture>? {
         if (element == null) return null
 
@@ -74,7 +72,6 @@ object JsonTextureUtils {
         return null
     }
 
-    @JvmStatic
     private fun extractTextureName(path: String): String {
         val lastSlash = path.lastIndexOf('/')
         val lastDot = path.lastIndexOf('.')
