@@ -65,7 +65,14 @@ object PlayerSkinTextureManager {
         modelId != null && ClientModelManager.isCustomSkinModel(modelId)
 
     fun isDefaultSkin(location: Identifier?): Boolean =
-        location != null && (location in WIDE_DEFAULT_SKINS || location in SLIM_DEFAULT_SKINS)
+        location != null && (
+            location in WIDE_DEFAULT_SKINS ||
+            location in SLIM_DEFAULT_SKINS ||
+            location.path.startsWith("textures/entity/player/wide/") ||
+            location.path.startsWith("textures/entity/player/slim/") ||
+            location.path == "textures/entity/steve.png" ||
+            location.path == "textures/entity/alex.png"
+        )
 
     fun getUseMcDefaultTexture(modelId: String?): Int {
         if (modelId == null) return 0
@@ -106,7 +113,10 @@ object PlayerSkinTextureManager {
     fun getSkinTexture(str: String): Identifier? {
         val defaultType = getUseMcDefaultTexture(str)
         val defaultTex = getDefaultSkinTexture(defaultType)
-        return defaultTex
+        if (defaultTex != null) return defaultTex
+        if (str.lowercase().contains("alex") || str == "misc/1_alex") return ALEX_SKIN
+        if (str.lowercase().contains("steve") || str == "misc/2_steve") return STEVE_SKIN
+        return null
     }
 
     fun getPlayerSkinLocation(player: Player?, modelId: String? = null): Identifier? {
