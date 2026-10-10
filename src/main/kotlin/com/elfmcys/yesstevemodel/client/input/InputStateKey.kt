@@ -9,11 +9,9 @@ import rip.ysm.api.event.EventResult
 
 @Environment(EnvType.CLIENT)
 object InputStateKey {
-    @JvmField
     @Volatile
     var keyStates: BooleanArray = BooleanArray(349)
 
-    @JvmField
     @Volatile
     var mouseStates: BooleanArray = BooleanArray(8)
 

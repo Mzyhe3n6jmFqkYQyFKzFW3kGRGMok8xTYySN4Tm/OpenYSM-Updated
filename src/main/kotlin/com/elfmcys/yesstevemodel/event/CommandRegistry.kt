@@ -18,7 +18,6 @@ import net.minecraft.commands.synchronization.SuggestionProviders
 import rip.ysm.api.PlatformAPI
 
 object CommandRegistry {
-    @JvmField
     val MODEL_IDS: SuggestionProvider<CommandSourceStack> =
         SuggestionProviders.register(NameSpaces.MOD.path("models")) { commandContext, suggestionsBuilder ->
             if (commandContext.source is SharedSuggestionProvider) {
@@ -36,7 +35,6 @@ object CommandRegistry {
             Suggestions.empty()
         }
 
-    @JvmField
     val ANIMATION_NAMES: SuggestionProvider<CommandSourceStack> =
         SuggestionProviders.register(NameSpaces.MOD.path("animations")) { commandContext, suggestionsBuilder ->
             if (commandContext.source is SharedSuggestionProvider) {
@@ -50,7 +48,6 @@ object CommandRegistry {
             Suggestions.empty()
         }
 
-    @JvmField
     val TEXTURE_IDS: SuggestionProvider<CommandSourceStack> =
         SuggestionProviders.register(NameSpaces.MOD.path("textures")) { commandContext, suggestionsBuilder ->
             if (commandContext.source is SharedSuggestionProvider) {

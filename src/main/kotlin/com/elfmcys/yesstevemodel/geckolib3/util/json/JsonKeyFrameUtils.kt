@@ -11,7 +11,6 @@ import java.util.*
  * 用于将 json 转换成关键帧的工具类
  */
 object JsonKeyFrameUtils {
-    @JvmStatic
     @Throws(NumberFormatException::class)
     fun getKeyFrames(boneKeyFrames: MutableList<RawBoneKeyFrame>, element: JsonElement?, parser: MolangParser) {
         if (element == null) return
@@ -84,7 +83,6 @@ object JsonKeyFrameUtils {
         boneKeyFrames.sortWith(Comparator.comparingDouble { it.startTick })
     }
 
-    @JvmStatic
     fun tryGetEasingType(element: JsonElement?, keyframe: RawBoneKeyFrame) {
         if (element == null || !element.isJsonPrimitive || !element.asJsonPrimitive.isString) return
         val easingTypeText = element.asJsonPrimitive.asString.lowercase(Locale.ENGLISH)
@@ -92,7 +90,6 @@ object JsonKeyFrameUtils {
             EasingType.LINEAR else if ("catmullrom" == easingTypeText) keyframe.easingType = EasingType.CATMULLROM
     }
 
-    @JvmStatic
     fun readPreKeyFrame(element: JsonElement, keyframe: RawBoneKeyFrame, parser: MolangParser) {
         if (element.isJsonPrimitive) {
             val primitive = element.asJsonPrimitive
@@ -175,7 +172,6 @@ object JsonKeyFrameUtils {
         }
     }
 
-    @JvmStatic
     fun readPostKeyFrame(element: JsonElement, keyframe: RawBoneKeyFrame, parser: MolangParser) {
         if (element.isJsonPrimitive) {
             val primitive = element.asJsonPrimitive

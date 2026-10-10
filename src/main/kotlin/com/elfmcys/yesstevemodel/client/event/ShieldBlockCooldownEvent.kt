@@ -7,12 +7,10 @@ import kotlin.jvm.optionals.getOrNull
 object ShieldBlockCooldownEvent {
     const val TAG_KEY: String = "ysm\$shield_block_cooldown"
 
-    @JvmStatic
     fun onShieldBlock(entity: LivingEntity) {
         EntityDataBridge.getPersistentData(entity).putInt(TAG_KEY, 5)
     }
 
-    @JvmStatic
     fun onLivingTick(entity: LivingEntity) {
         val tag = EntityDataBridge.getPersistentData(entity)
         val cooldown = tag.getInt(TAG_KEY).getOrNull()
@@ -25,7 +23,6 @@ object ShieldBlockCooldownEvent {
         }
     }
 
-    @JvmStatic
     fun isOnCooldown(livingEntity: LivingEntity): Boolean {
         return EntityDataBridge.getPersistentData(livingEntity).getInt(TAG_KEY).isPresent
     }

@@ -26,18 +26,15 @@ class S2CExecuteMolangPacket {
     }
 
     companion object {
-        @JvmStatic
         fun encode(message: S2CExecuteMolangPacket, buf: FriendlyByteBuf) {
             buf.writeVarIntArray(message.entityIds)
             buf.writeUtf(message.expression)
         }
 
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): S2CExecuteMolangPacket {
             return S2CExecuteMolangPacket(buf.readVarIntArray(), buf.readUtf())
         }
 
-        @JvmStatic
         fun handle(message: S2CExecuteMolangPacket, ctx: PacketContext) {
             if (ctx.isClientSide()) {
                 ctx.enqueueWork {
@@ -46,7 +43,6 @@ class S2CExecuteMolangPacket {
             }
         }
 
-        @JvmStatic
         @Environment(EnvType.CLIENT)
         fun handleCapability(message: S2CExecuteMolangPacket) {
             val level = Minecraft.getInstance().level ?: return

@@ -60,7 +60,6 @@ class VehicleModelCapability : NbtSave {
             return capability
         }
 
-        @JvmStatic
         operator fun get(entity: Entity): VehicleModelCapability? = VehicleModelCapabilityImpl[entity]
     }
 }

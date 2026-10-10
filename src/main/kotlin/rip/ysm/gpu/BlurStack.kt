@@ -34,12 +34,10 @@ object BlurStack {
         var tintRgba: Int = 0
     }
 
-    @JvmStatic
     fun pushBlur(x: Float, y: Float, w: Float, h: Float, cornerRadius: Float, blurRadius: Float) {
         pushBlur(x, y, w, h, cornerRadius, blurRadius, -1)
     }
 
-    @JvmStatic
     fun pushBlur(x: Float, y: Float, w: Float, h: Float, cornerRadius: Float, blurRadius: Float, tintRgba: Int) {
         val r = Region().apply {
             isPie = false
@@ -54,7 +52,6 @@ object BlurStack {
         regions.add(r)
     }
 
-    @JvmStatic
     fun pushBlurPie(
         centerX: Float,
         centerY: Float,
@@ -67,7 +64,6 @@ object BlurStack {
         pushBlurPie(centerX, centerY, innerRadius, outerRadius, startAngle, endAngle, blurRadius, -1)
     }
 
-    @JvmStatic
     fun pushBlurPie(
         centerX: Float,
         centerY: Float,
@@ -97,22 +93,18 @@ object BlurStack {
         regions.add(r)
     }
 
-    @JvmStatic
     fun popBlur() {
         if (regions.isNotEmpty()) {
             regions.removeAt(regions.size - 1)
         }
     }
 
-    @JvmStatic
     fun clear() {
         regions.clear()
     }
 
-    @JvmStatic
     fun isEmpty(): Boolean = regions.isEmpty()
 
-    @JvmStatic
     fun flush(graphics: GuiGraphics) {
         if (regions.isEmpty()) return
         if (!BlurShader.ensureCompiled()) {

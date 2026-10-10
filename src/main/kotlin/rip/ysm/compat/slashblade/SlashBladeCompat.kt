@@ -13,23 +13,18 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.slashblade.fabric.SlashBladeCompatImpl
 
 object SlashBladeCompat : ModCompat("slashblade") {
-    @JvmStatic
     fun isSlashBladeItem(stack: ItemStack): Boolean = isModLoaded && SlashBladeCompatImpl.isSlashBladeItem(stack)
 
-    @JvmStatic
     fun hasSlashBlade(livingEntity: LivingEntity): Boolean =
         isModLoaded && SlashBladeCompatImpl.hasSlashBlade(livingEntity)
 
-    @JvmStatic
     fun isCarry(livingEntity: LivingEntity): Boolean = isModLoaded && SlashBladeCompatImpl.isCarry(livingEntity)
 
-    @JvmStatic
     fun registerControllerFunctions(binding: CtrlBinding) {
         if (!isModLoaded) return
         SlashBladeCompatImpl.registerControllerFunctions(binding)
     }
 
-    @JvmStatic
     fun handleSlashBladeAnim(
         player: Player,
         event: AnimationEvent<CustomPlayerEntity>,
@@ -40,7 +35,6 @@ object SlashBladeCompat : ModCompat("slashblade") {
         return SlashBladeCompatImpl.handleSlashBladeAnim(player, event, str, loopType)
     }
 
-    @JvmStatic
     fun getComboAnimName(event: AnimationEvent<LivingAnimatable<*>>): String {
         if (!isModLoaded) return ""
         return SlashBladeCompatImpl.getComboAnimName(event)

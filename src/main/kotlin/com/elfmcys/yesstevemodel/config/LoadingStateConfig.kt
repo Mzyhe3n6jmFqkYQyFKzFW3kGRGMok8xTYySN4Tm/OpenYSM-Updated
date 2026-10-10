@@ -15,10 +15,8 @@ object LoadingStateConfig {
     lateinit var DISABLE_LOADING_STATE_SCREEN: ForgeConfigSpec.BooleanValue
     lateinit var LOADING_STATE_POSITION: ForgeConfigSpec.EnumValue<Position>
 
-    @JvmStatic
     fun save() = GeneralConfig.save()
 
-    @JvmStatic
     fun define(builder: ForgeConfigSpec.Builder) {
         builder.push("loading_state_screen")
         builder.comment("Whether to disable loading state screen")

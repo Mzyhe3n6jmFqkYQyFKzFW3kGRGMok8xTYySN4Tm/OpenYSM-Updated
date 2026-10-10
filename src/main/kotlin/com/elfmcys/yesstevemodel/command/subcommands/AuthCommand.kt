@@ -30,7 +30,6 @@ object AuthCommand {
     private const val TARGETS_NAME: String = "targets"
     private const val MODEL_ID_NAME: String = "model_id"
 
-    @JvmStatic
     fun register(): LiteralArgumentBuilder<CommandSourceStack> {
         val auth: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(AUTH_NAME)
             .requires { commandSourceStack -> YSMMessageFormatter.hasCommandPermission(commandSourceStack, 2) }

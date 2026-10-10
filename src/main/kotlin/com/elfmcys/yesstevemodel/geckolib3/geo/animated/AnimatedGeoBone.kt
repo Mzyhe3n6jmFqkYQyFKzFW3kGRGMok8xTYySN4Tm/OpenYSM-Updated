@@ -19,7 +19,6 @@ class AnimatedGeoBone(
     private val geoBonePivotZ: Float = geoBone.pivotZ
     private val geoBoneInitialRotation: Vector3f = Vector3f(geoBone.rotX, geoBone.rotY, geoBone.rotZ)
 
-    @JvmField
     @PublishedApi
     internal var rawTouhouMaidBone: Any? = null
 

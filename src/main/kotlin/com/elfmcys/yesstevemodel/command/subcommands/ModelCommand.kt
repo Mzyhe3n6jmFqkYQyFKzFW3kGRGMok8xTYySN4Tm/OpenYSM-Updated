@@ -32,7 +32,6 @@ object ModelCommand {
     private const val PLAYERS_NAME: String = "players"
     private const val ARG_VALUE: String = "value"
 
-    @JvmStatic
     fun register(): LiteralArgumentBuilder<CommandSourceStack> {
         val model = Commands.literal(MODEL_NAME)
             .requires { commandSourceStack -> YSMMessageFormatter.hasCommandPermission(commandSourceStack, 2) }

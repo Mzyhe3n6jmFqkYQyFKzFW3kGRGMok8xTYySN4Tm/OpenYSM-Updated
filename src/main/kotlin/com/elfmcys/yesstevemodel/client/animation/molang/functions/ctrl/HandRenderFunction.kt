@@ -68,14 +68,11 @@ class HandRenderFunction(private val handItemPredicate: HandItemPredicate) : Liv
         const val RESULT_FALSE = 0
         const val RESULT_TRUE = 1
 
-        @JvmStatic
         fun createAlways(): HandRenderFunction = HandRenderFunction { _, _ -> true }
 
-        @JvmStatic
         fun createWhenSwinging(): HandRenderFunction =
             HandRenderFunction { entity, _ -> entity.swinging && !entity.isSleeping }
 
-        @JvmStatic
         fun createWhenUsing(): HandRenderFunction =
             HandRenderFunction { entity, _ -> entity.isUsingItem && !entity.isSleeping }
     }

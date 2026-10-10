@@ -15,10 +15,8 @@ object FileTypeUtil {
     const val DEFAULT_TEXTURE: String = "default"
     private val ARCHIVE_EXTENSIONS: Set<String> = setOf(".zip", ".7z", ".ysm")
 
-    @JvmStatic
     fun parseHexId(str: String): Int = Integer.parseUnsignedInt(str.substring(0, 8), 16)
 
-    @JvmStatic
     fun splitFileNameAndParentDir(filePath: String): Pair<String, String> {
         val lastSlashIndex = filePath.lastIndexOf('/')
         if (lastSlashIndex == -1) {
@@ -27,7 +25,6 @@ object FileTypeUtil {
         return Pair.of(filePath.substring(lastSlashIndex + 1), filePath.substring(0, lastSlashIndex + 1))
     }
 
-    @JvmStatic
     fun getNameWithoutArchiveExtension(filePath: String): String {
         val fileName = filePath.substringAfterLast('/')
         val dotIndex = fileName.lastIndexOf('.')
@@ -37,7 +34,6 @@ object FileTypeUtil {
         return fileName.substring(0, dotIndex)
     }
 
-    @JvmStatic
     fun getFinalPathSegment(path: String?): String {
         if (path.isNullOrEmpty()) {
             return StringPool.EMPTY
@@ -46,12 +42,10 @@ object FileTypeUtil {
         return trimmedPath.substringAfterLast('/')
     }
 
-    @JvmStatic
     fun getPackIconLocation(str: String): Identifier {
         return NameSpaces.MOD.path("model_pack_icon/${str.hashCode()}")
     }
 
-    @JvmStatic
     fun resolveEntityTypes(strArr: Array<String>): Set<Identifier> {
         val hashSet = HashSet<Identifier>()
         for (str in strArr) {

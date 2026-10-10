@@ -20,7 +20,7 @@ open class MolangParser(map: MutableMap<String, Any>) {
         return runCatching {
             parseExpressionUnsafe(molangExpression, isScript)
         }.getOrElse { e ->
-            if (AnimationDebugOverlay.isDebugActive()) {
+            if (AnimationDebugOverlay.isDebugActive) {
                 Constants.LOGGER.error("Failed to parse molang expression: {}\n{}", e.message, molangExpression)
                 ChatLogger.logComponent(
                     Component.translatable("error.yes_steve_model.parse_molang_exp")
@@ -48,7 +48,6 @@ open class MolangParser(map: MutableMap<String, Any>) {
     open fun reset() = primaryBinding.reset()
 
     companion object {
-        @JvmStatic
         fun stripComments(input: String): String {
             if (input.indexOf('/') < 0) return input
             val len: Int = input.length

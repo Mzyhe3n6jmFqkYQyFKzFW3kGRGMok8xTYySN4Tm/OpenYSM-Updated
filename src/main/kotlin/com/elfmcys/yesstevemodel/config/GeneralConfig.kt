@@ -46,11 +46,9 @@ object GeneralConfig {
     lateinit var TEXTURE_SCREEN_MODE: ForgeConfigSpec.EnumValue<TextureScreenMode>
     lateinit var MODEL_INFO_SCREEN_MODE: ForgeConfigSpec.EnumValue<ModelInfoScreenMode>
 
-    @JvmStatic
     fun effectiveModernRoulette(): Boolean =
         !(!::ROULETTE_MODE.isInitialized || !::ROULETTE_SETTINGS_MODE.isInitialized) && ROULETTE_MODE.get() == RouletteMode.MODERN && ROULETTE_SETTINGS_MODE.get() == RouletteSettingsMode.MODERN
 
-    @JvmStatic
     fun buildSpec(): ForgeConfigSpec {
         val builder = ForgeConfigSpec.Builder()
         defineGeneral(builder)
@@ -61,12 +59,10 @@ object GeneralConfig {
         return spec
     }
 
-    @JvmStatic
     fun save() {
         if (::SPEC.isInitialized) runCatching { SPEC.save() }
     }
 
-    @JvmStatic
     fun defineGeneral(builder: ForgeConfigSpec.Builder) {
         builder.push("general")
         builder.comment("Whether to display disclaimer GUI")

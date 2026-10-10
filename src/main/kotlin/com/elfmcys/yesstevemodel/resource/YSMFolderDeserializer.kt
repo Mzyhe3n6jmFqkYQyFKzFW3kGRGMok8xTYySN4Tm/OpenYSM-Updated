@@ -1455,7 +1455,6 @@ class YSMFolderDeserializer : AutoCloseable {
     }
 
     companion object {
-        @JvmStatic
         fun isModelFolder(dir: Path?): Boolean {
             if (dir == null || !Files.isDirectory(dir)) {
                 return false
@@ -1466,7 +1465,6 @@ class YSMFolderDeserializer : AutoCloseable {
             return Files.isRegularFile(dir.resolve("main.json")) && Files.isRegularFile(dir.resolve("arm.json"))
         }
 
-        @JvmStatic
         fun detectFormat(data: ByteArray): Int {
             if (data.size >= 2 && data[0] == 0x42.toByte() && data[1] == 0x4D.toByte()) return 1 // 'BM'
             if (data.size >= 8 && data[0].toInt() and 0xFF == 0x89 && data[1] == 0x50.toByte() && data[2] == 0x4E.toByte() && data[3] == 0x47.toByte()) return 2 // PNG
@@ -1478,7 +1476,6 @@ class YSMFolderDeserializer : AutoCloseable {
             return 0
         }
 
-        @JvmStatic
         fun getAnimTypeFromKey(key: String): Int {
             return when (key) {
                 "main" -> 1
@@ -1498,7 +1495,6 @@ class YSMFolderDeserializer : AutoCloseable {
             }
         }
 
-        @JvmStatic
         fun getAnimKeyFromType(type: Int): String {
             return when (type) {
                 1 -> "main"
@@ -1518,18 +1514,14 @@ class YSMFolderDeserializer : AutoCloseable {
             }
         }
 
-        @JvmStatic
         fun getStr(obj: JsonObject, key: String, def: String): String = if (obj.has(key)) obj.get(key).asString else def
 
-        @JvmStatic
         fun getBool(obj: JsonObject, key: String, def: Boolean): Boolean =
             if (obj.has(key)) obj.get(key).asBoolean else def
 
-        @JvmStatic
         fun getDouble(obj: JsonObject, key: String, def: Double): Double =
             if (obj.has(key)) obj.get(key).asDouble else def
 
-        @JvmStatic
         fun getFloatArray(obj: JsonObject, key: String, size: Int): FloatArray {
             val result = FloatArray(size)
             if (obj.has(key)) {
@@ -1541,7 +1533,6 @@ class YSMFolderDeserializer : AutoCloseable {
             return result
         }
 
-        @JvmStatic
         fun extractFileName(fullPath: String): String {
             var name = fullPath
             val lastSlash = name.lastIndexOf('/')

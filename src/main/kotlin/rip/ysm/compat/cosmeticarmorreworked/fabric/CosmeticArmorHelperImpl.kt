@@ -7,10 +7,8 @@ import net.minecraft.world.item.ItemStack
 import rip.ysm.compat.ModCompat
 
 object CosmeticArmorHelperImpl : ModCompat("cosmeticarmorreworked") {
-    @JvmStatic
     fun getArmorItem(entity: LivingEntity, slot: EquipmentSlot): ItemStack = entity.getItemBySlot(slot)
 
-    @JvmStatic
     fun getElytraItem(livingEntity: LivingEntity): ItemStack {
         val chest = livingEntity.getItemBySlot(EquipmentSlot.CHEST)
         return if (chest.has(DataComponents.GLIDER)) chest else ItemStack.EMPTY

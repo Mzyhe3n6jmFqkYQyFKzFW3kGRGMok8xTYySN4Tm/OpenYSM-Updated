@@ -17,7 +17,6 @@ object ExportCommand {
     private const val MODEL_ID_NAME: String = "model_id"
     private const val EXTRA_NAME: String = "extra"
 
-    @JvmStatic
     fun register(): LiteralArgumentBuilder<CommandSourceStack> {
         val export: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(EXPORT_NAME)
             .requires { commandSourceStack -> YSMMessageFormatter.hasCommandPermission(commandSourceStack, 2) }

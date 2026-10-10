@@ -14,7 +14,6 @@ class RideStateAnimationPredicate : IAnimationPredicate<GeckoVehicleEntity> {
     }
 
     companion object {
-        @JvmField
         val ANIMATION_NAMES: Array<String> = arrayOf("has_ride", "not_ride")
     }
 }

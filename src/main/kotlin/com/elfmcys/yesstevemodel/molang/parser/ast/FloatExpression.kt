@@ -25,10 +25,8 @@ class FloatExpression(val value: Float) : Expression {
     }
 
     companion object {
-        @JvmField
         val ZERO: FloatExpression = FloatExpression(0.0f)
 
-        @JvmField
         val ONE: FloatExpression = FloatExpression(1.0f)
     }
 }

@@ -5,7 +5,6 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 
 object ShaderUtil {
-    @JvmStatic
     @Throws(IOException::class)
     fun loadResource(path: String): String {
         val stream = ShaderUtil::class.java.getResourceAsStream(path)
@@ -15,7 +14,6 @@ object ShaderUtil {
         }
     }
 
-    @JvmStatic
     fun compileShader(glType: Int, src: String, name: String): Int {
         val sh = GL20.glCreateShader(glType)
         GL20.glShaderSource(sh, src)
@@ -28,18 +26,15 @@ object ShaderUtil {
         return sh
     }
 
-    @JvmStatic
     @Throws(IOException::class)
     fun compileShaderFromResource(glType: Int, resourcePath: String): Int {
         return compileShader(glType, loadResource(resourcePath), resourcePath)
     }
 
-    @JvmStatic
     fun linkProgram(vararg shaderIds: Int): Int {
         return linkProgramWith(null, *shaderIds)
     }
 
-    @JvmStatic
     fun linkProgramWith(preLink: ((Int) -> Unit)?, vararg shaderIds: Int): Int {
         val prog = GL20.glCreateProgram()
         for (sh in shaderIds) {

@@ -76,7 +76,6 @@ class MT19937(seed: Long = System.currentTimeMillis()) {
     val seed: Long
         get() = mt[0]
 
-    @Suppress("ConstPropertyName")
     companion object {
         const val W: Int = 64
         const val N: Int = 312
@@ -94,39 +93,5 @@ class MT19937(seed: Long = System.currentTimeMillis()) {
         const val LOWER_MASK: Long = 0x7FFFFFFFL
         const val UPPER_MASK: Long = -0x80000000L // 0xFFFFFFFF80000000L
         const val DEFAULT_SEED: Int = 5489
-
-        // Keep lowercase alias if needed for java compat
-        const val w: Int = W
-
-        const val n: Int = N
-
-        const val m: Int = M
-
-        const val r: Int = R
-
-        @JvmField
-        val a: Long = A
-
-        const val u: Int = U
-
-        const val s: Int = S
-
-        const val t: Int = T
-
-        const val d: Long = D
-
-        const val b: Long = B
-
-        const val c: Long = C
-
-        const val l: Int = L
-
-        const val f: Long = F
-
-        const val lower_mask: Long = LOWER_MASK
-
-        const val upper_mask: Long = UPPER_MASK
-
-        const val default_seed: Int = DEFAULT_SEED
     }
 }

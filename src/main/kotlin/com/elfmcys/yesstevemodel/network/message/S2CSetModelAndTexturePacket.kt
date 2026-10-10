@@ -16,7 +16,6 @@ class S2CSetModelAndTexturePacket(
     val entityModelSync: S2CSyncPlayerStatePacket
 ) {
     companion object {
-        @JvmStatic
         fun encode(other: S2CSetModelAndTexturePacket, friendlyByteBuf: FriendlyByteBuf) {
             friendlyByteBuf.writeVarInt(other.entityId)
             friendlyByteBuf.writeUtf(other.modelId)
@@ -25,7 +24,6 @@ class S2CSetModelAndTexturePacket(
             S2CSyncPlayerStatePacket.encode(other.entityModelSync, friendlyByteBuf)
         }
 
-        @JvmStatic
         fun decode(friendlyByteBuf: FriendlyByteBuf): S2CSetModelAndTexturePacket {
             return S2CSetModelAndTexturePacket(
                 friendlyByteBuf.readVarInt(),
@@ -36,7 +34,6 @@ class S2CSetModelAndTexturePacket(
             )
         }
 
-        @JvmStatic
         fun handle(other: S2CSetModelAndTexturePacket, ctx: PacketContext) {
             if (ctx.isClientSide()) {
                 EntityJoinCallbackEvent.addCallback(other.entityId) { entity ->
@@ -45,7 +42,6 @@ class S2CSetModelAndTexturePacket(
             }
         }
 
-        @JvmStatic
         fun applyOnClient(entity: Entity, other: S2CSetModelAndTexturePacket) {
             val keepLocalModel = ClientOnlyMode.isForced && entity == Minecraft.getInstance().player
             PlayerCapability[entity]?.let { cap ->

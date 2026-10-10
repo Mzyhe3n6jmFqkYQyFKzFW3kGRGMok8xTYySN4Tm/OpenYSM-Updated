@@ -29,7 +29,6 @@ open class MaidStatusAnimationPredicate : IAnimationPredicate<MaidAnimatable> {
     }
 
     companion object {
-        @JvmField
         val RENDER_STATES: Array<String> = arrayOf("statue", "garage_kit")
     }
 }

@@ -32,7 +32,6 @@ class IdentifierExpression(
     }
 
     companion object {
-        @JvmStatic
         fun get(name: String, target: Any): Expression {
             return when (target) {
                 is Number -> FloatExpression(target.toFloat())

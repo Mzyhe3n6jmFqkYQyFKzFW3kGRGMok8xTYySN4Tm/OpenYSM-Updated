@@ -16,7 +16,6 @@ object BoneXformCompute {
     private var failed: Boolean = false
 
     @Synchronized
-    @JvmStatic
     fun ensureCompiled(): Boolean {
         if (program != 0) return true
         if (failed) return false
@@ -37,18 +36,13 @@ object BoneXformCompute {
         }
     }
 
-    @JvmStatic
     fun program(): Int = program
 
-    @JvmStatic
     fun locColor(): Int = locColor
 
-    @JvmStatic
     fun locOverlay(): Int = locOverlay
 
-    @JvmStatic
     fun locModelView(): Int = locModelView
 
-    @JvmStatic
     fun dispatchGroupCount(vertexCount: Int): Int = (vertexCount + 64 - 1) / 64
 }

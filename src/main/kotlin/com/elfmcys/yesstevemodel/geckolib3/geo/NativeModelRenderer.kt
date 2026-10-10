@@ -30,7 +30,6 @@ object NativeModelRenderer {
     private val projectionModelViewMatrix: Matrix4f = Matrix4f()
     private val matrixTransferArray: FloatArray = FloatArray(48)
 
-    @JvmStatic
     @JvmOverloads
     fun renderMesh(
         buffer: VertexConsumer,
@@ -138,7 +137,6 @@ object NativeModelRenderer {
         }
     }
 
-    @JvmStatic
     fun renderModel(
         vertexConsumer: VertexConsumer,
         pose: PoseStack.Pose,
@@ -284,7 +282,6 @@ object NativeModelRenderer {
         return localMat
     }
 
-    @JvmStatic
     fun submitVertices(v: Any, vertexCount: Int, fBuf: ByteBuffer, iBuf: ByteBuffer) {
         val f: FloatBuffer = fBuf.order(ByteOrder.nativeOrder()).asFloatBuffer()
         val inBuf: IntBuffer = iBuf.order(ByteOrder.nativeOrder()).asIntBuffer()
@@ -302,7 +299,6 @@ object NativeModelRenderer {
         }
     }
 
-    @JvmStatic
     fun nativeRenderModel(
         vertexConsumer: VertexConsumer,
         pose: PoseStack.Pose,

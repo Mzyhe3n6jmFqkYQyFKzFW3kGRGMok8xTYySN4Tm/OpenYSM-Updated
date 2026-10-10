@@ -16,17 +16,13 @@ object EquipmentUtil {
             }
         }
 
-    @JvmStatic
     fun getItemUseAnimationByName(str: String): Optional<ItemUseAnimation> =
         Optional.ofNullable(getItemUseAnimation(str))
 
-    @JvmStatic
     fun getItemUseAnimation(str: String): ItemUseAnimation? =
         EnumUtils.getEnum(ItemUseAnimation::class.java, str.uppercase(Locale.US))
 
-    @JvmStatic
     fun getEquipmentSlotByName(str: String): Optional<EquipmentSlot> = Optional.ofNullable(getEquipmentSlot(str))
 
-    @JvmStatic
     fun getEquipmentSlot(str: String): EquipmentSlot? = SLOT_BY_NAME[str]
 }

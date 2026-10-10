@@ -10,14 +10,12 @@ import rip.ysm.compat.touhoulittlemaid.TouhouLittleMaidCompat
 object InnerClassify {
     const val EMPTY: String = ""
 
-    @JvmStatic
     fun doClassifyTest(str: String, livingEntity: LivingEntity, interactionHand: InteractionHand): String {
         val itemType: String = getItemType(livingEntity.getItemInHand(interactionHand))
         if (itemType.isNotEmpty()) return str + itemType
         return ""
     }
 
-    @JvmStatic
     fun getItemType(itemStack: ItemStack): String {
         val item: Item = itemStack.item
         when {

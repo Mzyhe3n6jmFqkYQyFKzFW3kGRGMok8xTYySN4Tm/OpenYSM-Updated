@@ -30,10 +30,8 @@ class ProjectileCapability(projectile: Projectile) : GeckoProjectileEntity(proje
     }
 
     companion object {
-        @JvmStatic
         operator fun get(entity: Entity): ProjectileCapability? = ProjectileCapabilityImpl[entity]
 
-        @JvmStatic
         operator fun get(projectile: Projectile): ProjectileCapability? = ProjectileCapabilityImpl[projectile]
     }
 }

@@ -12,7 +12,6 @@ object PlayerCapabilityClientStore {
     private val STORE_BY_PLAYER: MutableMap<Player, PlayerCapability> = MapMaker().weakKeys().makeMap()
     private val LAST_BY_UUID: MutableMap<UUID, PlayerCapability> = ConcurrentHashMap()
 
-    @JvmStatic
     operator fun get(player: Player): PlayerCapability? {
         if (player !is AbstractClientPlayer) return null
         val existing = STORE_BY_PLAYER[player]
@@ -29,7 +28,6 @@ object PlayerCapabilityClientStore {
         return fresh
     }
 
-    @JvmStatic
     fun clear() {
         STORE_BY_PLAYER.clear()
         LAST_BY_UUID.clear()

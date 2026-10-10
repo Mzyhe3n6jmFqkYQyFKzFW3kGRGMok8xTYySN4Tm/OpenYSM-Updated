@@ -6,14 +6,12 @@ import java.io.FileInputStream
 import java.io.InputStream
 
 object MD5Utils {
-    @JvmStatic
     fun getStreamMD5(inputStream: InputStream): String {
         return runCatching {
             DigestUtils.md5Hex(inputStream)
         }.getOrDefault("")
     }
 
-    @JvmStatic
     fun getFileMD5(file: File): String {
         if (!file.exists()) {
             return ""
@@ -23,7 +21,6 @@ object MD5Utils {
         }.getOrDefault("")
     }
 
-    @JvmStatic
     fun getFileMD5(filepath: String): String {
         return getFileMD5(File(filepath))
     }

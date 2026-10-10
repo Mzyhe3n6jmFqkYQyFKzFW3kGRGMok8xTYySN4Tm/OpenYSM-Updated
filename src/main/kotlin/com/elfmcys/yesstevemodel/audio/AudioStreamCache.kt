@@ -17,7 +17,6 @@ object AudioStreamCache {
     private val providerCache = IdentityHashMap<ModelAssembly, WeakReference<CachedAudioStreamProvider>>()
     private val LOCK = Any()
 
-    @JvmStatic
     fun getOrCreateProvider(renderContext: ModelAssembly): IAudioStreamProvider {
         RenderSystem.assertOnRenderThread()
         val weakReference = providerCache[renderContext]

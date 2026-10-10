@@ -9,7 +9,6 @@ object ObjectPool {
     @Volatile
     private var activeCount: Int = 0
 
-    @JvmStatic
     fun acquire(): NativeAudioDecoder {
         synchronized(pool) {
             if (pool.isNotEmpty()) {
@@ -23,7 +22,6 @@ object ObjectPool {
         }
     }
 
-    @JvmStatic
     fun release(decoder: NativeAudioDecoder) {
         decoder.reset()
         synchronized(pool) {
@@ -35,7 +33,6 @@ object ObjectPool {
         }
     }
 
-    @JvmStatic
     fun cleanup() {
         if (activeCount != 0) {
             val currentTick = ClientTickEvent.tickCount

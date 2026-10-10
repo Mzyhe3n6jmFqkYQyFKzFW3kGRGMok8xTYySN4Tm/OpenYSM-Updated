@@ -7,6 +7,5 @@ import rip.ysm.compat.ModCompat
 
 object ImmersiveAirCraftCompatImpl : ModCompat("immersive_aircraft") {
     // TODO: Implement aircraft rotation logic
-    @JvmStatic
     fun getAircraftRotation(event: AnimationEvent<GeckoVehicleEntity>): Vector3f? = null
 }

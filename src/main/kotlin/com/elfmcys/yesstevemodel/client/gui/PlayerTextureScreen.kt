@@ -48,7 +48,7 @@ open class PlayerTextureScreen(
     init {
         for (holder in texturePreviewHolders) {
             holder.resetModel()
-            holder.animationStateMachine.setCurrentAnimation("idle")
+            holder.animationStateMachine.currentAnimation = "idle"
         }
         animationKeys = ArrayList(renderContext.animationBundle.mainAnimations.keys).apply {
             removeIf { it.startsWith(HIDDEN_PREFIX) }
@@ -138,10 +138,10 @@ open class PlayerTextureScreen(
         )
 
         for (animSlot in 0 until 11) {
-            val animIndex = animSlot + (animationCurrentPage * 11)
+            val animIndex = animSlot + animationCurrentPage * 11
             if (animIndex >= animationKeys.size) break
             val animKey = animationKeys[animIndex]
-            val animButtonY = guiTop + 27 + (17 * animSlot)
+            val animButtonY = guiTop + 27 + 17 * animSlot
             val btnKey = "gui.yes_steve_model.texture.button.${animKey.replace(":", ".")}"
             val descKey = "gui.yes_steve_model.texture.button.${animKey.replace(":", ".")}.desc"
             val label = if (I18n.exists(btnKey)) {
@@ -165,10 +165,10 @@ open class PlayerTextureScreen(
         }
 
         for (texSlot in 0 until 4) {
-            val texIndex = texSlot + (textureCurrentPage * 4)
+            val texIndex = texSlot + textureCurrentPage * 4
             if (texIndex >= textureMap.size) break
-            val texButtonX = guiLeft + 306 + (56 * (texSlot % 2))
-            val texButtonY = guiTop + 5 + (104 * (texSlot / 2))
+            val texButtonX = guiLeft + 306 + 56 * (texSlot % 2)
+            val texButtonY = guiTop + 5 + 104 * (texSlot / 2)
             val previewEntity = texturePreviewHolders[texSlot]
             previewEntity.initModelWithTexture(modelId, textureMap.getKeyAt(texIndex))
             addRenderableWidget(createTextureButton(texButtonX, texButtonY, previewEntity, texIndex))
@@ -183,17 +183,17 @@ open class PlayerTextureScreen(
         guiGraphics.fillGradient(guiLeft + 302, guiTop, guiLeft + 420, guiTop + 235, -14540254, -14540254)
 
         if (!modelHolder.animationStateMachine.isCurrentAnimation(currentAnimation)) {
-            modelHolder.animationStateMachine.setCurrentAnimation(currentAnimation)
+            modelHolder.animationStateMachine.currentAnimation = currentAnimation
         }
         renderTexturePreview(guiGraphics, minecraft.deltaTracker.getGameTimeDeltaPartialTick(false))
 
         val texPageStr = "${textureCurrentPage + 1}/${textureMaxPage + 1}"
-        val texPageX = guiLeft + 302 + ((118 - font.width(texPageStr)) / 2)
+        val texPageX = guiLeft + 302 + (118 - font.width(texPageStr)) / 2
         val texPageY = guiTop + 223
-        guiGraphics.drawString(font, texPageStr, texPageX, texPageY - (9 / 2), 0xFFF3F0E0.toInt())
+        guiGraphics.drawString(font, texPageStr, texPageX, texPageY - 9 / 2, 0xFFF3F0E0.toInt())
 
         val animPageStr = "${animationCurrentPage + 1}/${animationMaxPage + 1}"
-        val animPageX = guiLeft + 5 + ((80 - font.width(animPageStr)) / 2)
+        val animPageX = guiLeft + 5 + (80 - font.width(animPageStr)) / 2
         val animPageY = guiTop + 218
         guiGraphics.drawString(font, animPageStr, animPageX, animPageY, 0xFFF3F0E0.toInt())
 
@@ -253,7 +253,7 @@ open class PlayerTextureScreen(
         if (scrollY != 0.0)
             when {
                 isInPreviewArea(mouseX, mouseY) -> {
-                    adjustZoom((scrollY.toFloat()) * 0.07f)
+                    adjustZoom(scrollY.toFloat() * 0.07f)
                     return true
                 }
 
@@ -301,13 +301,13 @@ open class PlayerTextureScreen(
     }
 
     private fun isInPreviewArea(mouseX: Double, mouseY: Double): Boolean =
-        mouseX > (guiLeft + 93) && mouseX < (guiLeft + 299) && mouseY > guiTop && mouseY < (guiTop + 235)
+        mouseX > guiLeft + 93 && mouseX < guiLeft + 299 && mouseY > guiTop && mouseY < guiTop + 235
 
     private fun isInAnimationArea(mouseX: Double, mouseY: Double): Boolean =
-        mouseX > guiLeft && mouseX < (guiLeft + 90) && mouseY > (guiTop + 22) && mouseY < (guiTop + 235)
+        mouseX > guiLeft && mouseX < guiLeft + 90 && mouseY > guiTop + 22 && mouseY < guiTop + 235
 
     private fun isInTextureArea(mouseX: Double, mouseY: Double): Boolean =
-        mouseX > (guiLeft + 302) && mouseX < (guiLeft + 420) && mouseY > guiTop && mouseY < (guiTop + 235)
+        mouseX > guiLeft + 302 && mouseX < guiLeft + 420 && mouseY > guiTop && mouseY < guiTop + 235
 
     private fun adjustPitch(deltaY: Float) {
         pitch = when {
@@ -318,7 +318,7 @@ open class PlayerTextureScreen(
     }
 
     private fun adjustZoom(zoomDelta: Float) {
-        zoom = Mth.clamp(zoom + (zoomDelta * zoom), MIN_ZOOM, MAX_ZOOM)
+        zoom = Mth.clamp(zoom + zoomDelta * zoom, MIN_ZOOM, MAX_ZOOM)
     }
 
     override fun isPauseScreen(): Boolean = false

@@ -28,7 +28,6 @@ object MoLangCommand {
     private const val EXP_NAME: String = "exp"
     private const val EXECUTE_NAME: String = "execute"
 
-    @JvmStatic
     fun register(): LiteralArgumentBuilder<CommandSourceStack> {
         val molang = Commands.literal(MOLANG_NAME)
         val watch = Commands.literal(WATCH_NAME)
@@ -75,7 +74,6 @@ object MoLangCommand {
         return molang
     }
 
-    @JvmStatic
     fun addWatch(context: CommandContext<CommandSourceStack>, watchRegistry: MolangWatchRegistry.EvaluationPhase): Int {
         if (!isClientSide()) return Command.SINGLE_SUCCESS
         val string = StringArgumentType.getString(context, EXP_NAME_NAME)

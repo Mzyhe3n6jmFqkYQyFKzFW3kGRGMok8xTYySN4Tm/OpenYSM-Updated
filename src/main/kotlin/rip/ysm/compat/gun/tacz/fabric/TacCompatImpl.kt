@@ -13,11 +13,9 @@ import net.minecraft.world.item.ItemStack
 import rip.ysm.compat.ModCompat
 
 object TacCompatImpl : ModCompat("tacz") {
-    @JvmStatic
     fun registerControllerFunctions(binding: CtrlBinding) {
     }
 
-    @JvmStatic
     fun applyItemTransform(
         stack: ItemStack,
         model: AnimatedGeoModel,
@@ -28,7 +26,6 @@ object TacCompatImpl : ModCompat("tacz") {
     ) {
     }
 
-    @JvmStatic
     fun handleTaczAnimState(
         entity: LivingEntity,
         event: AnimationEvent<out LivingAnimatable<*>>,
@@ -36,26 +33,21 @@ object TacCompatImpl : ModCompat("tacz") {
         loopType: ILoopType
     ): PlayState? = null
 
-    @JvmStatic
     fun handleGunHoldAnimState(
         stack: ItemStack,
         event: AnimationEvent<out LivingAnimatable<*>>
     ): PlayState? = null
 
-    @JvmStatic
     fun handleGunActionAnimState(
         stack: ItemStack,
         event: AnimationEvent<out LivingAnimatable<*>>
     ): PlayState? = null
 
-    @JvmStatic
     fun handleGunSound(entity: LivingEntity, stack: ItemStack) {
     }
 
-    @JvmStatic
     fun handleItemSound(stack: ItemStack) {
     }
 
-    @JvmStatic
     fun getGunTexture(stack: ItemStack): Identifier? = null
 }

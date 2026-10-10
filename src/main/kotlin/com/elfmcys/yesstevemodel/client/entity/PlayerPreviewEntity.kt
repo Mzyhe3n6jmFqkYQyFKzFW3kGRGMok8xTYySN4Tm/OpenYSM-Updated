@@ -76,7 +76,6 @@ class PlayerPreviewEntity : CustomPlayerEntity(DummyPlayer(), false, false), IPr
         }
 
         companion object {
-            @JvmStatic
             fun createGameProfile(): GameProfile {
                 val uuid = UUID.randomUUID()
                 return GameProfile(uuid, "ysm_" + uuid.toString().replace('-', '_'))
@@ -86,7 +85,6 @@ class PlayerPreviewEntity : CustomPlayerEntity(DummyPlayer(), false, false), IPr
 
     @Suppress("unused")
     companion object {
-        @JvmStatic
         fun isPreviewPlayer(player: Player?): Boolean = player is DummyPlayer
     }
 }

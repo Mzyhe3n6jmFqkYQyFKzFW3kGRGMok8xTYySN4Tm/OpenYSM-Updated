@@ -836,7 +836,6 @@ class AnimationRouletteScreen : Screen {
         val navigationStack: LinkedList<Pair<String, Int>> = LinkedList()
         var lastModelId: String = StringPool.EMPTY
 
-        @JvmStatic
         fun setInitialSubmenu(str: String) {
             navigationStack.clear()
             navigationStack.addLast(MutablePair.of(StringPool.EMPTY, 0))

@@ -11,7 +11,6 @@ class S2CSyncAnimationExpressionPacket(
     val floatData: FloatArrayList
 ) {
     companion object {
-        @JvmStatic
         fun encode(message: S2CSyncAnimationExpressionPacket, buf: FriendlyByteBuf) {
             buf.writeVarInt(message.entityId)
             buf.writeByte(message.floatData.size)
@@ -20,7 +19,6 @@ class S2CSyncAnimationExpressionPacket(
             }
         }
 
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): S2CSyncAnimationExpressionPacket {
             val entityId = buf.readVarInt()
             val count = buf.readByte().toInt()
@@ -31,7 +29,6 @@ class S2CSyncAnimationExpressionPacket(
             return S2CSyncAnimationExpressionPacket(entityId, floatArrayList)
         }
 
-        @JvmStatic
         fun handleCapability(message: S2CSyncAnimationExpressionPacket, ctx: PacketContext) {
             if (ctx.isClientSide()) {
                 ctx.enqueueWork {

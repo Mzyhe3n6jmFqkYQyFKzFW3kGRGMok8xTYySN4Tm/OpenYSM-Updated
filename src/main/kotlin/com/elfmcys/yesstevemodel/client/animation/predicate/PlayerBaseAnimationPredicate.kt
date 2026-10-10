@@ -12,7 +12,7 @@ class PlayerBaseAnimationPredicate : IAnimationPredicate<CustomPlayerEntity> {
         val playerEntity: CustomPlayerEntity = event.animatable
         if (playerEntity is IPreviewAnimatable) {
             val tracker = playerEntity.animationStateMachine
-            if (tracker.hasAnimation()) {
+            if (tracker.hasAnimation) {
                 return IAnimationPredicate.playLoopAnimation(event, tracker.currentAnimation)
             }
             return PlayState.STOP

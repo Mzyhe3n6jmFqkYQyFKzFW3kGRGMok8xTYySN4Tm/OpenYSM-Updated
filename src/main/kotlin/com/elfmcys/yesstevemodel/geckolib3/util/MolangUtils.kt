@@ -15,7 +15,6 @@ import kotlin.math.abs
 import kotlin.math.roundToLong
 
 object MolangUtils {
-    @JvmField
     val SLOT_MAP: MutableMap<String, EquipmentSlot> = Object2ObjectOpenHashMap<String, EquipmentSlot>().apply {
         put("chest", EquipmentSlot.CHEST)
         put("feet", EquipmentSlot.FEET)
@@ -25,16 +24,13 @@ object MolangUtils {
         put("offhand", EquipmentSlot.OFFHAND)
     }
 
-    @JvmStatic
     fun normalizeTime(timestamp: Long): Float = (timestamp + 6000L).toFloat() / 24000f % 1f
 
-    @JvmStatic
     fun getRelativeBlockState(
         context: ExecutionContext<IContext<Entity>>,
         args: Function.ArgumentCollection
     ): BlockState? = getRelativeBlockStateAt(context, args, 0)
 
-    @JvmStatic
     fun getRelativeBlockStateAt(
         context: ExecutionContext<IContext<Entity>>,
         args: Function.ArgumentCollection,
@@ -53,7 +49,6 @@ object MolangUtils {
         return entity.level().getBlockState(BlockPos(x, y, z))
     }
 
-    @JvmStatic
     fun parseSlotType(context: IContext<*>, value: String?): EquipmentSlot? {
         if (value == null) {
             return null
@@ -65,7 +60,6 @@ object MolangUtils {
         return equipmentSlot
     }
 
-    @JvmStatic
     fun parseSlotType(
         ctx: ExecutionContext<out IContext<*>>,
         args: Function.ArgumentCollection,

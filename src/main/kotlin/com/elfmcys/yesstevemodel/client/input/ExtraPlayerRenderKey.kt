@@ -14,7 +14,6 @@ import rip.ysm.api.event.EventResult
 
 @Environment(EnvType.CLIENT)
 object ExtraPlayerRenderKey {
-    @JvmField
     val KEY_MAPPING: KeyMapping = KeyMappingFactory.createInGameAlt(
         "key.yes_steve_model.open_extra_player_render.desc",
         InputConstants.Type.KEYSYM,

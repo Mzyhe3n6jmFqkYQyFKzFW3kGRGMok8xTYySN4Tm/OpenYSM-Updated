@@ -7,7 +7,6 @@ import rip.ysm.api.network.PacketContext
 
 class C2SSyncAnimationExpressionPacket(val floatData: FloatArrayList) {
     companion object {
-        @JvmStatic
         fun encode(message: C2SSyncAnimationExpressionPacket, buf: FriendlyByteBuf) {
             buf.writeByte(message.floatData.size)
             for (i in message.floatData.indices) {
@@ -15,7 +14,6 @@ class C2SSyncAnimationExpressionPacket(val floatData: FloatArrayList) {
             }
         }
 
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): C2SSyncAnimationExpressionPacket {
             val size = buf.readByte().toInt()
             val floatArrayList = FloatArrayList(size)
@@ -25,7 +23,6 @@ class C2SSyncAnimationExpressionPacket(val floatData: FloatArrayList) {
             return C2SSyncAnimationExpressionPacket(floatArrayList)
         }
 
-        @JvmStatic
         fun handle(message: C2SSyncAnimationExpressionPacket, ctx: PacketContext) {
             val sender = ctx.sender
             if (ctx.isServerSide() && sender != null) {

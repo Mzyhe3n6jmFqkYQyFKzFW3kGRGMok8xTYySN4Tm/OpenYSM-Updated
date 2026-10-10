@@ -290,7 +290,6 @@ object YSMBinding : ContextBinding() {
         CuriosCompat.registerCuriosItems(this)
     }
 
-    @JvmStatic
     fun getHitTargetId(context: IContext<LocalPlayer>): String {
         val hitResult = Minecraft.getInstance().hitResult
         if (hitResult is BlockHitResult) {
@@ -308,7 +307,6 @@ object YSMBinding : ContextBinding() {
         return StringPool.EMPTY
     }
 
-    @JvmStatic
     fun getHitTargetType(context: IContext<LocalPlayer>): String {
         val hitResult = Minecraft.getInstance().hitResult ?: return StringPool.EMPTY
         return when (hitResult.type) {
@@ -318,7 +316,6 @@ object YSMBinding : ContextBinding() {
         }
     }
 
-    @JvmStatic
     fun getHookedEntityType(context: IContext<FishingHook>): String {
         val entity = context.entity.hookedIn
         if (entity != null) {
@@ -328,21 +325,18 @@ object YSMBinding : ContextBinding() {
         return StringPool.EMPTY
     }
 
-    @JvmStatic
     fun getThrowableItemId(context: IContext<ThrowableItemProjectile>): String {
         val projectile = context.entity
         val key = BuiltInRegistries.ITEM.getKey(projectile.defaultItem)
         return key.toString()
     }
 
-    @JvmStatic
     fun getGroundSpeed2(context: IContext<Entity>): Float {
         val tracker = context.geoInstance.positionTracker
         val delta = tracker.positionDelta
         return 20.0f * Mth.sqrt((delta.x * delta.x + delta.z * delta.z).toFloat()) / tracker.timeDelta
     }
 
-    @JvmStatic
     fun getXxa(context: IContext<LivingEntity>): Float {
         val animatable = context.geoInstance
         if (animatable is PlayerCapability) {
@@ -353,7 +347,6 @@ object YSMBinding : ContextBinding() {
         return context.entity.xxa
     }
 
-    @JvmStatic
     fun getYya(context: IContext<LivingEntity>): Float {
         val animatable = context.geoInstance
         if (animatable is PlayerCapability) {
@@ -364,7 +357,6 @@ object YSMBinding : ContextBinding() {
         return context.entity.yya
     }
 
-    @JvmStatic
     fun getZza(context: IContext<LivingEntity>): Float {
         val animatable = context.geoInstance
         if (animatable is PlayerCapability) {
@@ -375,13 +367,11 @@ object YSMBinding : ContextBinding() {
         return context.entity.zza
     }
 
-    @JvmStatic
     fun isInShieldBlockCooldown(context: IContext<Player>): Boolean {
         val animatable = context.geoInstance
         return animatable is PlayerCapability && animatable.positionTracker.isShieldBlocking
     }
 
-    @JvmStatic
     fun isFishing(context: IContext<LivingEntity>): Boolean {
         val livingEntity = context.entity
         if (livingEntity is Player) {
@@ -390,13 +380,11 @@ object YSMBinding : ContextBinding() {
         return TouhouLittleMaidCompat.isMaidSitting(livingEntity)
     }
 
-    @JvmStatic
     fun isChargedCrossbow(context: IContext<LivingEntity>, interactionHand: InteractionHand): Boolean {
         val itemInHand = context.entity.getItemInHand(interactionHand)
         return itemInHand.`is`(Items.CROSSBOW) && CrossbowItem.isCharged(itemInHand)
     }
 
-    @JvmStatic
     fun getEntityTypeName(context: IContext<LivingEntity>): String {
         val livingEntity = context.entity
         if (livingEntity is Player) return "player"
@@ -405,7 +393,6 @@ object YSMBinding : ContextBinding() {
         return key.toString()
     }
 
-    @JvmStatic
     fun getFoodLevel(context: IContext<LivingEntity>): Any {
         val animatable = context.geoInstance
         if (animatable is PlayerCapability && !animatable.isLocalPlayerModel) return animatable.positionTracker.foodLevel
@@ -414,17 +401,14 @@ object YSMBinding : ContextBinding() {
         return 20
     }
 
-    @JvmStatic
     fun isCloseEyes(event: AnimationEvent<*>, livingEntity: LivingEntity): Boolean {
         val blinkPhase = (event.currentTick + abs(livingEntity.uuid.leastSignificantBits) % 10) % 90.0f
         return livingEntity.isSleeping || blinkPhase in 85.0f..90.0f
     }
 
-    @JvmStatic
     fun hasEquipment(livingEntity: LivingEntity, equipmentSlot: EquipmentSlot): Boolean =
         !CosmeticArmorHelper.getArmorItem(livingEntity, equipmentSlot).isEmpty
 
-    @JvmStatic
     fun getWeather(clientLevel: ClientLevel?): Int = when {
         clientLevel == null -> 0
         clientLevel.isThundering -> 2
@@ -432,11 +416,9 @@ object YSMBinding : ContextBinding() {
         else -> 0
     }
 
-    @JvmStatic
     fun getBiomeCategory(entity: Entity): String? = null
 
     // TODO: Always null don't know why
-    @JvmStatic
     fun dumpMods(context: IContext<*>): Any? {
         if (!context.isDebugMode) return null
         FabricLoader.getInstance().allMods.sortedBy { it.metadata.name }.forEach { mod ->
@@ -450,7 +432,6 @@ object YSMBinding : ContextBinding() {
         return null
     }
 
-    @JvmStatic
     fun dumpEffects(context: IContext<Entity>): Any? {
         if (!context.isDebugMode) return null
         val activeEffects = when (val entity = context.entity) {
@@ -480,7 +461,6 @@ object YSMBinding : ContextBinding() {
         return null
     }
 
-    @JvmStatic
     fun dumpBiome(context: IContext<Entity>): Any? {
         if (!context.isDebugMode) {
             return null
@@ -500,21 +480,18 @@ object YSMBinding : ContextBinding() {
         return null
     }
 
-    @JvmStatic
     fun isOpenAir(entity: Entity): Boolean {
         val blockPos = entity.blockPosition()
         return entity.level().canSeeSky(blockPos) && entity.level()
             .getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, blockPos).y <= blockPos.y
     }
 
-    @JvmStatic
     fun getShoulderParrotVariant(player: Player, leftShoulder: Boolean): String {
         if (player !is AbstractClientPlayer) return "empty"
         val variant = player.getParrotVariantOnShoulder(leftShoulder)
         return variant?.name?.lowercase(Locale.ENGLISH) ?: "empty"
     }
 
-    @JvmStatic
     fun hasShoulderParrot(player: Player, leftShoulder: Boolean): Boolean =
         player is AbstractClientPlayer && player.getParrotVariantOnShoulder(leftShoulder) != null
 }

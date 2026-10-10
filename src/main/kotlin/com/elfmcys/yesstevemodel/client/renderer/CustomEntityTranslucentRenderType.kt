@@ -5,7 +5,6 @@ import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.resources.Identifier
 
 object CustomEntityTranslucentRenderType {
-    @JvmStatic
     fun get(identifier: Identifier): RenderType {
         return RenderTypes.entityTranslucent(identifier)
     }

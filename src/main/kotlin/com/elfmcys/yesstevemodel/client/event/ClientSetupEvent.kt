@@ -53,7 +53,6 @@ object ClientSetupEvent {
         }
     }
 
-    @JvmStatic
     fun checkNativeInitialization() {
         val component = nativeClientInit()
         if (component != null) {

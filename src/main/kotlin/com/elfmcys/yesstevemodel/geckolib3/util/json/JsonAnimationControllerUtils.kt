@@ -20,7 +20,6 @@ import org.apache.commons.lang3.tuple.Pair
  * 解析动画控制器
  */
 object JsonAnimationControllerUtils {
-    @JvmStatic
     fun getAnimationControllers(json: JsonObject): Set<Map.Entry<String, JsonElement>> {
         if (json.has("animation_controllers")) {
             return json.getAsJsonObject("animation_controllers").entrySet()
@@ -28,19 +27,16 @@ object JsonAnimationControllerUtils {
         return ImmutableSet.of()
     }
 
-    @JvmStatic
     fun getStates(json: JsonObject): List<Map.Entry<String, JsonElement>> {
         val states = json.getAsJsonObject("states")
         return states?.entrySet()?.toList() ?: emptyList()
     }
 
-    @JvmStatic
     fun getAnimations(json: JsonObject): List<JsonElement> {
         val animations = json.getAsJsonArray("animations")
         return animations?.asList() ?: emptyList()
     }
 
-    @JvmStatic
     @Throws(ClassCastException::class, IllegalStateException::class)
     fun deserializeJsonToAnimationController(
         element: Map.Entry<String, JsonElement>,
@@ -93,7 +89,6 @@ object JsonAnimationControllerUtils {
         return AnimationController(initialState, states.toTypedArray())
     }
 
-    @JvmStatic
     fun getAnimations(animations: MutableList<Pair<String, IValue>>, element: JsonElement?, parser: MolangParser) {
         if (element == null || !element.isJsonArray) return
         for (animation in element.asJsonArray) {
@@ -116,7 +111,6 @@ object JsonAnimationControllerUtils {
         }
     }
 
-    @JvmStatic
     fun getTransitions(transitions: MutableList<Pair<String, IValue>>, element: JsonElement?, parser: MolangParser) {
         if (element == null || !element.isJsonArray) return
         for (transition in element.asJsonArray) {
@@ -128,7 +122,6 @@ object JsonAnimationControllerUtils {
         }
     }
 
-    @JvmStatic
     fun getSoundEffects(soundEffects: MutableList<String>, element: JsonElement?) {
         if (element == null || !element.isJsonArray) return
         for (soundEffect in element.asJsonArray) {
@@ -147,7 +140,6 @@ object JsonAnimationControllerUtils {
         }
     }
 
-    @JvmStatic
     fun getBlendTransition(element: JsonElement?): IInterpolable {
         if (element == null) return TicksInterpolator(0.0f)
         when {

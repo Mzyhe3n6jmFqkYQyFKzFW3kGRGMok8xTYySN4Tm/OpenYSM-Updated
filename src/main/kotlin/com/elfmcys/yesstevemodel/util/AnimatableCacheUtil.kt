@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit
 
 @Environment(EnvType.CLIENT)
 object AnimatableCacheUtil {
-    @JvmField
     val ENTITIES_CACHE: Cache<Identifier, Entity> =
         CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build()
 }

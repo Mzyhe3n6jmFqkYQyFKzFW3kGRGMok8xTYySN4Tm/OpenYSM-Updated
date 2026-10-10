@@ -16,34 +16,26 @@ import rip.ysm.compat.touhoulittlemaid.fabric.tlm.MaidAnimatable
 
 // TODO: Fix anim on maid
 object TouhouLittleMaidCompat : ModCompat("touhou_little_maid") {
-    @JvmStatic
     fun isMaidEntity(entity: Entity): Boolean = isModLoaded && TouhouLittleMaidCompatImpl.isMaidEntity(entity)
 
-    @JvmStatic
     fun isMaidRideable(entity: Entity): Boolean = isModLoaded && TouhouLittleMaidCompatImpl.isMaidRideable(entity)
 
-    @JvmStatic
     fun isSimplePlanesEntity(entity: Entity): Boolean =
         isModLoaded && TouhouLittleMaidCompatImpl.isSimplePlanesEntity(entity)
 
-    @JvmStatic
     fun isImmersiveAircraftEntity(entity: Entity): Boolean =
         isModLoaded && TouhouLittleMaidCompatImpl.isImmersiveAircraftEntity(entity)
 
-    @JvmStatic
     fun isMaidItem(item: Item): Boolean = isModLoaded && TouhouLittleMaidCompatImpl.isMaidItem(item)
 
-    @JvmStatic
     fun getMaidEntityId(entity: Entity): String? {
         if (!isModLoaded) return null
         return TouhouLittleMaidCompatImpl.getMaidEntityId(entity)
     }
 
-    @JvmStatic
     fun isMaidSitting(livingEntity: LivingEntity): Boolean =
         isModLoaded && TouhouLittleMaidCompatImpl.isMaidSitting(livingEntity)
 
-    @JvmStatic
     fun registerMaidAnimStates(tlmBinding: TLMBinding) {
         if (isModLoaded)
             TouhouLittleMaidCompatImpl.registerMaidAnimStates(tlmBinding)
@@ -51,7 +43,6 @@ object TouhouLittleMaidCompat : ModCompat("touhou_little_maid") {
             registerDummyBindings(tlmBinding)
     }
 
-    @JvmStatic
     private fun registerDummyBindings(tlmBinding: TLMBinding) {
         tlmBinding.livingEntityVar("is_begging") { false }
         tlmBinding.livingEntityVar("is_sitting") { false }
@@ -71,7 +62,6 @@ object TouhouLittleMaidCompat : ModCompat("touhou_little_maid") {
         tlmBinding.livingEntityVar("show_item") { StringPool.EMPTY }
     }
 
-    @JvmStatic
     fun handleMaidInteraction(
         event: AnimationEvent<LivingAnimatable<*>>,
         livingEntity: LivingEntity,
@@ -81,16 +71,13 @@ object TouhouLittleMaidCompat : ModCompat("touhou_little_maid") {
         return TouhouLittleMaidCompatImpl.handleMaidInteraction(event, livingEntity, entity)
     }
 
-    @JvmStatic
     fun isMaidChatAvailable(): Boolean = isModLoaded && TouhouLittleMaidCompatImpl.isMaidChatAvailable()
 
-    @JvmStatic
     fun openMaidChat() {
         if (!isModLoaded) return
         TouhouLittleMaidCompatImpl.openMaidChat()
     }
 
-    @JvmStatic
     fun buildControllers(
         modelBundle: PlayerModelBundle,
         resourceBundle: ModelResourceBundle

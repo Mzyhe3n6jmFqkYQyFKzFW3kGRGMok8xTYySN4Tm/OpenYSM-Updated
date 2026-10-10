@@ -7,7 +7,6 @@ import net.minecraft.world.entity.LivingEntity
 import rip.ysm.api.client.fabric.RenderLivingBridgeImpl
 
 object RenderLivingBridge {
-    @JvmStatic
     fun firePre(
         entity: LivingEntity,
         renderer: LivingEntityRenderer<*, *, *>,
@@ -17,7 +16,6 @@ object RenderLivingBridge {
         packedLight: Int
     ): Boolean = RenderLivingBridgeImpl.firePre(entity, renderer, partialTick, poseStack, bufferSource, packedLight)
 
-    @JvmStatic
     fun firePost(
         entity: LivingEntity,
         renderer: LivingEntityRenderer<*, *, *>,

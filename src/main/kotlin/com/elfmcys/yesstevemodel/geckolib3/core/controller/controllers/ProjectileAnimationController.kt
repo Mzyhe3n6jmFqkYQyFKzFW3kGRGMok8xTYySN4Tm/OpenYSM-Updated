@@ -40,10 +40,8 @@ object ProjectileAnimationController {
 
     private const val PROJECTILE_PREFIX: String = "projectile"
 
-    @JvmField
     val REGISTRY: ProcessorPipeline<GeckoProjectileEntity, ProjectileModelBundle> = ProcessorPipeline()
 
-    @JvmStatic
     fun registerControllers() {
         registerNamedController("pre_main", null, true) { animationEntryKey, entity ->
             CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate)
@@ -69,7 +67,6 @@ object ProjectileAnimationController {
         }
     }
 
-    @JvmStatic
     fun buildControllers(
         modelBundle: ProjectileModelBundle,
         resourceBundle: ModelResourceBundle
@@ -78,7 +75,6 @@ object ProjectileAnimationController {
         return REGISTRY.buildAll(modelBundle, resourceBundle)
     }
 
-    @JvmStatic
     fun registerController(
         controllerName: String,
         controllerFactory: (String, GeckoProjectileEntity) -> IAnimationController<GeckoProjectileEntity>
@@ -89,7 +85,6 @@ object ProjectileAnimationController {
         }
     }
 
-    @JvmStatic
     fun registerNamedController(
         slotName: String,
         requiredAnimations: Array<String>?,
@@ -108,7 +103,6 @@ object ProjectileAnimationController {
         )
     }
 
-    @JvmStatic
     fun registerParallelController(
         slotName: String,
         controllerFactory: (String, GeckoProjectileEntity, String?) -> IAnimationController<GeckoProjectileEntity>

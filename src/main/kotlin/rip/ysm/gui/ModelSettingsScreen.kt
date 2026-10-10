@@ -242,7 +242,6 @@ open class ModelSettingsScreen(
         mouseX >= previewLeft && mouseX < previewRight && mouseY >= previewTop && mouseY < previewBottom
 
     companion object {
-        @JvmStatic
         fun renderPlayerForSettings(
             x: Float,
             y: Float,

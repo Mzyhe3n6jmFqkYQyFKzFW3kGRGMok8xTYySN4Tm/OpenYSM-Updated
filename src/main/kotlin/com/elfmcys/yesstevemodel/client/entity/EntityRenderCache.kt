@@ -12,16 +12,13 @@ object EntityRenderCache {
     private val weakRefs: ReferenceArrayList<WeakReference<GeoEntity<*>>> = ReferenceArrayList(64)
     private val strongRefs: ReferenceArrayList<GeoEntity<*>> = ReferenceArrayList(16)
 
-    @JvmStatic
     fun register(entity: GeoEntity<*>) {
         weakRefs.add(WeakReference(entity))
     }
 
     @JvmStatic
     fun tick(partialTick: Float) {
-        if (Minecraft.getInstance().player == null) {
-            return
-        }
+        if (Minecraft.getInstance().player == null) return
         val it = weakRefs.iterator()
         while (it.hasNext()) {
             val geoEntity = it.next().get()

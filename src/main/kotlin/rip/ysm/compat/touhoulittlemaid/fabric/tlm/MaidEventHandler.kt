@@ -11,19 +11,14 @@ import net.minecraft.world.item.Item
 
 object MaidEventHandler {
 
-    @JvmStatic
     fun isMaid(entity: Entity): Boolean = entity is EntityMaid
 
-    @JvmStatic
     fun isYsmModelMaid(entity: Entity): Boolean = entity is EntityMaid && entity.isYsmModel
 
-    @JvmStatic
     fun isChair(entity: Entity): Boolean = entity is EntityChair
 
-    @JvmStatic
     fun isSit(entity: Entity): Boolean = entity is EntitySit
 
-    @JvmStatic
     fun getChairModelId(entity: Entity): String {
         if (entity is EntityChair) {
             return entity.modelId
@@ -31,9 +26,7 @@ object MaidEventHandler {
         return StringPool.EMPTY
     }
 
-    @JvmStatic
     fun isMaidFishing(livingEntity: LivingEntity): Boolean = livingEntity is EntityMaid
 
-    @JvmStatic
     fun isGohei(item: Item): Boolean = item is ItemHakureiGohei
 }

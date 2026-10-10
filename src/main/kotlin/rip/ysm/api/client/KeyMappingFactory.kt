@@ -7,12 +7,10 @@ import net.minecraft.resources.Identifier
 import rip.ysm.api.client.fabric.KeyMappingFactoryImpl
 
 object KeyMappingFactory {
-    @JvmField
     val YSM_CATEGORY: KeyMapping.Category = KeyMapping.Category.register(
         Identifier.fromNamespaceAndPath("yes_steve_model", "main")
     )
 
-    @JvmStatic
     fun createInGameAlt(
         name: String,
         type: InputConstants.Type,
@@ -22,7 +20,6 @@ object KeyMappingFactory {
         return KeyMappingFactoryImpl.createInGameAlt(name, type, keyCode, category)
     }
 
-    @JvmStatic
     fun createInGameNone(
         name: String,
         type: InputConstants.Type,
@@ -32,7 +29,6 @@ object KeyMappingFactory {
         return KeyMappingFactoryImpl.createInGameNone(name, type, keyCode, category)
     }
 
-    @JvmStatic
     fun isActiveAndMatches(keyMapping: KeyMapping, event: KeyEvent): Boolean {
         return KeyMappingFactoryImpl.isActiveAndMatches(keyMapping, event)
     }

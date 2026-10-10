@@ -44,7 +44,6 @@ object CustomFishingHookRenderer {
         return true
     }
 
-    @JvmStatic
     fun renderFishingLine(
         fishingHook: FishingHook,
         partialTick: Float,
@@ -106,13 +105,10 @@ object CustomFishingHookRenderer {
             buffer.addVertex(0.0f, 0.0f, 0.0f).setColor(0, 0, 0, 255).setNormal(0.0f, 0.0f, 0.0f)
     }
 
-    @JvmStatic
     fun lineColor(fishingHook: FishingHook): FloatArray = floatArrayOf(0.0f, 0.0f, 0.0f)
 
-    @JvmStatic
     fun fraction(i: Int): Float = i / 16.0f
 
-    @JvmStatic
     fun stringVertex(
         x: Float,
         y: Float,

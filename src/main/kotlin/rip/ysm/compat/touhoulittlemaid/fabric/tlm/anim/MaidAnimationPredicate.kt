@@ -41,7 +41,6 @@ open class MaidAnimationPredicate : IAnimationPredicate<MaidAnimatable> {
         private val PRIORITY_HANDLERS: Array<ReferenceArrayList<AnimationState<EntityMaid, MaidAnimatable>>> =
             Array(PRIORITY_BUCKETS) { ReferenceArrayList(6) }
 
-        @JvmStatic
         fun registerHandler(animationState: AnimationState<EntityMaid, MaidAnimatable>) {
             PRIORITY_HANDLERS[animationState.priority].add(animationState)
         }

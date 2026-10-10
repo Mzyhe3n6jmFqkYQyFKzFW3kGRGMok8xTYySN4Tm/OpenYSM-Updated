@@ -21,34 +21,26 @@ object PlatformAPIImpl {
         }
     }
 
-    @JvmStatic
     val isServer: Boolean
         get() = FabricLoader.getInstance().environmentType == EnvType.SERVER
 
-    @JvmStatic
     val platformName: String
         get() = "Fabric"
 
-    @JvmStatic
     val configFolder: Path
         get() = FabricLoader.getInstance().configDir
 
-    @JvmStatic
     val gameFolder: Path
         get() = FabricLoader.getInstance().gameDir
 
-    @JvmStatic
     fun isModLoaded(modId: String): Boolean = FabricLoader.getInstance().isModLoaded(modId)
 
-    @JvmStatic
     fun getModVersion(modId: String): String =
         FabricLoader.getInstance().getModContainer(modId).getOrNull()?.metadata?.version?.friendlyString ?: "unknown"
 
-    @JvmStatic
     val isDevelopmentEnvironment: Boolean
         get() = FabricLoader.getInstance().isDevelopmentEnvironment
 
-    @JvmStatic
     val server: MinecraftServer?
         get() {
             if (currentServer != null) return currentServer

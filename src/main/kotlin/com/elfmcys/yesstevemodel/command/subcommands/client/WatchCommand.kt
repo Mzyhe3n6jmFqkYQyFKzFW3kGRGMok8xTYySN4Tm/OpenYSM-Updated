@@ -24,7 +24,6 @@ object WatchCommand {
     private const val EXP_NAME: String = "exp"
     private const val CONTROLLER_NAME: String = "controller"
 
-    @JvmStatic
     fun register(): LiteralArgumentBuilder<CommandSourceStack> {
         val watch = Commands.literal(WATCH_NAME)
         val varLiteral = Commands.literal(VAR_NAME)
@@ -60,7 +59,7 @@ object WatchCommand {
                 PlayerCapability[player]?.let {
                     AnimationDebugOverlay.molangWatch
                         .addWatch(MolangWatchRegistry.EvaluationPhase.POST_ANIMATION, string, value)
-                    if (!AnimationDebugOverlay.isDebugActive()) {
+                    if (!AnimationDebugOverlay.isDebugActive) {
                         AnimationDebugOverlay.tryUpdateFromLocalPlayer()
                     }
                 }
@@ -98,7 +97,7 @@ object WatchCommand {
             return Command.SINGLE_SUCCESS
         }
         AnimationDebugOverlay.addDebugLine(StringArgumentType.getString(context, CONTROLLER_NAME))
-        if (!AnimationDebugOverlay.isDebugActive()) {
+        if (!AnimationDebugOverlay.isDebugActive) {
             AnimationDebugOverlay.tryUpdateFromLocalPlayer()
             return Command.SINGLE_SUCCESS
         }

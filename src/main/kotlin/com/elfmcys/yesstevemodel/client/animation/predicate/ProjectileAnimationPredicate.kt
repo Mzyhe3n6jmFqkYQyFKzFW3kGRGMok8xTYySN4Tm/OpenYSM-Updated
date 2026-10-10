@@ -26,7 +26,6 @@ class ProjectileAnimationPredicate : IAnimationPredicate<GeckoProjectileEntity> 
     }
 
     companion object {
-        @JvmField
         val ENVIRONMENT_STATES: Array<String> = arrayOf("water", "ground", "fly", "fire")
     }
 }

@@ -21,7 +21,6 @@ import kotlin.time.Duration.Companion.minutes
 object ClientPlayerJoinNotification {
     private const val HANDSHAKE_PROBE_COUNT = 3
 
-    @JvmField
     var notified: Boolean = false
 
     private var handshakeProbeIndex = -1
@@ -49,7 +48,6 @@ object ClientPlayerJoinNotification {
         ClientTickEvents.START_CLIENT_TICK.register(::onClientTick)
     }
 
-    @JvmStatic
     private fun onPlayerJoin(player: LocalPlayer) {
         if (notified) return
         ClientModelManager.runPendingModelCallback()
@@ -87,7 +85,6 @@ object ClientPlayerJoinNotification {
         }
     }
 
-    @JvmStatic
     private fun onClientTick(client: Minecraft) {
         ClientModelManager.applyClientOnlySelection()
         if (handshakeProbeIndex < 0 || client.isLocalServer) return
@@ -113,7 +110,6 @@ object ClientPlayerJoinNotification {
         handshakeProbeDelay = probeInterval()
     }
 
-    @JvmStatic
     private fun onPlayerQuit(player: LocalPlayer) {
         handshakeProbeIndex = -1
         sessionId++

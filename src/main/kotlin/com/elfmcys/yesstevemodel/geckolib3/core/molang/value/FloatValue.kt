@@ -22,10 +22,8 @@ class FloatValue(val value: Float) : IValue {
     fun value(): Float = boxedValue
 
     companion object {
-        @JvmField
         val ONE: FloatValue = FloatValue(1.0f)
 
-        @JvmField
         val ZERO: FloatValue = FloatValue(0.0f)
     }
 }

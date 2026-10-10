@@ -10,17 +10,14 @@ import rip.ysm.compat.touhoulittlemaid.TouhouMaidCompat
 
 data class C2SCompleteFeedbackPacket(val feedbackData: FeedbackData) {
     companion object {
-        @JvmStatic
         fun encode(message: C2SCompleteFeedbackPacket, buf: FriendlyByteBuf) {
             FeedbackData.writeToBuf(message.feedbackData, buf)
         }
 
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): C2SCompleteFeedbackPacket {
             return C2SCompleteFeedbackPacket(FeedbackData.readFromBuf(buf, false))
         }
 
-        @JvmStatic
         fun handle(message: C2SCompleteFeedbackPacket, ctx: PacketContext) {
             val sender = ctx.sender
             if (ctx.isServerSide() && sender != null) {
@@ -30,7 +27,6 @@ data class C2SCompleteFeedbackPacket(val feedbackData: FeedbackData) {
             }
         }
 
-        @JvmStatic
         fun handleOnServer(message: C2SCompleteFeedbackPacket, serverLevel: ServerLevel) {
             val entity = serverLevel.getEntity(message.feedbackData.flags) ?: return
             when {

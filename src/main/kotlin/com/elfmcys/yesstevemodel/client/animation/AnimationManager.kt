@@ -15,11 +15,9 @@ import rip.ysm.compat.slashblade.SlashBladeCompat
 
 class AnimationManager : IAnimationPredicate<CustomPlayerEntity> {
     companion object {
-        @JvmField
         val data: Array<ReferenceArrayList<AnimationState<Player, CustomPlayerEntity>>> =
             Array(Priority.LOWEST + 1) { ReferenceArrayList(6) }
 
-        @JvmStatic
         fun register(state: AnimationState<Player, CustomPlayerEntity>) {
             data[state.priority].add(state)
         }

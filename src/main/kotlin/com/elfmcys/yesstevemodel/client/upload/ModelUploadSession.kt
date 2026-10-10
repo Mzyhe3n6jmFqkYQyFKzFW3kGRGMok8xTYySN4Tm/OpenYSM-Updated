@@ -100,19 +100,15 @@ class ModelUploadSession(
         private var serverLimitsKnown: Boolean = false
 
         @Volatile
-        @JvmField
         var lastMaxTotalBytes: Int = 16777216
 
         @Volatile
-        @JvmField
         var lastChunksPerTick: Int = 4
 
-        @JvmStatic
         val INSTANCE: ModelUploadSession?
             get() = instance
 
         @Synchronized
-        @JvmStatic
         fun start(modelId: String, data: ByteArray): String? {
             val currentInstance = INSTANCE
             if (currentInstance != null && !currentInstance.isTerminal) return "Upload already in progress"
@@ -127,10 +123,8 @@ class ModelUploadSession(
             return null
         }
 
-        @JvmStatic
         fun hasServerLimits(): Boolean = serverLimitsKnown
 
-        @JvmStatic
         fun formatBytes(bytes: Int): String {
             if (bytes < 1024) return "$bytes B"
             if (bytes < 1024 * 1024) return String.format("%.1f KB", bytes / 1024.0)
@@ -138,7 +132,6 @@ class ModelUploadSession(
         }
 
         @Synchronized
-        @JvmStatic
         fun clearIfTerminal() {
             val currentInstance = INSTANCE
             if (currentInstance != null && currentInstance.isTerminal) {
@@ -147,18 +140,15 @@ class ModelUploadSession(
             }
         }
 
-        @JvmStatic
         fun addListener(l: Listener) {
             listeners.add(l)
         }
 
-        @JvmStatic
         fun removeListener(l: Listener) {
             listeners.remove(l)
         }
 
         @Synchronized
-        @JvmStatic
         fun onStartAck(
             uploadId: Long,
             status: Byte,
@@ -189,7 +179,6 @@ class ModelUploadSession(
         }
 
         @Synchronized
-        @JvmStatic
         fun onResult(
             uploadId: Long,
             status: Byte,
@@ -209,13 +198,11 @@ class ModelUploadSession(
             notifyListeners()
         }
 
-        @JvmStatic
         fun tickCurrent() {
             val s = INSTANCE ?: return
             s.tick()
         }
 
-        @JvmStatic
         private fun notifyListeners() {
             val s = INSTANCE
             for (l in listeners) {
@@ -223,7 +210,6 @@ class ModelUploadSession(
             }
         }
 
-        @JvmStatic
         private fun isYsmFile(data: ByteArray): Boolean {
             val ysmHeader = byteArrayOf(0xEF.toByte(), 0xBB.toByte(), 0xBF.toByte(), 0x59, 0x53, 0x47, 0x50)
             if (data.size < ysmHeader.size) return false
@@ -233,7 +219,6 @@ class ModelUploadSession(
             return true
         }
 
-        @JvmStatic
         private fun getRequestErrorText(status: Byte): String = when (status.toInt()) {
             1 -> "Model ID already exists"
             2 -> "File exceeds server limit"
@@ -244,7 +229,6 @@ class ModelUploadSession(
             else -> "error: $status"
         }
 
-        @JvmStatic
         private fun getResponseErrorText(status: Byte): String = when (status.toInt()) {
             1 -> "Hash mismatch"
             2 -> "Server failed to parse model"

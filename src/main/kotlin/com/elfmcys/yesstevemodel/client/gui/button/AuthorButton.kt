@@ -175,7 +175,6 @@ class AuthorButton(
     }
 
     companion object {
-        @JvmStatic
         fun createAuthorButton(x: Int, y: Int, screen: Screen): AuthorButton {
             return AuthorButton(x, y, null, null, null, -1, screen)
         }

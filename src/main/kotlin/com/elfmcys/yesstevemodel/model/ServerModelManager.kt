@@ -55,28 +55,20 @@ import kotlin.math.max
 import kotlin.math.min
 
 object ServerModelManager {
-    @JvmField
     val BUILT: Path = Constants.ConfigDir.resolve("built")
 
-    @JvmField
     val CUSTOM: Path = Constants.ConfigDir.resolve("custom")
 
-    @JvmField
     val AUTH: Path = Constants.ConfigDir.resolve("auth")
 
-    @JvmField
     val EXPORT: Path = Constants.ConfigDir.resolve("export")
 
-    @JvmField
     val CACHE: Path = Constants.ConfigDir.resolve("cache")
 
-    @JvmField
     val CACHE_SERVER_INDEX_FILE: Path = CACHE.resolve("server_index")
 
-    @JvmField
     val CACHE_SERVER: Path = CACHE.resolve("server")
 
-    @JvmField
     val CACHE_CLIENT: Path = CACHE.resolve("client")
 
     private var CACHE_NAME_INFO: Map<String, ServerModelData> = Maps.newHashMap()
@@ -86,7 +78,6 @@ object ServerModelManager {
     private val packs = ConcurrentHashMap<String, ServerPackData>()
     private val theRandom = SecureRandom()
 
-    @JvmField
     var serverKey: ByteArray? = null
 
     @Volatile
@@ -1103,16 +1094,13 @@ object ServerModelManager {
         }
     }
 
-    @JvmStatic
     fun isClientOnlyHost(): Boolean = !PlatformAPIImpl.isServer && ClientOnlyHostBridge.isActive()
 
     private fun shouldHideModelsFrom(uuid: UUID): Boolean =
         isClientOnlyHost() && !ClientOnlyHostBridge.isLocalHost(uuid)
 
-    @JvmStatic
     fun getPacks(): Map<String, ServerPackData> = packs
 
-    @JvmStatic
     fun canReuseLoadedModels(): Boolean {
         return !(!initialized || loadedSourceState == null) && runCatching {
             loadedSourceState == computeModelSourceState()

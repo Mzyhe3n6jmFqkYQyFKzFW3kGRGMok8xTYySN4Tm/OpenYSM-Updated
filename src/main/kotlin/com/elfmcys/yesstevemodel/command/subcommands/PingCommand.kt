@@ -16,7 +16,6 @@ import rip.ysm.api.PlatformAPI
 object PingCommand {
     private const val PING_NAME: String = "ping"
 
-    @JvmStatic
     fun register(): LiteralArgumentBuilder<CommandSourceStack> {
         return Commands.literal(PING_NAME).executes(::executePing)
     }

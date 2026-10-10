@@ -14,17 +14,14 @@ import org.ladysnake.cca.api.v3.entity.RespawnCopyStrategy
 
 class YsmComponents : EntityComponentInitializer {
     companion object {
-        @JvmField
         val MODEL_INFO: ComponentKey<ModelInfoComponent> =
             ComponentRegistryV3.INSTANCE.getOrCreate(NameSpaces.MOD.path("model_info"), ModelInfoComponent::class.java)
 
-        @JvmField
         val PROJECTILE_MODEL: ComponentKey<ProjectileModelComponent> = ComponentRegistryV3.INSTANCE.getOrCreate(
             NameSpaces.MOD.path("projectile_model"),
             ProjectileModelComponent::class.java
         )
 
-        @JvmField
         val VEHICLE_MODEL: ComponentKey<VehicleModelComponent> = ComponentRegistryV3.INSTANCE.getOrCreate(
             NameSpaces.MOD.path("vehicle_model"),
             VehicleModelComponent::class.java

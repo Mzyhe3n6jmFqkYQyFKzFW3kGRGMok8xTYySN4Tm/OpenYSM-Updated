@@ -1,7 +1,6 @@
 package rip.ysm.legacy
 
 object ByteInteger {
-    @JvmStatic
     fun int2Bytes(value: Int): ByteArray {
         val b = ByteArray(4)
         for (i in 0 until 4) {
@@ -10,7 +9,6 @@ object ByteInteger {
         return b
     }
 
-    @JvmStatic
     fun bytes2Int(b: ByteArray, start: Int): Int {
         var len = 4
         var sum = 0

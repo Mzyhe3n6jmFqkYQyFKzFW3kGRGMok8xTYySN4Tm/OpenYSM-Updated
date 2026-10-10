@@ -18,13 +18,11 @@ class S2CSyncProjectileModelPacket(
     val floatMap: Int2FloatOpenHashMap = Int2FloatOpenHashMap()
 ) {
     companion object {
-        @JvmStatic
         fun encode(message: S2CSyncProjectileModelPacket, buf: FriendlyByteBuf) {
             buf.writeVarInt(message.entityId)
             buf.writeNbt(message.capability.save())
         }
 
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): S2CSyncProjectileModelPacket {
             val entityId = buf.readVarInt()
             val nbt = buf.readNbt()
@@ -37,7 +35,6 @@ class S2CSyncProjectileModelPacket(
             return S2CSyncProjectileModelPacket(entityId, cap, floatMap)
         }
 
-        @JvmStatic
         fun handle(message: S2CSyncProjectileModelPacket, ctx: PacketContext) {
             if (!ctx.isClientSide()) return
             EntityJoinCallbackEvent.addCallback(message.entityId) { entity ->
@@ -45,7 +42,6 @@ class S2CSyncProjectileModelPacket(
             }
         }
 
-        @JvmStatic
         @Environment(EnvType.CLIENT)
         fun handleCapability(entity: Entity, capability: ProjectileModelCapability, floatMap: Int2FloatOpenHashMap) {
             ProjectileCapability[entity]?.let { projectileCapability ->

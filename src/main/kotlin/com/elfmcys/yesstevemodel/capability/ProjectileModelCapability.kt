@@ -61,10 +61,8 @@ class ProjectileModelCapability : NbtSave {
             return capability
         }
 
-        @JvmStatic
         operator fun get(entity: Entity): ProjectileModelCapability? = ProjectileModelCapabilityImpl[entity]
 
-        @JvmStatic
         operator fun get(projectile: Projectile): ProjectileModelCapability? = ProjectileModelCapabilityImpl[projectile]
     }
 }

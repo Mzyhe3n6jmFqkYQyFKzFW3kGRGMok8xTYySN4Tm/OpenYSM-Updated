@@ -10,7 +10,6 @@ fun interface IAnimationPredicate<T : AnimatableEntity<*>> {
     fun predicate(event: AnimationEvent<T>, evaluator: ExpressionEvaluator<*>?): PlayState
 
     companion object {
-        @JvmStatic
         fun <T : AnimatableEntity<*>> playAnimationWithLoop(
             event: AnimationEvent<T>,
             animationName: String,
@@ -20,7 +19,6 @@ fun interface IAnimationPredicate<T : AnimatableEntity<*>> {
             return PlayState.CONTINUE
         }
 
-        @JvmStatic
         fun <P : AnimatableEntity<*>> predicate(
             event: AnimationEvent<P>,
             animationName: String
@@ -29,7 +27,6 @@ fun interface IAnimationPredicate<T : AnimatableEntity<*>> {
             return PlayState.CONTINUE
         }
 
-        @JvmStatic
         fun <P : AnimatableEntity<*>> playAnimationWithValid(
             event: AnimationEvent<P>,
             animationName: String,
@@ -44,7 +41,6 @@ fun interface IAnimationPredicate<T : AnimatableEntity<*>> {
             return PlayState.CONTINUE
         }
 
-        @JvmStatic
         fun <T : AnimatableEntity<*>> playLoopAnimation(
             event: AnimationEvent<T>,
             str: String

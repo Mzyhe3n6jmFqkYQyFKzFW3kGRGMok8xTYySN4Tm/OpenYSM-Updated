@@ -40,7 +40,6 @@ object BlurShader {
     private var lastCaptureFrame: Long = -1
 
     @Synchronized
-    @JvmStatic
     fun ensureCompiled(): Boolean {
         if (program != 0) return true
         if (failed) return false
@@ -85,70 +84,48 @@ object BlurShader {
         }
     }
 
-    @JvmStatic
     fun program(): Int = program
 
-    @JvmStatic
     fun dummyVao(): Int = dummyVao
 
-    @JvmStatic
     fun locProj(): Int = locProj
 
-    @JvmStatic
     fun locRect(): Int = locRect
 
-    @JvmStatic
     fun locScreenSize(): Int = locScreenSize
 
-    @JvmStatic
     fun locRectSize(): Int = locRectSize
 
-    @JvmStatic
     fun locRadius(): Int = locRadius
 
-    @JvmStatic
     fun locCorner(): Int = locCorner
 
-    @JvmStatic
     fun locBlurRadius(): Int = locBlurRadius
 
-    @JvmStatic
     fun locGamma(): Int = locGamma
 
-    @JvmStatic
     fun locTint(): Int = locTint
 
-    @JvmStatic
     fun locMode(): Int = locMode
 
-    @JvmStatic
     fun locPieCenter(): Int = locPieCenter
 
-    @JvmStatic
     fun locPieInner(): Int = locPieInner
 
-    @JvmStatic
     fun locPieOuter(): Int = locPieOuter
 
-    @JvmStatic
     fun locPieStart(): Int = locPieStart
 
-    @JvmStatic
     fun locPieEnd(): Int = locPieEnd
 
-    @JvmStatic
     fun locPieFeather(): Int = locPieFeather
 
-    @JvmStatic
     fun captureTextureId(): Int = captureTextureId
 
-    @JvmStatic
     fun captureWidth(): Int = captureWidth
 
-    @JvmStatic
     fun captureHeight(): Int = captureHeight
 
-    @JvmStatic
     fun captureScreen(frameKey: Long) {
         if (frameKey == lastCaptureFrame && frameKey >= 0) return
         lastCaptureFrame = frameKey

@@ -67,7 +67,6 @@ object RendererManager {
             return _playerRenderer!!
         }
 
-    @JvmStatic
     val projectileRenderer: ProjectileRenderer
         get() {
             val current = _projectileRenderer

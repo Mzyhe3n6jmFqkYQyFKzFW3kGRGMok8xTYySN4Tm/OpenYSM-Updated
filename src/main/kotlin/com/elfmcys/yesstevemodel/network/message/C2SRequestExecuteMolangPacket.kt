@@ -10,18 +10,15 @@ class C2SRequestExecuteMolangPacket(
     val entityId: Int
 ) {
     companion object {
-        @JvmStatic
         fun encode(message: C2SRequestExecuteMolangPacket, buf: FriendlyByteBuf) {
             buf.writeUtf(message.animationName)
             buf.writeVarInt(message.entityId)
         }
 
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): C2SRequestExecuteMolangPacket {
             return C2SRequestExecuteMolangPacket(buf.readUtf(), buf.readVarInt())
         }
 
-        @JvmStatic
         fun handle(message: C2SRequestExecuteMolangPacket, ctx: PacketContext) {
             if (ctx.isServerSide()) {
                 val sender = ctx.sender
@@ -33,7 +30,6 @@ class C2SRequestExecuteMolangPacket(
             }
         }
 
-        @JvmStatic
         fun handleOnServer(message: C2SRequestExecuteMolangPacket, sender: ServerPlayer) {
             if (!sender.isAlive) {
                 return

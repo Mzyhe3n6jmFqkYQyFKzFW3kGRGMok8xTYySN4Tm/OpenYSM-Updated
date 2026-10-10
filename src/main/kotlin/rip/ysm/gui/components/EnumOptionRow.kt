@@ -159,7 +159,6 @@ open class EnumOptionRow<E : Enum<E>>(
     }
 
     companion object {
-        @JvmStatic
         fun prettify(name: String): String {
             val parts = name.split("_")
             val sb = StringBuilder(name.length)

@@ -7,7 +7,6 @@ interface ILoopType {
     fun isRepeatingAfterEnd(): Boolean
 
     companion object {
-        @JvmStatic
         fun fromJson(json: JsonElement?): ILoopType {
             if (json == null || !json.isJsonPrimitive) {
                 return EDefaultLoopTypes.PLAY_ONCE

@@ -12,7 +12,6 @@ object UnsafeUtil {
         throw RuntimeException("Couldn't obtain reference to sun.misc.Unsafe", e)
     }
 
-    @JvmStatic
     fun getUnsafe(): Unsafe {
         return UNSAFE
     }

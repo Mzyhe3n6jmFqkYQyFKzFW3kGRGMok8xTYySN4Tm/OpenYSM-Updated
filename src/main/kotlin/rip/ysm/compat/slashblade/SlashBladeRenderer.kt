@@ -9,7 +9,6 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.slashblade.fabric.SlashBladeRendererImpl
 
 object SlashBladeRenderer : ModCompat("slashblade") {
-    @JvmStatic
     fun renderOnEntity(
         livingEntity: LivingEntity,
         model: AnimatedGeoModel,
@@ -31,7 +30,6 @@ object SlashBladeRenderer : ModCompat("slashblade") {
         )
     }
 
-    @JvmStatic
     fun renderRightWaist(
         model: AnimatedGeoModel,
         poseStack: PoseStack,

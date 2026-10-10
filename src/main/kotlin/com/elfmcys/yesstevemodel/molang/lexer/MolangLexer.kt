@@ -22,18 +22,14 @@ interface MolangLexer : Closeable {
     override fun close()
 
     companion object {
-        @JvmStatic
         fun lexer(reader: Reader): MolangLexer = MolangLexerImpl(reader)
 
-        @JvmStatic
         fun lexer(string: String): MolangLexer = lexer(StringReader(string))
 
-        @JvmStatic
         fun tokenizeAll(reader: Reader): List<Token> {
             return lexer(reader).use { it.tokenizeAll() }
         }
 
-        @JvmStatic
         fun tokenizeAll(string: String): List<Token> {
             return lexer(string).use { it.tokenizeAll() }
         }

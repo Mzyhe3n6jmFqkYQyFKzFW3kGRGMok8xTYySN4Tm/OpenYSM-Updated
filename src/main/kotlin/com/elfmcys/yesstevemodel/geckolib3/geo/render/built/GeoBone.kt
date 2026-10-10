@@ -19,13 +19,10 @@ open class GeoBone(
     val boneId: Int = StringPool.computeIfAbsent(name)
     val glow: Boolean = name.startsWith(GLOWING_PREFIX)
 
-    @JvmField
     var partMask: Int = 0
 
-    @JvmField
     var parentIdx: Int = -1
 
-    @JvmField
     var parentName: String = ""
 
     fun cubesAreHidden(): Boolean = areCubesHidden

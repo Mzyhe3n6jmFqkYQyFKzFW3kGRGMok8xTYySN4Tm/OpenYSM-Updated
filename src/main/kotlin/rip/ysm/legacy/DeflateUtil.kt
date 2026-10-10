@@ -6,7 +6,6 @@ import java.util.zip.Deflater
 import java.util.zip.Inflater
 
 object DeflateUtil {
-    @JvmStatic
     fun compressBytes(input: ByteArray): ByteArray {
         if (input.isEmpty()) return byteArrayOf()
         val stream = ByteArrayOutputStream()
@@ -22,7 +21,6 @@ object DeflateUtil {
         return stream.toByteArray()
     }
 
-    @JvmStatic
     @Throws(DataFormatException::class)
     fun decompressBytes(input: ByteArray): ByteArray {
         if (input.isEmpty()) return byteArrayOf()

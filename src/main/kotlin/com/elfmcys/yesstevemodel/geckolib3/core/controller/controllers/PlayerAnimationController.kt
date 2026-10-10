@@ -45,13 +45,11 @@ object PlayerAnimationController {
         ): ConditionArmor = t.conditionManager.armor
     }
 
-    @JvmField
     val REGISTRY: ProcessorPipeline<CustomPlayerEntity, PlayerModelBundle> = ProcessorPipeline()
     private const val PLAYER_PREFIX: String = "player"
 
     const val CAP_CONTROLLER_KEY: String = "$PLAYER_PREFIX.cap"
 
-    @JvmStatic
     fun registerControllers() {
         registerParallelController("pre_parallel") { animationEntryKey, entity, linkedAnimationName ->
             CompositeAnimationController(
@@ -236,7 +234,6 @@ object PlayerAnimationController {
         }
     }
 
-    @JvmStatic
     fun buildControllers(
         modelBundle: PlayerModelBundle,
         resourceBundle: ModelResourceBundle
@@ -245,7 +242,6 @@ object PlayerAnimationController {
         return REGISTRY.buildAll(modelBundle, resourceBundle)
     }
 
-    @JvmStatic
     fun registerController(
         controllerName: String,
         controllerFactory: (String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>
@@ -253,7 +249,6 @@ object PlayerAnimationController {
         registerController(controllerName, false, controllerFactory)
     }
 
-    @JvmStatic
     fun registerController(
         controllerName: String,
         guiOnly: Boolean,
@@ -268,7 +263,6 @@ object PlayerAnimationController {
         REGISTRY.register(processor)
     }
 
-    @JvmStatic
     fun registerSlotController(
         slotName: String,
         controllerFactory: (String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>
@@ -283,7 +277,6 @@ object PlayerAnimationController {
         )
     }
 
-    @JvmStatic
     fun registerNamedController(
         slotName: String,
         requiredAnimations: Array<String>?,
@@ -302,7 +295,6 @@ object PlayerAnimationController {
         )
     }
 
-    @JvmStatic
     fun registerParallelController(
         slotName: String,
         controllerFactory: (String, CustomPlayerEntity, String?) -> IAnimationController<CustomPlayerEntity>
@@ -318,7 +310,6 @@ object PlayerAnimationController {
         )
     }
 
-    @JvmStatic
     fun registerArmorController(
         category: String,
         controllerFactory: (String, CustomPlayerEntity, EquipmentSlot) -> IAnimationController<CustomPlayerEntity>

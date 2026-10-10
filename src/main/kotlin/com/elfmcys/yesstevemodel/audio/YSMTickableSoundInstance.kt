@@ -12,7 +12,6 @@ open class YSMTickableSoundInstance(
     soundEvent: SoundEvent,
     val entity: Entity
 ) : AbstractTickableSoundInstance(soundEvent, SoundSource.PLAYERS, SoundInstance.createUnseededRandom()), IAudioPlayer {
-    @JvmField
     var targetVolume: Float = 1.0f
 
     init {

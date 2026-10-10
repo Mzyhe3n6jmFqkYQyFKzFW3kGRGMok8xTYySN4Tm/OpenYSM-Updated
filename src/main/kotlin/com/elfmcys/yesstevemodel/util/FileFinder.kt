@@ -3,7 +3,6 @@ package com.elfmcys.yesstevemodel.util
 import java.io.File
 
 object FileFinder {
-    @JvmStatic
     fun findFiles(path: File, filter: (File) -> Boolean): List<File> {
         val files = mutableListOf<File>()
         findFiles(path, filter, files)

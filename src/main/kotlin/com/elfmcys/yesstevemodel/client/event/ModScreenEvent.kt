@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.elfmcys.yesstevemodel.client.event
 
 import com.elfmcys.yesstevemodel.client.gui.DownloadScreen
@@ -11,15 +13,9 @@ import net.minecraft.client.gui.screens.Screen
 object ModScreenEvent {
     const val IMC_METHOD: String = "DownloadScreen"
 
-    @JvmField
+    @Suppress("MemberVisibilityCanBePrivate")
     var receivedScreen: Screen? = null
 
-    @JvmStatic
-    fun setReceivedScreen(screen: Screen?) {
-        receivedScreen = screen
-    }
-
-    @JvmStatic
     fun openScreen(modelScreen: PlayerModelScreen) {
         Minecraft.getInstance().setScreen(receivedScreen ?: DownloadScreen(modelScreen))
     }

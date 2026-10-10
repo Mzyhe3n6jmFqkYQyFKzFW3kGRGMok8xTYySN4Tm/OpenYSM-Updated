@@ -39,7 +39,6 @@ class Armor : LivingEntityFunction() {
         const val PREFIX_ITEM_TAG = "#"
         const val EMPTY_ITEM = "empty"
 
-        @JvmStatic
         fun create(): Armor = Armor()
     }
 }

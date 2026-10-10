@@ -13,7 +13,6 @@ import java.util.*
 object YSMClientCache {
     private val SECURE_RANDOM: SecureRandom = SecureRandom()
 
-    @JvmStatic
     fun generateCacheFileName(hash1: Long, hash2: Long, rtKey: ByteArray?): String? {
         if (rtKey == null || rtKey.size != 56) return null
         val seed = SECURE_RANDOM.nextInt()
@@ -39,7 +38,6 @@ object YSMClientCache {
         return sb.toString()
     }
 
-    @JvmStatic
     fun verifyFileContent(cacheFile: File?, hash1: Long, hash2: Long): Boolean {
         return !(cacheFile == null || !cacheFile.exists() || cacheFile.length() <= 8) && runCatching {
             val fileData = Files.readAllBytes(cacheFile.toPath())
@@ -59,7 +57,6 @@ object YSMClientCache {
         }
     }
 
-    @JvmStatic
     fun getModelUUIDFromFileName(fileName: String?, rtKey: ByteArray?): UUID? {
         if (fileName == null || fileName.length != 40 || rtKey == null || rtKey.size != 56) return null
         return runCatching {
@@ -88,7 +85,6 @@ object YSMClientCache {
         }.getOrNull()
     }
 
-    @JvmStatic
     fun buildCacheIndex(cacheDir: File, rtKey: ByteArray): MutableMap<UUID, File> {
         val cacheIndex = HashMap<UUID, File>()
 

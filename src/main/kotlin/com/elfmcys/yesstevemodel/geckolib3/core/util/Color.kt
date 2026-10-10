@@ -73,58 +73,40 @@ class Color(val color: Int) {
     override fun toString(): String = color.toString()
 
     companion object {
-        @JvmField
         val WHITE: Color = Color(0xFFFFFFFF.toInt())
 
-        @JvmField
         val LIGHT_GRAY: Color = Color(0xFFC0C0C0.toInt())
 
-        @JvmField
         val GRAY: Color = Color(0xFF808080.toInt())
 
-        @JvmField
         val DARK_GRAY: Color = Color(0x404040)
 
-        @JvmField
         val BLACK: Color = Color(0xFF000000.toInt())
 
-        @JvmField
         val RED: Color = Color(0xFFFF0000.toInt())
 
-        @JvmField
         val PINK: Color = Color(0xFFFFAFAF.toInt())
 
-        @JvmField
         val ORANGE: Color = Color(0xFFFFC800.toInt())
 
-        @JvmField
         val YELLOW: Color = Color(0xFFFFFF00.toInt())
 
-        @JvmField
         val GREEN: Color = Color(0x00FF00)
 
-        @JvmField
         val MAGENTA: Color = Color(0xFFFF00FF.toInt())
 
-        @JvmField
         val CYAN: Color = Color(0x00FFFF)
 
-        @JvmField
         val BLUE: Color = Color(0x0000FF)
 
-        @JvmStatic
         fun ofTransparent(color: Int): Color = Color(color)
 
-        @JvmStatic
         fun ofOpaque(color: Int): Color = Color(0xFF000000.toInt() or color)
 
-        @JvmStatic
         fun ofRGB(r: Float, g: Float, b: Float): Color = ofRGBA(r, g, b, 1.0f)
 
-        @JvmStatic
         fun ofRGB(r: Int, g: Int, b: Int): Color = ofRGBA(r, g, b, 255)
 
-        @JvmStatic
         fun ofRGBA(r: Float, g: Float, b: Float, a: Float): Color {
             return ofRGBA(
                 (r * 255.0f + 0.5f).toInt(),
@@ -134,17 +116,14 @@ class Color(val color: Int) {
             )
         }
 
-        @JvmStatic
         fun ofRGBA(r: Int, g: Int, b: Int, a: Int): Color {
             return Color(a and 0xFF shl 24 or (r and 0xFF shl 16) or (g and 0xFF shl 8) or (b and 0xFF))
         }
 
-        @JvmStatic
         fun ofHSB(hue: Float, saturation: Float, brightness: Float): Color {
             return ofOpaque(HSBtoRGB(hue, saturation, brightness))
         }
 
-        @JvmStatic
         fun HSBtoRGB(hue: Float, saturation: Float, brightness: Float): Int {
             var r = 0
             var g = 0

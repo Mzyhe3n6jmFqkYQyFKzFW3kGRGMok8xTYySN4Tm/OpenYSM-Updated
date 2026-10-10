@@ -25,7 +25,6 @@ object MaidAnimationController {
 
     private val REGISTRY: ProcessorPipeline<MaidAnimatable, PlayerModelBundle> = ProcessorPipeline()
 
-    @JvmStatic
     fun buildControllers(
         modelBundle: PlayerModelBundle,
         resourceBundle: ModelResourceBundle

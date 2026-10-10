@@ -38,10 +38,8 @@ object FirstPersonArmAnimationController {
 
     private const val FP_ARM_PREFIX: String = "fp.arm"
 
-    @JvmField
     val processorRegistry: ProcessorPipeline<PlayerGeoEntity, PlayerModelBundle> = ProcessorPipeline()
 
-    @JvmStatic
     fun registerDefaultProcessors() {
         registerNamedProcessor("misc", null, true) { animationEntryKey, entity ->
             CompositeAnimationController(entity, animationEntryKey, 0.0f, StopAnimationPredicate)
@@ -65,7 +63,6 @@ object FirstPersonArmAnimationController {
         }
     }
 
-    @JvmStatic
     fun buildControllers(
         modelBundle: PlayerModelBundle,
         resourceBundle: ModelResourceBundle
@@ -74,7 +71,6 @@ object FirstPersonArmAnimationController {
         return processorRegistry.buildAll(modelBundle, resourceBundle)
     }
 
-    @JvmStatic
     fun registerSimpleProcessor(
         slotName: String,
         controllerFactory: (String, PlayerGeoEntity) -> IAnimationController<PlayerGeoEntity>
@@ -82,7 +78,6 @@ object FirstPersonArmAnimationController {
         registerProcessorWithFilter(slotName, false, controllerFactory)
     }
 
-    @JvmStatic
     fun registerProcessorWithFilter(
         slotName: String,
         skipOnPreview: Boolean,
@@ -98,7 +93,6 @@ object FirstPersonArmAnimationController {
         processorRegistry.register(processor)
     }
 
-    @JvmStatic
     fun registerMolangProcessor(
         slotName: String,
         controllerFactory: (String, PlayerGeoEntity) -> IAnimationController<PlayerGeoEntity>
@@ -113,7 +107,6 @@ object FirstPersonArmAnimationController {
         )
     }
 
-    @JvmStatic
     fun registerNamedProcessor(
         slotName: String,
         requiredAnimations: Array<String>?,
@@ -132,7 +125,6 @@ object FirstPersonArmAnimationController {
         )
     }
 
-    @JvmStatic
     fun registerParallelProcessor(
         slotName: String,
         controllerFactory: (String, PlayerGeoEntity, String?) -> IAnimationController<PlayerGeoEntity>
@@ -148,7 +140,6 @@ object FirstPersonArmAnimationController {
         )
     }
 
-    @JvmStatic
     fun registerArmorProcessor(
         category: String,
         controllerFactory: (String, PlayerGeoEntity, EquipmentSlot) -> IAnimationController<PlayerGeoEntity>

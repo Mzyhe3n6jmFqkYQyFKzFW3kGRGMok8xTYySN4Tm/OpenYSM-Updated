@@ -5,7 +5,6 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.playeranimator.fabric.PlayerAnimatorCompatImpl
 
 object PlayerAnimatorCompat : ModCompat("player-animation-lib") {
-    @JvmStatic
     fun isPlayerAnimated(abstractClientPlayer: AbstractClientPlayer): Boolean =
         isModLoaded && PlayerAnimatorCompatImpl.isPlayerAnimated(abstractClientPlayer)
 }

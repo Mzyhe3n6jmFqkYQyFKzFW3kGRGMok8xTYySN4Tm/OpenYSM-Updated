@@ -6,7 +6,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 
 object OpenYSMClientCommand {
-    @JvmStatic
     fun registerClientCommands(commandDispatcher: CommandDispatcher<FabricClientCommandSource>) {
         val root = LiteralArgumentBuilder.literal<FabricClientCommandSource>("openysm")
             .requires { true }

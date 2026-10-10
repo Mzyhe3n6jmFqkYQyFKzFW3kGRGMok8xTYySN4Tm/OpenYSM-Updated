@@ -4,8 +4,6 @@ import com.elfmcys.yesstevemodel.config.GeneralConfig
 import com.elfmcys.yesstevemodel.config.ModSoundEvents
 import com.elfmcys.yesstevemodel.config.ServerConfig
 import com.elfmcys.yesstevemodel.event.YsmEventBootstrap
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.Minecraft
@@ -15,9 +13,6 @@ import rip.ysm.api.PlatformAPI
 import rip.ysm.api.config.ConfigRegistration
 
 object YesSteveModel {
-    @JvmField
-    val GSON: Gson = GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create()
-
     init {
         Constants.LOGGER.info("Initializing YesSteveModel, platform: {}", PlatformAPI.platformName)
         runCatching { NativeLibLoader }.onFailure {

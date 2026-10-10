@@ -6,13 +6,11 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.touhoulittlemaid.fabric.TouhouMaidBoneProcessorImpl
 
 object TouhouMaidBoneProcessor : ModCompat("touhou_little_maid") {
-    @JvmStatic
     fun createLocationBone(bone: AnimatedGeoBone): Any? {
         if (!isModLoaded) return null
         return TouhouMaidBoneProcessorImpl.createLocationBone(bone)
     }
 
-    @JvmStatic
     fun createLocationModel(model: AnimatedGeoModel): Any? {
         if (!isModLoaded) return null
         return TouhouMaidBoneProcessorImpl.createLocationModel(model)

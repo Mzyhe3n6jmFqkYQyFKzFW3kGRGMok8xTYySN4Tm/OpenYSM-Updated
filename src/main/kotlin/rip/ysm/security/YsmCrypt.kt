@@ -24,7 +24,6 @@ object YsmCrypt {
 
     private val theRandom = SecureRandom()
 
-    @JvmField
     val publicKey: ByteArray = byteArrayOf(
         0x0F,
         0xC7.toByte(),
@@ -112,7 +111,6 @@ object YsmCrypt {
         }
     }
 
-    @JvmStatic
     fun calculateModelHashes(modelHashStr: String, serverKey: ByteArray): LongArray {
         val data = modelHashStr.toByteArray(StandardCharsets.UTF_8)
         val xored = mt19937Xor(data, serverKey, SEED_KEY_DERIVATION)
@@ -122,13 +120,11 @@ object YsmCrypt {
         return longArrayOf(hash1, hash2)
     }
 
-    @JvmStatic
     @Throws(Exception::class)
     fun encryptServerCache(clearText: ByteArray, serverKey: ByteArray, hash1: Long, hash2: Long): ByteArray {
         return encryptServerCache(clearText, 0, clearText.size, serverKey, hash1, hash2)
     }
 
-    @JvmStatic
     @Throws(Exception::class)
     fun encryptServerCache(
         clearText: ByteArray,
@@ -182,7 +178,6 @@ object YsmCrypt {
         }
     }
 
-    @JvmStatic
     fun verifyServerCache(cacheData: ByteArray, hash1: Long, hash2: Long): Boolean {
         if (cacheData.size < 8) return false
         val payloadEnd = cacheData.size - 8
@@ -193,7 +188,6 @@ object YsmCrypt {
         return fileSignature == expectedSignature
     }
 
-    @JvmStatic
     @Throws(Exception::class)
     fun encryptYsmFile(rawClearText: ByteArray): ByteArray {
         val key = ByteArray(32)
@@ -243,7 +237,6 @@ object YsmCrypt {
         return fileBuf.array()
     }
 
-    @JvmStatic
     @Throws(Exception::class)
     fun transcodeServerDataToClientCache(
         serverData: ByteArray,
@@ -338,7 +331,6 @@ object YsmCrypt {
         return result
     }
 
-    @JvmStatic
     @Throws(Exception::class)
     fun decryptYsmFile(fileData: ByteArray): ByteArray {
         if (fileData.size < 8 + 24 + 32 + 8) {
@@ -427,7 +419,6 @@ object YsmCrypt {
         return result
     }
 
-    @JvmStatic
     @Throws(Exception::class)
     fun decrypt(packet: ByteArray, key: ByteArray): ByteArray {
         if (packet.size <= 11) throw RuntimeException("Packet too short!")
@@ -451,7 +442,6 @@ object YsmCrypt {
         return xoredData
     }
 
-    @JvmStatic
     @Throws(Exception::class)
     fun encrypt(payload: ByteArray, currentKeyIv: ByteArray, appendNextKey: Boolean): EncryptedPacket {
         val fullPlaintext: ByteArray
@@ -527,7 +517,6 @@ object YsmCrypt {
         }
     }
 
-    @JvmStatic
     @Throws(Exception::class)
     fun read(cacheFileData: ByteArray, clientKey: ByteArray): ByteArray {
         YSMByteBuf(Unpooled.wrappedBuffer(cacheFileData)).use { buf ->

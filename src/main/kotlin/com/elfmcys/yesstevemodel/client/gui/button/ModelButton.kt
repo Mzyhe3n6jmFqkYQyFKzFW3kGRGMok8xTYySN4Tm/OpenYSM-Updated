@@ -104,18 +104,18 @@ open class ModelButton(
         val tracker = modelIdHolder.animationStateMachine
         if (isHovered) {
             lastHoverTime = Util.getMillis()
-            tracker.setPreviousAnimation(modelId)
+            tracker.previousAnimation = modelId
         } else {
             if (Util.getMillis() - lastHoverTime < animationDuration) {
-                tracker.setPreviousAnimation(modelName)
+                tracker.previousAnimation = modelName
             } else {
-                tracker.setPreviousAnimation("empty")
+                tracker.previousAnimation = "empty"
             }
         }
         if (isFocused) {
-            tracker.setQueuedAnimation(authorName)
+            tracker.queuedAnimation = authorName
         } else {
-            tracker.setQueuedAnimation("empty")
+            tracker.queuedAnimation = "empty"
         }
 
         val minecraft = Minecraft.getInstance()
@@ -237,7 +237,6 @@ open class ModelButton(
     companion object {
         val ICON_TEXTURE: Identifier = NameSpaces.MOD.path("texture/icon.png")
 
-        @JvmStatic
         fun createDisplayName(previewEntity: PlayerPreviewEntity, modelAssembly: ModelAssembly): MutableComponent {
             val metadata = modelAssembly.modelData.metadata
             if (metadata == null || metadata.name.isBlank())

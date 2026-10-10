@@ -68,7 +68,6 @@ class MolangWatchRegistry {
     }
 
     companion object {
-        @JvmField
         val DECIMAL_FORMAT: DecimalFormat = DecimalFormat("#.#####")
     }
 }

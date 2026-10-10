@@ -5,6 +5,5 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.crawl.fabric.CrawlCompatImpl
 
 object CrawlCompat : ModCompat("crawl") {
-    @JvmStatic
     val CRAWLING: Pose by lazy { if (!isModLoaded) Pose.SWIMMING else CrawlCompatImpl.CRAWLING }
 }

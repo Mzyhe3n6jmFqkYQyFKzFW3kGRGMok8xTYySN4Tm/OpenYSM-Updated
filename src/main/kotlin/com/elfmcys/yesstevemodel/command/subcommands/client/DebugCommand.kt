@@ -14,7 +14,6 @@ object DebugCommand {
     private const val DEBUG_NAME: String = "debug"
     private const val ARG_NAME: String = "target"
 
-    @JvmStatic
     fun register(): LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(DEBUG_NAME)
         .then(
             Commands.argument(ARG_NAME, EntityArgument.entity())

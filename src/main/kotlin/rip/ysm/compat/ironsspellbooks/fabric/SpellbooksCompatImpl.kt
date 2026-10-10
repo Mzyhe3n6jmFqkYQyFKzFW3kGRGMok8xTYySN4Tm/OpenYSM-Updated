@@ -8,10 +8,8 @@ import net.minecraft.world.entity.LivingEntity
 import rip.ysm.compat.ModCompat
 
 object SpellbooksCompatImpl : ModCompat("irons_spellbooks") {
-    @JvmStatic
     fun registerBindings(binding: CtrlBinding) {
     }
 
-    @JvmStatic
     fun resolvePlayState(event: AnimationEvent<LivingAnimatable<*>>, entity: LivingEntity): PlayState? = null
 }

@@ -8,7 +8,6 @@ import net.minecraft.world.item.ItemStack
 import rip.ysm.compat.ModCompat
 
 object SlashBladeRendererImpl : ModCompat("slashblade") {
-    @JvmStatic
     fun renderOnEntity(
         livingEntity: LivingEntity,
         model: AnimatedGeoModel,
@@ -20,7 +19,6 @@ object SlashBladeRendererImpl : ModCompat("slashblade") {
     ) {
     }
 
-    @JvmStatic
     fun renderRightWaist(
         model: AnimatedGeoModel,
         poseStack: PoseStack,

@@ -22,10 +22,8 @@ interface MolangEngine {
     }
 
     companion object {
-        @JvmStatic
         fun fromCustomBinding(objectBinding: ObjectBinding): MolangEngine = MolangEngineImpl(objectBinding)
 
-        @JvmStatic
         fun createEmpty(): MolangEngine = MolangEngineImpl(ObjectBinding.EMPTY)
     }
 }

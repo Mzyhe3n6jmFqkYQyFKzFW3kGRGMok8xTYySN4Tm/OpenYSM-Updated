@@ -4,10 +4,8 @@ import net.minecraft.client.renderer.SubmitNodeCollector
 import net.minecraft.client.renderer.state.CameraRenderState
 
 object RenderContext {
-    @JvmField
     val COLLECTOR: ThreadLocal<SubmitNodeCollector?> = ThreadLocal()
 
-    @JvmField
     val CAMERA: ThreadLocal<CameraRenderState?> = ThreadLocal()
 
     @JvmStatic
@@ -22,13 +20,7 @@ object RenderContext {
         CAMERA.remove()
     }
 
-    @JvmStatic
-    fun collector(): SubmitNodeCollector? {
-        return COLLECTOR.get()
-    }
+    fun collector(): SubmitNodeCollector? = COLLECTOR.get()
 
-    @JvmStatic
-    fun camera(): CameraRenderState? {
-        return CAMERA.get()
-    }
+    fun camera(): CameraRenderState? = CAMERA.get()
 }

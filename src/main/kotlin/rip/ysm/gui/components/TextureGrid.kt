@@ -32,7 +32,7 @@ class TextureGrid(private val owner: ModernPlayerTextureScreen) : OptionRow<Any?
         holders = Array(names.size) { i ->
             PlayerPreviewEntity().apply {
                 resetModel()
-                animationStateMachine.setCurrentAnimation("idle")
+                animationStateMachine.currentAnimation = "idle"
                 initModelWithTexture(owner.modelId, names[i])
             }
         }

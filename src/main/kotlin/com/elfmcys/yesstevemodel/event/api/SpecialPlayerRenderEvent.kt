@@ -19,7 +19,6 @@ class SpecialPlayerRenderEvent(
     }
 
     companion object {
-        @JvmField
         val EVENT: Event<RenderHandler> = EventFactory.createArrayBacked(RenderHandler::class.java) { listeners ->
             RenderHandler { event ->
                 for (listener in listeners) {
@@ -32,7 +31,6 @@ class SpecialPlayerRenderEvent(
             }
         }
 
-        @JvmStatic
         fun post(event: SpecialPlayerRenderEvent): EventResult {
             return EVENT.invoker().onRender(event)
         }

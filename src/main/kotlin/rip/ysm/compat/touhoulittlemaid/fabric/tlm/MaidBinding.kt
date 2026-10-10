@@ -17,7 +17,6 @@ import java.util.*
 
 object MaidBinding {
 
-    @JvmStatic
     fun registerBindings(binding: TLMBinding) {
         binding.livingEntityVar("is_begging", createMaidEvaluable(EntityMaid::isBegging))
         binding.livingEntityVar("is_sitting", createMaidEvaluable(EntityMaid::isMaidInSittingPose))

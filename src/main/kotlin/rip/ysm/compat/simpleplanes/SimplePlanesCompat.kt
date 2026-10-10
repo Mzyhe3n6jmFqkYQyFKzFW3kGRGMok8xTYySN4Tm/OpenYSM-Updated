@@ -7,7 +7,6 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.simpleplanes.fabric.SimplePlanesCompatImpl
 
 object SimplePlanesCompat : ModCompat("simpleplanes") {
-    @JvmStatic
     fun getSimplePlanesRotation(event: AnimationEvent<GeckoVehicleEntity>): Vector3f? {
         if (!isModLoaded) return null
         return SimplePlanesCompatImpl.getSimplePlanesRotation(event)

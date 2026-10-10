@@ -531,7 +531,6 @@ open class CityHash {
 
     @Suppress("ConstPropertyName")
     companion object {
-        @JvmField
         val IS_BIG_EDIAN: Boolean = System.getProperty("sun.cpu.endian") != "little"
 
         const val K0: Long = -0x1b6795dc71a555e9L // 0xE4986A230E5AAA17L
@@ -549,7 +548,6 @@ open class CityHash {
         const val c1: Int = C1
         const val c2: Int = C2
 
-        @JvmStatic
         fun rotate32(v: Int, shift: Int): Int {
             return if (shift == 0) v else ((v ushr shift) or (v shl (32 - shift)))
         }

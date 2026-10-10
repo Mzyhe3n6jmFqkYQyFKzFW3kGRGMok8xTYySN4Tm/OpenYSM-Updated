@@ -25,16 +25,10 @@ import org.joml.Matrix4f
 abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEntity<TEntity>, S : EntityRenderState>(
     context: EntityRendererProvider.Context
 ) : EntityRenderer<TEntity, S>(context), IGeoRenderer<T> {
-
-    @JvmField
-    var modelViewMatrix: Matrix4f = Matrix4f()
-
-    @JvmField
-    var projectionMatrix: Matrix4f = Matrix4f()
-
+    private var modelViewMatrix: Matrix4f = Matrix4f()
+    private var projectionMatrix: Matrix4f = Matrix4f()
     private var renderState: IRenderCycle = EModelRenderCycle.INITIAL
 
-    @JvmField
     var bufferSource: MultiBufferSource? = null
 
     open fun render(
@@ -139,7 +133,6 @@ abstract class AbstractProjectileRenderer<TEntity : Projectile, T : AnimatableEn
         }
 
     companion object {
-        @JvmStatic
         fun getPackedLight(entity: Entity, u: Float): Int {
             return OverlayTexture.pack(OverlayTexture.u(u), OverlayTexture.v(false))
         }

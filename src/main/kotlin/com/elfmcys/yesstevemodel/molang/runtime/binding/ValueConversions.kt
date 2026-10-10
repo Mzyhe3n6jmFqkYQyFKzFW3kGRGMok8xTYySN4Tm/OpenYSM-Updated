@@ -4,7 +4,6 @@ import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 import com.elfmcys.yesstevemodel.molang.parser.ast.StringExpression
 
 object ValueConversions {
-    @JvmStatic
     fun asBoolean(obj: Any?): Boolean {
         if (obj == null) return false
         if (obj is Boolean) return obj
@@ -15,7 +14,6 @@ object ValueConversions {
         return true
     }
 
-    @JvmStatic
     fun asFloat(obj: Any?): Float {
         if (obj == null) return 0.0f
         if (obj is Number) {
@@ -28,7 +26,6 @@ object ValueConversions {
         return 1.0f
     }
 
-    @JvmStatic
     fun asInt(obj: Any?): Int {
         if (obj == null) return 0
         if (obj is Number) {
@@ -40,7 +37,6 @@ object ValueConversions {
         return 1
     }
 
-    @JvmStatic
     fun asDouble(obj: Any?): Double {
         if (obj == null) return 0.0
         if (obj is Number) {
@@ -53,7 +49,6 @@ object ValueConversions {
         return 1.0
     }
 
-    @JvmStatic
     fun asString(obj: Any?): String? {
         if (obj is StringExpression) {
             return obj.name
@@ -64,7 +59,6 @@ object ValueConversions {
         return null
     }
 
-    @JvmStatic
     fun asStringId(obj: Any?): Int {
         if (obj is StringExpression) {
             return obj.path

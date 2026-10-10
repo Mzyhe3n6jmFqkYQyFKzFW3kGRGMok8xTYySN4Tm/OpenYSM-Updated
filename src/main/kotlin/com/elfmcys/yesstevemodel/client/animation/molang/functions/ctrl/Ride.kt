@@ -43,7 +43,6 @@ class Ride : LivingEntityFunction() {
         const val MODE_VEHICLE = 0
         const val MODE_PASSENGER = 1
 
-        @JvmStatic
         fun create(): Ride = Ride()
     }
 }

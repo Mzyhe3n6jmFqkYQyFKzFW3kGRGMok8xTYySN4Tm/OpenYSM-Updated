@@ -8,16 +8,12 @@ import net.minecraft.sounds.SoundEvent
 import java.util.function.Supplier
 
 object ModSoundEvents {
-    @JvmField
     val CUSTOM_SOUND_ID: Identifier = NameSpaces.MOD.path("custom")
 
-    @JvmField
     val CUSTOM_SOUND_EVENT: SoundEvent = SoundEvent.createFixedRangeEvent(CUSTOM_SOUND_ID, 16.0f)
 
-    @JvmField
     val CUSTOM_SOUND: Supplier<SoundEvent> = Supplier { CUSTOM_SOUND_EVENT }
 
-    @JvmStatic
     fun register() {
         Registry.register(BuiltInRegistries.SOUND_EVENT, CUSTOM_SOUND_ID, CUSTOM_SOUND_EVENT)
     }

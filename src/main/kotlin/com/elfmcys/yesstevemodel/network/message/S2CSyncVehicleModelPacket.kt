@@ -18,13 +18,11 @@ class S2CSyncVehicleModelPacket(
     val floatMap: Int2FloatOpenHashMap = Int2FloatOpenHashMap(0)
 ) {
     companion object {
-        @JvmStatic
         fun encode(message: S2CSyncVehicleModelPacket, friendlyByteBuf: FriendlyByteBuf) {
             friendlyByteBuf.writeVarInt(message.entityId)
             friendlyByteBuf.writeNbt(message.capability.save())
         }
 
-        @JvmStatic
         fun decode(buf: FriendlyByteBuf): S2CSyncVehicleModelPacket {
             val varInt = buf.readVarInt()
             val nbt = buf.readNbt()
@@ -37,7 +35,6 @@ class S2CSyncVehicleModelPacket(
             return S2CSyncVehicleModelPacket(varInt, cap, floatMap)
         }
 
-        @JvmStatic
         fun handle(message: S2CSyncVehicleModelPacket, ctx: PacketContext) {
             if (ctx.isClientSide()) {
                 EntityJoinCallbackEvent.addCallback(message.entityId) { entity ->
@@ -46,7 +43,6 @@ class S2CSyncVehicleModelPacket(
             }
         }
 
-        @JvmStatic
         @Environment(EnvType.CLIENT)
         fun handleCapability(entity: Entity, capability: VehicleModelCapability, floatMap: Int2FloatOpenHashMap) {
             VehicleCapability[entity]?.let { vehicleCapability ->

@@ -20,47 +20,33 @@ import rip.ysm.api.network.PacketContext
 class S2CSyncPlayerStatePacket(
     @JvmField var entityId: Int
 ) {
-    @JvmField
     var flags: Short = 0
 
-    @JvmField
     var isFlying: Boolean = false
 
-    @JvmField
     var effectAmplifiers: Object2ByteMap<Holder<MobEffect>>? = null
 
-    @JvmField
     var experienceLevel: Int = 0
 
-    @JvmField
     var foodLevel: Int = 0
 
-    @JvmField
     var health: Int = 0
 
-    @JvmField
     var maxHealth: Int = 0
 
-    @JvmField
     var strafeInput: Byte = 0
 
-    @JvmField
     var verticalInput: Byte = 0
 
-    @JvmField
     var forwardInput: Byte = 0
 
-    @JvmField
     var shieldBlockCooldown: Boolean = false
 
-    @JvmField
     var modelSwitchId: String? = null
     var molangHashId: Int = 0
 
-    @JvmField
     var molangVars: Object2FloatMap<String>? = null
 
-    @JvmField
     var molangVarData: Int2FloatMap? = null
 
     fun isEmpty(): Boolean = flags.toInt() == 0
@@ -179,7 +165,6 @@ class S2CSyncPlayerStatePacket(
     }
 
     companion object {
-        @JvmStatic
         fun encode(message: S2CSyncPlayerStatePacket, buffer: FriendlyByteBuf) {
             buffer.writeVarInt(message.entityId)
             buffer.writeShort(message.flags.toInt())
@@ -213,7 +198,6 @@ class S2CSyncPlayerStatePacket(
             }
         }
 
-        @JvmStatic
         fun decode(buffer: FriendlyByteBuf): S2CSyncPlayerStatePacket {
             val entityId = buffer.readVarInt()
             val flags = buffer.readShort()
@@ -298,7 +282,6 @@ class S2CSyncPlayerStatePacket(
             return message
         }
 
-        @JvmStatic
         fun handle(message: S2CSyncPlayerStatePacket, ctx: PacketContext) {
             if (ctx.isClientSide()) {
                 EntityJoinCallbackEvent.addCallback(message.entityId) { entity ->
@@ -307,7 +290,6 @@ class S2CSyncPlayerStatePacket(
             }
         }
 
-        @JvmStatic
         fun handleCapability(entity: Entity, message: S2CSyncPlayerStatePacket) {
             if (entity is Player) {
                 PlayerCapability[entity]?.let { cap ->

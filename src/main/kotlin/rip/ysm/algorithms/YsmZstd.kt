@@ -10,13 +10,11 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 object YsmZstd {
-    @JvmStatic
     @Throws(IOException::class)
     fun decompress(rawData: ByteArray): ByteArray {
         return decompress(rawData, 0, rawData.size)
     }
 
-    @JvmStatic
     @Throws(IOException::class)
     fun decompress(rawData: ByteArray, offset: Int, length: Int): ByteArray {
         val actualLength = washInPlace(rawData, offset, length)
@@ -38,12 +36,10 @@ object YsmZstd {
         }
     }
 
-    @JvmStatic
     fun compress(rawData: ByteArray): ByteArray {
         return compress(rawData, 0, rawData.size)
     }
 
-    @JvmStatic
     fun compress(rawData: ByteArray, offset: Int, length: Int): ByteArray {
         val compressor = ZstdCompressor()
         val buffer = ByteArray(compressor.maxCompressedLength(length))

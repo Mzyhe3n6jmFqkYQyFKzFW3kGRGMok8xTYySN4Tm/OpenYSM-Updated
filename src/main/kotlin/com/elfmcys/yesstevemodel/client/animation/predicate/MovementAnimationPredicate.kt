@@ -18,7 +18,6 @@ class MovementAnimationPredicate : IAnimationPredicate<GeckoVehicleEntity> {
     }
 
     companion object {
-        @JvmField
         val ANIMATION_NAMES: Array<String> = arrayOf("forward", "idle")
     }
 }

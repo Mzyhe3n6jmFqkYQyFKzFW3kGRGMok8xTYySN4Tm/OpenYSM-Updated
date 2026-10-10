@@ -12,13 +12,10 @@ import net.minecraft.world.item.ItemStack
 import rip.ysm.compat.ModCompat
 
 object SWarfareCompatImpl : ModCompat("superbwarfare") {
-    @JvmStatic
     fun isGunItem(itemStack: ItemStack): Boolean = false
 
-    @JvmStatic
     fun isPlayerAiming(player: Player): Boolean = false
 
-    @JvmStatic
     fun applyGunTransform(
         stack: ItemStack,
         model: AnimatedGeoModel,
@@ -29,7 +26,6 @@ object SWarfareCompatImpl : ModCompat("superbwarfare") {
     ) {
     }
 
-    @JvmStatic
     fun handleTaczAnim(
         entity: LivingEntity,
         event: AnimationEvent<*>,
@@ -37,18 +33,15 @@ object SWarfareCompatImpl : ModCompat("superbwarfare") {
         loopType: ILoopType
     ): PlayState? = null
 
-    @JvmStatic
     fun handleGunHoldAnim(
         stack: ItemStack,
         event: AnimationEvent<*>
     ): PlayState? = null
 
-    @JvmStatic
     fun handleGunActionAnim(
         stack: ItemStack,
         event: AnimationEvent<*>
     ): PlayState? = null
 
-    @JvmStatic
     fun getGunTexture(stack: ItemStack): Identifier? = null
 }

@@ -14,7 +14,6 @@ import net.minecraft.world.entity.LivingEntity
 
 object MaidInteractionAnimHandler {
 
-    @JvmStatic
     fun handleMaidInteractionAnim(
         event: AnimationEvent<LivingAnimatable<*>>,
         livingEntity: LivingEntity,

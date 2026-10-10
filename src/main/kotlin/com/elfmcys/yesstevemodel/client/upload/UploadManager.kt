@@ -25,12 +25,10 @@ object UploadManager {
     private val expiredTextures = ConcurrentHashMap<AbstractTexture, ReferenceIntMutablePair<Identifier>>()
     private val pendingReleases: Queue<Identifier> = Queues.newArrayDeque()
 
-    @JvmStatic
     fun getOrCreateLocatable(texture: AbstractTexture, register: Boolean): IResourceLocatable {
         return getOrCreateLocatableWithSize(texture, register)
     }
 
-    @JvmStatic
     fun getOrCreateLocatableWithSize(
         texture: AbstractTexture,
         register: Boolean,
@@ -73,13 +71,11 @@ object UploadManager {
         return locatable
     }
 
-    @JvmStatic
     fun removeTexture(abstractTexture: AbstractTexture) {
         RenderSystem.assertOnRenderThread()
         textureCache.remove(abstractTexture)
     }
 
-    @JvmStatic
     fun processPendingUploads() {
         RenderSystem.assertOnRenderThread()
         if (expiredTextures.isNotEmpty()) {
@@ -116,7 +112,6 @@ object UploadManager {
         } while (stopWatchCreateStarted.time < UPLOAD_TIME_LIMIT_MS)
     }
 
-    @JvmStatic
     private fun registerTexture(texture: AbstractTexture, locatable: TextureLocatable) {
         if (!locatable.registered) {
             Minecraft.getInstance().textureManager.register(locatable.identifier, texture)

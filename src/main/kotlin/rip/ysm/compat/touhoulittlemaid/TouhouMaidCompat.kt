@@ -23,20 +23,17 @@ object TouhouMaidCompat : ModCompat("touhou_little_maid") {
         TouhouMaidCompatImpl.handleProjectileOwner(projectile, entity)
     }
 
-    @JvmStatic
     fun registerAnimationRoulette(entity: Entity, classify: String, index: Int) {
         if (!isModLoaded) return
         TouhouMaidCompatImpl.registerAnimationRoulette(entity, classify, index)
     }
 
-    @JvmStatic
     fun applyFeedback(entity: Entity, message: FeedbackData) {
         if (!isModLoaded) return
         TouhouMaidCompatImpl.applyFeedback(entity, message)
     }
 
     @Environment(EnvType.CLIENT)
-    @JvmStatic
     fun playMaidAnimation(entity: Entity, expression: String) {
         if (!isModLoaded) return
         TouhouMaidCompatImpl.playMaidAnimation(entity, expression)

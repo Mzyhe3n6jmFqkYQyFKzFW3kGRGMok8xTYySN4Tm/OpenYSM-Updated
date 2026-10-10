@@ -27,7 +27,6 @@ object YSMChannelImpl {
     @Volatile
     private var currentServer: MinecraftServer? = null
 
-    @JvmStatic
     fun init(id: Identifier, version: String) {
         channelId = id
         YSMPayload.init(id)
@@ -49,7 +48,6 @@ object YSMChannelImpl {
         }
     }
 
-    @JvmStatic
     fun <T : Any> register(
         discriminator: Int,
         type: Class<T>,
@@ -67,14 +65,12 @@ object YSMChannelImpl {
         ID_BY_CLASS[type] = maskedId
     }
 
-    @JvmStatic
     fun dispatch(buf: FriendlyByteBuf, ctx: PacketContext) {
         val discriminator = buf.readUnsignedByte().toInt()
         val codec = CODECS_BY_ID[discriminator]
         codec?.dispatch(buf, ctx)
     }
 
-    @JvmStatic
     fun sendToServer(packet: Any) {
         if (FabricLoader.getInstance().environmentType != EnvType.CLIENT) {
             return
@@ -82,12 +78,10 @@ object YSMChannelImpl {
         YSMChannelClientImpl.sendToServer(encodePayload(packet))
     }
 
-    @JvmStatic
     fun sendToClientPlayer(packet: Any, player: ServerPlayer) {
         ServerPlayNetworking.send(player, encodePayload(packet))
     }
 
-    @JvmStatic
     fun sendToAll(packet: Any) {
         val server = currentServer ?: return
         val payload = encodePayload(packet)
@@ -96,7 +90,6 @@ object YSMChannelImpl {
         }
     }
 
-    @JvmStatic
     fun sendToTrackingEntity(packet: Any, entity: Entity) {
         val payload = encodePayload(packet)
         for (player in PlayerLookup.tracking(entity)) {
@@ -104,7 +97,6 @@ object YSMChannelImpl {
         }
     }
 
-    @JvmStatic
     fun sendToTrackingEntityAndSelf(packet: Any, player: Player) {
         val payload = encodePayload(packet)
         for (p in PlayerLookup.tracking(player)) {
@@ -115,12 +107,10 @@ object YSMChannelImpl {
         }
     }
 
-    @JvmStatic
     fun toClientboundPacket(packet: Any): Packet<*> {
         return ServerPlayNetworking.createS2CPacket(encodePayload(packet))
     }
 
-    @JvmStatic
     fun toServerboundPacket(packet: Any): Packet<*> {
         if (FabricLoader.getInstance().environmentType != EnvType.CLIENT) {
             throw IllegalStateException("toServerboundPacket can only be invoked from the client environment")
@@ -128,7 +118,6 @@ object YSMChannelImpl {
         return YSMChannelClientImpl.toServerboundPacket(encodePayload(packet))
     }
 
-    @JvmStatic
     private fun encodePayload(packet: Any): YSMPayload {
         val id = ID_BY_CLASS[packet.javaClass]
             ?: throw IllegalStateException("Packet type not registered: ${packet.javaClass}")

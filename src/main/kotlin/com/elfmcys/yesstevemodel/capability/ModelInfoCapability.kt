@@ -245,7 +245,6 @@ class ModelInfoCapability : NbtSave {
             return capability
         }
 
-        @JvmStatic
         operator fun get(player: Player): ModelInfoCapability? = ModelInfoCapabilityImpl[player]
     }
 }

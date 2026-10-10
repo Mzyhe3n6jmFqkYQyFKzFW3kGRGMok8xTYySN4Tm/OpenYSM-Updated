@@ -241,10 +241,8 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     }
 
     companion object {
-        @JvmStatic
         operator fun get(player: Player): PlayerCapability? = PlayerCapabilityImpl[player]
 
-        @JvmStatic
         operator fun get(entity: Entity): PlayerCapability? = PlayerCapabilityImpl[entity]
     }
 }

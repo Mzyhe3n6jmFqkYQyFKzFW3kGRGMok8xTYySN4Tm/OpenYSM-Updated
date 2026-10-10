@@ -14,12 +14,10 @@ interface ExpressionEvaluator<TEntity> : ExecutionContext<TEntity> {
     }
 
     companion object {
-        @JvmStatic
         fun <TEntity> evaluator(entity: TEntity): ExpressionEvaluator<TEntity> {
             return ExpressionEvaluatorImpl(entity)
         }
 
-        @JvmStatic
         fun evaluator(): ExpressionEvaluator<ObjectBinding> {
             return evaluator(ObjectBinding.EMPTY)
         }

@@ -11,16 +11,13 @@ import rip.ysm.compat.ModCompat
 import rip.ysm.compat.carryon.CarryOnDataHelper
 
 object CarryOnCompatImpl : ModCompat("carryon") {
-    @JvmStatic
     val controllerFactory: (String, CustomPlayerEntity) -> IAnimationController<CustomPlayerEntity>
         get() = { animationEntryKey, entity ->
             CompositeAnimationController(entity, animationEntryKey, 0.1f, PlayerAnimationPredicate())
         }
 
-    @JvmStatic
     fun isPlayerCarrying(player: Player): Boolean = CarryOnDataHelper.isPlayerCarrying(player)
 
-    @JvmStatic
     fun registerBindings(binding: CtrlBinding) {
         binding.livingEntityVar("carryon_type") {
             val entity = it.entity

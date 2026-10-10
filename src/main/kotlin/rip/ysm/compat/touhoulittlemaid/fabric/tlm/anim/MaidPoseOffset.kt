@@ -24,7 +24,6 @@ object MaidPoseOffset {
     private const val POSE_SIT: Float = -0.5f
     private const val SEAT_UNMEASURED: Float = 0.0f
 
-    @JvmStatic
     fun resolve(maid: EntityMaid, animatable: MaidAnimatable): Float {
         val vehicle = vanilla(maid).vehicle
         if (vehicle == null || !vehicle.isAlive) {

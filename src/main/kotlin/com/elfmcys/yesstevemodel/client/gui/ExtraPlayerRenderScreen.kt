@@ -20,13 +20,13 @@ class ExtraPlayerRenderScreen : Screen(Component.literal("YSM Extra Player Rende
     private var rotationY: Float = ExtraPlayerRenderConfig.PLAYER_YAW_OFFSET.get().toFloat()
     private var isDragging: Boolean = false
     private var isRightDragging: Boolean = false
-    private var offsetX: Int = if (PauseScreenButtonBuilder.isServerConnected()) 16 else 5
-    private var offsetY: Int = if (PauseScreenButtonBuilder.isServerConnected()) 0 else 1
+    private var offsetX: Int = if (PauseScreenButtonBuilder.isServerConnected) 16 else 5
+    private var offsetY: Int = if (PauseScreenButtonBuilder.isServerConnected) 0 else 1
 
     override fun init() {
         clearWidgets()
         var i = -30
-        if (PauseScreenButtonBuilder.isServerConnected()) {
+        if (PauseScreenButtonBuilder.isServerConnected) {
             addRenderableWidget(
                 Button.builder(Component.translatable("controls.reset")) {
                     resetTransform()

@@ -11,24 +11,18 @@ package com.ysm.parser
 object YSMNative {
     // ── CityHash ──────────────────────────────────────────────────────────
 
-    @JvmStatic
     external fun cityHash64(data: ByteArray): Long
 
-    @JvmStatic
     external fun cityHash64WithSeed(data: ByteArray, seed: Long): Long
 
-    @JvmStatic
     external fun cityHash128(data: ByteArray): LongArray
 
-    @JvmStatic
     external fun cityHash128WithSeed(data: ByteArray, seedLow: Long, seedHigh: Long): LongArray
 
     // ── Zstd ──────────────────────────────────────────────────────────────
 
-    @JvmStatic
     external fun zstdDecompress(data: ByteArray): ByteArray
 
-    @JvmStatic
     external fun zstdCompress(data: ByteArray, level: Int): ByteArray
 
     // ── XChaCha20 ─────────────────────────────────────────────────────────
@@ -38,13 +32,11 @@ object YSMNative {
      * @param iv    24-byte nonce
      * @param rounds number of rounds (10, 20, or 30)
      */
-    @JvmStatic
     external fun xchacha20Encrypt(data: ByteArray, key: ByteArray, iv: ByteArray, rounds: Int): ByteArray
 
     /**
      * Decryption is the same operation as encryption for XChaCha20.
      */
-    @JvmStatic
     external fun xchacha20Decrypt(data: ByteArray, key: ByteArray, iv: ByteArray, rounds: Int): ByteArray
 
     /**
@@ -54,7 +46,6 @@ object YSMNative {
      * @param iv    24-byte nonce
      * @param seed  CityHash seed controlling block updates
      */
-    @JvmStatic
     external fun modifiedChaChaDecrypt(data: ByteArray, key: ByteArray, iv: ByteArray, seed: Long): ByteArray
 
     // ── MT19937 (stateful) ────────────────────────────────────────────────
@@ -63,19 +54,15 @@ object YSMNative {
      * Create a new MT19937-64 RNG instance.
      * @return opaque handle for subsequent calls
      */
-    @JvmStatic
     external fun mt19937Create(seed: Long): Long
 
     /** Return the next 64-bit random value from the generator. */
-    @JvmStatic
     external fun mt19937Next(handle: Long): Long
 
     /** Fill and return [count] random bytes from the generator. */
-    @JvmStatic
     external fun mt19937GenerateBytes(handle: Long, count: Int): ByteArray
 
     /** Destroy the generator and release native resources. */
-    @JvmStatic
     external fun mt19937Destroy(handle: Long)
 
     /**
@@ -85,7 +72,6 @@ object YSMNative {
      * @param data 压缩且被混淆过的 byte 数组
      * @return 解压后的原始 byte 数组
      */
-    @JvmStatic
     external fun ysmZstdDecompress(data: ByteArray): ByteArray
 
     /**
@@ -96,6 +82,5 @@ object YSMNative {
      * @param level ZSTD 压缩等级 (通常推荐 3，最大通常支持到 22)
      * @return 压缩且混淆后的 byte 数组
      */
-    @JvmStatic
     external fun ysmZstdCompress(data: ByteArray, level: Int): ByteArray
 }
