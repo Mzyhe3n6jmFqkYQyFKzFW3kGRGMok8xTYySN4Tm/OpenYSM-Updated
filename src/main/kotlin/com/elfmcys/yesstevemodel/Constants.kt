@@ -30,7 +30,7 @@ object Constants {
         val dir = runCatching {
             FabricLoader.getInstance().configDir.resolve(NameSpaces.MOD())
         }.getOrElse {
-            Path.of("config", NameSpaces.MOD())
+            Path.of(System.getProperty("fabric.config.dir") ?: ".temp/config", NameSpaces.MOD())
         }
         runCatching { dir.createDirectories() }
         dir
@@ -41,7 +41,7 @@ object Constants {
         val dir = runCatching {
             FabricLoader.getInstance().configDir
         }.getOrElse {
-            Path.of("config")
+            Path.of(System.getProperty("fabric.config.dir") ?: ".temp/config")
         }
         runCatching { dir.createDirectories() }
         dir
