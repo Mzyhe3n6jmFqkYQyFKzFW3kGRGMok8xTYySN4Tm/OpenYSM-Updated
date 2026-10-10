@@ -13,9 +13,6 @@ import java.util.*
  *
  * The library is extracted to a temporary directory on first call and loaded
  * via [System.load]. Subsequent calls are no-ops.
- *
- * Platforms that lack a JNI library are detected and reported via a
- * `false` return from [load].
  */
 object YSMParserNativeLoader {
     private const val NATIVE_DIR = "natives/ysmparser"
@@ -34,18 +31,11 @@ object YSMParserNativeLoader {
     )
 
     init {
-        load()
+        init()
     }
 
-    /**
-     * Load the YSMParser JNI library for the current platform.
-     * Thread-safe and idempotent — safe to call multiple times.
-     *
-     * @return `true` if JNI loaded successfully, `false` if JNI is
-     *         unavailable (caller should skip native parsing)
-     */
-    fun load(): Boolean {
-        if (loaded) return jniAvailable
+    fun init() {
+        if (loaded) return
 
         val platform = detectPlatform()
         val libName = platform.libraryName
@@ -54,7 +44,7 @@ object YSMParserNativeLoader {
             Constants.LOGGER.warn("Unsupported platform for YSMParser: {} {}", platform.osTag, platform.archTag)
             loaded = true
             jniAvailable = false
-            return false
+            return
         }
 
         val resourcePath = "$NATIVE_DIR/$folder/$libName"
@@ -66,7 +56,7 @@ object YSMParserNativeLoader {
             Constants.LOGGER.warn("Native library not found in JAR: {}", resourcePath)
             loaded = true
             jniAvailable = false
-            return false
+            return
         }
 
         runCatching {
@@ -84,21 +74,20 @@ object YSMParserNativeLoader {
             val start = System.currentTimeMillis()
             Constants.LOGGER.info("Begin load YSMParser native library")
             System.load(extractedLib.toAbsolutePath().toString())
-            Constants.LOGGER.info("Successfully load YSMParser native library in {}ms", System.currentTimeMillis() - start)
+            Constants.LOGGER.info(
+                "Successfully load YSMParser native library in {}ms",
+                System.currentTimeMillis() - start
+            )
 
             extractedLib.toFile().deleteOnExit()
 
             loaded = true
             jniAvailable = true
-            return true
         }.onFailure {
             Constants.LOGGER.warn("Failed to load YSMParser native lib: $resourcePath", it)
             loaded = true
             jniAvailable = false
-            return false
         }
-
-        return jniAvailable
     }
 
     fun isJniAvailable(): Boolean {
