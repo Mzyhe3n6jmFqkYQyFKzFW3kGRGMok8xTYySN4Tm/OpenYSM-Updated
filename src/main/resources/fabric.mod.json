@@ -3,12 +3,22 @@
   "id": "${mod_id}",
   "version": "${version}",
   "name": "${mod_name}",
-  "description": "",
+  "description": "A mod based on GeckoLib that modifies the player model.",
+  "contributors": [
+    "bernie-g (GeckoLib)",
+    "fadookie (mclib)",
+    "TT432 & SQwatermark (helped me solve many difficult problems)"
+  ],
   "authors": [
+    "YS Group",
+    "TartaricAcid",
+    "TomatoPuddin",
+    "AryochiL",
     "Tianjin Accessible Care Innovation Development Co., Ltd."
   ],
   "contact": {
-    "homepage": ""
+    "issues": "TODO",
+    "homepage": "https://ysm.cfpa.team/"
   },
   "license": "MIT",
   "icon": "yesstevemodel.png",
