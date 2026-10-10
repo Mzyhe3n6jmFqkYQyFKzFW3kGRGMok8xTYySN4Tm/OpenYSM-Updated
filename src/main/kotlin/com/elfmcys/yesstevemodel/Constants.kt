@@ -27,11 +27,7 @@ object Constants {
 
     @JvmStatic
     val ConfigDir: Path by lazy {
-        val dir = runCatching {
-            FabricLoader.getInstance().configDir.resolve(NameSpaces.MOD())
-        }.getOrElse {
-            Path.of(System.getProperty("fabric.config.dir") ?: ".temp/config", NameSpaces.MOD())
-        }
+        val dir = MainConfigDir.resolve(NameSpaces.MOD())
         runCatching { dir.createDirectories() }
         dir
     }
