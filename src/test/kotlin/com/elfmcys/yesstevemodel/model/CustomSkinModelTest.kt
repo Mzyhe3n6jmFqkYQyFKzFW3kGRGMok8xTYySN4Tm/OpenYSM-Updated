@@ -6,6 +6,7 @@ import com.elfmcys.yesstevemodel.resource.YSMFolderDeserializer
 import com.elfmcys.yesstevemodel.resource.pojo.RawYsmModel
 import com.google.gson.JsonParser
 import java.nio.file.Paths
+import net.minecraft.resources.Identifier
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -125,6 +126,20 @@ class CustomSkinModelTest {
         assertTrue(PlayerSkinTextureManager.SLIM_DEFAULT_SKINS.contains(PlayerSkinTextureManager.ALEX_SKIN))
         assertTrue(PlayerSkinTextureManager.WIDE_DEFAULT_SKINS.all { it.path.startsWith("textures/entity/player/wide/") })
         assertTrue(PlayerSkinTextureManager.SLIM_DEFAULT_SKINS.all { it.path.startsWith("textures/entity/player/slim/") })
+    }
+
+    @Test
+    fun testIsDefaultSkinDetection() {
+        assertTrue(PlayerSkinTextureManager.isDefaultSkin(PlayerSkinTextureManager.STEVE_SKIN))
+        assertTrue(PlayerSkinTextureManager.isDefaultSkin(PlayerSkinTextureManager.ALEX_SKIN))
+        assertTrue(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:textures/entity/player/wide/ari.png")))
+        assertTrue(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:textures/entity/player/slim/efe.png")))
+        assertTrue(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:textures/entity/steve.png")))
+        assertTrue(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:textures/entity/alex.png")))
+
+        assertFalse(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:skins/1234567890abcdef")))
+        assertFalse(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("yes_steve_model:textures/custom.png")))
+        assertFalse(PlayerSkinTextureManager.isDefaultSkin(null))
     }
 
     @Test

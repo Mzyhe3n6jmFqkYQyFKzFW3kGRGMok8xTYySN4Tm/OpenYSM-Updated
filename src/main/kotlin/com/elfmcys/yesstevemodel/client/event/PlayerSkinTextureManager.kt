@@ -64,6 +64,17 @@ object PlayerSkinTextureManager {
     fun isCustomSkinModel(modelId: String?): Boolean =
         modelId != null && ClientModelManager.isCustomSkinModel(modelId)
 
+    fun isDefaultSkin(location: Identifier?): Boolean {
+        if (location == null) return false
+        val path = location.path
+        return when {
+            location in WIDE_DEFAULT_SKINS || location in SLIM_DEFAULT_SKINS -> true
+            path.startsWith("textures/entity/player/wide/") || path.startsWith("textures/entity/player/slim/") -> true
+            path == "textures/entity/steve.png" || path == "textures/entity/alex.png" -> true
+            else -> false
+        }
+    }
+
     fun getUseMcDefaultTexture(modelId: String?): Int {
         if (modelId == null) return 0
         val clientVal = ClientModelManager.getUseMcDefaultTexture(modelId)
@@ -103,7 +114,7 @@ object PlayerSkinTextureManager {
         }
     }
 
-    fun getSkinTexture(str: String): Identifier {
+    fun getSkinTexture(str: String): Identifier? {
         val defaultType = getUseMcDefaultTexture(str)
         val defaultTex = getDefaultSkinTexture(defaultType)
         if (defaultTex != null) return defaultTex
@@ -123,19 +134,20 @@ object PlayerSkinTextureManager {
             val loc = runCatching {
                 targetPlayer.skin.body().texturePath()
             }.getOrNull()
-            if (loc != null) return loc
+            if (loc != null && !isDefaultSkin(loc)) return loc
 
             val lookupLoc = runCatching {
                 val minecraft = Minecraft.getInstance()
                 val skinLookup = minecraft.skinManager.createLookup(targetPlayer.gameProfile, false)
                 skinLookup.get().body().texturePath()
             }.getOrNull()
-            if (lookupLoc != null) return lookupLoc
+            if (lookupLoc != null && !isDefaultSkin(lookupLoc)) return lookupLoc
         }
 
         if (modelId != null) {
             val defaultType = getUseMcDefaultTexture(modelId)
             if (defaultType > 0) return getDefaultSkinTexture(defaultType, targetPlayer)
+            if (isCustomSkin) return null
             return getSkinTexture(modelId)
         }
         return null
