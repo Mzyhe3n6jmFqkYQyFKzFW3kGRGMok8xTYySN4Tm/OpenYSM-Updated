@@ -12,7 +12,7 @@ object NativeParseUtil {
     @JvmStatic
     fun parseNative(raw: ByteArray?, modelId: String): RawYsmModel? {
         if (raw == null || raw.isEmpty()) return null
-        if (!YSMParserNativeLoader.load()) {
+        if (!YSMParserNativeLoader.isJniAvailable()) {
             Constants.LOGGER.warn("Native YSMParser unavailable, skipping model: {}", modelId)
             return null
         }
