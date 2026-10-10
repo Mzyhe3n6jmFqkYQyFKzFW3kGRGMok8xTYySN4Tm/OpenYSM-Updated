@@ -58,7 +58,7 @@ class PlayerPreviewEntity : CustomPlayerEntity(DummyPlayer(), false, false), IPr
     override fun buildRenderShape(modelAssembly: ModelAssembly, isDefault: Boolean): ModelWrapper =
         TexturedModelWrapper(modelAssembly, isDefault, false, true, 300)
 
-    private class DummyPlayer : AbstractClientPlayer(
+    internal class DummyPlayer : AbstractClientPlayer(
         Minecraft.getInstance().level!!,
         createGameProfile()
     ) {
@@ -87,6 +87,6 @@ class PlayerPreviewEntity : CustomPlayerEntity(DummyPlayer(), false, false), IPr
     @Suppress("unused")
     companion object {
         @JvmStatic
-        fun isPreviewPlayer(player: Player): Boolean = player is DummyPlayer
+        fun isPreviewPlayer(player: Player?): Boolean = player is DummyPlayer
     }
 }

@@ -5,6 +5,7 @@ package com.elfmcys.yesstevemodel.client.entity
 import com.elfmcys.yesstevemodel.client.ClientModelManager
 import com.elfmcys.yesstevemodel.client.animation.condition.ConditionManager
 import com.elfmcys.yesstevemodel.client.animation.molang.MolangEventDispatcher
+import com.elfmcys.yesstevemodel.client.event.PlayerSkinTextureManager
 import com.elfmcys.yesstevemodel.client.model.ModelAssembly
 import com.elfmcys.yesstevemodel.client.upload.IResourceLocatable
 import com.elfmcys.yesstevemodel.client.upload.UploadManager
@@ -20,6 +21,7 @@ import it.unimi.dsi.fastutil.booleans.BooleanList
 import net.minecraft.client.renderer.texture.AbstractTexture
 import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.player.Player
 import org.joml.Vector2f
 
 abstract class LivingAnimatable<T : LivingEntity>(
@@ -171,6 +173,10 @@ abstract class LivingAnimatable<T : LivingEntity>(
 
     override val textureLocation: Identifier
         get() = if (isModelReady) {
+            if (PlayerSkinTextureManager.isCustomSkinModel(modelId)) {
+                val skinLoc = PlayerSkinTextureManager.getPlayerSkinLocation(entity as? Player, modelId)
+                if (skinLoc != null) return skinLoc
+            }
             (renderShape as? LivingAnimatable<*>.TexturedModelWrapper)?.texture?.getResourceLocation()
                 ?: ClientModelManager.defaultTexture
         } else {

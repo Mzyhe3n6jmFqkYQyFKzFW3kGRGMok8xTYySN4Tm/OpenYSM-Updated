@@ -735,6 +735,18 @@ object ClientModelManager {
 
     fun findModelContext(str: String): ModelAssembly? = modelAssemblyMap[str]
 
+    fun isCustomSkinModel(modelId: String): Boolean {
+        val model = modelAssemblyMap[modelId]
+        if (model != null) {
+            return model.isCustomSkinModel || modelId == "misc/2_steve" || modelId == "misc/1_alex"
+        }
+        val ctx = serverModels.values.find { it.modelId == modelId }
+        if (ctx != null && ctx.isCustomSkinModel != 0) {
+            return true
+        }
+        return modelId == "misc/2_steve" || modelId == "misc/1_alex"
+    }
+
     val localModelContext: ModelAssembly
         get() {
             runPendingModelCallback()

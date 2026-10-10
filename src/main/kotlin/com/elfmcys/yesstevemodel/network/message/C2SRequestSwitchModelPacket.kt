@@ -44,9 +44,11 @@ class C2SRequestSwitchModelPacket(
                 val serverModelData = serverModelInfo[str]
                 val hasAuth =
                     !ServerModelManager.authModels.contains(str) || ServerModelSelection.hasAuthModel(sender.uuid, str)
+                val isCustomSkin =
+                    serverModelData?.isCustomSkinModel == true || ServerModelManager.isCustomSkinModel(str)
                 if (serverModelData == null ||
                     !hasAuth ||
-                    !serverModelData.modelInfo.textures.contains(message.textureId)
+                    (!isCustomSkin && !serverModelData.modelInfo.textures.contains(message.textureId))
                 ) {
                     cap.resetToDefault()
                     ServerModelSelection.savePlayerSelection(sender.uuid, cap.modelId, cap.selectTexture)
