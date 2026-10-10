@@ -1,6 +1,5 @@
 package rip.ysm.compat.gun.swarfare
 
-import com.elfmcys.yesstevemodel.client.entity.LivingAnimatable
 import com.elfmcys.yesstevemodel.geckolib3.core.builder.ILoopType
 import com.elfmcys.yesstevemodel.geckolib3.core.enums.PlayState
 import com.elfmcys.yesstevemodel.geckolib3.core.event.predicate.AnimationEvent

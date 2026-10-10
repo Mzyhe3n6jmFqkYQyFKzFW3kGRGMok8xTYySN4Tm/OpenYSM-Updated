@@ -87,7 +87,7 @@ data class RadialSliceRenderState(
             x3: Float,
             y3: Float,
             scissor: ScreenRectangle?
-        ): ScreenRectangle? {
+        ): ScreenRectangle {
             val v0 = pose.transformPosition(x0, y0, Vector2f())
             val v1 = pose.transformPosition(x1, y1, Vector2f())
             val v2 = pose.transformPosition(x2, y2, Vector2f())

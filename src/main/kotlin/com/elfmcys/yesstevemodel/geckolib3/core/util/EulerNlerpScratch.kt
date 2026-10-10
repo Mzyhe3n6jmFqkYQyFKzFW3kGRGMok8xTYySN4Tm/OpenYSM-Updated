@@ -4,7 +4,7 @@ import org.joml.Quaternionf
 import org.joml.Vector3f
 
 class EulerNlerpScratch {
-    @JvmField val vec: Vector3f = Vector3f()
-    @JvmField val qa: Quaternionf = Quaternionf()
-    @JvmField val qb: Quaternionf = Quaternionf()
+    val vec: Vector3f = Vector3f()
+    val qa: Quaternionf = Quaternionf()
+    val qb: Quaternionf = Quaternionf()
 }

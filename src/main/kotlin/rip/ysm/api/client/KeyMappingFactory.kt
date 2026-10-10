@@ -13,12 +13,22 @@ object KeyMappingFactory {
     )
 
     @JvmStatic
-    fun createInGameAlt(name: String, type: InputConstants.Type, keyCode: Int, category: KeyMapping.Category): KeyMapping {
+    fun createInGameAlt(
+        name: String,
+        type: InputConstants.Type,
+        keyCode: Int,
+        category: KeyMapping.Category
+    ): KeyMapping {
         return KeyMappingFactoryImpl.createInGameAlt(name, type, keyCode, category)
     }
 
     @JvmStatic
-    fun createInGameNone(name: String, type: InputConstants.Type, keyCode: Int, category: KeyMapping.Category): KeyMapping {
+    fun createInGameNone(
+        name: String,
+        type: InputConstants.Type,
+        keyCode: Int,
+        category: KeyMapping.Category
+    ): KeyMapping {
         return KeyMappingFactoryImpl.createInGameNone(name, type, keyCode, category)
     }
 

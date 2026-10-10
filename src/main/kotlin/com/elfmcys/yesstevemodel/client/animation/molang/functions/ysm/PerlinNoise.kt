@@ -8,7 +8,7 @@ import net.minecraft.world.entity.Entity
 import org.lwjgl.stb.STBPerlin
 
 class PerlinNoise : EntityFunction() {
-    override fun eval(context: ExecutionContext<IContext<Entity>>, arguments: ArgumentCollection): Any? {
+    override fun eval(context: ExecutionContext<IContext<Entity>>, arguments: ArgumentCollection): Any {
         val seed: Int = arguments.getAsInt(context, 0)
         val x: Float = arguments.getAsFloat(context, 1)
         val y: Float = if (arguments.size() > 2) arguments.getAsFloat(context, 2) else 0.0f

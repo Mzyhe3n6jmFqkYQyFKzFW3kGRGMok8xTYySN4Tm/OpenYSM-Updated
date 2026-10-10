@@ -9,7 +9,6 @@ import com.elfmcys.yesstevemodel.client.renderer.ModelSyncStateOverlay
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 import net.minecraft.client.Minecraft
-import net.minecraft.resources.Identifier
 import rip.ysm.compat.touhoulittlemaid.fabric.TouhouLittleMaidCompatImpl
 
 class YesSteveModelFabricClient : ClientModInitializer {
@@ -17,7 +16,7 @@ class YesSteveModelFabricClient : ClientModInitializer {
         val debugOverlay = AnimationDebugOverlay.createOverlay()
         val loadingOverlay = ExtraPlayerOverlay()
         val syncOverlay = ModelSyncStateOverlay()
-        HudElementRegistry.addLast(Identifier.fromNamespaceAndPath(NameSpaces.MOD(), "overlays")) { guiGraphics, deltaTracker ->
+        HudElementRegistry.addLast(NameSpaces.MOD.path("overlays")) { guiGraphics, deltaTracker ->
             val mc = Minecraft.getInstance()
             val w = mc.window.guiScaledWidth
             val h = mc.window.guiScaledHeight

@@ -27,7 +27,7 @@ object UploadManager {
 
     @JvmStatic
     fun getOrCreateLocatable(texture: AbstractTexture, register: Boolean): IResourceLocatable {
-        return getOrCreateLocatableWithSize(texture, register, 200)
+        return getOrCreateLocatableWithSize(texture, register)
     }
 
     @JvmStatic

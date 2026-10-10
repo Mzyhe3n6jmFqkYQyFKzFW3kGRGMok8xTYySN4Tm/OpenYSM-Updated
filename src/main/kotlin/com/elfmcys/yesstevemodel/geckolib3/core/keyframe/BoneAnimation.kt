@@ -1,13 +1,15 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.elfmcys.yesstevemodel.geckolib3.core.keyframe
 
 import com.elfmcys.yesstevemodel.geckolib3.core.keyframe.bone.BoneKeyFrame
 import com.elfmcys.yesstevemodel.geckolib3.core.molang.util.StringPool
 
-open class BoneAnimation(
-    @JvmField var boneName: String,
-    @JvmField var rotationKeyFrames: MutableList<BoneKeyFrame>,
-    @JvmField var positionKeyFrames: MutableList<BoneKeyFrame>,
-    @JvmField var scaleKeyFrames: MutableList<BoneKeyFrame>
+data class BoneAnimation(
+    val boneName: String,
+    val rotationKeyFrames: MutableList<BoneKeyFrame>,
+    val positionKeyFrames: MutableList<BoneKeyFrame>,
+    val scaleKeyFrames: MutableList<BoneKeyFrame>
 ) {
-    @JvmField var boneId: Int = StringPool.computeIfAbsent(boneName)
+    var boneId: Int = StringPool.computeIfAbsent(boneName)
 }

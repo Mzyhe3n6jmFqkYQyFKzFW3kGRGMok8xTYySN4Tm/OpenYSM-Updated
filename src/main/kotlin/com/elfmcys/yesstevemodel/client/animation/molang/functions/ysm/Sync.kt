@@ -41,7 +41,10 @@ class Sync : AbstractClientPlayerFunction() {
         const val MAX_ARGS: Int = 16
 
         @JvmStatic
-        fun collectArgs(context: ExecutionContext<IContext<AbstractClientPlayer>>, arguments: ArgumentCollection): FloatArrayList {
+        fun collectArgs(
+            context: ExecutionContext<IContext<AbstractClientPlayer>>,
+            arguments: ArgumentCollection
+        ): FloatArrayList {
             val floatArrayList = FloatArrayList(arguments.size())
             for (i in 0 until arguments.size()) {
                 floatArrayList.add(arguments.getAsFloat(context, i))

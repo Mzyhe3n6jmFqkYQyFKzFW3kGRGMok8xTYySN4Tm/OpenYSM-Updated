@@ -123,7 +123,11 @@ object ModelCommand {
         }
         targets.forEach { player ->
             ModelInfoCapability[player]?.let { cap ->
-                if (!ServerModelManager.authModels.contains(modelName) || ServerModelSelection.hasAuthModel(player.uuid, modelName)) {
+                if (!ServerModelManager.authModels.contains(modelName) || ServerModelSelection.hasAuthModel(
+                        player.uuid,
+                        modelName
+                    )
+                ) {
                     cap.setModelAndTexture(modelName, finalTextureName)
                     cap.setMandatory(true)
                     ServerModelSelection.savePlayerSelection(player.uuid, modelName, finalTextureName)

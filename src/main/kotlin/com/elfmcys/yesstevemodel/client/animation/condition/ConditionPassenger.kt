@@ -17,11 +17,9 @@ class ConditionPassenger {
     private val tagPre: String = "passenger#"
 
     fun doTest(name: String) {
-        val preSize: Int = idPre.length
-        if (name.length <= preSize) {
-            return
-        }
-        val strSubstring: String = name.substring(preSize)
+        val preSize = idPre.length
+        if (name.length <= preSize) return
+        val strSubstring = name.substring(preSize)
         if (name.startsWith(idPre) && Identifier.tryParse(strSubstring) != null) {
             idTest.add(Identifier.parse(strSubstring))
         }
@@ -31,32 +29,22 @@ class ConditionPassenger {
     }
 
     fun doTest(entity: LivingEntity): String {
-        val firstPassenger: Entity? = entity.firstPassenger
-        if (firstPassenger == null || !firstPassenger.isAlive) {
-            return EMPTY
-        }
-        val result: String = doIdTest(firstPassenger)
-        if (result.isEmpty()) {
-            return doTagTest(firstPassenger)
-        }
+        val firstPassenger = entity.firstPassenger
+        if (firstPassenger == null || !firstPassenger.isAlive) return EMPTY
+        val result = doIdTest(firstPassenger)
+        if (result.isEmpty()) return doTagTest(firstPassenger)
         return result
     }
 
     private fun doIdTest(entity: Entity): String {
-        if (idTest.isEmpty()) {
-            return EMPTY
-        }
-        val key: Identifier? = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
-        if (key != null && idTest.contains(key)) {
-            return idPre + key
-        }
+        if (idTest.isEmpty()) return EMPTY
+        val key = BuiltInRegistries.ENTITY_TYPE.getKey(entity.type)
+        if (idTest.contains(key)) return idPre + key
         return EMPTY
     }
 
     private fun doTagTest(entity: Entity): String {
-        if (tagTest.isEmpty()) {
-            return EMPTY
-        }
+        if (tagTest.isEmpty) return EMPTY
         return tagTest.firstOrNull { entity.type.`is`(it) }?.let { tagPre + it.location() } ?: EMPTY
     }
 

@@ -1,8 +1,8 @@
 package com.elfmcys.yesstevemodel.molang.lexer
 
-import java.util.Objects
+import java.util.*
 
-class Cursor(var line: Int = 0, var column: Int = 0) : Cloneable {
+class Cursor(private var line: Int = 0, private var column: Int = 0) : Cloneable {
     var index: Int = 0
         private set
 

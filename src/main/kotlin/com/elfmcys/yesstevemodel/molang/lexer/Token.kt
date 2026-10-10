@@ -1,7 +1,5 @@
 package com.elfmcys.yesstevemodel.molang.lexer
 
-import java.util.Objects
-
 class Token(
     val kind: TokenKind,
     val value: String? = null,
@@ -35,7 +33,7 @@ class Token(
 
     override fun hashCode(): Int {
         var result = kind.hashCode()
-        result = 31 * result + (value?.hashCode() ?: 0)
+        result = 31 * result + value.hashCode()
         result = 31 * result + start
         result = 31 * result + end
         return result

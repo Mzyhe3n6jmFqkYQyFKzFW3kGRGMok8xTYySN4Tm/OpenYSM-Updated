@@ -8,7 +8,7 @@ import com.elfmcys.yesstevemodel.molang.parser.ast.FloatExpression
 import com.elfmcys.yesstevemodel.molang.runtime.ExpressionEvaluator
 import com.elfmcys.yesstevemodel.molang.runtime.binding.ValueConversions
 
-open class MolangValue(
+class MolangValue(
     val expressions: List<Expression>,
     val isScript: Boolean
 ) : IValue {

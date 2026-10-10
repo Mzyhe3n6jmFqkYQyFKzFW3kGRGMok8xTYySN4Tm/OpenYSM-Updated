@@ -1,7 +1,7 @@
 package com.elfmcys.yesstevemodel.geckolib3.core.builder
 
 import com.google.gson.JsonElement
-import java.util.Locale
+import java.util.*
 
 interface ILoopType {
     fun isRepeatingAfterEnd(): Boolean
@@ -34,8 +34,8 @@ interface ILoopType {
 
     enum class EDefaultLoopTypes(private val looping: Boolean = false) : ILoopType {
         LOOP(true),
-        PLAY_ONCE(false),
-        HOLD_ON_LAST_FRAME(false);
+        PLAY_ONCE(),
+        HOLD_ON_LAST_FRAME();
 
         override fun isRepeatingAfterEnd(): Boolean {
             return looping

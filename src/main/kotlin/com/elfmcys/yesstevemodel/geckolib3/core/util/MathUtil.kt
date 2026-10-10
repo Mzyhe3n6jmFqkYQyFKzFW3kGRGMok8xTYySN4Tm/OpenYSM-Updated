@@ -6,26 +6,46 @@ import org.joml.Quaternionf
 import org.joml.Vector3f
 
 object MathUtil {
-    @JvmField val DEGREES_TO_RADIANS: Float = Mth.DEG_TO_RAD
-    @JvmField val RADIANS_TO_DEGREES: Float = Mth.RAD_TO_DEG
+    private const val DEGREES_TO_RADIANS: Float = Mth.DEG_TO_RAD
+
+    private const val RADIANS_TO_DEGREES: Float = Mth.RAD_TO_DEG
     const val PI_FROM_DEG: Float = 3.1415927f
-    @JvmField val TWO_PI: Float = Math.toRadians(360.0).toFloat()
-    @JvmField val PI: Float = Math.toRadians(180.0).toFloat()
-    @JvmField val ZERO: Vector3f = Vector3f(0.0f, 0.0f, 0.0f)
-    @JvmField val ONE: Vector3f = Vector3f(1.0f, 1.0f, 1.0f)
+
+    @JvmField
+    val TWO_PI: Float = Math.toRadians(360.0).toFloat()
+
+    @JvmField
+    val PI: Float = Math.toRadians(180.0).toFloat()
+
+    @JvmField
+    val ZERO: Vector3f = Vector3f(0.0f, 0.0f, 0.0f)
+
+    @JvmField
+    val ONE: Vector3f = Vector3f(1.0f, 1.0f, 1.0f)
 
     @JvmStatic
-    fun eulerZYXToQuaternion(angles: Vector3f): Quaternionf {
-        return Quaternionf().rotateZYX(angles.z, angles.y, angles.x)
-    }
+    fun eulerZYXToQuaternion(angles: Vector3f): Quaternionf = Quaternionf().rotateZYX(angles.z, angles.y, angles.x)
 
     @JvmStatic
-    fun nlerpEulerAngles(percentCompleted: Float, startEuler: Vector3f, endEuler: Vector3f, offsetEuler: Vector3f, outEuler: Vector3f) {
+    fun nlerpEulerAngles(
+        percentCompleted: Float,
+        startEuler: Vector3f,
+        endEuler: Vector3f,
+        offsetEuler: Vector3f,
+        outEuler: Vector3f
+    ) {
         nlerpEulerAngles(percentCompleted, startEuler, endEuler, offsetEuler, outEuler, EulerNlerpScratch())
     }
 
     @JvmStatic
-    fun nlerpEulerAngles(percentCompleted: Float, startEuler: Vector3f, endEuler: Vector3f, offsetEuler: Vector3f, outEuler: Vector3f, scratch: EulerNlerpScratch) {
+    fun nlerpEulerAngles(
+        percentCompleted: Float,
+        startEuler: Vector3f,
+        endEuler: Vector3f,
+        offsetEuler: Vector3f,
+        outEuler: Vector3f,
+        scratch: EulerNlerpScratch
+    ) {
         val tempEuler: Vector3f = scratch.vec
         val startQuat: Quaternionf = scratch.qa
         val endQuat: Quaternionf = scratch.qb
@@ -40,9 +60,15 @@ object MathUtil {
 
     @JvmStatic
     fun getEulerAnglesZYX(quaternionf: Quaternionf, eulerAngles: Vector3f): Vector3f {
-        eulerAngles.x = Math.atan2((quaternionf.y * quaternionf.z) + (quaternionf.w * quaternionf.x), (0.5f - (quaternionf.x * quaternionf.x)) - (quaternionf.y * quaternionf.y))
-        eulerAngles.y = Math.safeAsin((-2.0f) * ((quaternionf.x * quaternionf.z) - (quaternionf.w * quaternionf.y)))
-        eulerAngles.z = Math.atan2((quaternionf.x * quaternionf.y) + (quaternionf.w * quaternionf.z), (0.5f - (quaternionf.y * quaternionf.y)) - (quaternionf.z * quaternionf.z))
+        eulerAngles.x = Math.atan2(
+            quaternionf.y * quaternionf.z + quaternionf.w * quaternionf.x,
+            0.5f - quaternionf.x * quaternionf.x - quaternionf.y * quaternionf.y
+        )
+        eulerAngles.y = Math.safeAsin(-2.0f * (quaternionf.x * quaternionf.z - quaternionf.w * quaternionf.y))
+        eulerAngles.z = Math.atan2(
+            quaternionf.x * quaternionf.y + quaternionf.w * quaternionf.z,
+            0.5f - quaternionf.y * quaternionf.y - quaternionf.z * quaternionf.z
+        )
         return eulerAngles
     }
 
@@ -113,7 +139,7 @@ object MathUtil {
         if (f2 >= PI) {
             f2 -= TWO_PI
         }
-        if (f2 < (-PI)) {
+        if (f2 < -PI) {
             f2 += TWO_PI
         }
         return f2
@@ -130,7 +156,5 @@ object MathUtil {
     }
 
     @JvmStatic
-    fun lerpAngle(target: Float, t: Float): Float {
-        return 1.0f + ((target - 1.0f) * t)
-    }
+    fun lerpAngle(target: Float, t: Float): Float = 1.0f + (target - 1.0f) * t
 }

@@ -17,7 +17,7 @@ interface MolangEngine {
         } catch (e: ParseException) {
             throw e
         } catch (e2: IOException) {
-            throw ParseException("Failed to close string reader", e2, Cursor(0, 0))
+            throw ParseException("Failed to close string reader", e2, Cursor())
         }
     }
 
