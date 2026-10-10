@@ -19,9 +19,6 @@ object PlayerSkinTextureManager {
     val STEVE_SKIN: Identifier = Identifier.parse("textures/entity/player/wide/steve.png")
     val ALEX_SKIN: Identifier = Identifier.parse("textures/entity/player/slim/alex.png")
 
-    private const val STEVE_TEXTURE_ID: String = "misc/2_steve"
-    private const val ALEX_TEXTURE_ID: String = "misc/1_alex"
-
     init {
         SpecialPlayerRenderEvent.EVENT.register(::onRenderTexture)
     }
@@ -39,12 +36,10 @@ object PlayerSkinTextureManager {
     }
 
     fun isCustomSkinModel(modelId: String?): Boolean =
-        modelId != null && (isDefaultSkin(modelId) || ClientModelManager.isCustomSkinModel(modelId))
+        modelId != null && ClientModelManager.isCustomSkinModel(modelId)
 
-    // TODO: Remove this
-    fun isDefaultSkin(str: String): Boolean = str == STEVE_TEXTURE_ID || str == ALEX_TEXTURE_ID
-
-    fun getSkinTexture(str: String): Identifier = if (str == ALEX_TEXTURE_ID) ALEX_SKIN else STEVE_SKIN
+    fun getSkinTexture(str: String): Identifier =
+        if (str.contains("alex", ignoreCase = true) || str == "misc/1_alex") ALEX_SKIN else STEVE_SKIN
 
     fun getPlayerSkinLocation(player: Player?, modelId: String? = null): Identifier? {
         val targetPlayer = if (PlayerPreviewEntity.isPreviewPlayer(player) || player == null) {
