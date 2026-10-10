@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
 
 object ProjectileCapabilityClientStore {
-    val STORE: ConcurrentMap<UUID, ProjectileCapability> = ConcurrentHashMap()
+    private val STORE: ConcurrentMap<UUID, ProjectileCapability> = ConcurrentHashMap()
 
     operator fun get(projectile: Projectile): ProjectileCapability? =
         STORE.computeIfAbsent(projectile.uuid) { ProjectileCapability(projectile) }
