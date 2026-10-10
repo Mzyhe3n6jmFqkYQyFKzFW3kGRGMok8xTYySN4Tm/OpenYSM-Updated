@@ -8,7 +8,10 @@ import com.elfmcys.yesstevemodel.config.ServerConfig
 import com.elfmcys.yesstevemodel.model.ServerModelManager
 import com.elfmcys.yesstevemodel.model.ServerModelSelection
 import com.elfmcys.yesstevemodel.network.NetworkHandler
-import com.elfmcys.yesstevemodel.network.message.*
+import com.elfmcys.yesstevemodel.network.message.S2CSyncAuthModelsPacket
+import com.elfmcys.yesstevemodel.network.message.S2CSyncProjectileModelPacket
+import com.elfmcys.yesstevemodel.network.message.S2CSyncVehicleModelPacket
+import com.elfmcys.yesstevemodel.network.message.S2CVersionCheckPacket
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents
@@ -46,14 +49,19 @@ object CapabilityEvent {
                 val savedTexture = ServerModelSelection.getPlayerTexture(entity.uuid)
                 if (savedModel != null && ServerModelManager.serverModelInfo.containsKey(savedModel)) {
                     val modelData = ServerModelManager.serverModelInfo[savedModel]
-                    val validTexture = if (savedTexture != null && modelData?.modelInfo?.textures?.contains(savedTexture) == true) {
-                        savedTexture
-                    } else {
-                        modelData?.modelInfo?.textures?.firstOrNull() ?: "default"
-                    }
+                    val validTexture =
+                        if (savedTexture != null && modelData?.modelInfo?.textures?.contains(savedTexture) == true) {
+                            savedTexture
+                        } else {
+                            modelData?.modelInfo?.textures?.firstOrNull() ?: "default"
+                        }
                     modelInfoCap.setModelAndTexture(savedModel, validTexture)
                 } else if (modelInfoCap.modelId.isNotBlank()) {
-                    ServerModelSelection.savePlayerSelection(entity.uuid, modelInfoCap.modelId, modelInfoCap.selectTexture)
+                    ServerModelSelection.savePlayerSelection(
+                        entity.uuid,
+                        modelInfoCap.modelId,
+                        modelInfoCap.selectTexture
+                    )
                 }
                 if (!NetworkHandler.isPlayerConnected(entity) && !modelInfoCap.isMandatory) {
                     modelInfoCap.markDirty()

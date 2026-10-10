@@ -1085,21 +1085,23 @@ object ServerModelManager {
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(userAuthModels), serverPlayer)
             }
             val modelId = modelInfoCap.modelId
-            if (!serverModelInfo.containsKey(modelId) || (AUTH_MODELS.contains(modelId) && !userAuthModels
-                    .contains(modelInfoCap.modelId)) || !(CACHE_NAME_INFO[modelId] ?: return).modelInfo.textures
+            if (!serverModelInfo.containsKey(modelId) || AUTH_MODELS.contains(modelId) && !userAuthModels
+                    .contains(modelInfoCap.modelId) || !(CACHE_NAME_INFO[modelId] ?: return).modelInfo.textures
                     .contains(modelInfoCap.selectTexture)
             ) {
                 modelInfoCap.resetToDefault()
-                ServerModelSelection.savePlayerSelection(serverPlayer.uuid, modelInfoCap.modelId, modelInfoCap.selectTexture)
+                ServerModelSelection.savePlayerSelection(
+                    serverPlayer.uuid,
+                    modelInfoCap.modelId,
+                    modelInfoCap.selectTexture
+                )
             }
             modelInfoCap.retainAnimationKeys(modelHashSet)
         }
     }
 
     @JvmStatic
-    fun isClientOnlyHost(): Boolean {
-        return !PlatformAPIImpl.isServer && ClientOnlyHostBridge.isActive()
-    }
+    fun isClientOnlyHost(): Boolean = !PlatformAPIImpl.isServer && ClientOnlyHostBridge.isActive()
 
     private fun shouldHideModelsFrom(uuid: UUID): Boolean =
         isClientOnlyHost() && !ClientOnlyHostBridge.isLocalHost(uuid)

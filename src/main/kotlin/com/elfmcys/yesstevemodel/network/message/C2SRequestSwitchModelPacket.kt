@@ -42,7 +42,8 @@ class C2SRequestSwitchModelPacket(
                 val str = message.modelId
                 val serverModelInfo = ServerModelManager.serverModelInfo
                 val serverModelData = serverModelInfo[str]
-                val hasAuth = !ServerModelManager.authModels.contains(str) || ServerModelSelection.hasAuthModel(sender.uuid, str)
+                val hasAuth =
+                    !ServerModelManager.authModels.contains(str) || ServerModelSelection.hasAuthModel(sender.uuid, str)
                 if (serverModelData == null ||
                     !hasAuth ||
                     !serverModelData.modelInfo.textures.contains(message.textureId)

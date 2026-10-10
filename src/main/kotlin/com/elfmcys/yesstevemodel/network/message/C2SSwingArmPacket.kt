@@ -51,9 +51,7 @@ class C2SSwingArmPacket(val hand: InteractionHand) {
 
         @JvmStatic
         fun getSwingDuration(entity: LivingEntity): Int {
-            if (MobEffectUtil.hasDigSpeed(entity)) {
-                return 6 - 1 + MobEffectUtil.getDigSpeedAmplification(entity)
-            }
+            if (MobEffectUtil.hasDigSpeed(entity)) return 6 - 1 + MobEffectUtil.getDigSpeedAmplification(entity)
             if (entity.hasEffect(MobEffects.MINING_FATIGUE)) {
                 val effect = entity.getEffect(MobEffects.MINING_FATIGUE)
                 val amplifier = effect?.amplifier ?: 0

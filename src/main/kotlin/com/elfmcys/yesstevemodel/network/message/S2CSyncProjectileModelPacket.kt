@@ -39,10 +39,9 @@ class S2CSyncProjectileModelPacket(
 
         @JvmStatic
         fun handle(message: S2CSyncProjectileModelPacket, ctx: PacketContext) {
-            if (ctx.isClientSide()) {
-                EntityJoinCallbackEvent.addCallback(message.entityId) { entity ->
-                    handleCapability(entity, message.capability, message.floatMap)
-                }
+            if (!ctx.isClientSide()) return
+            EntityJoinCallbackEvent.addCallback(message.entityId) { entity ->
+                handleCapability(entity, message.capability, message.floatMap)
             }
         }
 
