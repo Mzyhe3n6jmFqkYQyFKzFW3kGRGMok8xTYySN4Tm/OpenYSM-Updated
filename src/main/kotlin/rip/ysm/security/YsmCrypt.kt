@@ -185,7 +185,18 @@ object YsmCrypt {
         val ch = CityHash()
         val calculatedHash = ch.hash64WithSeed(cacheData, 0, payloadEnd, SEED_CACHE_VERIFICATION)
         val expectedSignature = calculatedHash xor hash1 xor hash2
-        return fileSignature == expectedSignature
+        if (fileSignature != expectedSignature) return false
+
+        return runCatching {
+            YSMByteBuf(Unpooled.wrappedBuffer(cacheData)).use { buf ->
+                if (buf.readVarInt() != 1) return false
+                buf.readVarInt()
+                buf.readVarInt()
+                buf.readVarInt()
+                val format = buf.readVarInt()
+                format == Constants.FORMAT_VERSION
+            }
+        }.getOrDefault(false)
     }
 
     @Throws(Exception::class)

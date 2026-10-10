@@ -1,6 +1,7 @@
 package rip.ysm.security
 
 import com.elfmcys.yesstevemodel.Constants
+import io.netty.buffer.Unpooled
 import rip.ysm.algorithms.CityHash
 import rip.ysm.algorithms.MT19937
 import java.io.File
@@ -50,7 +51,16 @@ object YSMClientCache {
             val calculatedHash = ch.hash64WithSeed(payload, YsmCrypt.SEED_CACHE_VERIFICATION)
 
             val verif = calculatedHash xor hash1 xor hash2
-            verif == realHash
+            if (verif != realHash) return false
+
+            YSMByteBuf(Unpooled.wrappedBuffer(fileData)).use { buf ->
+                if (buf.readVarInt() != 1) return false
+                buf.readVarInt()
+                buf.readVarInt()
+                buf.readVarInt()
+                val format = buf.readVarInt()
+                format == Constants.FORMAT_VERSION
+            }
         }.getOrElse {
             Constants.LOGGER.error("Failed to verify cache file content", it)
             false
