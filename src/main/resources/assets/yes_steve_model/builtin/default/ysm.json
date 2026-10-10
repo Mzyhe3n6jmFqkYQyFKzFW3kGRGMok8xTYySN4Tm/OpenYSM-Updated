@@ -129,42 +129,56 @@
     },
     "projectiles": [
       {
-        "match": ["minecraft:arrow"],
+        "match": [
+          "minecraft:arrow"
+        ],
         "model": "models/arrow.json",
         "animation": "animations/arrow.animation.json",
         "texture": "textures/arrow.png"
       },
       {
-        "match": ["minecraft:trident"],
+        "match": [
+          "minecraft:trident"
+        ],
         "model": "models/trident.json",
         "texture": "textures/trident.png"
       },
       {
-        "match": ["minecraft:fishing_bobber"],
+        "match": [
+          "minecraft:fishing_bobber"
+        ],
         "model": "models/fishing_bobber.json",
         "texture": "textures/fishing_bobber.png"
       },
       {
-        "match": ["minecraft:firework_rocket"],
+        "match": [
+          "minecraft:firework_rocket"
+        ],
         "model": "models/firework_rocket.json",
         "texture": "textures/firework_rocket.png"
       }
     ],
     "vehicles": [
       {
-        "match": ["#minecraft:boat"],
+        "match": [
+          "#minecraft:boat"
+        ],
         "model": "models/boat.json",
         "animation": "animations/boat.animation.json",
         "texture": "textures/boat.png"
       },
       {
-        "match": ["minecraft:chest_boat"],
+        "match": [
+          "minecraft:chest_boat"
+        ],
         "model": "models/chest_boat.json",
         "animation": "animations/boat.animation.json",
         "texture": "textures/boat.png"
       },
       {
-        "match": ["minecraft:minecart"],
+        "match": [
+          "minecraft:minecart"
+        ],
         "model": "models/minecart.json",
         "texture": "textures/minecart.png"
       }
