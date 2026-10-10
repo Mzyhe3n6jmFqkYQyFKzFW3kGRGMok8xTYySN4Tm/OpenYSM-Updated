@@ -1,10 +1,10 @@
 package com.elfmcys.yesstevemodel.model
 
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.test.*
 
 class ServerModelSelectionTest {
-
     private val player1 = UUID.fromString("069a79f4-44e9-4726-a5be-fca90e38aaf5")
     private val player2 = UUID.fromString("11111111-2222-3333-4444-555555555555")
 
@@ -96,7 +96,7 @@ class ServerModelSelectionTest {
             modelId = "test_model",
             textureId = "test_tex"
         )
-        player.roamingStorage["test_model"] = java.util.concurrent.ConcurrentHashMap(mapOf("slider1" to 5.5f))
+        player.roamingStorage["test_model"] = ConcurrentHashMap(mapOf("slider1" to 5.5f))
         player.authModels.addAll(listOf("auth_1", "auth_2"))
 
         val tag = player.save()
