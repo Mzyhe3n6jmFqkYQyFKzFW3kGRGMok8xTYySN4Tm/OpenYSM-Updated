@@ -578,6 +578,12 @@ class YSMBinaryDeserializer : AutoCloseable {
             model.properties.guiNoLighting = reader.readVarInt() != 0
             if (format >= 32) {
                 model.properties.mergeMultilineExpr = reader.readVarInt() != 0
+                if (reader.rawBuf.isReadable) {
+                    model.properties.isCustomSkinModel = reader.readVarInt() != 0
+                    if (reader.rawBuf.isReadable) {
+                        model.properties.useMcDefaultTexture = reader.readVarInt()
+                    }
+                }
             }
 
             model.properties.guiForeground = reader.readString()
