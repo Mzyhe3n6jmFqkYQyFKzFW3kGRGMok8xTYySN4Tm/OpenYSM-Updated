@@ -130,9 +130,42 @@ class CustomSkinModelTest {
         assertTrue(PlayerSkinTextureManager.isDefaultSkin(PlayerSkinTextureManager.ALEX_SKIN))
         assertTrue(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:textures/entity/player/wide/ari.png")))
         assertTrue(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:textures/entity/player/slim/efe.png")))
+        assertTrue(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:textures/entity/steve.png")))
+        assertTrue(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:textures/entity/alex.png")))
 
         assertFalse(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:skins/1234567890abcdef")))
         assertFalse(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("yes_steve_model:textures/custom.png")))
         assertFalse(PlayerSkinTextureManager.isDefaultSkin(null))
+    }
+
+    @Test
+    fun testPlayerSkinTextureManagerDefaults() {
+        assertEquals(PlayerSkinTextureManager.STEVE_SKIN, PlayerSkinTextureManager.getSkinTexture("misc/2_steve"))
+        assertEquals(PlayerSkinTextureManager.ALEX_SKIN, PlayerSkinTextureManager.getSkinTexture("misc/1_alex"))
+        assertNull(PlayerSkinTextureManager.getSkinTexture("default"))
+    }
+
+    @Test
+    fun testFormat32BinarySerializationWithCustomSkinProperties() {
+        val model = RawYsmModel().apply {
+            formatVersion = 32
+            metadata.name = "Custom Skin Model"
+            properties.sha256 = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+            properties.isCustomSkinModel = true
+            properties.useMcDefaultTexture = 2
+            footer.version = 32
+            footer.unkInt1 = 1
+            footer.rand = "test"
+            footer.time = 12345L
+        }
+
+        val serializedBuf = com.elfmcys.yesstevemodel.resource.YSMBinarySerializer.serialize(model, 32, true)
+        val data = serializedBuf.toArray()
+
+        com.elfmcys.yesstevemodel.resource.YSMBinaryDeserializer(data, 32).use { deserializer ->
+            val deserialized = deserializer.deserializeKeepOpen()
+            assertTrue(deserialized.properties.isCustomSkinModel)
+            assertEquals(2, deserialized.properties.useMcDefaultTexture)
+        }
     }
 }

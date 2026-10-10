@@ -1081,9 +1081,11 @@ object ServerModelManager {
                 NetworkHandler.sendToClientPlayer(S2CSyncAuthModelsPacket(userAuthModels), serverPlayer)
             }
             val modelId = modelInfoCap.modelId
+            val modelData = CACHE_NAME_INFO[modelId]
+            val isCustomSkin = modelData?.isCustomSkinModel == true
             if (!serverModelInfo.containsKey(modelId) || AUTH_MODELS.contains(modelId) && !userAuthModels
-                    .contains(modelInfoCap.modelId) || !(CACHE_NAME_INFO[modelId] ?: return).modelInfo.textures
-                    .contains(modelInfoCap.selectTexture)
+                    .contains(modelInfoCap.modelId) || (!isCustomSkin && !(modelData ?: return).modelInfo.textures
+                    .contains(modelInfoCap.selectTexture))
             ) {
                 modelInfoCap.resetToDefault()
                 ServerModelSelection.savePlayerSelection(
