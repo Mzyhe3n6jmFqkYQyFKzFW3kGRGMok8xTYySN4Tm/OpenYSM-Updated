@@ -3,8 +3,8 @@
 package com.elfmcys.yesstevemodel
 
 import net.minecraft.network.chat.Component
-import java.io.IOException
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.util.*
 
@@ -20,12 +20,15 @@ object NativeLibLoader {
     @Volatile
     private var isAndroid = false
 
+    @JvmStatic
     val isAvailable: Boolean
         get() = available
 
+    @JvmStatic
     val isLoaded: Boolean
         get() = loaded
 
+    @JvmStatic
     val isOnAndroid: Boolean
         get() = isAndroid
 
@@ -44,8 +47,10 @@ object NativeLibLoader {
     )
 
     @Synchronized
-    private fun init() {
+    @JvmStatic
+    fun init() {
         if (available) return
+
         if (System.getProperty("OYSM_DISABLE_SMID") != null) {
             available = true
             loaded = false
@@ -54,28 +59,35 @@ object NativeLibLoader {
 
         val platform = detectPlatform()
         val libName = platform.libraryName
-        if (libName == null) {
+        val folder = platform.folder
+        if (libName == null || folder == null) {
             setUnsupportedPlatformError("${platform.osTag} ${platform.archTag}")
             available = true
             loaded = false
             return
         }
 
-        val resourcePath = "$NATIVE_DIR/${platform.folder}/$libName"
+        val resourcePath = "$NATIVE_DIR/$folder/$libName"
+        val classLoader = NativeLibLoader::class.java.classLoader
+            ?: ClassLoader.getSystemClassLoader()
+
+        val inStream = classLoader?.getResourceAsStream(resourcePath)
+        if (inStream == null) {
+            Constants.LOGGER.warn("Native library not found in JAR: {}", resourcePath)
+            setUnsatisfiedRuntimeError("Native library not found in JAR: $resourcePath")
+            loaded = false
+            available = true
+            return
+        }
+
         runCatching {
-            val tempDir = Files.createTempDirectory("ysm_native_")
+            val tempDir: Path = Files.createTempDirectory("ysm_native_")
             tempDir.toFile().deleteOnExit()
 
-            val extractedLib = tempDir.resolve(libName)
+            val extractedLib: Path = tempDir.resolve(libName)
 
-            val classLoader = NativeLibLoader::class.java.classLoader
-                ?: ClassLoader.getSystemClassLoader()
-
-            classLoader.getResourceAsStream(resourcePath).use { inStream ->
-                if (inStream == null) {
-                    throw IOException("Native library not found in JAR: $resourcePath")
-                }
-                Files.copy(inStream, extractedLib, StandardCopyOption.REPLACE_EXISTING)
+            inStream.use { stream ->
+                Files.copy(stream, extractedLib, StandardCopyOption.REPLACE_EXISTING)
             }
 
             if (!platform.osTag.contains("win")) {
@@ -97,10 +109,6 @@ object NativeLibLoader {
             loaded = false
             available = true
         }
-    }
-
-    init {
-        init()
     }
 
     private fun detectPlatform(): PlatformInfo {
@@ -181,9 +189,11 @@ object NativeLibLoader {
         )
     }
 
+    @JvmStatic
     val errorComponent: Component?
         get() = lastError?.component
 
+    @JvmStatic
     val errorMessage: String?
         get() = lastError?.logMsg
 }
