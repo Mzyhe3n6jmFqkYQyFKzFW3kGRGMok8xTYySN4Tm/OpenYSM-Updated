@@ -24,7 +24,7 @@
     "homepage": "https://github.com/Mzyhe3n6jmFqkYQyFKzFW3kGRGMok8xTYySN4Tm/OpenYSM-Updated"
   },
   "license": "MIT",
-  "icon": "yesstevemodel.png",
+  "icon": "${mod_id}.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -60,5 +60,6 @@
       "${mod_id}:projectile_model",
       "${mod_id}:vehicle_model"
     ]
-  }
+  },
+  "accessWidener": "${mod_id}.aw"
 }
