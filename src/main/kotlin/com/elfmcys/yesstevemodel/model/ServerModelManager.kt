@@ -580,16 +580,17 @@ object ServerModelManager {
                 }
             }
             if (needsUpdate) {
-                val encryptedCache = YSMBinarySerializer.serialize(model, Constants.FORMAT_VERSION, true).use { serialized ->
-                    val raw = serialized.rawBuf
-                    if (raw.hasArray()) {
-                        val off = raw.arrayOffset() + raw.readerIndex()
-                        val len = raw.readableBytes()
-                        YsmCrypt.encryptServerCache(raw.array(), off, len, currentServerKey, hashes[0], hashes[1])
-                    } else {
-                        YsmCrypt.encryptServerCache(serialized.toArray(), currentServerKey, hashes[0], hashes[1])
+                val encryptedCache =
+                    YSMBinarySerializer.serialize(model, Constants.FORMAT_VERSION, true).use { serialized ->
+                        val raw = serialized.rawBuf
+                        if (raw.hasArray()) {
+                            val off = raw.arrayOffset() + raw.readerIndex()
+                            val len = raw.readableBytes()
+                            YsmCrypt.encryptServerCache(raw.array(), off, len, currentServerKey, hashes[0], hashes[1])
+                        } else {
+                            YsmCrypt.encryptServerCache(serialized.toArray(), currentServerKey, hashes[0], hashes[1])
+                        }
                     }
-                }
                 Files.write(cacheFile, encryptedCache)
             }
             validCacheFiles.add(cacheFileName)

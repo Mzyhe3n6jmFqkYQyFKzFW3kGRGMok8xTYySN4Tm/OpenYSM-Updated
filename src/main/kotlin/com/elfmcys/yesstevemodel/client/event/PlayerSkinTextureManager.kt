@@ -67,10 +67,7 @@ object PlayerSkinTextureManager {
         modelId != null && ClientModelManager.isCustomSkinModel(modelId)
 
     fun isDefaultSkin(location: Identifier?): Boolean =
-        location != null && (
-                location in WIDE_DEFAULT_SKINS ||
-                        location in SLIM_DEFAULT_SKINS
-                )
+        location != null && (location in WIDE_DEFAULT_SKINS || location in SLIM_DEFAULT_SKINS)
 
     fun getUseMcDefaultTexture(modelId: String?): Int {
         if (modelId == null) return 0
