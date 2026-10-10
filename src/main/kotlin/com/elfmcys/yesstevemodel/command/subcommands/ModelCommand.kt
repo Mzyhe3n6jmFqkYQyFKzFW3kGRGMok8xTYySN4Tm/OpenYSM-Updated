@@ -4,32 +4,23 @@ import com.elfmcys.yesstevemodel.capability.ModelInfoCapability
 import com.elfmcys.yesstevemodel.event.CommandRegistry
 import com.elfmcys.yesstevemodel.model.ServerModelManager
 import com.elfmcys.yesstevemodel.model.ServerModelSelection
-import com.elfmcys.yesstevemodel.model.format.ServerModelData
 import com.elfmcys.yesstevemodel.util.YSMMessageFormatter
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.arguments.BoolArgumentType
 import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
-import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import net.minecraft.commands.CommandSourceStack
 import net.minecraft.commands.Commands
 import net.minecraft.commands.arguments.EntityArgument
-import net.minecraft.commands.arguments.selector.EntitySelector
 import net.minecraft.network.chat.Component
-import net.minecraft.server.level.ServerPlayer
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.time.StopWatch
 import rip.ysm.api.PlatformAPI
 import java.util.concurrent.TimeUnit
 
 object ModelCommand {
-    @JvmField
-    val GSON: Gson = GsonBuilder().disableHtmlEscaping().excludeFieldsWithoutExposeAnnotation().create()
-
     private const val MODEL_NAME: String = "model"
     private const val LITERAL_RELOAD: String = "reload"
     private const val SET_NAME: String = "set"
@@ -43,7 +34,7 @@ object ModelCommand {
 
     @JvmStatic
     fun register(): LiteralArgumentBuilder<CommandSourceStack> {
-        val model: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(MODEL_NAME)
+        val model = Commands.literal(MODEL_NAME)
             .requires { commandSourceStack -> YSMMessageFormatter.hasCommandPermission(commandSourceStack, 2) }
         model.then(Commands.literal(LITERAL_RELOAD).executes(::reloadAllPack))
         model.then(
@@ -52,17 +43,12 @@ object ModelCommand {
                     .then(Commands.argument(ARG_VALUE, BoolArgumentType.bool()).executes(::disableModel))
             )
         )
-        val set: LiteralArgumentBuilder<CommandSourceStack> = Commands.literal(SET_NAME)
-        val targets: RequiredArgumentBuilder<CommandSourceStack, EntitySelector> =
-            Commands.argument(TARGETS_NAME, EntityArgument.players())
-        val modelId: RequiredArgumentBuilder<CommandSourceStack, String> =
-            Commands.argument(MODEL_ID_NAME, StringArgumentType.string())
-                .suggests(CommandRegistry.MODEL_IDS)
-        val textureId: RequiredArgumentBuilder<CommandSourceStack, String> =
-            Commands.argument(TEXTURE_ID_NAME, StringArgumentType.string())
-                .suggests(CommandRegistry.TEXTURE_IDS)
-        val ignoreAuth: RequiredArgumentBuilder<CommandSourceStack, Boolean> =
-            Commands.argument(IGNORE_AUTH_NAME, BoolArgumentType.bool())
+        val set = Commands.literal(SET_NAME)
+        val targets = Commands.argument(TARGETS_NAME, EntityArgument.players())
+        val modelId = Commands.argument(MODEL_ID_NAME, StringArgumentType.string()).suggests(CommandRegistry.MODEL_IDS)
+        val textureId =
+            Commands.argument(TEXTURE_ID_NAME, StringArgumentType.string()).suggests(CommandRegistry.TEXTURE_IDS)
+        val ignoreAuth = Commands.argument(IGNORE_AUTH_NAME, BoolArgumentType.bool())
 
         model.then(set.then(targets.then(modelId.then(textureId.executes { commandContext ->
             setModel(
@@ -81,10 +67,10 @@ object ModelCommand {
 
     @Throws(CommandSyntaxException::class)
     fun setModel(context: CommandContext<CommandSourceStack>, ignoreAuth: Boolean): Int {
-        val targets: Collection<ServerPlayer> = EntityArgument.getPlayers(context, TARGETS_NAME)
-        val modelName: String = StringArgumentType.getString(context, MODEL_ID_NAME)
-        var textureName: String = StringArgumentType.getString(context, TEXTURE_ID_NAME)
-        val info: ServerModelData? = ServerModelManager.serverModelInfo[modelName]
+        val targets = EntityArgument.getPlayers(context, TARGETS_NAME)
+        val modelName = StringArgumentType.getString(context, MODEL_ID_NAME)
+        var textureName = StringArgumentType.getString(context, TEXTURE_ID_NAME)
+        val info = ServerModelManager[modelName]
         if (info == null) {
             context.source.sendSuccess({
                 Component.translatable(
@@ -103,7 +89,7 @@ object ModelCommand {
         if (info.modelInfo.textures.isEmpty()) {
             return Command.SINGLE_SUCCESS
         }
-        val finalTextureName: String = textureName
+        val finalTextureName = textureName
         if (ignoreAuth) {
             targets.forEach { player ->
                 ModelInfoCapability[player]?.let { cap ->
@@ -154,7 +140,7 @@ object ModelCommand {
 
     private fun reloadAllPack(context: CommandContext<CommandSourceStack>): Int {
         context.source.sendSuccess({ Component.translatable("message.yes_steve_model.model.reload.start") }, true)
-        val watch: StopWatch = StopWatch.createStarted()
+        val watch = StopWatch.createStarted()
         if (!ServerModelManager.loadModels({ result ->
                 result.errorMessage?.let {
                     YSMMessageFormatter.sendServerMessage(context.source, YSMMessageFormatter.withPrefix(it), true)
@@ -212,8 +198,8 @@ object ModelCommand {
 
     @Throws(CommandSyntaxException::class)
     private fun disableModel(context: CommandContext<CommandSourceStack>): Int {
-        val targets: Collection<ServerPlayer> = EntityArgument.getPlayers(context, PLAYERS_NAME)
-        val bool: Boolean = BoolArgumentType.getBool(context, ARG_VALUE)
+        val targets = EntityArgument.getPlayers(context, PLAYERS_NAME)
+        val bool = BoolArgumentType.getBool(context, ARG_VALUE)
         val strKey =
             if (bool) "message.yes_steve_model.model.disable.true" else "message.yes_steve_model.model.disable.false"
         targets.forEach { player ->

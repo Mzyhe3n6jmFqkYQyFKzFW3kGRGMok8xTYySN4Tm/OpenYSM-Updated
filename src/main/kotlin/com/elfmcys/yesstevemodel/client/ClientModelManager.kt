@@ -216,8 +216,7 @@ object ClientModelManager {
     }
 
     private fun registerClientOnlyCatalog() {
-        val serverModelInfo = ServerModelManager.serverModelInfo
-        val total = serverModelInfo.size
+        val total = ServerModelManager.size
         Minecraft.getInstance().execute {
             if (total > 0) {
                 syncState.startSyncing(total)

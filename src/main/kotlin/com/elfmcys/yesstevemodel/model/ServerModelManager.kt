@@ -603,10 +603,7 @@ object ServerModelManager {
             }
             validCacheFiles.add(cacheFileName)
 
-            val isCustomSkinModel =
-                model.properties.isCustomSkinModel || "misc/2_steve" == modelId || "misc/1_alex" == modelId
-
-            mapToDataClass(modelId, model, isAuth, isCustomSkinModel)
+            mapToDataClass(modelId, model, isAuth, model.properties.isCustomSkinModel)
         }.getOrElse {
             Constants.LOGGER.error("Failed to process and cache model: $modelId", it)
             null
@@ -930,10 +927,12 @@ object ServerModelManager {
 
     fun getModelDefinition(str: String): Optional<ServerModelData> = Optional.ofNullable(CACHE_NAME_INFO[str])
 
-    fun isCustomSkinModel(modelId: String): Boolean =
-        CACHE_NAME_INFO[modelId]?.isCustomSkinModel ?: ("misc/2_steve" == modelId || "misc/1_alex" == modelId)
+    fun isCustomSkinModel(modelId: String): Boolean = CACHE_NAME_INFO[modelId]?.isCustomSkinModel ?: false
 
     operator fun get(str: String): ServerModelData? = CACHE_NAME_INFO[str]
+
+    val size: Int
+        get() = CACHE_NAME_INFO.size
 
     val serverModelInfo: Map<String, ServerModelData>
         get() = CACHE_NAME_INFO
