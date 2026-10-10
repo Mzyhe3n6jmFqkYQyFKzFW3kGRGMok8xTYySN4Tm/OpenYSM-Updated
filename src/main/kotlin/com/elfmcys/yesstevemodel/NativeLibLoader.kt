@@ -21,15 +21,12 @@ object NativeLibLoader {
     @Volatile
     private var isAndroid = false
 
-    @JvmStatic
     val isAvailable: Boolean
         get() = available
 
-    @JvmStatic
     val isLoaded: Boolean
         get() = loaded
 
-    @JvmStatic
     val isOnAndroid: Boolean
         get() = isAndroid
 
@@ -49,9 +46,8 @@ object NativeLibLoader {
 
     @Synchronized
     @JvmStatic
-    fun init() {
+    private fun init() {
         if (available) return
-
         if (System.getProperty("OYSM_DISABLE_SMID") != null) {
             available = true
             loaded = false
@@ -103,6 +99,10 @@ object NativeLibLoader {
             loaded = false
             available = true
         }
+    }
+
+    init {
+        init()
     }
 
     private fun detectPlatform(): PlatformInfo {

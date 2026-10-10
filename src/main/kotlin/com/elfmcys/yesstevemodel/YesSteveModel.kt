@@ -20,7 +20,7 @@ object YesSteveModel {
 
     init {
         Constants.LOGGER.info("Initializing YesSteveModel, platform: {}", PlatformAPI.platformName)
-        runCatching { NativeLibLoader.init() }.onFailure {
+        runCatching { NativeLibLoader }.onFailure {
             Constants.LOGGER.error(
                 "Failed to initialize native lib",
                 it

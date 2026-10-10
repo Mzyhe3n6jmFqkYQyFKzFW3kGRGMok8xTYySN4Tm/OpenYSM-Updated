@@ -3,6 +3,7 @@
 package com.ysm.parser
 
 import com.elfmcys.yesstevemodel.Constants
+import com.ysm.parser.YSMParserNativeLoader.init
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -17,7 +18,7 @@ import java.util.*
  * via [System.load]. Subsequent calls are no-ops.
  *
  * Platforms that lack a JNI library are detected and reported via a
- * `false` return from [load].
+ * `false` return from [init].
  */
 object YSMParserNativeLoader {
     private const val NATIVE_DIR = "natives/ysmparser"
@@ -43,16 +44,14 @@ object YSMParserNativeLoader {
      *         unavailable (caller should skip native parsing)
      */
     @Synchronized
-    @JvmStatic
-    fun load(): Boolean {
-        if (loaded) return jniAvailable
+    private fun init() {
+        if (loaded) return
 
         val platform = detectPlatform()
         val libName = platform.libraryName
         if (libName == null) {
             loaded = true
             jniAvailable = false
-            return false
         }
 
         val resourcePath = "$NATIVE_DIR/${platform.folder}/$libName"
@@ -78,23 +77,27 @@ object YSMParserNativeLoader {
             val start = System.currentTimeMillis()
             Constants.LOGGER.info("Begin load YSMParser native library")
             System.load(extractedLib.toAbsolutePath().toString())
-            Constants.LOGGER.info("Successfully load YSMParser native library in {}ms", System.currentTimeMillis() - start)
+            Constants.LOGGER.info(
+                "Successfully load YSMParser native library in {}ms",
+                System.currentTimeMillis() - start
+            )
 
             extractedLib.toFile().deleteOnExit()
 
             loaded = true
             jniAvailable = true
-            return true
-        }.getOrElse {
+        }.onFailure {
             Constants.LOGGER.warn("Failed to load YSMParser native lib: $resourcePath", it)
             loaded = true
             jniAvailable = false
-            return false
         }
     }
 
+    init {
+        init()
+    }
+
     @Synchronized
-    @JvmStatic
     fun isJniAvailable(): Boolean {
         if (!loaded) {
             val platform = detectPlatform()
