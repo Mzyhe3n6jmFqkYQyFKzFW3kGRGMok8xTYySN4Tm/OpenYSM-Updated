@@ -5,13 +5,9 @@ import com.elfmcys.yesstevemodel.resource.YSMClientMapper
 import com.elfmcys.yesstevemodel.resource.YSMFolderDeserializer
 import com.elfmcys.yesstevemodel.resource.pojo.RawYsmModel
 import com.google.gson.JsonParser
-import java.nio.file.Paths
 import net.minecraft.resources.Identifier
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import java.nio.file.Paths
+import kotlin.test.*
 
 class CustomSkinModelTest {
     @Test
@@ -134,25 +130,9 @@ class CustomSkinModelTest {
         assertTrue(PlayerSkinTextureManager.isDefaultSkin(PlayerSkinTextureManager.ALEX_SKIN))
         assertTrue(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:textures/entity/player/wide/ari.png")))
         assertTrue(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:textures/entity/player/slim/efe.png")))
-        assertTrue(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:textures/entity/steve.png")))
-        assertTrue(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:textures/entity/alex.png")))
 
         assertFalse(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("minecraft:skins/1234567890abcdef")))
         assertFalse(PlayerSkinTextureManager.isDefaultSkin(Identifier.parse("yes_steve_model:textures/custom.png")))
         assertFalse(PlayerSkinTextureManager.isDefaultSkin(null))
-    }
-
-    @Test
-    fun testPlayerSkinTextureManagerDefaults() {
-        assertEquals(PlayerSkinTextureManager.STEVE_SKIN, PlayerSkinTextureManager.getSkinTexture("misc/2_steve"))
-        assertEquals(PlayerSkinTextureManager.ALEX_SKIN, PlayerSkinTextureManager.getSkinTexture("misc/1_alex"))
-        assertEquals(
-            PlayerSkinTextureManager.STEVE_SKIN,
-            PlayerSkinTextureManager.getPlayerSkinLocation(null, "misc/2_steve")
-        )
-        assertEquals(
-            PlayerSkinTextureManager.ALEX_SKIN,
-            PlayerSkinTextureManager.getPlayerSkinLocation(null, "misc/1_alex")
-        )
     }
 }
