@@ -20,6 +20,7 @@ object NativeParseUtil {
         var tempDir: Path? = null
         return runCatching {
             val dir = Files.createTempDirectory("ysm_v3_")
+            dir.toFile().deleteOnExit()
             tempDir = dir
             val ok = YSMParser.parseBytes(raw, dir.toString())
             if (!ok) {
