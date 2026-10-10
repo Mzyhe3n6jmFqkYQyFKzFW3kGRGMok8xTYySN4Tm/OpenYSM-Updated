@@ -580,7 +580,7 @@ object ServerModelManager {
                 }
             }
             if (needsUpdate) {
-                val encryptedCache = YSMBinarySerializer.serialize(model, 32, true).use { serialized ->
+                val encryptedCache = YSMBinarySerializer.serialize(model, 40, true).use { serialized ->
                     val raw = serialized.rawBuf
                     if (raw.hasArray()) {
                         val off = raw.arrayOffset() + raw.readerIndex()
