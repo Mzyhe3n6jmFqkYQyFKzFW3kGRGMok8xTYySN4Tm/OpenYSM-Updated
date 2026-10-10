@@ -387,8 +387,8 @@ object ClientModelManager {
             outBuf.rawBuf.writeByte(0x00)
 
             val result = YsmCrypt.encrypt(outBuf.toArray(), newKey1, true)
-            lastKey = result.nextKey()
-            sendModelFile(ByteBuffer.wrap(result.data()))
+            lastKey = result.nextKey
+            sendModelFile(ByteBuffer.wrap(result.data))
         }
     }
 
@@ -568,7 +568,7 @@ object ClientModelManager {
                 }
 
                 val result = YsmCrypt.encrypt(outBuf.toArray(), currentKey1, false)
-                sendModelFile(ByteBuffer.wrap(result.data()))
+                sendModelFile(ByteBuffer.wrap(result.data))
             }
         }
 

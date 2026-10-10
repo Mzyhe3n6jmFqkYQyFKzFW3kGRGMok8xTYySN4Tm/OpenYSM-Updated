@@ -88,9 +88,6 @@ object YsmCrypt {
         val data: ByteArray,
         val nextKey: ByteArray?
     ) {
-        fun data(): ByteArray = data
-        fun nextKey(): ByteArray? = nextKey
-
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (other !is EncryptedPacket) return false
