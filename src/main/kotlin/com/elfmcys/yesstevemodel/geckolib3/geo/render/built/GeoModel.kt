@@ -188,10 +188,13 @@ class GeoModel(
     }
 
     companion object {
+        @JvmStatic
         external fun nInitModelCache(buffer: ByteBuffer): Long
 
+        @JvmStatic
         external fun nDestroyModelCache(handle: Long)
 
+        @JvmStatic
         external fun nComputeModelVertices(
             handle: Long, vertexConsumer: Any,
             matrixTransfer: FloatArray, animTransfer: FloatArray,
@@ -199,16 +202,22 @@ class GeoModel(
             r: Float, g: Float, b: Float, a: Float
         )
 
+        @JvmStatic
         external fun nBuildGpuMesh(buffer: ByteBuffer, outMeta: IntArray): Long
 
+        @JvmStatic
         external fun nGetGpuMeshVertexBuffer(pointer: Long): ByteBuffer
 
+        @JvmStatic
         external fun nGetGpuMeshIndexBuffer(pointer: Long): ByteBuffer
 
+        @JvmStatic
         external fun nReleaseGpuMeshScratch(pointer: Long)
 
+        @JvmStatic
         external fun nFreeGpuMesh(pointer: Long)
 
+        @JvmStatic
         external fun nComputeBoneMatrices(
             pointer: Long,
             rootPose: FloatArray,
@@ -218,6 +227,7 @@ class GeoModel(
             outBoneBuffer: ByteBuffer
         )
 
+        @JvmStatic
         external fun nComputeBoneMatricesLocal(
             handle: Long,
             animArray: FloatArray,

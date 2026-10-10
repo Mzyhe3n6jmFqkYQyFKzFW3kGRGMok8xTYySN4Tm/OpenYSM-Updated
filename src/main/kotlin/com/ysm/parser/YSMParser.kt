@@ -19,6 +19,7 @@ object YSMParser {
      * @throws IllegalArgumentException if either argument is null
      * @throws RuntimeException         if native parsing fails
      */
+    @JvmStatic
     external fun parse(ysmFilePath: String, outputDir: String): Boolean
 
     /**
@@ -30,6 +31,7 @@ object YSMParser {
      * @throws IllegalArgumentException if data is null/empty or outputDir is null
      * @throws RuntimeException         if native parsing fails
      */
+    @JvmStatic
     external fun parseBytes(ysmData: ByteArray, outputDir: String): Boolean
 
     /**
@@ -40,5 +42,6 @@ object YSMParser {
      * @throws IllegalArgumentException if the path is null
      * @throws RuntimeException         if reading fails
      */
+    @JvmStatic
     external fun getVersion(ysmFilePath: String): Int
 }

@@ -282,6 +282,7 @@ object NativeModelRenderer {
         return localMat
     }
 
+    @JvmStatic
     fun submitVertices(v: Any, vertexCount: Int, fBuf: ByteBuffer, iBuf: ByteBuffer) {
         val f: FloatBuffer = fBuf.order(ByteOrder.nativeOrder()).asFloatBuffer()
         val inBuf: IntBuffer = iBuf.order(ByteOrder.nativeOrder()).asIntBuffer()
