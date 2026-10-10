@@ -88,6 +88,7 @@ object PlayerSkinTextureManager {
                     STEVE_SKIN
                 }
             }
+
             4 -> {
                 if (targetPlayer != null) {
                     val index = Math.floorMod(targetPlayer.uuid.hashCode(), SLIM_DEFAULT_SKINS.size)
@@ -96,6 +97,7 @@ object PlayerSkinTextureManager {
                     ALEX_SKIN
                 }
             }
+
             else -> null
         }
     }
