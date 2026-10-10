@@ -580,7 +580,7 @@ object ServerModelManager {
                 }
             }
             if (needsUpdate) {
-                val encryptedCache = YSMBinarySerializer.serialize(model, 40, true).use { serialized ->
+                val encryptedCache = YSMBinarySerializer.serialize(model, Constants.FORMAT_VERSION, true).use { serialized ->
                     val raw = serialized.rawBuf
                     if (raw.hasArray()) {
                         val off = raw.arrayOffset() + raw.readerIndex()
@@ -686,7 +686,7 @@ object ServerModelManager {
                     outBuf.writeString(model.modelId)
                     outBuf.writeVarInt(if (model.isAuth) 1 else 0)
                     outBuf.writeVarInt(if (model.isCustomSkinModel) 1 else 0)
-                    outBuf.writeVarInt(40) // format
+                    outBuf.writeVarInt(Constants.FORMAT_VERSION) // format
                 }
 
                 val visiblePacks = if (shouldHideModelsFrom(uuid)) emptyList() else packs.values
@@ -866,15 +866,15 @@ object ServerModelManager {
                 val clearText = YsmCrypt.read(cacheData, currentServerKey)
 
                 val coreDataLength: Int
-                YSMBinaryDeserializer(clearText, 40).use { deserializer ->
+                YSMBinaryDeserializer(clearText, Constants.FORMAT_VERSION).use { deserializer ->
                     deserializer.deserializeKeepOpen()
                     coreDataLength = deserializer.reader.offset
                 }
 
                 YSMByteBuf(Unpooled.buffer()).use { outBuf ->
-                    outBuf.writeDword(40)
+                    outBuf.writeDword(Constants.FORMAT_VERSION)
                     outBuf.rawBuf.writeBytes(clearText, 0, coreDataLength)
-                    outBuf.writeVarInt(40) // version
+                    outBuf.writeVarInt(Constants.FORMAT_VERSION) // version
                     outBuf.writeVarInt(1)
                     val randBytes = ByteArray(8)
                     theRandom.nextBytes(randBytes)

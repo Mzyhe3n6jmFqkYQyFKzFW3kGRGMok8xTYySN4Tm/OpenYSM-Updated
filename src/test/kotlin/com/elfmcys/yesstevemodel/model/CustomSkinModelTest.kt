@@ -1,6 +1,9 @@
 package com.elfmcys.yesstevemodel.model
 
+import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.client.event.PlayerSkinTextureManager
+import com.elfmcys.yesstevemodel.resource.YSMBinaryDeserializer
+import com.elfmcys.yesstevemodel.resource.YSMBinarySerializer
 import com.elfmcys.yesstevemodel.resource.YSMClientMapper
 import com.elfmcys.yesstevemodel.resource.YSMFolderDeserializer
 import com.elfmcys.yesstevemodel.resource.pojo.RawYsmModel
@@ -137,23 +140,23 @@ class CustomSkinModelTest {
     }
 
     @Test
-    fun testFormat40BinarySerializationWithCustomSkinProperties() {
+    fun testFormatBinarySerializationWithCustomSkinProperties() {
         val model = RawYsmModel().apply {
-            formatVersion = 40
+            formatVersion = Constants.FORMAT_VERSION
             metadata.name = "Custom Skin Model"
             properties.sha256 = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
             properties.isCustomSkinModel = true
             properties.useMcDefaultTexture = 2
-            footer.version = 40
+            footer.version = Constants.FORMAT_VERSION
             footer.unkInt1 = 1
             footer.rand = "test"
             footer.time = 12345L
         }
 
-        val serializedBuf = com.elfmcys.yesstevemodel.resource.YSMBinarySerializer.serialize(model, 40, true)
+        val serializedBuf = YSMBinarySerializer.serialize(model, Constants.FORMAT_VERSION, true)
         val data = serializedBuf.toArray()
 
-        com.elfmcys.yesstevemodel.resource.YSMBinaryDeserializer(data, 40).use { deserializer ->
+        YSMBinaryDeserializer(data, Constants.FORMAT_VERSION).use { deserializer ->
             val deserialized = deserializer.deserializeKeepOpen()
             assertTrue(deserialized.properties.isCustomSkinModel)
             assertEquals(2, deserialized.properties.useMcDefaultTexture)
