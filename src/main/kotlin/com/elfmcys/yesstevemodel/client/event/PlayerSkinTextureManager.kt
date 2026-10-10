@@ -2,6 +2,7 @@
 
 package com.elfmcys.yesstevemodel.client.event
 
+import com.elfmcys.yesstevemodel.NameSpaces
 import com.elfmcys.yesstevemodel.YesSteveModel
 import com.elfmcys.yesstevemodel.client.ClientModelManager
 import com.elfmcys.yesstevemodel.client.entity.PlayerPreviewEntity
@@ -17,31 +18,31 @@ import rip.ysm.api.event.EventResult
 
 @Environment(EnvType.CLIENT)
 object PlayerSkinTextureManager {
-    val STEVE_SKIN: Identifier = Identifier.parse("textures/entity/player/wide/steve.png")
-    val ALEX_SKIN: Identifier = Identifier.parse("textures/entity/player/slim/alex.png")
+    val STEVE_SKIN: Identifier = NameSpaces.MINECRAFT.path("textures/entity/player/wide/steve.png")
+    val ALEX_SKIN: Identifier = NameSpaces.MINECRAFT.path("textures/entity/player/slim/alex.png")
 
     val WIDE_DEFAULT_SKINS: List<Identifier> = listOf(
         STEVE_SKIN,
-        Identifier.parse("textures/entity/player/wide/alex.png"),
-        Identifier.parse("textures/entity/player/wide/ari.png"),
-        Identifier.parse("textures/entity/player/wide/efe.png"),
-        Identifier.parse("textures/entity/player/wide/kai.png"),
-        Identifier.parse("textures/entity/player/wide/makena.png"),
-        Identifier.parse("textures/entity/player/wide/noor.png"),
-        Identifier.parse("textures/entity/player/wide/sunny.png"),
-        Identifier.parse("textures/entity/player/wide/zuri.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/wide/alex.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/wide/ari.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/wide/efe.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/wide/kai.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/wide/makena.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/wide/noor.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/wide/sunny.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/wide/zuri.png"),
     )
 
     val SLIM_DEFAULT_SKINS: List<Identifier> = listOf(
         ALEX_SKIN,
-        Identifier.parse("textures/entity/player/slim/steve.png"),
-        Identifier.parse("textures/entity/player/slim/ari.png"),
-        Identifier.parse("textures/entity/player/slim/efe.png"),
-        Identifier.parse("textures/entity/player/slim/kai.png"),
-        Identifier.parse("textures/entity/player/slim/makena.png"),
-        Identifier.parse("textures/entity/player/slim/noor.png"),
-        Identifier.parse("textures/entity/player/slim/sunny.png"),
-        Identifier.parse("textures/entity/player/slim/zuri.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/slim/steve.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/slim/ari.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/slim/efe.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/slim/kai.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/slim/makena.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/slim/noor.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/slim/sunny.png"),
+        NameSpaces.MINECRAFT.path("textures/entity/player/slim/zuri.png"),
     )
 
     init {
@@ -134,9 +135,7 @@ object PlayerSkinTextureManager {
 
         if (modelId != null) {
             val defaultType = getUseMcDefaultTexture(modelId)
-            if (defaultType > 0) {
-                return getDefaultSkinTexture(defaultType, targetPlayer)
-            }
+            if (defaultType > 0) return getDefaultSkinTexture(defaultType, targetPlayer)
             return getSkinTexture(modelId)
         }
         return null
