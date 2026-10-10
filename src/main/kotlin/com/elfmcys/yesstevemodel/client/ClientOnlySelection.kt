@@ -22,7 +22,6 @@ data class ClientSelectionData(
     val roamingStorage: MutableMap<String, MutableMap<String, Float>> = ConcurrentHashMap(),
     val starModels: MutableSet<String> = ConcurrentHashMap.newKeySet()
 ) : NbtSave, DeepCopy<ClientSelectionData>, IsEmpty {
-
     override val isEmpty: Boolean
         get() = modelId.isNullOrEmpty() && textureId.isNullOrEmpty() && roamingStorage.isEmpty() && starModels.isEmpty()
 
@@ -82,8 +81,7 @@ data class ClientSelectionData(
 }
 
 @Environment(EnvType.CLIENT)
-object ClientOnlySelection : AbstractManager<ClientSelectionData>("client_selection.nbt", ClientSelectionData()) {
-
+object ClientOnlySelection : AbstractManager<ClientSelectionData>("client_selection.dat", ClientSelectionData()) {
     override fun loadData(): ClientSelectionData =
         runCatching {
             if (Files.exists(dataPath)) {

@@ -21,7 +21,6 @@ data class PlayerServerData(
     val roamingStorage: MutableMap<String, MutableMap<String, Float>> = ConcurrentHashMap(),
     val authModels: MutableSet<String> = ConcurrentHashMap.newKeySet()
 ) : NbtSave, DeepCopy<PlayerServerData>, IsEmpty {
-
     override val isEmpty: Boolean
         get() = modelId.isNullOrEmpty() && textureId.isNullOrEmpty() && roamingStorage.isEmpty() && authModels.isEmpty()
 
@@ -83,7 +82,6 @@ data class PlayerServerData(
 data class ServerSelectionData(
     val players: MutableMap<String, PlayerServerData> = ConcurrentHashMap()
 ) : NbtSave, DeepCopy<ServerSelectionData>, IsEmpty {
-
     override val isEmpty: Boolean
         get() = players.isEmpty()
 
@@ -120,8 +118,7 @@ data class ServerSelectionData(
     }
 }
 
-object ServerModelSelection : AbstractManager<ServerSelectionData>("server_selection.nbt", ServerSelectionData()) {
-
+object ServerModelSelection : AbstractManager<ServerSelectionData>("server_selection.dat", ServerSelectionData()) {
     override fun loadData(): ServerSelectionData =
         runCatching {
             if (Files.exists(dataPath)) {
