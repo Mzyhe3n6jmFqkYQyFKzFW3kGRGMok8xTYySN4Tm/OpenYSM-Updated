@@ -6,7 +6,6 @@ import com.elfmcys.yesstevemodel.molang.runtime.Function
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.mojang.brigadier.StringReader
-import com.mojang.brigadier.exceptions.CommandSyntaxException
 import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.Minecraft
