@@ -92,9 +92,9 @@ object ParticleEffectUtil {
             var spawnPos = Vec3(offset.x(), offset.y(), offset.z())
             if (!isAbsolute) {
                 spawnPos = if (entity is Player) {
-                    spawnPos.yRot((-entity.yBodyRot) * 0.017453292f)
+                    spawnPos.yRot(-entity.yBodyRot * 0.017453292f)
                 } else {
-                    spawnPos.yRot((-entity.yRot) * 0.017453292f)
+                    spawnPos.yRot(-entity.yRot * 0.017453292f)
                 }
             }
 
@@ -137,7 +137,7 @@ object ParticleEffectUtil {
 
         var spawnPos = Vec3(offset.x() + spreadX, offset.y() + spreadY, offset.z() + spreadZ)
         if (!isAbsolute) {
-            spawnPos = spawnPos.yRot((-entity.yRot) * 0.017453292f)
+            spawnPos = spawnPos.yRot(-entity.yRot * 0.017453292f)
         }
 
         val x = entity.x + spawnPos.x()
