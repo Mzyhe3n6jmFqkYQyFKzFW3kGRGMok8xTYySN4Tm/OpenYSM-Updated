@@ -13,10 +13,13 @@ import java.nio.file.StandardCopyOption
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
-abstract class AbstractManager<T : DeepCopy<T>>(fileName: String, newData: T) {
-    protected open val dataPath: Path = Constants.ConfigDir.resolve(fileName)
+abstract class AbstractManager<T : DeepCopy<T>>(
+    fileName: String,
+    newData: T,
+    protected val dataPath: Path = Constants.ConfigDir.resolve(fileName),
+    protected val autoSaveDelay: Duration = 5.minutes
+) {
     protected open val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    protected open val autoSaveDelay: Duration = 5.minutes
 
     protected open var data: T = newData
 
@@ -28,7 +31,6 @@ abstract class AbstractManager<T : DeepCopy<T>>(fileName: String, newData: T) {
      */
     private val saveRequests: Channel<Unit> = Channel(Channel.CONFLATED)
     private val writeLock: Mutex = Mutex()
-    private var autoSaveJob: Job? = null
 
     protected open fun load() {
         if (Files.exists(dataPath)) {
@@ -56,11 +58,11 @@ abstract class AbstractManager<T : DeepCopy<T>>(fileName: String, newData: T) {
      * process exits). Regular gameplay saves always go through [save] on a background dispatcher.
      */
     fun saveNow() {
-        runBlocking { writeLock.withLock { writeSafely(data) } }
+        runBlocking { writeLock.withLock { writeSafely { writeAtomically(data) } } }
     }
 
-    private fun writeSafely(saveData: T) {
-        runCatching { writeAtomically(saveData) }.onFailure {
+    private inline fun writeSafely(block: () -> Unit) {
+        runCatching(block).onFailure {
             Constants.LOGGER.error("Failed to save {}", dataPath.fileName, it)
         }
     }
@@ -86,23 +88,24 @@ abstract class AbstractManager<T : DeepCopy<T>>(fileName: String, newData: T) {
 
     init {
         load()
+        // Background writer: coalesces save requests and serializes all writes.
         scope.launch {
             for (unused in saveRequests) {
-                writeLock.withLock { writeSafely(data.deepCopy()) }
+                writeLock.withLock { writeSafely { writeAtomically(data.deepCopy()) } }
+            }
+        }
+        // Periodic safety-net flush. Deliberately not tied to SERVER_STARTING: this manager is a
+        // lazily initialised singleton that is first touched when a player joins, i.e. *after*
+        // SERVER_STARTING has already fired, so a listener registered here would never receive it
+        // and the auto-save would silently never run.
+        scope.launch {
+            while (isActive) {
+                delay(autoSaveDelay)
+                save()
             }
         }
         runCatching {
-            ServerLifecycleEvents.SERVER_STARTING.register {
-                autoSaveJob?.cancel()
-                autoSaveJob = scope.launch {
-                    while (isActive) {
-                        delay(autoSaveDelay)
-                        save()
-                    }
-                }
-            }
             ServerLifecycleEvents.SERVER_STOPPING.register {
-                autoSaveJob?.cancel()
                 saveNow()
             }
             ServerLifecycleEvents.START_DATA_PACK_RELOAD.register { _, _ ->
