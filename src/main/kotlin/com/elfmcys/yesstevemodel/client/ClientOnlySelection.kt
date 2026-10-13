@@ -97,8 +97,7 @@ object ClientOnlySelection : AbstractManager<ClientSelectionData>("client_select
 
     override fun saveNow(saveData: ClientSelectionData) {
         runCatching {
-            Files.createDirectories(dataPath.parent)
-            NbtIo.writeCompressed(saveData.save(), dataPath)
+            writeAtomically { path -> NbtIo.writeCompressed(saveData.save(), path) }
         }.onFailure {
             Constants.LOGGER.error("Failed to save client-only model selection to NBT", it)
         }

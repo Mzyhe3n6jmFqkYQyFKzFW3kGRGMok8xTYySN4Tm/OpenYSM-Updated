@@ -134,8 +134,7 @@ object ServerModelSelection : AbstractManager<ServerSelectionData>("server_selec
 
     override fun saveNow(saveData: ServerSelectionData) {
         runCatching {
-            Files.createDirectories(dataPath.parent)
-            NbtIo.writeCompressed(saveData.save(), dataPath)
+            writeAtomically { path -> NbtIo.writeCompressed(saveData.save(), path) }
         }.onFailure {
             Constants.LOGGER.error("Failed to save server model selection to NBT", it)
         }

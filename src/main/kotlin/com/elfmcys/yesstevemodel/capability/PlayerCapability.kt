@@ -123,7 +123,13 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
     fun updateMolangVars(i: Int, int2FloatOpenHashMap: Int2FloatOpenHashMap) {
         val varHolder = molangVarsMap.computeIfAbsent(i) { MolangVarHolder() }
         if (isLocalPlayerModel) {
-            if (varHolder.currentVars == null || serverVarContainer == null) {
+            // The local player owns its roaming variables, so incoming syncs must not clobber
+            // changes that are already in progress. They *must*, however, be accepted while the
+            // holder is still empty: on join the model is initialised (with an empty holder)
+            // before this sync arrives, and rejecting it here silently drops the values that were
+            // persisted in server_selection.dat.
+            val currentVars = varHolder.currentVars
+            if (currentVars == null || currentVars.isEmpty() || serverVarContainer == null) {
                 varHolder.currentVars = int2FloatOpenHashMap
                 varHolder.applyPendingDeltas()
                 if (i == currentModelHashId) {
