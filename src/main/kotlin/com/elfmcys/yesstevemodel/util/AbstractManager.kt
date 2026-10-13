@@ -111,35 +111,39 @@ abstract class AbstractManager<T : DeepCopy<T>>(
             }
         }
         runCatching {
-            ServerLifecycleEvents.START_DATA_PACK_RELOAD.register { _, _ ->
-                save()
-            }
-            if (isServerSide) {
-                // Server-owned data is only flushed while a server is running, so the auto-save is
-                // driven by the server lifecycle. These managers must be initialised before
-                // SERVER_STARTING fires (see YsmEventBootstrap), otherwise the listener registers
-                // too late and never runs.
-                ServerLifecycleEvents.SERVER_STARTING.register {
+            when {
+                isServerSide -> {
+                    // Server-owned data is only flushed while a server is running, so the auto-save is
+                    // driven by the server lifecycle. These managers must be initialised before
+                    // SERVER_STARTING fires (see YsmEventBootstrap), otherwise the listener registers
+                    // too late and never runs.
+                    ServerLifecycleEvents.SERVER_STARTING.register {
+                        startAutoSave()
+                    }
+                    ServerLifecycleEvents.START_DATA_PACK_RELOAD.register { _, _ ->
+                        save()
+                    }
+                    ServerLifecycleEvents.SERVER_STOPPING.register {
+                        autoSaveJob?.cancel()
+                        saveNow()
+                    }
+                }
+
+                else -> {
+                    // Client-owned data must be saved even when no server exists, so the auto-save runs
+                    // for the manager's lifetime instead of waiting for SERVER_STARTING.
                     startAutoSave()
-                }
-                ServerLifecycleEvents.SERVER_STOPPING.register {
-                    autoSaveJob?.cancel()
-                    saveNow()
-                }
-            } else {
-                // Client-owned data must be saved even when no server exists, so the auto-save runs
-                // for the manager's lifetime instead of waiting for SERVER_STARTING.
-                startAutoSave()
-                // Leaving the world / disconnecting from a server is a natural session boundary, so
-                // flush there as well (this also fires when quitting a singleplayer save).
-                ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
-                    save()
-                }
-                // A pure client connected to a remote server never sees SERVER_STOPPING, so flush
-                // when the game itself closes instead.
-                ClientLifecycleEvents.CLIENT_STOPPING.register {
-                    autoSaveJob?.cancel()
-                    saveNow()
+                    // Leaving the world / disconnecting from a server is a natural session boundary, so
+                    // flush there as well (this also fires when quitting a singleplayer save).
+                    ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
+                        save()
+                    }
+                    // A pure client connected to a remote server never sees SERVER_STOPPING, so flush
+                    // when the game itself closes instead.
+                    ClientLifecycleEvents.CLIENT_STOPPING.register {
+                        autoSaveJob?.cancel()
+                        saveNow()
+                    }
                 }
             }
         }
