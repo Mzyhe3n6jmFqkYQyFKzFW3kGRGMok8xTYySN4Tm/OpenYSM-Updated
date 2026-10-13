@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.elfmcys.yesstevemodel.util
 
 import com.elfmcys.yesstevemodel.Constants
@@ -17,7 +19,13 @@ abstract class AbstractManager<T : DeepCopy<T>>(
     fileName: String,
     newData: T,
     protected val dataPath: Path = Constants.ConfigDir.resolve(fileName),
-    protected val autoSaveDelay: Duration = 5.minutes
+    protected val autoSaveDelay: Duration = 5.minutes,
+    /**
+     * True for server-owned data: the periodic auto-save only runs while a server is up.
+     * False for client-owned data: the auto-save runs for the manager's whole lifetime, since a
+     * client may never see a server (e.g. client-only mode against a remote/vanilla server).
+     */
+    protected val isServerSide: Boolean
 ) {
     protected open val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -87,6 +95,16 @@ abstract class AbstractManager<T : DeepCopy<T>>(
         }
     }
 
+    private fun startAutoSave() {
+        autoSaveJob?.cancel()
+        autoSaveJob = scope.launch {
+            while (isActive) {
+                delay(autoSaveDelay)
+                save()
+            }
+        }
+    }
+
     init {
         load()
         // Background writer: coalesces save requests and serializes all writes.
@@ -95,25 +113,29 @@ abstract class AbstractManager<T : DeepCopy<T>>(
                 writeLock.withLock { writeSafely { writeAtomically(data.deepCopy()) } }
             }
         }
-        // The periodic auto-save only runs while a server is up, so it is driven by the server
-        // lifecycle. These managers must therefore be initialised before SERVER_STARTING fires
-        // (see YsmEventBootstrap); otherwise the listener registers too late and never runs.
         runCatching {
-            ServerLifecycleEvents.SERVER_STARTING.register {
-                autoSaveJob?.cancel()
-                autoSaveJob = scope.launch {
-                    while (isActive) {
-                        delay(autoSaveDelay)
-                        save()
-                    }
-                }
-            }
-            ServerLifecycleEvents.SERVER_STOPPING.register {
-                autoSaveJob?.cancel()
-                saveNow()
-            }
             ServerLifecycleEvents.START_DATA_PACK_RELOAD.register { _, _ ->
                 save()
+            }
+            if (isServerSide) {
+                // Server-owned data is only flushed while a server is running, so the auto-save is
+                // driven by the server lifecycle. These managers must be initialised before
+                // SERVER_STARTING fires (see YsmEventBootstrap), otherwise the listener registers
+                // too late and never runs.
+                ServerLifecycleEvents.SERVER_STARTING.register {
+                    startAutoSave()
+                }
+                ServerLifecycleEvents.SERVER_STOPPING.register {
+                    autoSaveJob?.cancel()
+                    saveNow()
+                }
+            } else {
+                // Client-owned data must be saved even when no server exists, so the auto-save runs
+                // for the manager's lifetime instead of waiting for SERVER_STARTING.
+                startAutoSave()
+                ServerLifecycleEvents.SERVER_STOPPING.register {
+                    saveNow()
+                }
             }
         }
     }

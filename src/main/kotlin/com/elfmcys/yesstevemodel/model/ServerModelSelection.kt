@@ -119,7 +119,11 @@ data class ServerSelectionData(
     }
 }
 
-object ServerModelSelection : AbstractManager<ServerSelectionData>("server_selection.dat", ServerSelectionData()) {
+object ServerModelSelection : AbstractManager<ServerSelectionData>(
+    "server_selection.dat",
+    ServerSelectionData(),
+    isServerSide = true
+) {
     override fun loadData(): ServerSelectionData =
         runCatching {
             if (Files.exists(dataPath)) {
