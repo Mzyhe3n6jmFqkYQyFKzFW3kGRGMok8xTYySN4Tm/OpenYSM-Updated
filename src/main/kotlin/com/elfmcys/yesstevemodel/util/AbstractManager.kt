@@ -4,12 +4,12 @@ import com.elfmcys.yesstevemodel.Constants
 import com.elfmcys.yesstevemodel.data.DeepCopy
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
@@ -27,7 +27,7 @@ abstract class AbstractManager<T : DeepCopy<T>>(fileName: String, newData: T) {
      * launched one write per request and corrupted/lost data when they overlapped).
      */
     private val saveRequests: Channel<Unit> = Channel(Channel.CONFLATED)
-    private val writeLock: ReentrantLock = ReentrantLock()
+    private val writeLock: Mutex = Mutex()
     private var autoSaveJob: Job? = null
 
     protected open fun load() {
@@ -56,7 +56,7 @@ abstract class AbstractManager<T : DeepCopy<T>>(fileName: String, newData: T) {
      * process exits). Regular gameplay saves always go through [save] on a background dispatcher.
      */
     fun saveNow() {
-        writeLock.withLock { writeSafely(data) }
+        runBlocking { writeLock.withLock { writeSafely(data) } }
     }
 
     private fun writeSafely(saveData: T) {
