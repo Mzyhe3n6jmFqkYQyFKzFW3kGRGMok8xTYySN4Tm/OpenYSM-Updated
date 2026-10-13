@@ -14,7 +14,7 @@ class AbstractManagerTest {
     private class TestManager(
         path: Path,
         isServerSide: Boolean = true
-    ) : AbstractManager<Holder>("abstract_manager_test.dat", Holder(), path, 50.milliseconds, isServerSide) {
+    ) : AbstractManager<Holder>("abstract_manager_test.dat", Holder(), isServerSide, path, 50.milliseconds) {
         override fun loadData(): Holder = Holder(Files.readString(dataPath).trim().toInt())
 
         override fun writeTo(saveData: Holder, target: Path) {
