@@ -9,6 +9,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import java.nio.file.Files
 import java.nio.file.Path
@@ -129,6 +130,11 @@ abstract class AbstractManager<T : DeepCopy<T>>(
                 // Client-owned data must be saved even when no server exists, so the auto-save runs
                 // for the manager's lifetime instead of waiting for SERVER_STARTING.
                 startAutoSave()
+                // Leaving the world / disconnecting from a server is a natural session boundary, so
+                // flush there as well (this also fires when quitting a singleplayer save).
+                ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
+                    save()
+                }
                 // A pure client connected to a remote server never sees SERVER_STOPPING, so flush
                 // when the game itself closes instead.
                 ClientLifecycleEvents.CLIENT_STOPPING.register {
