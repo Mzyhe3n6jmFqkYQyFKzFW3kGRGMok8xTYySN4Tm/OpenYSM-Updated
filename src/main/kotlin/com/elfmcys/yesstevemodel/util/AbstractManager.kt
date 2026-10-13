@@ -18,14 +18,9 @@ import kotlin.time.Duration.Companion.minutes
 abstract class AbstractManager<T : DeepCopy<T>>(
     fileName: String,
     newData: T,
+    protected val isServerSide: Boolean,
     protected val dataPath: Path = Constants.ConfigDir.resolve(fileName),
     protected val autoSaveDelay: Duration = 5.minutes,
-    /**
-     * True for server-owned data: the periodic auto-save only runs while a server is up.
-     * False for client-owned data: the auto-save runs for the manager's whole lifetime, since a
-     * client may never see a server (e.g. client-only mode against a remote/vanilla server).
-     */
-    protected val isServerSide: Boolean
 ) {
     protected open val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 

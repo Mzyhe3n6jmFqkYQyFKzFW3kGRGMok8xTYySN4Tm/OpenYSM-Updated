@@ -82,11 +82,8 @@ data class ClientSelectionData(
 }
 
 @Environment(EnvType.CLIENT)
-object ClientOnlySelection : AbstractManager<ClientSelectionData>(
-    "client_selection.dat",
-    ClientSelectionData(),
-    isServerSide = false
-) {
+object ClientOnlySelection :
+    AbstractManager<ClientSelectionData>("client_selection.dat", ClientSelectionData(), false) {
     override fun loadData(): ClientSelectionData =
         runCatching {
             if (Files.exists(dataPath)) {
