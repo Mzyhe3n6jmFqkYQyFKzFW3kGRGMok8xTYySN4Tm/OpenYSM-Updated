@@ -51,7 +51,7 @@ class S2CSyncPlayerStatePacket(
 
     fun isEmpty(): Boolean = flags.toInt() == 0
 
-    fun isFullSync(): Boolean = (flags.toInt() and 1) != 0
+    fun isFullSync(): Boolean = flags.toInt() and 1 != 0
 
     fun markFullSync() {
         flags = (flags.toInt() or 1).toShort()
@@ -220,7 +220,7 @@ class S2CSyncPlayerStatePacket(
 
                     else -> {
                         val map = Object2ByteArrayMap<Holder<MobEffect>>(effectCount)
-                        for (i in 0 until effectCount) {
+                        repeat(effectCount) {
                             val holder = BuiltInRegistries.MOB_EFFECT.asHolderIdMap().byId(buffer.readVarInt())
                             val amplifier = buffer.readByte()
                             if (holder != null) {
