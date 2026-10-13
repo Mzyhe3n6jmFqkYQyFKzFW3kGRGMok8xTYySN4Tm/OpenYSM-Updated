@@ -114,8 +114,9 @@ interface IGeoRenderer<T : AnimatableEntity<*>> {
         alpha: Float
     ) {
         if (currentModelRenderCycle == EModelRenderCycle.INITIAL) {
-            val width = animatable.heightScale
-            val height = animatable.widthScale
+            // Y is Minecraft's height axis, so width_scale drives X/Z and height_scale drives Y.
+            val width = animatable.widthScale
+            val height = animatable.heightScale
             poseStack.scale(width, height, width)
         }
     }

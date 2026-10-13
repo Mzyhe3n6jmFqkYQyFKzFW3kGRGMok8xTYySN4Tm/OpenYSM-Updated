@@ -97,13 +97,14 @@ class PlayerCapability(player: Player) : CustomPlayerEntity(player, player is Lo
             when {
                 model.viewLocatorBone != null -> {
                     FirstPersonCompat.setCameraDistance(
-                        model.viewLocatorBone.pivotY * widthScale
+                        // Must match the vertical factor IGeoRenderer.renderEarly applies to the model.
+                        model.viewLocatorBone.pivotY * heightScale
                     )
                 }
 
                 z && model.headBones.isNotEmpty() -> {
                     val bone = model.headBones[model.headBones.size - 1]
-                    FirstPersonCompat.setCameraDistance(bone.pivotY * widthScale)
+                    FirstPersonCompat.setCameraDistance(bone.pivotY * heightScale)
                 }
             }
         }
