@@ -13,6 +13,7 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.nbt.*
 import java.nio.file.Files
+import java.nio.file.Path
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.jvm.optionals.getOrNull
 
@@ -95,12 +96,8 @@ object ClientOnlySelection : AbstractManager<ClientSelectionData>("client_select
             ClientSelectionData()
         }
 
-    override fun saveNow(saveData: ClientSelectionData) {
-        runCatching {
-            writeAtomically { path -> NbtIo.writeCompressed(saveData.save(), path) }
-        }.onFailure {
-            Constants.LOGGER.error("Failed to save client-only model selection to NBT", it)
-        }
+    override fun writeTo(saveData: ClientSelectionData, target: Path) {
+        NbtIo.writeCompressed(saveData.save(), target)
     }
 
     @Synchronized

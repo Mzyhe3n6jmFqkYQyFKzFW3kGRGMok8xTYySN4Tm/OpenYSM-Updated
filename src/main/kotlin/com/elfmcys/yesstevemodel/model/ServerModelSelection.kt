@@ -11,6 +11,7 @@ import com.elfmcys.yesstevemodel.util.getListOrNull
 import com.elfmcys.yesstevemodel.util.getStringOrNull
 import net.minecraft.nbt.*
 import java.nio.file.Files
+import java.nio.file.Path
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.jvm.optionals.getOrNull
@@ -132,12 +133,8 @@ object ServerModelSelection : AbstractManager<ServerSelectionData>("server_selec
             ServerSelectionData()
         }
 
-    override fun saveNow(saveData: ServerSelectionData) {
-        runCatching {
-            writeAtomically { path -> NbtIo.writeCompressed(saveData.save(), path) }
-        }.onFailure {
-            Constants.LOGGER.error("Failed to save server model selection to NBT", it)
-        }
+    override fun writeTo(saveData: ServerSelectionData, target: Path) {
+        NbtIo.writeCompressed(saveData.save(), target)
     }
 
     @Synchronized
