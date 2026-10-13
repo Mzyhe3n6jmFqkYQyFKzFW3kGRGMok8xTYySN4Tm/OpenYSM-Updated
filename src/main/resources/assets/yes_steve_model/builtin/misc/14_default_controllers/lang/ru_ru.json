@@ -1,0 +1,20 @@
+{
+  "metadata.name": "Модель контроллеров по умолчанию",
+  "metadata.tips": "Тестовая модель контроллеров по умолчанию",
+  "metadata.authors.0.name": "GODZILLA256",
+  "metadata.authors.0.role": "Модель",
+  "metadata.authors.0.comment": "Автор моделей MC/YSM с кучей идей и нехваткой времени",
+  "metadata.authors.1.name": "lucia2048",
+  "metadata.authors.1.role": "Анимация",
+  "metadata.authors.1.comment": "Блуждающий среди звезд",
+  "properties.extra_animation.extra0": "Шаг Мория",
+  "properties.extra_animation.extra1": "Махать рукой",
+  "properties.extra_animation.extra2": "Хлопать",
+  "properties.extra_animation.extra3": "YES",
+  "properties.extra_animation.extra4": "NO",
+  "properties.extra_animation.extra5": "Ура",
+  "properties.extra_animation.extra6": "Качать руками",
+  "properties.extra_animation.extra7": "Танцевать",
+  "properties.extra_animation_buttons.extra_config.config_forms.0.title": "Размер: ",
+  "properties.extra_animation_buttons.extra_config.config_forms.0.description": "Изменить размер игрока"
+}

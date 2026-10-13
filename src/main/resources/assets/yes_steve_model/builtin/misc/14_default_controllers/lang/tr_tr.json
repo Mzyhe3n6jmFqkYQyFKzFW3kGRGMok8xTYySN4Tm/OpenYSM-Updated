@@ -1,0 +1,20 @@
+{
+  "metadata.name": "Varsayılan Denetleyici Modeli",
+  "metadata.tips": "Varsayılan Denetleyici Test Modeli",
+  "metadata.authors.0.name": "GODZILLA256",
+  "metadata.authors.0.role": "Model",
+  "metadata.authors.0.comment": "Çok fikri olan ama az zamanı olan bir MC model/YSM yazarı",
+  "metadata.authors.1.name": "lucia2048",
+  "metadata.authors.1.role": "Animasyon",
+  "metadata.authors.1.comment": "Yıldızların arasında dolaşıyor",
+  "properties.extra_animation.extra0": "Moriya Adımı",
+  "properties.extra_animation.extra1": "El Salla",
+  "properties.extra_animation.extra2": "Alkış",
+  "properties.extra_animation.extra3": "YES",
+  "properties.extra_animation.extra4": "NO",
+  "properties.extra_animation.extra5": "Yaşasın",
+  "properties.extra_animation.extra6": "Sallanma",
+  "properties.extra_animation.extra7": "Dans",
+  "properties.extra_animation_buttons.extra_config.config_forms.0.title": "Boyut: ",
+  "properties.extra_animation_buttons.extra_config.config_forms.0.description": "Oyuncu boyutunu değiştir"
+}

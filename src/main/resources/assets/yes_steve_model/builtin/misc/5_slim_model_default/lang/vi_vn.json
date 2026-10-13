@@ -1,0 +1,21 @@
+{
+  "metadata.name": "Mô hình mảnh kết cấu MC",
+  "metadata.tips": "Kết cấu mặc định của mô hình mảnh Minecraft",
+  "metadata.authors.0.name": "GODZILLA256",
+  "metadata.authors.0.role": "Mô hình",
+  "metadata.authors.0.comment": "Một tác giả mô hình MC/YSM với nhiều ý tưởng nhưng ít thời gian",
+  "metadata.authors.1.name": "Duan Mu",
+  "metadata.authors.1.role": "Hoạt ảnh",
+  "metadata.authors.1.comment": "Luôn luôn đang tiến hành",
+  "metadata.authors.2.name": "Sweetzonzi",
+  "metadata.authors.2.role": "Hoạt ảnh",
+  "metadata.authors.2.comment": "(ᗜˬᗜ)",
+  "properties.extra_animation.extra0": "Bước chân Moriya",
+  "properties.extra_animation.extra1": "Vẫy tay",
+  "properties.extra_animation.extra2": "Vỗ tay",
+  "properties.extra_animation.extra3": "YES",
+  "properties.extra_animation.extra4": "NO",
+  "properties.extra_animation.extra5": "Tuyệt",
+  "properties.extra_animation.extra6": "Đung đưa",
+  "properties.extra_animation.extra7": "Nhảy múa"
+}

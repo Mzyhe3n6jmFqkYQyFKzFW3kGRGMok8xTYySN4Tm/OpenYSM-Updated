@@ -1,0 +1,20 @@
+{
+  "metadata.name": "Mô hình bộ điều khiển mặc định",
+  "metadata.tips": "Mô hình thử nghiệm bộ điều khiển mặc định",
+  "metadata.authors.0.name": "GODZILLA256",
+  "metadata.authors.0.role": "Mô hình",
+  "metadata.authors.0.comment": "Một tác giả mô hình MC/YSM với nhiều ý tưởng nhưng ít thời gian",
+  "metadata.authors.1.name": "lucia2048",
+  "metadata.authors.1.role": "Hoạt ảnh",
+  "metadata.authors.1.comment": "Lang thang giữa các vì sao",
+  "properties.extra_animation.extra0": "Bước chân Moriya",
+  "properties.extra_animation.extra1": "Vẫy tay",
+  "properties.extra_animation.extra2": "Vỗ tay",
+  "properties.extra_animation.extra3": "YES",
+  "properties.extra_animation.extra4": "NO",
+  "properties.extra_animation.extra5": "Tuyệt",
+  "properties.extra_animation.extra6": "Đung đưa",
+  "properties.extra_animation.extra7": "Nhảy múa",
+  "properties.extra_animation_buttons.extra_config.config_forms.0.title": "Kích thước: ",
+  "properties.extra_animation_buttons.extra_config.config_forms.0.description": "Thay đổi kích thước người chơi"
+}

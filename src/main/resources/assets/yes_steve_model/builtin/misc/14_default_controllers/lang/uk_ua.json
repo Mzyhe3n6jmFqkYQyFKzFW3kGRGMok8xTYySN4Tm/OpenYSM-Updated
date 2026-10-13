@@ -1,0 +1,20 @@
+{
+  "metadata.name": "Модель контролерів за замовчуванням",
+  "metadata.tips": "Тестова модель контролерів за замовчуванням",
+  "metadata.authors.0.name": "GODZILLA256",
+  "metadata.authors.0.role": "Модель",
+  "metadata.authors.0.comment": "Автор моделей MC/YSM з купою ідей і обмалем часу",
+  "metadata.authors.1.name": "lucia2048",
+  "metadata.authors.1.role": "Анімація",
+  "metadata.authors.1.comment": "Блукає серед зірок",
+  "properties.extra_animation.extra0": "Крок Морія",
+  "properties.extra_animation.extra1": "Махнути рукою",
+  "properties.extra_animation.extra2": "Плескати",
+  "properties.extra_animation.extra3": "YES",
+  "properties.extra_animation.extra4": "NO",
+  "properties.extra_animation.extra5": "Ура",
+  "properties.extra_animation.extra6": "Махати",
+  "properties.extra_animation.extra7": "Танцювати",
+  "properties.extra_animation_buttons.extra_config.config_forms.0.title": "Розмір: ",
+  "properties.extra_animation_buttons.extra_config.config_forms.0.description": "Змінити розмір гравця"
+}

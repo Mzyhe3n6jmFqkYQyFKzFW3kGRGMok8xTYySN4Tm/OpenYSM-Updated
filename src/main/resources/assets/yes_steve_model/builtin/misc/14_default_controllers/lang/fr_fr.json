@@ -1,0 +1,20 @@
+{
+  "metadata.name": "Modèle de contrôleurs par défaut",
+  "metadata.tips": "Modèle de test des contrôleurs par défaut",
+  "metadata.authors.0.name": "GODZILLA256",
+  "metadata.authors.0.role": "Modèle",
+  "metadata.authors.0.comment": "Un créateur de modèles MC/YSM avec beaucoup d'idées et peu de temps",
+  "metadata.authors.1.name": "lucia2048",
+  "metadata.authors.1.role": "Animation",
+  "metadata.authors.1.comment": "Errant parmi les étoiles",
+  "properties.extra_animation.extra0": "Danse Moriya",
+  "properties.extra_animation.extra1": "Saluer",
+  "properties.extra_animation.extra2": "Applaudir",
+  "properties.extra_animation.extra3": "YES",
+  "properties.extra_animation.extra4": "NO",
+  "properties.extra_animation.extra5": "Ouais",
+  "properties.extra_animation.extra6": "Balancer",
+  "properties.extra_animation.extra7": "Danser",
+  "properties.extra_animation_buttons.extra_config.config_forms.0.title": "Taille : ",
+  "properties.extra_animation_buttons.extra_config.config_forms.0.description": "Changer la taille du joueur"
+}
