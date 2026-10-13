@@ -31,6 +31,7 @@ abstract class AbstractManager<T : DeepCopy<T>>(
      */
     private val saveRequests: Channel<Unit> = Channel(Channel.CONFLATED)
     private val writeLock: Mutex = Mutex()
+    private var autoSaveJob: Job? = null
 
     protected open fun load() {
         if (Files.exists(dataPath)) {
@@ -94,18 +95,21 @@ abstract class AbstractManager<T : DeepCopy<T>>(
                 writeLock.withLock { writeSafely { writeAtomically(data.deepCopy()) } }
             }
         }
-        // Periodic safety-net flush. Deliberately not tied to SERVER_STARTING: this manager is a
-        // lazily initialised singleton that is first touched when a player joins, i.e. *after*
-        // SERVER_STARTING has already fired, so a listener registered here would never receive it
-        // and the auto-save would silently never run.
-        scope.launch {
-            while (isActive) {
-                delay(autoSaveDelay)
-                save()
-            }
-        }
+        // The periodic auto-save only runs while a server is up, so it is driven by the server
+        // lifecycle. These managers must therefore be initialised before SERVER_STARTING fires
+        // (see YsmEventBootstrap); otherwise the listener registers too late and never runs.
         runCatching {
+            ServerLifecycleEvents.SERVER_STARTING.register {
+                autoSaveJob?.cancel()
+                autoSaveJob = scope.launch {
+                    while (isActive) {
+                        delay(autoSaveDelay)
+                        save()
+                    }
+                }
+            }
             ServerLifecycleEvents.SERVER_STOPPING.register {
+                autoSaveJob?.cancel()
                 saveNow()
             }
             ServerLifecycleEvents.START_DATA_PACK_RELOAD.register { _, _ ->
